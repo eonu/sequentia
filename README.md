@@ -1,6 +1,6 @@
-# Stateful
+# Sequentia
 
-State-based isolated temporal pattern recognition with multivariate Hidden Markov Models.
+A generalized interface for state-based isolated temporal pattern recognition problems using multivariate Hidden Markov Models.
 
 # Contributors
 
@@ -26,6 +26,6 @@ All contributions to this repository are greatly appreciated. Contribution guide
 ---
 
 <p align="center">
-  <b>Stateful</b> &copy; 2019-2020, Edwin Onuonga - Released under the <a href="https://opensource.org/licenses/MIT">MIT</a> License.<br/>
+  <b>Sequentia</b> &copy; 2019-2020, Edwin Onuonga - Released under the <a href="https://opensource.org/licenses/MIT">MIT</a> License.<br/>
   <em>Authored and maintained by Edwin Onuonga.</em>
 </p>
