@@ -15,7 +15,7 @@ All contributions to this repository are greatly appreciated. Contribution guide
                 <br/><sub><b>Edwin Onuonga</b></sub>
                 </a>
                 <br/>
-                <a href="mailto:ed@eonu.net">📧</a>
+                <a href="mailto:ed@eonu.net">✉️</a>
                 <a href="https://eonu.net">🌍</a>
 			</th>
 			<!-- Add more <th></th> blocks for more contributors -->
