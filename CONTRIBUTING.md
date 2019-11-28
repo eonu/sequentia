@@ -48,7 +48,8 @@ Pull request titles must be of the form `[type:specifier] Pull request title`, w
 
 The `specifier` should be one of:
 
-- `lib`: Changes to any library code in the.
+- `pkg`: Changes to any core package configuration.
+- `lib`: Changes to any library code.
 - `ci`: Changes to `.travis.yml`.
 - `tests`: Changes to any test code.
 - `git`: Changes to any Git-related code, such as `.gitignore`.
