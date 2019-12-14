@@ -1,6 +1,6 @@
 # Sequentia
 
-A generalized interface for state-based isolated temporal pattern recognition problems using multivariate Hidden Markov Models.
+A generalized interface for isolated temporal sequence classification using Hidden Markov Models and Dynamic Time Warping kNN.
 
 # Contributors
 
