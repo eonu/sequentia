@@ -6,11 +6,11 @@ from typing import Dict, Union, List, Tuple, Any
 class HMMClassifier:
     """An ensemble classifier that combines individual HMMs which model isolated sequences from different classes.
 
-    Examples:
+    Example:
         >>> import numpy as np
         >>> from sequentia.classifiers import HMM, HMMClassifier
-        >>>
-        >>> # Create some sample HMMs
+        >>> ​
+        >>> # Create and fit some sample HMMs
         >>> hmms = []
         >>> for i in range(5):
         >>>     hmm = HMM(label=f'class{i}', n_states=(i + 3), topology='left-right')
@@ -18,11 +18,11 @@ class HMMClassifier:
         >>>     hmm.set_random_transitions()
         >>>     hmm.fit([np.arange((i + j * 20) * 30).reshape(-1, 3) for j in range(1, 4)])
         >>>     hmms.append(hmm)
-        >>>
+        >>> ​
         >>> # Create some sample test data and labels
         >>> X = [np.random.random((10 * i, 3)) for i in range(1, 4)]
         >>> y = ['class0', 'class1', 'class1']
-        >>>
+        >>> ​
         >>> # Create a classifier and calculate predictions and evaluations
         >>> clf = HMMClassifier()
         >>> clf.fit(hmms)
@@ -47,7 +47,7 @@ class HMMClassifier:
         else:
             raise TypeError('Expected `models` to be a list or dict of HMM objects')
 
-    def predict(self, X: Union[np.ndarray, List[np.ndarray]], prior=True, return_scores=False) -> Union[np.ndarray, List[np.ndarray]]:
+    def predict(self, X: Union[np.ndarray, List[np.ndarray]], prior=True, return_scores=False) -> Union[str, List[str]]:
         """Predicts the label for an observation sequence (or multiple sequences) according to maximum likelihood or posterior scores.
 
         Parameters:
@@ -57,7 +57,7 @@ class HMMClassifier:
                 to False, then the negative log likelihoods generated from the models' `forward` function are used.
             return_scores {bool} - Whether to return the scores of each model on the observation sequence(s).
 
-        Returns:
+        Returns {str, list(str)}:
             The predicted labels for the observation sequence(s).
         """
         if not isinstance(prior, bool):
