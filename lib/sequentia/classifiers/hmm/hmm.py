@@ -10,13 +10,15 @@ class HMM:
     Example:
         >>> import numpy as np
         >>> from sequentia.classifiers import HMM
-        >>>
+        >>> ​
+        >>> # Create some sample data
         >>> X = [np.random.random((10 * i, 3)) for i in range(1, 4)]
-        >>>
-        >>> nod = HMM(label='nod', n_states=5, topology='left-right')
-        >>> nod.set_random_initial()
-        >>> nod.set_random_transitions()
-        >>> nod.fit(X)
+        >>> ​
+        >>> # Create and fit a left-right HMM with random transitions and initial state distribution
+        >>> hmm1 = HMM(label='class1', n_states=5, topology='left-right')
+        >>> hmm1.set_random_initial()
+        >>> hmm1.set_random_transitions()
+        >>> hmm1.fit(X)
 
     Attributes:
         label (getter) - The label for the model.
