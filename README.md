@@ -2,7 +2,7 @@
 
 A generalized interface for isolated temporal sequence classification algorithms.
 
-<img src="https://i.ibb.co/gPymgs4/classifier.png" width="35%" align="left"></img>
+<img src="https://i.ibb.co/gPymgs4/classifier.png" width="50%" align="right"></img>
 
 ## Features
 
