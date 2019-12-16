@@ -2,7 +2,19 @@
 
 A generalized interface for isolated temporal sequence classification algorithms.
 
-<img src="https://i.ibb.co/gPymgs4/classifier.png" width="50%" align="right"></img>
+<img src="https://i.ibb.co/gPymgs4/classifier.png" width="40%" align="right"></img>
+
+## Introduction
+
+Temporal sequences are sequences of observations that occur over time. Changing patterns over time naturally provide many interesting opportunities and challenges for machine learning.
+
+This library specifically aims to tackle classification problems for isolated temporal sequences. Despite these types of sequences sounding very specific, you probably observe some of them on a regular basis!
+
+Some examples of classification problems for isolated temporal sequences include classifying individual:
+
+- word utterances in speech audio signals,
+- hand-written characters according to their pen-tip trajectories,
+- hand or head gestures in a video or motion-capture recording.
 
 ## Features
 
@@ -17,10 +29,6 @@ A generalized interface for isolated temporal sequence classification algorithms
 - [x] Sequence Normalization
 - [x] Downsampling (by decimation and averaging)
 - [x] Discrete (Fast) Fourier Transform
-
-## Introduction
-
-TODO
 
 # Contributors
 
