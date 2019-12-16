@@ -13,7 +13,7 @@ setup(
     version = VERSION,
     author = "Edwin Onuonga",
     author_email = "ed@eonu.net",
-    description = "A generalized interface for isolated temporal sequence classification algorithms.",
+    description = "A machine learning interface for isolated temporal sequence classification algorithms in Python.",
     long_description = long_description,
     long_description_content_type = "text/markdown",
     url = "https://github.com/eonu/sequentia",

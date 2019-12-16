@@ -1,6 +1,6 @@
 # Sequentia
 
-A generalized interface for isolated temporal sequence classification algorithms.
+A machine learning interface for isolated temporal sequence classification algorithms in Python.
 
 ## Introduction
 
