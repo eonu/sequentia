@@ -1,6 +1,42 @@
 # Sequentia
 
-A generalized interface for isolated temporal sequence classification using Hidden Markov Models and Dynamic Time Warping kNN.
+_A machine learning interface for isolated temporal sequence classification algorithms in Python._
+
+## Introduction
+
+<img src="https://i.ibb.co/gPymgs4/classifier.png" width="40%" align="right"></img>
+
+Temporal sequences are sequences of observations that occur over time. Changing patterns over time naturally provide many interesting opportunities and challenges for machine learning.
+
+This library specifically aims to tackle classification problems for isolated temporal sequences by creating an interface to a number of classification algorithms.
+
+Despite these types of sequences sounding very specific, you probably observe some of them on a regular basis!
+
+**Some examples of classification problems for isolated temporal sequences include classifying**:
+
+- isolated word utterances in speech audio signals,
+- isolated hand-written characters according to their pen-tip trajectories,
+- isolated hand or head gestures in a video or motion-capture recording.
+
+## Features
+
+**Classication algorithms**:
+
+- [x] Ensemble Hidden Markov Models
+- [x] Dynamic Time Warping k-Nearest Neighbors (implemented with [FastDTW](https://github.com/slaypni/fastdtw))
+- [ ] Long Short-Term Memory Networks
+
+**Preprocessing methods**:
+
+- [x] Sequence Normalization
+- [x] Downsampling (by decimation and averaging)
+- [x] Discrete (Fast) Fourier Transform
+
+## Installation
+
+```
+pip install sequentia
+```
 
 # Contributors
 

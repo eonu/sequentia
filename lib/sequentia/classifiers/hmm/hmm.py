@@ -6,7 +6,7 @@ from typing import List
 from ...internals import Validator
 
 class HMM:
-    """A hidden Markov model representing an isolated temporal sequence.
+    """A hidden Markov model representing an isolated temporal sequence class.
 
     Example:
         >>> import numpy as np
