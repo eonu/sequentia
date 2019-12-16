@@ -3,6 +3,7 @@ import pomegranate as pg
 from .topologies.ergodic import ErgodicTopology
 from .topologies.left_right import LeftRightTopology
 from typing import List
+from ...internals import Validator
 
 class HMM:
     """A hidden Markov model representing an isolated temporal sequence.
@@ -23,37 +24,24 @@ class HMM:
     Attributes:
         label (getter) - The label for the model.
         n_states (getter) - The number of states for the model.
-        prior (getter) - The prior for the model.
         n_seqs (getter) - The number of observation sequences use to train the model.
         initial (setter/getter) - The initial state distribution of the model.
         transitions (setter/getter) - The transition matrix of the model.
     """
 
-    def __init__(self, label: str, n_states: int, topology='ergodic', prior=None, random_state=None):
+    def __init__(self, label: str, n_states: int, topology='ergodic', random_state=None):
         """
         Parameters:
             label {str} - A label for the model (should ideally correspond to the class label).
             n_states {int} - The number of states for the model.
             topology {str} - The topology ('ergodic' or 'left-right') for the model.
-            prior {float} - The prior for the class represented by the model.
             random_state {numpy.random.RandomState, int} - A random state object or seed for reproducible randomness.
         """
-        if not isinstance(label, str):
-            raise TypeError('Expected `label` to be a string')
-        self._label = label
-
-        if not isinstance(n_states, int):
-            raise TypeError('Expected `n_states` to be an int')
-        if n_states < 1:
-            raise ValueError('A HMM requires at least one state')
-        self._n_states = n_states
-
-        if prior is not None:
-            if not isinstance(prior, float):
-                raise TypeError('Model prior probability must be a float.')
-            if not 0 < prior <= 1:
-                raise ValueError('Model prior probability must be greater than 0 and less than or equal to 1')
-        self._prior = prior
+        self._val = Validator()
+        self._label = self._val.string(label, 'model label')
+        self._n_states = self._val.restricted_integer(
+            n_states, lambda x: x > 0, desc='number of states', expected='greater than zero')
+        self._val.one_of(topology, ['ergodic', 'left-right'], desc='topology')
 
         if random_state is None:
             self._random_state = np.random.RandomState()
@@ -62,14 +50,12 @@ class HMM:
         elif isinstance(random_state, int):
             self._random_state = np.random.RandomState(seed=random_state)
         else:
-            raise TypeError("Expected `random_state` to be of type: None, int, or numpy.random.RandomState")
+            raise TypeError('Expected random state to be of type: None, int, or numpy.random.RandomState')
 
         if topology == 'ergodic':
             self._topology = ErgodicTopology(self._n_states, self._random_state)
         elif topology == 'left-right':
             self._topology = LeftRightTopology(self._n_states, self._random_state)
-        else:
-            raise ValueError("Expected `topology` to be: 'ergodic' or 'left-right'")
 
     @property
     def label(self) -> str:
@@ -78,10 +64,6 @@ class HMM:
     @property
     def n_states(self) -> int:
         return self._n_states
-
-    @property
-    def prior(self) -> float:
-        return self._prior
 
     @property
     def n_seqs(self) -> int:
@@ -134,15 +116,7 @@ class HMM:
             X {list(numpy.ndarray)} - Collection of multivariate observation sequences, each of shape (T, D)
                 where T may vary per observation sequence.
         """
-        if not isinstance(X, list):
-            raise TypeError('Collection of observation sequences must be a list')
-        if not all(isinstance(sequence, np.ndarray) for sequence in X):
-            raise TypeError('Each observation sequence must be a numpy.ndarray')
-        if not all(sequence.ndim == 2 for sequence in X):
-            raise ValueError('Each observation sequence must be two-dimensional')
-        if not all(sequence.shape[1] == X[0].shape[1] for sequence in X):
-            raise ValueError('Each observation sequence must have the same dimensionality')
-
+        self._val.observation_sequences(X)
         self._n_seqs = len(X)
         self._n_features = X[0].shape[1]
 

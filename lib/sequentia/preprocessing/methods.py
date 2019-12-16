@@ -1,6 +1,7 @@
 import scipy.fftpack
 import numpy as np
 from typing import Union, List
+from ..internals import Validator
 
 def normalize(X: Union[np.ndarray, List[np.ndarray]]) -> Union[np.ndarray, List[np.ndarray]]:
     """Normalizes an observation sequence (or multiple sequences) by centering observations around the mean.
@@ -12,18 +13,8 @@ def normalize(X: Union[np.ndarray, List[np.ndarray]]) -> Union[np.ndarray, List[
     Returns {numpy.ndarray, list(numpy.ndarray)}:
         The normalized input observation sequence(s).
     """
-    if isinstance(X, list):
-        if not all(isinstance(sequence, np.ndarray) for sequence in X):
-            raise TypeError('Each observation sequence must be a numpy.ndarray')
-        if not all(sequence.ndim == 2 for sequence in X):
-            raise ValueError('Each observation sequence must be two-dimensional')
-        if not all(sequence.shape[1] == X[0].shape[1] for sequence in X):
-            raise ValueError('Each observation sequence must have the same dimensionality')
-    elif isinstance(X, np.ndarray):
-        if not X.ndim == 2:
-            raise ValueError('Sequence of observations must be two-dimensional')
-    else:
-        raise TypeError('Expected a single observation sequence (numpy.ndarray) or list of observation sequences')
+    val = Validator()
+    val.observation_sequences(X, allow_single=True)
     return _normalize(X)
 
 def _normalize(X: Union[np.ndarray, List[np.ndarray]]) -> Union[np.ndarray, List[np.ndarray]]:
@@ -46,32 +37,15 @@ def downsample(X: Union[np.ndarray, List[np.ndarray]], n: int, method='decimate'
         n {int} - Downsample factor.
             NOTE: This downsamples the current observation by either decimating the next n-1
                 observations or computing an average with them.
-        method {str} - The downsamplimg method, either 'decimate' or 'average'.
+        method {str} - The downsampling method, either 'decimate' or 'average'.
 
     Returns {numpy.ndarray, list(numpy.ndarray)}:
         The downsampled input observation sequence(s).
     """
-    if isinstance(X, list):
-        if not all(isinstance(sequence, np.ndarray) for sequence in X):
-            raise TypeError('Each observation sequence must be a numpy.ndarray')
-        if not all(sequence.ndim == 2 for sequence in X):
-            raise ValueError('Each observation sequence must be two-dimensional')
-        if not all(sequence.shape[1] == X[0].shape[1] for sequence in X):
-            raise ValueError('Each observation sequence must have the same dimensionality')
-    elif isinstance(X, np.ndarray):
-        if not X.ndim == 2:
-            raise ValueError('Sequence of observations must be two-dimensional')
-    else:
-        raise TypeError('Expected a single observation sequence (numpy.ndarray) or list of observation sequences')
-
-    if not isinstance(n, int):
-        raise TypeError('Expected downsample factor to be an integer')
-    if not n > 1:
-        raise ValueError('Expected downsample factor to be greater than one')
-
-    if method not in ['decimate', 'average']:
-        raise ValueError("Expected downsample method to be one of 'decimate' or 'average'")
-
+    val = Validator()
+    val.observation_sequences(X, allow_single=True)
+    val.restricted_integer(n, lambda x: x > 1, desc='downsample factor', expected='greater than one')
+    val.one_of(method, ['decimate', 'average'], desc='downsampling method')
     return _downsample(X, n, method)
 
 def _downsample(X: Union[np.ndarray, List[np.ndarray]], n: int, method: str) -> Union[np.ndarray, List[np.ndarray]]:
@@ -95,19 +69,8 @@ def fft(X: Union[np.ndarray, List[np.ndarray]]) -> Union[np.ndarray, List[np.nda
     Returns {numpy.ndarray, list(numpy.ndarray)}:
         The transformed input observation sequence(s).
     """
-    if isinstance(X, list):
-        if not all(isinstance(sequence, np.ndarray) for sequence in X):
-            raise TypeError('Each observation sequence must be a numpy.ndarray')
-        if not all(sequence.ndim == 2 for sequence in X):
-            raise ValueError('Each observation sequence must be two-dimensional')
-        if not all(sequence.shape[1] == X[0].shape[1] for sequence in X):
-            raise ValueError('Each observation sequence must have the same dimensionality')
-    elif isinstance(X, np.ndarray):
-        if not X.ndim == 2:
-            raise ValueError('Sequence of observations must be two-dimensional')
-    else:
-        raise TypeError('Expected a single observation sequence (numpy.ndarray) or list of observation sequences')
-
+    val = Validator()
+    val.observation_sequences(X, allow_single=True)
     return _fft(X)
 
 def _fft(X: Union[np.ndarray, List[np.ndarray]]) -> Union[np.ndarray, List[np.ndarray]]:

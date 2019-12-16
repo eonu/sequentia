@@ -1,6 +1,7 @@
 import numpy as np
 from typing import Union, List
 from .methods import _normalize, _downsample, _fft
+from ..internals import Validator
 
 class Preprocess:
     """Efficiently applies multiple preprocessing transformations to provided input observation sequences.
@@ -24,6 +25,7 @@ class Preprocess:
 
     def __init__(self):
         self._transforms = []
+        self._val = Validator()
 
     def normalize(self) -> None:
         """Normalizes an observation sequence (or multiple sequences) by centering observations around the mean."""
@@ -39,13 +41,8 @@ class Preprocess:
                 by either decimating the next n-1 observations or computing an average with them.
             method {str} - The downsamplimg method, either 'decimate' or 'average'.
         """
-        if not isinstance(n, int):
-            raise TypeError('Expected downsample factor to be an integer')
-        if not n > 1:
-            raise ValueError('Expected downsample factor to be greater than one')
-        if method not in ['decimate', 'average']:
-            raise ValueError("Expected downsample method to be one of 'decimate' or 'average'")
-
+        self._val.restricted_integer(n, lambda x: x > 1, desc='downsample factor', expected='greater than one')
+        self._val.one_of(method, ['decimate', 'average'], desc='downsampling method')
         self._transforms.append(('_downsample', {'n': n, 'method': method}))
 
     def fft(self) -> None:
@@ -61,18 +58,12 @@ class Preprocess:
         Returns {list(numpy.ndarray)}:
             The input observation sequences with preprocessing transformations applied in order.
         """
-        if isinstance(X, list):
-            if not all(isinstance(sequence, np.ndarray) for sequence in X):
-                raise TypeError('Each observation sequence must be a numpy.ndarray')
-            if not all(sequence.ndim == 2 for sequence in X):
-                raise ValueError('Each observation sequence must be two-dimensional')
-            if not all(sequence.shape[1] == X[0].shape[1] for sequence in X):
-                raise ValueError('Each observation sequence must have the same dimensionality')
-        else:
-            raise TypeError('Expected a list of observation sequences, each of type numpy.ndarray')
+        self._val.observation_sequences(X)
 
         X_transform = X
+
         for transform, kwargs in self._transforms:
             method = globals()[transform]
             X_transform = method(X_transform, **kwargs)
+
         return X_transform
