@@ -1,6 +1,6 @@
 # Sequentia
 
-A machine learning interface for isolated temporal sequence classification algorithms in Python.
+_A machine learning interface for isolated temporal sequence classification algorithms in Python._
 
 ## Introduction
 
@@ -12,11 +12,11 @@ This library specifically aims to tackle classification problems for isolated te
 
 Despite these types of sequences sounding very specific, you probably observe some of them on a regular basis!
 
-Some examples of classification problems for isolated temporal sequences include classifying individual:
+**Some examples of classification problems for isolated temporal sequences include classifying**:
 
-- word utterances in speech audio signals,
-- hand-written characters according to their pen-tip trajectories,
-- hand or head gestures in a video or motion-capture recording.
+- isolated word utterances in speech audio signals,
+- isolated hand-written characters according to their pen-tip trajectories,
+- isolated hand or head gestures in a video or motion-capture recording.
 
 ## Features
 
