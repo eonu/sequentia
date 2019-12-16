@@ -32,6 +32,12 @@ Despite these types of sequences sounding very specific, you probably observe so
 - [x] Downsampling (by decimation and averaging)
 - [x] Discrete (Fast) Fourier Transform
 
+## Installation
+
+```
+pip install sequentia
+```
+
 # Contributors
 
 All contributions to this repository are greatly appreciated. Contribution guidelines can be found [here](/CONTRIBUTING.md).
