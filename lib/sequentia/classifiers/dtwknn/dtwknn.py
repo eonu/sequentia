@@ -4,6 +4,7 @@ from fastdtw import fastdtw
 from collections import Counter
 from scipy.spatial.distance import euclidean
 from typing import Callable, Union, List, Tuple
+from ...internals import Validator
 
 class DTWKNN:
     """A k-Nearest Neighbor classifier that compares differing length observation sequences
@@ -32,20 +33,11 @@ class DTWKNN:
             radius {int} - Radius parameter for FastDTW.
                 See: https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf
         """
-        if isinstance(k, int):
-            if k < 1:
-                raise ValueError('Expected number of neighbors to be greater than zero')
-        else:
-            raise TypeError("Expected number of neighbors to be an 'int'")
-
-        if isinstance(radius, int):
-            if radius < 1:
-                raise ValueError('Expected radius parameter to be greater than zero')
-        else:
-            raise TypeError("Expected radius parameter to be an 'int'")
-
-        self._k = k
-        self._radius = radius
+        self._val = Validator()
+        self._k = self._val.restricted_integer(
+            k, lambda x: x > 0, desc='number of neighbors', expected='greater than zero')
+        self._radius = self._val.restricted_integer(
+            radius, lambda x: x > 0, desc='radius parameter', expected='greater than zero')
         self._distance = distance
 
     def fit(self, X: List[np.ndarray], y: List[str]) -> None:
@@ -55,26 +47,7 @@ class DTWKNN:
             X {list(numpy.ndarray)} - A list of multiple observation sequences.
             y {list(str)} - A list of labels for the observation sequences.
         """
-        if not isinstance(X, list):
-            raise TypeError('Collection of observation sequences must be a list')
-        if not all(isinstance(sequence, np.ndarray) for sequence in X):
-            raise TypeError('Each observation sequence must be a numpy.ndarray')
-        if not all(sequence.ndim == 2 for sequence in X):
-            raise ValueError('Each observation sequence must be two-dimensional')
-        if not all(sequence.shape[1] == X[0].shape[1] for sequence in X):
-            raise ValueError('Each observation sequence must have the same dimensionality')
-
-        if isinstance(y, list):
-            if not all(isinstance(label, str) for label in y):
-                raise ValueError('Expected all labels to be strings')
-        else:
-            raise ValueError('Expected labels to be a list of strings')
-
-        if not len(X) == len(y):
-            raise ValueError('Expected the same number of observation sequences and labels')
-
-        self._X = X
-        self._y = y
+        self._X, self._y = self._val.observation_sequences_and_labels(X, y)
 
     def predict(self, X: Union[np.ndarray, List[np.ndarray]]) -> Union[str, List[str]]:
         """Predicts the label for an observation sequence (or multiple sequences).
@@ -91,16 +64,7 @@ class DTWKNN:
         except AttributeError:
             raise RuntimeError('The classifier needs to be fitted before predictions are made')
 
-        if isinstance(X, np.ndarray):
-            if not X.ndim == 2:
-                raise ValueError('Observation sequence must be two-dimensional')
-        elif isinstance(X, list):
-            if not all(isinstance(sequence, np.ndarray) for sequence in X):
-                raise TypeError('Each observation sequence must be a numpy.ndarray')
-            if not all(sequence.ndim == 2 for sequence in X):
-                raise ValueError('Each observation sequence must be two-dimensional')
-            if not all(sequence.shape[1] == X[0].shape[1] for sequence in X):
-                raise ValueError('Each observation sequence must have the same dimensionality')
+        self._val.observation_sequences(X, allow_single=True)
 
         # Create a singleton array if predicting just one sequence
         if isinstance(X, np.ndarray):
@@ -139,34 +103,11 @@ class DTWKNN:
             - The specified performance result: either categorical accuracy or F1 score.
             - A confusion matrix representing the discrepancy between predicted and actual labels.
         """
-        if isinstance(X, list):
-            if not all(isinstance(sequence, np.ndarray) for sequence in X):
-                raise TypeError('Each observation sequence must be a numpy.ndarray')
-            if not all(sequence.ndim == 2 for sequence in X):
-                raise ValueError('Each observation sequence must be two-dimensional')
-            if not all(sequence.shape[1] == X[0].shape[1] for sequence in X):
-                raise ValueError('Each observation sequence must have the same dimensionality')
-        else:
-            raise TypeError('Expected a list of observation sequences, each of type numpy.ndarray')
-
-        if isinstance(y, list):
-            if not all(isinstance(label, str) for label in y):
-                raise ValueError('Expected all labels to be strings')
-        else:
-            raise ValueError('Expected labels to be a list of strings')
-
-        if not len(X) == len(y):
-            raise ValueError('Expected the same number of observation sequences and labels')
-
-        if metric not in ['accuracy', 'f1']:
-            raise ValueError("Expected `metric` to be one of 'accuracy' or 'f1'")
+        self._val.observation_sequences_and_labels(X, y)
+        self._val.one_of(metric, ['accuracy', 'f1'], desc='metric')
 
         if labels is not None:
-            if isinstance(labels, list):
-                if not all(isinstance(label, str) for label in labels):
-                    raise ValueError('Expected all confusion matrix labels to be strings')
-            else:
-                raise ValueError('Expected confusion matrix labels to be a list of strings')
+            self._val.list_of_strings(labels, desc='confusion matrix labels')
 
         # Classify each observation sequence
         predictions = self.predict(X)
