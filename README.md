@@ -8,7 +8,9 @@ A generalized interface for isolated temporal sequence classification algorithms
 
 Temporal sequences are sequences of observations that occur over time. Changing patterns over time naturally provide many interesting opportunities and challenges for machine learning.
 
-This library specifically aims to tackle classification problems for isolated temporal sequences by creating an interface to a number of classification algorithms. Despite these types of sequences sounding very specific, you probably observe some of them on a regular basis!
+This library specifically aims to tackle classification problems for isolated temporal sequences by creating an interface to a number of classification algorithms.
+
+Despite these types of sequences sounding very specific, you probably observe some of them on a regular basis!
 
 Some examples of classification problems for isolated temporal sequences include classifying individual:
 
