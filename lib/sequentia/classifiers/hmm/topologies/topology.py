@@ -3,7 +3,7 @@ import numpy as np
 class Topology:
     """Represents a topology for a HMM, imposing restrictions on the transition matrix and initial state distribution."""
 
-    def __init__(self, n_states, random_state):
+    def __init__(self, n_states: int, random_state: np.random.RandomState):
         """Parameters:
             n_states {int} - Number of states in the HMM.
             random_state {numpy.random.RandomState} - The random state object for reproducible randomness.
@@ -42,7 +42,7 @@ class Topology:
             from a Dirichlet distribution."""
         raise NotImplementedError
 
-    def validate_initial(self, initial) -> None:
+    def validate_initial(self, initial: np.ndarray) -> None:
         """Validates an initial state distribution according to the topology's restrictions."""
         if not isinstance(initial, np.ndarray):
             raise TypeError('Initial state distribution must be a numpy.ndarray')
@@ -51,7 +51,7 @@ class Topology:
         if not initial.sum() == 1:
             raise ValueError('Initial state distribution must sum to one')
 
-    def validate_transitions(self, transitions) -> None:
+    def validate_transitions(self, transitions: np.ndarray) -> None:
         """Validates a transition matrix according to the topology's restrictions."""
         if not isinstance(transitions, np.ndarray):
             raise TypeError('Transition matrix must be a numpy.ndarray')
