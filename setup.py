@@ -13,7 +13,7 @@ setup(
     version = VERSION,
     author = "Edwin Onuonga",
     author_email = "ed@eonu.net",
-    description = "A generalized interface for isolated temporal sequence classification using Hidden Markov Models and Dynamic Time Warping kNN.",
+    description = "A generalized interface for isolated temporal sequence classification algorithms.",
     long_description = long_description,
     long_description_content_type = "text/markdown",
     url = "https://github.com/eonu/sequentia",

@@ -1,6 +1,26 @@
 # Sequentia
 
-A generalized interface for isolated temporal sequence classification using Hidden Markov Models and Dynamic Time Warping kNN.
+A generalized interface for isolated temporal sequence classification algorithms.
+
+<img src="https://i.ibb.co/gPymgs4/classifier.png" width="35%" align="left"></img>
+
+## Features
+
+**Classication algorithms**:
+
+- [x] Ensemble Hidden Markov Models
+- [x] Dynamic Time Warping k-Nearest Neighbors (implemented with [FastDTW](https://github.com/slaypni/fastdtw))
+- [ ] Long Short-Term Memory Networks
+
+**Preprocessing methods**:
+
+- [x] Sequence Normalization
+- [x] Downsampling (by decimation and averaging)
+- [x] Discrete (Fast) Fourier Transform
+
+## Introduction
+
+TODO
 
 # Contributors
 
