@@ -132,4 +132,4 @@ class Validator:
                 raise ValueError('Expected all {} to be strings'.format(desc))
         else:
             raise ValueError('Expected {} to be a list of strings'.format(desc))
-        return item
+        return items
