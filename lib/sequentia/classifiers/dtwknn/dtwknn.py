@@ -3,6 +3,7 @@ import numpy as np
 from fastdtw import fastdtw
 from collections import Counter
 from scipy.spatial.distance import euclidean
+from sklearn.metrics import confusion_matrix
 from typing import Callable, Union, List, Tuple
 from tqdm import tqdm
 from ...internals import Validator
