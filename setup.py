@@ -40,6 +40,7 @@ setup(
         'pomegranate>=0.11,<1',
         'fastdtw>=0.3,<0.4',
         'scipy>=1.3,<2',
-        'scikit-learn>=0.22,<1'
+        'scikit-learn>=0.22,<1',
+        'tqdm>=4.36,<5'
     ]
 )

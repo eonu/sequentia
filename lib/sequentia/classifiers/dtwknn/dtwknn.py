@@ -4,6 +4,7 @@ from fastdtw import fastdtw
 from collections import Counter
 from scipy.spatial.distance import euclidean
 from typing import Callable, Union, List, Tuple
+from tqdm import tqdm
 from ...internals import Validator
 
 class DTWKNN:
@@ -26,19 +27,20 @@ class DTWKNN:
         >>> clf.predict(X)
     """
 
-    def __init__(self, k: int, radius: int = 10, distance: Callable = euclidean):
+    def __init__(self, k: int, radius: int = 10, metric: Callable = euclidean):
         """
         Parameters:
             k {int} - Number of neighbors.
             radius {int} - Radius parameter for FastDTW.
                 See: https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf
+            metric {Callable} - Distance metric for FastDTW.
         """
         self._val = Validator()
         self._k = self._val.restricted_integer(
             k, lambda x: x > 0, desc='number of neighbors', expected='greater than zero')
         self._radius = self._val.restricted_integer(
             radius, lambda x: x > 0, desc='radius parameter', expected='greater than zero')
-        self._distance = distance
+        self._metric = metric
 
     def fit(self, X: List[np.ndarray], y: List[str]) -> None:
         """Fits the classifier by adding labeled training observation sequences.
@@ -49,12 +51,13 @@ class DTWKNN:
         """
         self._X, self._y = self._val.observation_sequences_and_labels(X, y)
 
-    def predict(self, X: Union[np.ndarray, List[np.ndarray]]) -> Union[str, List[str]]:
+    def predict(self, X: Union[np.ndarray, List[np.ndarray]], verbose=True) -> Union[str, List[str]]:
         """Predicts the label for an observation sequence (or multiple sequences).
 
         Parameters:
             X {numpy.ndarray, list(numpy.ndarray)} - An individual observation sequence or
                 a list of multiple observation sequences.
+            verbose {bool} - Whether to display a progress bar or not.
 
         Returns {numpy.ndarray, list(numpy.ndarray)}:
             The predicted labels for the observation sequence(s).
@@ -65,16 +68,12 @@ class DTWKNN:
             raise RuntimeError('The classifier needs to be fitted before predictions are made')
 
         self._val.observation_sequences(X, allow_single=True)
+        self._val.boolean(verbose)
 
-        # Create a singleton array if predicting just one sequence
+        distance = lambda x1, x2: fastdtw(x1, x2, radius=self._radius, dist=self._metric)
+
         if isinstance(X, np.ndarray):
-            X = [X]
-
-        labels = []
-        distance = lambda x1, x2: fastdtw(x1, x2, radius=self._radius, dist=self._distance)
-
-        for sequence in X:
-            distances = [distance(sequence, x)[0] for x in self._X]
+            distances = [distance(X, x)[0] for x in tqdm(self._X, desc='Calculating distances', disable=not(verbose))]
             idx = np.argpartition(distances, self._k)[:self._k]
             neighbor_labels = [self._y[i] for i in idx]
 
@@ -83,13 +82,27 @@ class DTWKNN:
             max_count = max(counter.values())
             modes = [k for k, v in counter.items() if v == max_count]
 
-            # If there are multiple modes, randomly select one as the label
-            # NOTE: Still okay if there is only one mode
-            labels.append(random.choice(modes))
+            # Randomly select one of the modal labels
+            return random.choice(modes)
+        else:
+            labels = []
 
-        return labels[0] if len(X) == 1 else labels
+            for sequence in tqdm(X, desc='Classifying examples', disable=not(verbose)):
+                distances = [distance(sequence, x)[0] for x in self._X]
+                idx = np.argpartition(distances, self._k)[:self._k]
+                neighbor_labels = [self._y[i] for i in idx]
 
-    def evaluate(self, X: List[np.ndarray], y: List[str], metric='accuracy', labels=None) -> Tuple[float, np.ndarray]:
+                # Find the modal labels
+                counter = Counter(neighbor_labels)
+                max_count = max(counter.values())
+                modes = [k for k, v in counter.items() if v == max_count]
+
+                # Randomly select one of the modal labels
+                labels.append(random.choice(modes))
+
+            return labels
+
+    def evaluate(self, X: List[np.ndarray], y: List[str], metric='accuracy', labels=None, verbose=True) -> Tuple[float, np.ndarray]:
         """Evaluates the performance of the classifier on a batch of observation sequences and their labels.
 
         Parameters:
@@ -98,6 +111,7 @@ class DTWKNN:
             metric {str} - A performance metric for the classification - one of
                 'accuracy' (categorical accuracy) or 'f1' (F1 score = harmonic mean of precision and recall).
             labels {list(str)} - A list of labels for ordering the axes of the confusion matrix.
+            verbose {bool} - Whether to display a progress bar for predictions or not.
 
         Return: {tuple(float, numpy.ndarray)}
             - The specified performance result: either categorical accuracy or F1 score.
@@ -105,6 +119,7 @@ class DTWKNN:
         """
         self._val.observation_sequences_and_labels(X, y)
         self._val.one_of(metric, ['accuracy', 'f1'], desc='metric')
+        self._val.boolean(verbose)
 
         if labels is not None:
             self._val.list_of_strings(labels, desc='confusion matrix labels')
