@@ -117,6 +117,12 @@ class HMM:
                 where T may vary per observation sequence.
         """
         self._val.observation_sequences(X)
+
+        try:
+            (self._initial, self._transitions)
+        except AttributeError as e:
+            raise AttributeError('Must specify initial state distribution and transitions before the HMM can be fitted') from e
+
         self._n_seqs = len(X)
         self._n_features = X[0].shape[1]
 
