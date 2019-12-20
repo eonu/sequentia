@@ -103,37 +103,27 @@ class DTWKNN:
 
             return labels
 
-    def evaluate(self, X: List[np.ndarray], y: List[str], metric='accuracy', labels=None, verbose=True) -> Tuple[float, np.ndarray]:
+    def evaluate(self, X: List[np.ndarray], y: List[str], labels=None, verbose=True) -> Tuple[float, np.ndarray]:
         """Evaluates the performance of the classifier on a batch of observation sequences and their labels.
 
         Parameters:
             X {list(numpy.ndarray)} - A list of multiple observation sequences.
             y {list(str)} - A list of labels for the observation sequences.
-            metric {str} - A performance metric for the classification - one of
-                'accuracy' (categorical accuracy) or 'f1' (F1 score = harmonic mean of precision and recall).
             labels {list(str)} - A list of labels for ordering the axes of the confusion matrix.
             verbose {bool} - Whether to display a progress bar for predictions or not.
 
         Return: {tuple(float, numpy.ndarray)}
-            - The specified performance result: either categorical accuracy or F1 score.
+            - The categorical accuracy of the classifier on the observation sequences.
             - A confusion matrix representing the discrepancy between predicted and actual labels.
         """
         self._val.observation_sequences_and_labels(X, y)
-        self._val.one_of(metric, ['accuracy', 'f1'], desc='metric')
         self._val.boolean(verbose, desc='verbose')
 
         if labels is not None:
             self._val.list_of_strings(labels, desc='confusion matrix labels')
 
-        # Classify each observation sequence
+        # Classify each observation sequence and calculate confusion matrix
         predictions = self.predict(X)
-
-        # Calculate confusion matrix and precision and recall
         cm = confusion_matrix(y, predictions, labels=labels)
-        precision = np.mean(np.diag(cm) / np.sum(cm, axis=0))
-        recall = np.mean(np.diag(cm) / np.sum(cm, axis=1))
 
-        if metric == 'accuracy':
-            return np.sum(np.diag(cm)) / len(predictions), cm
-        elif metric == 'f1':
-            return 2.0 * precision * recall / (precision + recall), cm
+        return np.sum(np.diag(cm)) / np.sum(cm), cm
