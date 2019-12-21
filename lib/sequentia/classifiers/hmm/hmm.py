@@ -109,7 +109,7 @@ class HMM:
     def set_random_transitions(self):
         self._transitions = self._topology.random_transitions()
 
-    def fit(self, X: List[np.ndarray], n_jobs=1: int):
+    def fit(self, X: List[np.ndarray], n_jobs=1):
         """Fits the HMM to observation sequences assumed to be labeled as the class that the model represents.
 
         Parameters:
