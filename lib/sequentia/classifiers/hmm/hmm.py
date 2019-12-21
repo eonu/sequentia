@@ -29,7 +29,7 @@ class HMM:
         transitions (setter/getter) - The transition matrix of the model.
     """
 
-    def __init__(self, label: str, n_states: int, topology='ergodic', random_state=None):
+    def __init__(self, label: str, n_states: int, topology='left-right', random_state=None):
         """
         Parameters:
             label {str} - A label for the model (should ideally correspond to the class label).
