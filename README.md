@@ -20,15 +20,17 @@ Despite these types of sequences sounding very specific, you probably observe so
 
 ## Features
 
-Sequentia offers the use of **multivariate observation sequences with differing lengths** in conjunction with the following algorithms and methods.
+Sequentia offers the use of **multivariate observation sequences with differing durations** in conjunction with the following algorithms and methods.
 
 ### Classication algorithms
 
 - [x] Ensemble Hidden Markov Models
+  - [x] Multivariate Gaussian emission distributions
+  - [ ] Gaussian Mixture Model emission distributions (soon!)
 - [x] Approximate Dynamic Time Warping k-Nearest Neighbors (implemented with [FastDTW](https://github.com/slaypni/fastdtw))
-- [ ] Long Short-Term Memory Networks
+- [ ] Long Short-Term Memory Networks (soon!)
 
-### Preprocessing methods**
+### Preprocessing methods
 
 - [x] Sequence Normalization
 - [x] Downsampling (by decimation and averaging)
