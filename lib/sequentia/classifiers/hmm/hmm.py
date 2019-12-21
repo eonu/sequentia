@@ -109,14 +109,16 @@ class HMM:
     def set_random_transitions(self):
         self._transitions = self._topology.random_transitions()
 
-    def fit(self, X: List[np.ndarray]):
+    def fit(self, X: List[np.ndarray], n_jobs=1: int):
         """Fits the HMM to observation sequences assumed to be labeled as the class that the model represents.
 
         Parameters:
             X {list(numpy.ndarray)} - Collection of multivariate observation sequences, each of shape (T, D)
                 where T may vary per observation sequence.
+            n_jobs {int} - The number of threads to use when performing training.
         """
         self._val.observation_sequences(X)
+        self._val.integer(n_jobs, 'number of jobs')
 
         try:
             (self._initial, self._transitions)
@@ -138,7 +140,7 @@ class HMM:
         )
 
         # Perform the Baum-Welch algorithm to fit the model to the observations
-        self._model.fit(X)
+        self._model.fit(X, n_jobs=n_jobs)
 
         # Update the initial state distribution and transitions to reflect the updated parameters
         inner_tx = self._model.dense_transition_matrix()[:, :self._n_states]
