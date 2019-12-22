@@ -1,3 +1,5 @@
-# Changelog
+# [0.1.0](https://github.com/eonu/sequentia/releases/tag/v0.1.0)
 
-<!-- Add changelog entries here! -->
+#### Major changes
+
+Nothing, initial release!
