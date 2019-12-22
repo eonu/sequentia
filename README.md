@@ -36,6 +36,8 @@ Sequentia offers the use of **multivariate observation sequences with differing 
 - [x] Downsampling (by decimation and averaging)
 - [x] Discrete (Fast) Fourier Transform
 
+> **Disclaimer**: The package currently remains largely untested and is still in its first alpha stages – use carefully!
+
 ## Installation
 
 ```
