@@ -1,6 +1,4 @@
-# Sequentia
-
-<div align="right">
+<div align="center">
   <a href="https://pypi.org/project/sequentia/">
     <img src="https://img.shields.io/pypi/v/sequentia?style=flat-square" alt="PyPI"/>
   </a>
@@ -11,6 +9,8 @@
     <img src="https://img.shields.io/pypi/l/sequentia?style=flat-square" alt="PyPI - License"/>
   </a>
 </div>
+
+# Sequentia
 
 _A machine learning interface for isolated temporal sequence classification algorithms in Python._
 
