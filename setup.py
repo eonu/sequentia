@@ -41,6 +41,7 @@ setup(
         'fastdtw>=0.3,<0.4',
         'scipy>=1.3,<2',
         'scikit-learn>=0.22,<1',
-        'tqdm>=4.36,<5'
+        'tqdm>=4.36,<5',
+        'joblib>=0.14,<1'
     ]
 )

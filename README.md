@@ -44,11 +44,15 @@ Sequentia offers the use of **multivariate observation sequences with differing 
 
 ### Preprocessing methods
 
-- [x] Sequence Normalization
+- [x] Normalization (centering observation sequences)
 - [x] Downsampling (by decimation and averaging)
 - [x] Discrete (Fast) Fourier Transform
 
-> **Disclaimer**: The package currently remains largely untested and is still in its first alpha stages – use carefully!
+### Parallelization
+
+- [x] Multi-processing for DTW k-NN predictions
+
+> **Disclaimer**: The package currently remains largely untested and is still in its first alpha stages – _use with caution_!
 
 ## Installation
 
@@ -58,7 +62,16 @@ pip install sequentia
 
 ## References
 
-<table><tbody><tr><td>[1]</td><td><a href="https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf">Stan Salvador, and Philip Chan. <b>"FastDTW: Toward accurate dynamic time  warping in linear time and space."</b> Intelligent Data Analysis 11.5  (2007): 561-580.</a></td></tr></tbody></table>
+<table>
+  <tbody>
+    <tr>
+      <td>[1]</td>
+      <td>
+        <a href="https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf">Stan Salvador, and Philip Chan. <b>"FastDTW: Toward accurate dynamic time  warping in linear time and space."</b> Intelligent Data Analysis 11.5  (2007): 561-580.</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 # Contributors
 
