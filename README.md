@@ -1,3 +1,15 @@
+<div align="right">
+  <a href="https://pypi.org/project/sequentia/">
+    <img src="https://img.shields.io/pypi/v/sequentia?style=flat-square" alt="PyPI"/>
+  </a>
+  <a href="https://pypi.org/project/sequentia/">
+    <img src="https://img.shields.io/pypi/pyversions/sequentia?style=flat-square" alt="PyPI - Python Version"/>
+  </a>
+  <a href="https://raw.githubusercontent.com/eonu/sequentia/master/LICENSE">
+    <img src="https://img.shields.io/pypi/l/sequentia?style=flat-square" alt="PyPI - License"/>
+  </a>
+</div>
+
 # Sequentia
 
 _A machine learning interface for isolated temporal sequence classification algorithms in Python._
