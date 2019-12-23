@@ -115,10 +115,10 @@ class HMM:
         Parameters:
             X {list(numpy.ndarray)} - Collection of multivariate observation sequences, each of shape (T, D)
                 where T may vary per observation sequence.
-            n_jobs {int} - The number of threads to use when performing training.
+            n_jobs {int} - The number of jobs to run in parallel.
         """
         self._val.observation_sequences(X)
-        self._val.integer(n_jobs, 'number of jobs')
+        self._val.restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
 
         try:
             (self._initial, self._transitions)
