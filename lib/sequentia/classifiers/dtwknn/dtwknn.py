@@ -1,4 +1,5 @@
 import tqdm
+import tqdm.auto
 import random
 import numpy as np
 from joblib import Parallel, delayed

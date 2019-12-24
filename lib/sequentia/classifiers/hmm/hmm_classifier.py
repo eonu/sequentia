@@ -28,7 +28,7 @@ class HMMClassifier:
         >>> clf = HMMClassifier()
         >>> clf.fit(hmms)
         >>> predictions = clf.predict(X)
-        >>> f1, confusion = clf.evaluate(X, y, metric='f1')
+        >>> f1, confusion = clf.evaluate(X, y)
     """
 
     def __init__(self):
