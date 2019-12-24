@@ -52,7 +52,7 @@ Sequentia offers the use of **multivariate observation sequences with differing 
 
 - [x] Multi-processing for DTW k-NN predictions
 
-> **Disclaimer**: The package currently remains largely untested and is still in its first alpha stages – _use with caution_!
+> **Disclaimer**: The package currently remains largely untested and is still in its early pre-alpha stages – _use with caution_!
 
 ## Installation
 
