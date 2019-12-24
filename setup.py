@@ -25,7 +25,7 @@ setup(
     package_dir = {'': 'lib'},
     packages = find_packages(where='lib'),
     classifiers = [
-        'Development Status :: 1 - Planning',
+        'Development Status :: 2 - Pre-Alpha',
         'Programming Language :: Python :: 3.5',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
