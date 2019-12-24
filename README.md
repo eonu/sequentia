@@ -62,7 +62,7 @@ pip install sequentia
 
 ## Tutorials and examples
 
-For tutorials and examples on the usage of Sequentia, [look at the notebooks here](https://nbviewer.jupyter.org/github/eonu/sequentia/tree/master/examples/)!
+For tutorials and examples on the usage of Sequentia, [look at the notebooks here](https://nbviewer.jupyter.org/github/eonu/sequentia/tree/master/notebooks/)!
 
 ## References
 
