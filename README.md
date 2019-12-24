@@ -27,7 +27,7 @@ Despite these types of sequences sounding very specific, you probably observe so
 **Some examples of classification problems for isolated temporal sequences include classifying**:
 
 - isolated word utterances in speech audio signals,
-- [isolated hand-written characters according to their pen-tip trajectories](./examples/Pen-Tip%20Trajectories%20(Example).ipynb),
+- isolated hand-written characters according to their pen-tip trajectories,
 - isolated hand or head gestures in a video or motion-capture recording.
 
 ## Features
@@ -59,6 +59,10 @@ Sequentia offers the use of **multivariate observation sequences with differing 
 ```
 pip install sequentia
 ```
+
+## Tutorials and examples
+
+For tutorials and examples on the usage of Sequentia, [look at the notebooks here](https://nbviewer.jupyter.org/github/eonu/sequentia/tree/master/examples/)!
 
 ## References
 
