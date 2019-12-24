@@ -36,10 +36,10 @@ Sequentia offers the use of **multivariate observation sequences with differing 
 
 ### Classication algorithms
 
-- [x] Ensemble Hidden Markov Models
+- [x] Ensemble Hidden Markov Models (via [Pomegranate](https://github.com/jmschrei/pomegranate) [[1]](#references))
   - [x] Multivariate Gaussian emission distributions
   - [ ] Gaussian Mixture Model emission distributions (soon!)
-- [x] Approximate Dynamic Time Warping k-Nearest Neighbors (implemented with [FastDTW](https://github.com/slaypni/fastdtw) – also see [[1]](#references))
+- [x] Approximate Dynamic Time Warping k-Nearest Neighbors (implemented with [FastDTW](https://github.com/slaypni/fastdtw) [[2]](#references))
 - [ ] Long Short-Term Memory Networks (soon!)
 
 ### Preprocessing methods
@@ -67,7 +67,13 @@ pip install sequentia
     <tr>
       <td>[1]</td>
       <td>
-        <a href="https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf">Stan Salvador, and Philip Chan. <b>"FastDTW: Toward accurate dynamic time  warping in linear time and space."</b> Intelligent Data Analysis 11.5  (2007): 561-580.</a>
+        <a href="http://jmlr.org/papers/volume18/17-636/17-636.pdf">Jacob Schreiber. <b>"pomegranate: Fast and Flexible Probabilistic Modeling in Python."</b> Journal of Machine Learning Research 18 (2018), (164):1-6.</a>
+      </td>
+    </tr>
+    <tr>
+      <td>[2]</td>
+      <td>
+        <a href="https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf">Stan Salvador, and Philip Chan. <b>"FastDTW: Toward accurate dynamic time warping in linear time and space."</b> Intelligent Data Analysis 11.5 (2007), 561-580.</a>
       </td>
     </tr>
   </tbody>
