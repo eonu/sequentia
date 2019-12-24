@@ -2,7 +2,7 @@ import tqdm
 import random
 import numpy as np
 from joblib import Parallel, delayed
-from multiprocessing import cpu_count, current_process
+from multiprocessing import cpu_count
 from fastdtw import fastdtw
 from collections import Counter
 from scipy.spatial.distance import euclidean
