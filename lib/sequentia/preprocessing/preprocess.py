@@ -20,7 +20,7 @@ class Preprocess:
         >>> pre.fft()
         >>> ​
         >>> # Transform the data applying transformations in order
-        >>> X = pre.fit_transform(X)
+        >>> X = pre.transform(X)
     """
 
     def __init__(self):
@@ -49,7 +49,7 @@ class Preprocess:
         """Applies a Discrete Fourier Transform to the input observation sequence(s)."""
         self._transforms.append(('_fft', {}))
 
-    def fit_transform(self, X: List[np.ndarray]) -> List[np.ndarray]:
+    def transform(self, X: List[np.ndarray]) -> List[np.ndarray]:
         """Applies the preprocessing transformations to the provided input observation sequence(s).
 
         Parameters:
