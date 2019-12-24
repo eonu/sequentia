@@ -1,4 +1,8 @@
+import sys
 import numpy as np
+from tqdm.auto import tqdm
+from joblib import Parallel, delayed
+from multiprocessing import cpu_count, current_process
 from typing import Union, List
 from .methods import _normalize, _downsample, _fft
 from ..internals import Validator
@@ -29,7 +33,7 @@ class Preprocess:
 
     def normalize(self) -> None:
         """Normalizes an observation sequence (or multiple sequences) by centering observations around the mean."""
-        self._transforms.append(('_normalize', {}))
+        self._transforms.append((_normalize, {}))
 
     def downsample(self, n: int, method='decimate') -> None:
         """Downsamples an observation sequence (or multiple sequences) by:
@@ -43,11 +47,11 @@ class Preprocess:
         """
         self._val.restricted_integer(n, lambda x: x > 1, desc='downsample factor', expected='greater than one')
         self._val.one_of(method, ['decimate', 'average'], desc='downsampling method')
-        self._transforms.append(('_downsample', {'n': n, 'method': method}))
+        self._transforms.append((_downsample, {'n': n, 'method': method}))
 
     def fft(self) -> None:
         """Applies a Discrete Fourier Transform to the input observation sequence(s)."""
-        self._transforms.append(('_fft', {}))
+        self._transforms.append((_fft, {}))
 
     def transform(self, X: List[np.ndarray]) -> List[np.ndarray]:
         """Applies the preprocessing transformations to the provided input observation sequence(s).
@@ -61,9 +65,6 @@ class Preprocess:
         self._val.observation_sequences(X)
 
         X_transform = X
-
         for transform, kwargs in self._transforms:
-            method = globals()[transform]
-            X_transform = method(X_transform, **kwargs)
-
+            X_transform = transform(X_transform, **kwargs)
         return X_transform
