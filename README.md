@@ -2,9 +2,9 @@
   <img src="https://i.ibb.co/42GkhfR/sequentia.png" width="275px" alt="Sequentia">
 </h1>
 
-<div align="center">
+<p align="center">
   <em>A machine learning interface for isolated temporal sequence classification algorithms in Python.</em>
-</div>
+</p>
 
 <div align="center">
   <a href="https://pypi.org/project/sequentia">
@@ -20,8 +20,6 @@
     <img src="https://readthedocs.org/projects/sequentia/badge/?version=latest&style=flat-square" alt="Read The Docs - Documentation">
   </a>
 </div>
-
-<hr/>
 
 ## Introduction
 
