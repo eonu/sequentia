@@ -8,37 +8,26 @@ from fastdtw import fastdtw
 from collections import Counter
 from scipy.spatial.distance import euclidean
 from sklearn.metrics import confusion_matrix
-from typing import Callable, Union, List, Tuple
 from ...internals import Validator
 
 class DTWKNN:
-    """A k-Nearest Neighbor classifier that compares differing length observation sequences
-        using the efficient FastDTW dynamic time warping algorithm.
+    """A k-Nearest Neighbor classifier that compares differing length observation sequences using the efficient FastDTW dynamic time warping algorithm.
 
-    Example:
-        >>> import numpy as np
-        >>> from sequentia.classifiers import DTWKNN
-        >>> ​
-        >>> # Create some sample data
-        >>> X = [np.random.random((10 * i, 3)) for i in range(1, 4)]
-        >>> y = ['class0', 'class1', 'class1']
-        >>> ​
-        >>> # Create and fit the classifier
-        >>> clf = DTWKNN(k=1, radius=5)
-        >>> clf.fit(X, y)
-        >>> ​
-        >>> # Predict labels for the training data (just as an example)
-        >>> clf.predict(X)
+    Parameters
+    ----------
+    k: int
+        Number of neighbors.
+
+    radius: int
+        Radius parameter for FastDTW.
+
+        See: `Stan Salvador, and Philip Chan. "FastDTW: Toward accurate dynamic time warping in linear time and space." Intelligent Data Analysis 11.5 (2007), 561-580. <https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf>`_
+
+    metric: callable
+        Distance metric for FastDTW.
     """
 
-    def __init__(self, k: int, radius: int = 10, metric: Callable = euclidean):
-        """
-        Parameters:
-            k {int} - Number of neighbors.
-            radius {int} - Radius parameter for FastDTW.
-                See: https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf
-            metric {Callable} - Distance metric for FastDTW.
-        """
+    def __init__(self, k, radius, metric: euclidean):
         self._val = Validator()
         self._k = self._val.restricted_integer(
             k, lambda x: x > 0, desc='number of neighbors', expected='greater than zero')
@@ -46,26 +35,38 @@ class DTWKNN:
             radius, lambda x: x > 0, desc='radius parameter', expected='greater than zero')
         self._metric = metric
 
-    def fit(self, X: List[np.ndarray], y: List[str]) -> None:
+    def fit(self, X, y):
         """Fits the classifier by adding labeled training observation sequences.
 
-        Parameters:
-            X {list(numpy.ndarray)} - A list of multiple observation sequences.
-            y {list(str)} - A list of labels for the observation sequences.
+        Parameters
+        ----------
+        X: List[numpy.ndarray]
+            A list of multiple observation sequences.
+
+        y: List[str]
+            A list of labels for the observation sequences.
         """
         self._X, self._y = self._val.observation_sequences_and_labels(X, y)
 
-    def predict(self, X: Union[np.ndarray, List[np.ndarray]], verbose=True, n_jobs=1) -> Union[str, List[str]]:
+    def predict(self, X, verbose=True, n_jobs=1):
         """Predicts the label for an observation sequence (or multiple sequences).
 
-        Parameters:
-            X {numpy.ndarray, list(numpy.ndarray)} - An individual observation sequence or
-                a list of multiple observation sequences.
-            verbose {bool} - Whether to display a progress bar or not.
-            n_jobs {int} - The number of jobs to run in parallel.
+        Parameters
+        ----------
+        X: numpy.ndarray or List[numpy.ndarray]
+            An individual observation sequence or a list of multiple observation sequences.
 
-        Returns {numpy.ndarray, list(numpy.ndarray)}:
-            The predicted labels for the observation sequence(s).
+        verbose: bool
+            Whether to display a progress bar or not.
+
+        n_jobs: int
+            | The number of jobs to run in parallel.
+            | Setting this to -1 will use all available CPU cores.
+
+        Returns
+        -------
+        prediction(s): str or List[str]
+            The predicted label(s) for the observation sequence(s).
         """
         try:
             (self._X, self._y)
@@ -115,19 +116,34 @@ class DTWKNN:
                 labels = Parallel(n_jobs=n_jobs)(delayed(parallel_predict)(i+1, chunk) for i, chunk in enumerate(X_chunks))
                 return [label for sublist in labels for label in sublist] # Flatten the resulting array
 
-    def evaluate(self, X: List[np.ndarray], y: List[str], labels=None, verbose=True, n_jobs=1) -> Tuple[float, np.ndarray]:
+    def evaluate(self, X, y, labels=None, verbose=True, n_jobs=1):
         """Evaluates the performance of the classifier on a batch of observation sequences and their labels.
 
-        Parameters:
-            X {list(numpy.ndarray)} - A list of multiple observation sequences.
-            y {list(str)} - A list of labels for the observation sequences.
-            labels {list(str)} - A list of labels for ordering the axes of the confusion matrix.
-            verbose {bool} - Whether to display a progress bar for predictions or not.
-            n_jobs {int} - The number of jobs to run in parallel.
+        Parameters
+        ----------
+        X: List[numpy.ndarray]
+            A list of multiple observation sequences.
 
-        Return: {tuple(float, numpy.ndarray)}
-            - The categorical accuracy of the classifier on the observation sequences.
-            - A confusion matrix representing the discrepancy between predicted and actual labels.
+        y: List[str]
+            A list of labels for the observation sequences.
+
+        labels: List[str]
+            A list of labels for ordering the axes of the confusion matrix.
+
+        verbose: bool
+            Whether to display a progress bar for predictions or not.
+
+        n_jobs: int
+            | The number of jobs to run in parallel.
+            | Setting this to -1 will use all available CPU cores.
+
+        Returns
+        -------
+        accuracy: float
+            The categorical accuracy of the classifier on the observation sequences.
+
+        confusion: numpy.ndarray
+            The confusion matrix representing the discrepancy between predicted and actual labels.
         """
         self._val.observation_sequences_and_labels(X, y)
         self._val.boolean(verbose, desc='verbose')

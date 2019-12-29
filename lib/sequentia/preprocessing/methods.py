@@ -1,23 +1,25 @@
 import scipy.fftpack
 import numpy as np
-from typing import Union, List
 from ..internals import Validator
 
-def normalize(X: Union[np.ndarray, List[np.ndarray]]) -> Union[np.ndarray, List[np.ndarray]]:
+def normalize(X):
     """Normalizes an observation sequence (or multiple sequences) by centering observations around the mean.
 
-    Parameters:
-        X {numpy.ndarray, list(numpy.ndarray)} - An individual observation sequence or
-            a list of multiple observation sequences.
+    Parameters
+    ----------
+    X: numpy.ndarray or List[numpy.ndarray]
+        An individual observation sequence or a list of multiple observation sequences.
 
-    Returns {numpy.ndarray, list(numpy.ndarray)}:
+    Returns
+    -------
+    normalized: numpy.ndarray or List[numpy.ndarray]
         The normalized input observation sequence(s).
     """
     val = Validator()
     val.observation_sequences(X, allow_single=True)
     return _normalize(X)
 
-def _normalize(X: Union[np.ndarray, List[np.ndarray]]) -> Union[np.ndarray, List[np.ndarray]]:
+def _normalize(X):
     def transform(x):
         return x - x.mean(axis=0)
 
@@ -26,20 +28,25 @@ def _normalize(X: Union[np.ndarray, List[np.ndarray]]) -> Union[np.ndarray, List
     elif isinstance(X, np.ndarray):
         return transform(X)
 
-def downsample(X: Union[np.ndarray, List[np.ndarray]], n: int, method='decimate') -> Union[np.ndarray, List[np.ndarray]]:
-    """Downsamples an observation sequence (or multiple sequences) by:
-        - Decimating the next n-1 observations
-        - Averaging the current observation with the next n-1 observations
+def downsample(X, n, method='decimate'):
+    """Downsamples an observation sequence (or multiple sequences) by either:
+        - Decimating the next :math:`n-1` observations
+        - Averaging the current observation with the next :math:`n-1` observations
 
-    Parameters:
-        X {numpy.ndarray, list(numpy.ndarray)} - An individual observation sequence or
-            a list of multiple observation sequences.
-        n {int} - Downsample factor.
-            NOTE: This downsamples the current observation by either decimating the next n-1
-                observations or computing an average with them.
-        method {str} - The downsampling method, either 'decimate' or 'average'.
+    Parameters
+    ----------
+    X: numpy.ndarray or List[numpy.ndarray]
+        An individual observation sequence or a list of multiple observation sequences.
 
-    Returns {numpy.ndarray, list(numpy.ndarray)}:
+    n: int
+        Downsample factor.
+
+    method: {'decimate', 'average'}
+        The downsampling method.
+
+    Returns
+    -------
+    downsampled: numpy.ndarray or List[numpy.ndarray]
         The downsampled input observation sequence(s).
     """
     val = Validator()
@@ -48,7 +55,7 @@ def downsample(X: Union[np.ndarray, List[np.ndarray]], n: int, method='decimate'
     val.one_of(method, ['decimate', 'average'], desc='downsampling method')
     return _downsample(X, n, method)
 
-def _downsample(X: Union[np.ndarray, List[np.ndarray]], n: int, method: str) -> Union[np.ndarray, List[np.ndarray]]:
+def _downsample(X, n, method):
     def transform(x):
         N, D = x.shape
         if method == 'decimate':
@@ -63,17 +70,24 @@ def _downsample(X: Union[np.ndarray, List[np.ndarray]], n: int, method: str) -> 
     elif isinstance(X, np.ndarray):
         return transform(X)
 
-def fft(X: Union[np.ndarray, List[np.ndarray]]) -> Union[np.ndarray, List[np.ndarray]]:
+def fft(X):
     """Applies a Discrete Fourier Transform to the input observation sequence(s).
 
-    Returns {numpy.ndarray, list(numpy.ndarray)}:
+    Parameters
+    ----------
+    X: numpy.ndarray or List[numpy.ndarray]
+        An individual observation sequence or a list of multiple observation sequences.
+
+    Returns
+    -------
+    transformed: numpy.ndarray or List[numpy.ndarray]
         The transformed input observation sequence(s).
     """
     val = Validator()
     val.observation_sequences(X, allow_single=True)
     return _fft(X)
 
-def _fft(X: Union[np.ndarray, List[np.ndarray]]) -> Union[np.ndarray, List[np.ndarray]]:
+def _fft(X):
     def transform(x):
         return scipy.fftpack.rfft(x, axis=0)
 

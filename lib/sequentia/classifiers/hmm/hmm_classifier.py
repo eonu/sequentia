@@ -1,43 +1,21 @@
 import numpy as np
 from .hmm import HMM
 from sklearn.metrics import confusion_matrix
-from typing import Dict, Union, List, Tuple, Any
 from ...internals import Validator
 
 class HMMClassifier:
-    """An ensemble classifier that combines individual HMMs which model isolated sequences from different classes.
-
-    Example:
-        >>> import numpy as np
-        >>> from sequentia.classifiers import HMM, HMMClassifier
-        >>> ​
-        >>> # Create and fit some sample HMMs
-        >>> hmms = []
-        >>> for i in range(5):
-        >>>     hmm = HMM(label=f'class{i}', n_states=(i + 3), topology='left-right')
-        >>>     hmm.set_random_initial()
-        >>>     hmm.set_random_transitions()
-        >>>     hmm.fit([np.arange((i + j * 20) * 30).reshape(-1, 3) for j in range(1, 4)])
-        >>>     hmms.append(hmm)
-        >>> ​
-        >>> # Create some sample test data and labels
-        >>> X = [np.random.random((10 * i, 3)) for i in range(1, 4)]
-        >>> y = ['class0', 'class1', 'class1']
-        >>> ​
-        >>> # Create a classifier and calculate predictions and evaluations
-        >>> clf = HMMClassifier()
-        >>> clf.fit(hmms)
-        >>> predictions = clf.predict(X)
-        >>> f1, confusion = clf.evaluate(X, y)
-    """
+    """An ensemble classifier that combines individual :class:`~HMM` objects, which model isolated sequences from different classes."""
 
     def __init__(self):
         self._val = Validator()
 
-    def fit(self, models: Union[List[HMM], Dict[Any, HMM]]):
-        """
-        Parameters:
-            models {list(HMM),dict(HMM)} - A collection of HMM objects to use for classification.
+    def fit(self, models):
+        """Fits the ensemble classifier with a collection of :class:`~HMM` objects.
+
+        Parameters
+        ----------
+        models: List[HMM] or Dict[Any, HMM]
+            A collection of :class:`~HMM` objects to use for classification.
         """
         if isinstance(models, list):
             if not all(isinstance(model, HMM) for model in models):
@@ -55,18 +33,31 @@ class HMMClassifier:
         else:
             raise RuntimeError('Must fit the classifier with at least one HMM')
 
-    def predict(self, X: Union[np.ndarray, List[np.ndarray]], prior=True, return_scores=False) -> Union[str, List[str]]:
+    def predict(self, X, prior=True, return_scores=False):
         """Predicts the label for an observation sequence (or multiple sequences) according to maximum likelihood or posterior scores.
 
-        Parameters:
-            X {numpy.ndarray, list(numpy.ndarray)} - An individual observation sequence or
-                a list of multiple observation sequences.
-            prior {bool} - Whether to calculate a prior and perform MAP estimation. If this parameter is set
-                to False, then the negative log likelihoods generated from the models' `forward` function are used.
-            return_scores {bool} - Whether to return the scores of each model on the observation sequence(s).
+        Parameters
+        ----------
+        X: numpy.ndarray or List[numpy.ndarray]
+            An individual observation sequence or a list of multiple observation sequences.
 
-        Returns {str, list(str)}:
-            The predicted labels for the observation sequence(s).
+        prior: bool
+            Whether to calculate a prior for each model and perform MAP estimation by scoring with
+            the joint probability (or un-normalized posterior) :math:`\mathbb{P}(O, \lambda_c)=\mathbb{P}(O|\lambda_c)\mathbb{P}(\lambda_c)`.
+
+            If this parameter is set to false, then the negative log likelihoods
+            :math:`\mathbb{P}(O|\lambda_c)` generated from the models' :func:`~HMM.forward` function are used.
+
+        return_scores: bool
+            Whether to return the scores of each model on the observation sequence(s).
+
+        Returns
+        -------
+        prediction(s): str or List[str]
+            The predicted label(s) for the observation sequence(s).
+
+            If ``return_scores`` is true, then for each observation sequence, a tuple `(label, scores)` is returned for each label,
+            consisting of the `scores` of each HMM and the `label` of the HMM with the best score.
         """
         self._val.boolean(prior, desc='prior')
         self._val.boolean(return_scores, desc='return_scores')
@@ -91,19 +82,34 @@ class HMMClassifier:
                 predictions.append((best[0], scores) if return_scores else best[0])
             return predictions
 
-    def evaluate(self, X: List[np.ndarray], y: List[str], prior=True, labels=None) -> Tuple[float, np.ndarray]:
+    def evaluate(self, X, y, prior=True, labels=None):
         """Evaluates the performance of the classifier on a batch of observation sequences and their labels.
 
-        Parameters:
-            X {list(numpy.ndarray)} - A list of multiple observation sequences.
-            y {list(str)} - A list of labels for the observation sequences.
-            prior {bool} - Whether to calculate a prior and perform MAP estimation. If this parameter is set
-                to False, then the negative log likelihoods generated from the models' `forward` function are used.
-            labels {list(str)} - A list of labels for ordering the axes of the confusion matrix.
+        Parameters
+        ----------
+        X: List[numpy.ndarray]
+            A list of multiple observation sequences.
 
-        Return: {tuple(float, numpy.ndarray)}
-            - The categorical accuracy of the classifier on the observation sequences.
-            - A confusion matrix representing the discrepancy between predicted and actual labels.
+        y: List[str]
+            A list of labels for the observation sequences.
+
+        prior: bool
+            Whether to calculate a prior for each model and perform MAP estimation by scoring with
+            the joint probability (or un-normalized posterior) :math:`\mathbb{P}(O, \lambda_c)=\mathbb{P}(O|\lambda_c)\mathbb{P}(\lambda_c)`.
+
+            If this parameter is set to false, then the negative log likelihoods
+            :math:`\mathbb{P}(O|\lambda_c)` generated from the models' :func:`~HMM.forward` function are used.
+
+        labels: List[str]
+            A list of labels for ordering the axes of the confusion matrix.
+
+        Returns
+        -------
+        accuracy: float
+            The categorical accuracy of the classifier on the observation sequences.
+
+        confusion: numpy.ndarray
+            The confusion matrix representing the discrepancy between predicted and actual labels.
         """
         self._val.observation_sequences_and_labels(X, y)
         self._val.boolean(prior, desc='prior')
