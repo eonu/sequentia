@@ -2,41 +2,44 @@ import numpy as np
 import pomegranate as pg
 from .topologies.ergodic import ErgodicTopology
 from .topologies.left_right import LeftRightTopology
-from typing import List
 from ...internals import Validator
 
 class HMM:
     """A hidden Markov model representing an isolated temporal sequence class.
 
-    Example:
-        >>> import numpy as np
-        >>> from sequentia.classifiers import HMM
-        >>> ​
-        >>> # Create some sample data
-        >>> X = [np.random.random((10 * i, 3)) for i in range(1, 4)]
-        >>> ​
-        >>> # Create and fit a left-right HMM with random transitions and initial state distribution
-        >>> hmm1 = HMM(label='class1', n_states=5, topology='left-right')
-        >>> hmm1.set_random_initial()
-        >>> hmm1.set_random_transitions()
-        >>> hmm1.fit(X)
+    Parameters
+    ----------
+    label: str
+        A label for the model, corresponding to the class being represented.
 
-    Attributes:
-        label (getter) - The label for the model.
-        n_states (getter) - The number of states for the model.
-        n_seqs (getter) - The number of observation sequences use to train the model.
-        initial (setter/getter) - The initial state distribution of the model.
-        transitions (setter/getter) - The transition matrix of the model.
+    n_states: int
+        The number of states for the model.
+
+    topology: {'ergodic', 'left-right'}
+        The topology for the model.
+
+    random_state: numpy.random.RandomState, int, optional
+        A random state object or seed for reproducible randomness.
+
+    Attributes
+    ----------
+    label: str
+        The label for the model.
+
+    n_states: int
+        The number of states for the model.
+
+    n_seqs: int
+        The number of observation sequences use to train the model.
+
+    initial: numpy.ndarray
+        The initial state distribution of the model.
+
+    transitions: numpy.ndarray
+        The transition matrix of the model.
     """
 
-    def __init__(self, label: str, n_states: int, topology='left-right', random_state=None):
-        """
-        Parameters:
-            label {str} - A label for the model (should ideally correspond to the class label).
-            n_states {int} - The number of states for the model.
-            topology {str} - The topology ('ergodic' or 'left-right') for the model.
-            random_state {numpy.random.RandomState, int} - A random state object or seed for reproducible randomness.
-        """
+    def __init__(self, label, n_states, topology='left-right', random_state=None):
         self._val = Validator()
         self._label = self._val.string(label, 'model label')
         self._n_states = self._val.restricted_integer(
@@ -57,65 +60,34 @@ class HMM:
         elif topology == 'left-right':
             self._topology = LeftRightTopology(self._n_states, self._random_state)
 
-    @property
-    def label(self) -> str:
-        return self._label
-
-    @property
-    def n_states(self) -> int:
-        return self._n_states
-
-    @property
-    def n_seqs(self) -> int:
-        """Number of observation sequences used to train the model."""
-        try:
-            return self._n_seqs
-        except AttributeError as e:
-            raise AttributeError('The model has not been fitted and has not seen any observation sequences') from e
-
-    @property
-    def initial(self) -> np.ndarray:
-        try:
-            return self._initial
-        except AttributeError as e:
-            raise AttributeError('No initial state distribution has been defined') from e
-
-    @initial.setter
-    def initial(self, probabilities: np.ndarray):
-        self._topology.validate_initial(probabilities)
-        self._initial = probabilities
-
-    @property
-    def transitions(self) -> np.ndarray:
-        try:
-            return self._transitions
-        except AttributeError as e:
-            raise AttributeError('No transition matrix has been defined') from e
-
-    @transitions.setter
-    def transitions(self, probabilities: np.ndarray):
-        self._topology.validate_transitions(probabilities)
-        self._transitions = probabilities
-
     def set_uniform_initial(self):
+        """Sets a uniform initial state distribution."""
         self._initial = self._topology.uniform_initial()
 
     def set_random_initial(self):
+        """Sets a random initial state distribution."""
         self._initial = self._topology.random_initial()
 
     def set_uniform_transitions(self):
+        """Sets a uniform transition matrix according to the topology."""
         self._transitions = self._topology.uniform_transitions()
 
     def set_random_transitions(self):
+        """Sets a random transition matrix according to the topology."""
         self._transitions = self._topology.random_transitions()
 
-    def fit(self, X: List[np.ndarray], n_jobs=1):
+    def fit(self, X, n_jobs=1):
         """Fits the HMM to observation sequences assumed to be labeled as the class that the model represents.
 
-        Parameters:
-            X {list(numpy.ndarray)} - Collection of multivariate observation sequences, each of shape (T, D)
-                where T may vary per observation sequence.
-            n_jobs {int} - The number of jobs to run in parallel.
+        Parameters
+        ----------
+        X: List[numpy.ndarray]
+            Collection of multivariate observation sequences, each of shape :math:`(T \\times D)` where
+            :math:`T` may vary per observation sequence.
+
+        n_jobs: int
+            | The number of jobs to run in parallel.
+            | Setting this to -1 will use all available CPU cores.
         """
         self._val.observation_sequences(X)
         self._val.restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
@@ -147,14 +119,19 @@ class HMM:
         self._initial = inner_tx[self._n_states]
         self._transitions = inner_tx[:self._n_states]
 
-    def forward(self, sequence: np.ndarray) -> float:
+    def forward(self, sequence):
         """Runs the forward algorithm to calculate the (negative log) likelihood of the model generating an observation sequence.
 
-        Parameters:
-            sequence {numpy.ndarray} - An individual sequence of observations of size (T, D) where:
-                T is the number of time frames (or observations) and D is the number of features.
+        Parameters
+        ----------
+        sequence: numpy.ndarray
+            An individual sequence of observations of size :math:`(T \\times D)` where
+            :math:`T` is the number of time frames (or observations) and
+            :math:`D` is the number of features.
 
-        Returns {float}:
+        Returns
+        -------
+        negative log-likelihood: float
             The negative log-likelihood of the model generating the observation sequence.
         """
         if not isinstance(sequence, np.ndarray):
@@ -165,3 +142,42 @@ class HMM:
             raise ValueError('Number of observation features must match the dimensionality of the original data used to fit the model')
 
         return -self._model.log_probability(sequence)
+
+    @property
+    def label(self):
+        return self._label
+
+    @property
+    def n_states(self):
+        return self._n_states
+
+    @property
+    def n_seqs(self):
+        try:
+            return self._n_seqs
+        except AttributeError as e:
+            raise AttributeError('The model has not been fitted and has not seen any observation sequences') from e
+
+    @property
+    def initial(self):
+        try:
+            return self._initial
+        except AttributeError as e:
+            raise AttributeError('No initial state distribution has been defined') from e
+
+    @initial.setter
+    def initial(self, probabilities):
+        self._topology.validate_initial(probabilities)
+        self._initial = probabilities
+
+    @property
+    def transitions(self):
+        try:
+            return self._transitions
+        except AttributeError as e:
+            raise AttributeError('No transition matrix has been defined') from e
+
+    @transitions.setter
+    def transitions(self, probabilities):
+        self._topology.validate_transitions(probabilities)
+        self._transitions = probabilities

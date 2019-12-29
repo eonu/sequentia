@@ -1,18 +1,27 @@
+<h1 align="center">
+  <img src="https://i.ibb.co/42GkhfR/sequentia.png" width="275px" alt="Sequentia">
+</h1>
+
 <div align="center">
-  <a href="https://pypi.org/project/sequentia/">
+  <em>A machine learning interface for isolated temporal sequence classification algorithms in Python.</em>
+</div>
+
+<div align="center">
+  <a href="https://pypi.org/project/sequentia">
     <img src="https://img.shields.io/pypi/v/sequentia?style=flat-square" alt="PyPI"/>
   </a>
-  <a href="https://pypi.org/project/sequentia/">
+  <a href="https://pypi.org/project/sequentia">
     <img src="https://img.shields.io/pypi/pyversions/sequentia?style=flat-square" alt="PyPI - Python Version"/>
   </a>
   <a href="https://raw.githubusercontent.com/eonu/sequentia/master/LICENSE">
     <img src="https://img.shields.io/pypi/l/sequentia?style=flat-square" alt="PyPI - License"/>
   </a>
+  <a href="https://sequentia.readthedocs.io/en/latest">
+    <img src="https://readthedocs.org/projects/sequentia/badge/?version=latest&style=flat-square" alt="Read The Docs - Documentation">
+  </a>
 </div>
 
-# Sequentia
-
-_A machine learning interface for isolated temporal sequence classification algorithms in Python._
+<hr/>
 
 ## Introduction
 
@@ -44,7 +53,7 @@ Sequentia offers the use of **multivariate observation sequences with differing 
 
 ### Preprocessing methods
 
-- [x] Normalization (centering observation sequences)
+- [x] Normalization
 - [x] Downsampling (by decimation and averaging)
 - [x] Discrete (Fast) Fourier Transform
 
@@ -59,6 +68,10 @@ Sequentia offers the use of **multivariate observation sequences with differing 
 ```
 pip install sequentia
 ```
+
+## Documentation
+
+Documentation for the package is available on [Read The Docs](https://sequentia.readthedocs.io/en/latest).
 
 ## Tutorials and examples
 
@@ -91,13 +104,13 @@ All contributions to this repository are greatly appreciated. Contribution guide
 	<thead>
 		<tr>
 			<th align="center">
-                <a href="https://github.com/eonu">
-                <img src="https://avatars0.githubusercontent.com/u/24795571?s=460&v=4" alt="Edwin Onuonga" width="60px">
-                <br/><sub><b>Edwin Onuonga</b></sub>
-                </a>
-                <br/>
-                <a href="mailto:ed@eonu.net">✉️</a>
-                <a href="https://eonu.net">🌍</a>
+        <a href="https://github.com/eonu">
+        <img src="https://avatars0.githubusercontent.com/u/24795571?s=460&v=4" alt="Edwin Onuonga" width="60px">
+        <br/><sub><b>Edwin Onuonga</b></sub>
+        </a>
+        <br/>
+        <a href="mailto:ed@eonu.net">✉️</a>
+        <a href="https://eonu.net">🌍</a>
 			</th>
 			<!-- Add more <th></th> blocks for more contributors -->
 		</tr>
