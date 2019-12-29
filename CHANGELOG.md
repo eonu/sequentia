@@ -1,3 +1,9 @@
+## [0.3.0](https://github.com/eonu/sequentia/releases/tag/v0.3.0)
+
+#### Major changes
+
+- Add proper documentation, hosted on [Read The Docs](https://sequentia.readthedocs.io/en/latest). ([#40](https://github.com/eonu/sequentia/pull/40), [#41](https://github.com/eonu/sequentia/pull/41))
+
 ## [0.2.0](https://github.com/eonu/sequentia/releases/tag/v0.2.0)
 
 #### Major changes
