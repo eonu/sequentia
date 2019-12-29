@@ -1,3 +1,13 @@
+## [0.4.0](https://github.com/eonu/sequentia/releases/tag/v0.4.0)
+
+#### Major changes
+
+- Re-add `euclidean` metric as `DTWKNN` default. ([#43](https://github.com/eonu/sequentia/pull/43))
+
+#### Minor changes
+
+- Add explicit labels to `evaluate()` in `HMMClassifier` example. ([#44](https://github.com/eonu/sequentia/pull/44))
+
 ## [0.3.0](https://github.com/eonu/sequentia/releases/tag/v0.3.0)
 
 #### Major changes
