@@ -1,0 +1,386 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sequentia.classifiers.hmm.hmm &mdash; sequentia 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> sequentia
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Sequentia</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classifiers and Models</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../sections/classifiers/hmm.html">Hidden Markov Model (<code class="docutils literal notranslate"><span class="pre">HMM</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../sections/classifiers/hmm.html#ensemble-hidden-markov-model-classifier-hmmclassifier">Ensemble Hidden Markov Model Classifier (<code class="docutils literal notranslate"><span class="pre">HMMClassifier</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../sections/classifiers/dtwknn.html">Dynamic Time Warping <cite>k</cite>-Nearest Neighbors Classifier (<code class="docutils literal notranslate"><span class="pre">DTWKNN</span></code>)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Preprocessing Methods</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../sections/preprocessing/normalize.html">Normalization (<code class="docutils literal notranslate"><span class="pre">normalize</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../sections/preprocessing/downsample.html">Downsampling (<code class="docutils literal notranslate"><span class="pre">downsample</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../sections/preprocessing/fft.html">Discrete Fourier Transform (<code class="docutils literal notranslate"><span class="pre">fft</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../sections/preprocessing/preprocessing.html">Combined Preprocessing (<code class="docutils literal notranslate"><span class="pre">Preprocess</span></code>)</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">sequentia</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>sequentia.classifiers.hmm.hmm</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for sequentia.classifiers.hmm.hmm</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pomegranate</span> <span class="k">as</span> <span class="nn">pg</span>
+<span class="kn">from</span> <span class="nn">.topologies.ergodic</span> <span class="kn">import</span> <span class="n">ErgodicTopology</span>
+<span class="kn">from</span> <span class="nn">.topologies.left_right</span> <span class="kn">import</span> <span class="n">LeftRightTopology</span>
+<span class="kn">from</span> <span class="nn">...internals</span> <span class="kn">import</span> <span class="n">Validator</span>
+
+<div class="viewcode-block" id="HMM"><a class="viewcode-back" href="../../../../sections/classifiers/hmm.html#sequentia.classifiers.hmm.HMM">[docs]</a><span class="k">class</span> <span class="nc">HMM</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A hidden Markov model representing an isolated temporal sequence class.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    label: str</span>
+<span class="sd">        A label for the model, corresponding to the class being represented.</span>
+
+<span class="sd">    n_states: int</span>
+<span class="sd">        The number of states for the model.</span>
+
+<span class="sd">    topology: {&#39;ergodic&#39;, &#39;left-right&#39;}</span>
+<span class="sd">        The topology for the model.</span>
+
+<span class="sd">    random_state: numpy.random.RandomState, int, optional</span>
+<span class="sd">        A random state object or seed for reproducible randomness.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    label: str</span>
+<span class="sd">        The label for the model.</span>
+
+<span class="sd">    n_states: int</span>
+<span class="sd">        The number of states for the model.</span>
+
+<span class="sd">    n_seqs: int</span>
+<span class="sd">        The number of observation sequences use to train the model.</span>
+
+<span class="sd">    initial: numpy.ndarray</span>
+<span class="sd">        The initial state distribution of the model.</span>
+
+<span class="sd">    transitions: numpy.ndarray</span>
+<span class="sd">        The transition matrix of the model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">n_states</span><span class="p">,</span> <span class="n">topology</span><span class="o">=</span><span class="s1">&#39;left-right&#39;</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_val</span> <span class="o">=</span> <span class="n">Validator</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_val</span><span class="o">.</span><span class="n">string</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="s1">&#39;model label&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_val</span><span class="o">.</span><span class="n">restricted_integer</span><span class="p">(</span>
+            <span class="n">n_states</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;number of states&#39;</span><span class="p">,</span> <span class="n">expected</span><span class="o">=</span><span class="s1">&#39;greater than zero&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_val</span><span class="o">.</span><span class="n">one_of</span><span class="p">(</span><span class="n">topology</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;ergodic&#39;</span><span class="p">,</span> <span class="s1">&#39;left-right&#39;</span><span class="p">],</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;topology&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">random_state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">random_state</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span> <span class="o">=</span> <span class="n">random_state</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">random_state</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">random_state</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Expected random state to be of type: None, int, or numpy.random.RandomState&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">topology</span> <span class="o">==</span> <span class="s1">&#39;ergodic&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_topology</span> <span class="o">=</span> <span class="n">ErgodicTopology</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_states</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">topology</span> <span class="o">==</span> <span class="s1">&#39;left-right&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_topology</span> <span class="o">=</span> <span class="n">LeftRightTopology</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_states</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HMM.set_uniform_initial"><a class="viewcode-back" href="../../../../sections/classifiers/hmm.html#sequentia.classifiers.hmm.HMM.set_uniform_initial">[docs]</a>    <span class="k">def</span> <span class="nf">set_uniform_initial</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets a uniform initial state distribution.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_topology</span><span class="o">.</span><span class="n">uniform_initial</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="HMM.set_random_initial"><a class="viewcode-back" href="../../../../sections/classifiers/hmm.html#sequentia.classifiers.hmm.HMM.set_random_initial">[docs]</a>    <span class="k">def</span> <span class="nf">set_random_initial</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets a random initial state distribution.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_topology</span><span class="o">.</span><span class="n">random_initial</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="HMM.set_uniform_transitions"><a class="viewcode-back" href="../../../../sections/classifiers/hmm.html#sequentia.classifiers.hmm.HMM.set_uniform_transitions">[docs]</a>    <span class="k">def</span> <span class="nf">set_uniform_transitions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets a uniform transition matrix according to the topology.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_topology</span><span class="o">.</span><span class="n">uniform_transitions</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="HMM.set_random_transitions"><a class="viewcode-back" href="../../../../sections/classifiers/hmm.html#sequentia.classifiers.hmm.HMM.set_random_transitions">[docs]</a>    <span class="k">def</span> <span class="nf">set_random_transitions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets a random transition matrix according to the topology.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transitions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_topology</span><span class="o">.</span><span class="n">random_transitions</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="HMM.fit"><a class="viewcode-back" href="../../../../sections/classifiers/hmm.html#sequentia.classifiers.hmm.HMM.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fits the HMM to observation sequences assumed to be labeled as the class that the model represents.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: List[numpy.ndarray]</span>
+<span class="sd">            Collection of multivariate observation sequences, each of shape :math:`(T \\times D)` where</span>
+<span class="sd">            :math:`T` may vary per observation sequence.</span>
+
+<span class="sd">        n_jobs: int</span>
+<span class="sd">            | The number of jobs to run in parallel.</span>
+<span class="sd">            | Setting this to -1 will use all available CPU cores.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_val</span><span class="o">.</span><span class="n">observation_sequences</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_val</span><span class="o">.</span><span class="n">restricted_integer</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;number of jobs&#39;</span><span class="p">,</span> <span class="s1">&#39;-1 or greater than zero&#39;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_initial</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transitions</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Must specify initial state distribution and transitions before the HMM can be fitted&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_seqs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_features</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Create a multivariate Gaussian emission distribution using combined samples for initial parameter esimation</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">MultivariateGaussianDistribution</span><span class="o">.</span><span class="n">from_samples</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+
+        <span class="c1"># Create the HMM object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">HiddenMarkovModel</span><span class="o">.</span><span class="n">from_matrix</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_label</span><span class="p">,</span>
+            <span class="n">transition_probabilities</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_transitions</span><span class="p">,</span>
+            <span class="n">distributions</span><span class="o">=</span><span class="p">[</span><span class="n">dist</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_states</span><span class="p">)],</span>
+            <span class="n">starts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_initial</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Perform the Baum-Welch algorithm to fit the model to the observations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span>
+
+        <span class="c1"># Update the initial state distribution and transitions to reflect the updated parameters</span>
+        <span class="n">inner_tx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">dense_transition_matrix</span><span class="p">()[:,</span> <span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_states</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial</span> <span class="o">=</span> <span class="n">inner_tx</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_states</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transitions</span> <span class="o">=</span> <span class="n">inner_tx</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_states</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="HMM.forward"><a class="viewcode-back" href="../../../../sections/classifiers/hmm.html#sequentia.classifiers.hmm.HMM.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequence</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Runs the forward algorithm to calculate the (negative log) likelihood of the model generating an observation sequence.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sequence: numpy.ndarray</span>
+<span class="sd">            An individual sequence of observations of size :math:`(T \\times D)` where</span>
+<span class="sd">            :math:`T` is the number of time frames (or observations) and</span>
+<span class="sd">            :math:`D` is the number of features.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        negative log-likelihood: float</span>
+<span class="sd">            The negative log-likelihood of the model generating the observation sequence.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Sequence of observations must be a numpy.ndarray&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sequence</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Sequence of observations must be two-dimensional&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sequence</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_features</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Number of observation features must match the dimensionality of the original data used to fit the model&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">log_probability</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_states</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_seqs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_seqs</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;The model has not been fitted and has not seen any observation sequences&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">initial</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;No initial state distribution has been defined&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+    <span class="nd">@initial</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">initial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_topology</span><span class="o">.</span><span class="n">validate_initial</span><span class="p">(</span><span class="n">probabilities</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial</span> <span class="o">=</span> <span class="n">probabilities</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">transitions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transitions</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;No transition matrix has been defined&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+    <span class="nd">@transitions</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">transitions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_topology</span><span class="o">.</span><span class="n">validate_transitions</span><span class="p">(</span><span class="n">probabilities</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transitions</span> <span class="o">=</span> <span class="n">probabilities</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019-2020, Edwin Onuonga
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

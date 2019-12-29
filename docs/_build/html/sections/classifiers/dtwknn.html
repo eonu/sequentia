@@ -1,0 +1,375 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Dynamic Time Warping k-Nearest Neighbors Classifier (DTWKNN) &mdash; sequentia 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Normalization (normalize)" href="../preprocessing/normalize.html" />
+    <link rel="prev" title="Hidden Markov Model (HMM)" href="hmm.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> sequentia
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Sequentia</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classifiers and Models</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="hmm.html">Hidden Markov Model (<code class="docutils literal notranslate"><span class="pre">HMM</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hmm.html#ensemble-hidden-markov-model-classifier-hmmclassifier">Ensemble Hidden Markov Model Classifier (<code class="docutils literal notranslate"><span class="pre">HMMClassifier</span></code>)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dynamic Time Warping <cite>k</cite>-Nearest Neighbors Classifier (<code class="docutils literal notranslate"><span class="pre">DTWKNN</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api-reference">API reference</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Preprocessing Methods</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing/normalize.html">Normalization (<code class="docutils literal notranslate"><span class="pre">normalize</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing/downsample.html">Downsampling (<code class="docutils literal notranslate"><span class="pre">downsample</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing/fft.html">Discrete Fourier Transform (<code class="docutils literal notranslate"><span class="pre">fft</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing/preprocessing.html">Combined Preprocessing (<code class="docutils literal notranslate"><span class="pre">Preprocess</span></code>)</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">sequentia</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+      <li>Dynamic Time Warping <cite>k</cite>-Nearest Neighbors Classifier (<code class="docutils literal notranslate"><span class="pre">DTWKNN</span></code>)</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/sections/classifiers/dtwknn.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dynamic-time-warping-k-nearest-neighbors-classifier-dtwknn">
+<span id="dtwknn"></span><h1>Dynamic Time Warping <cite>k</cite>-Nearest Neighbors Classifier (<code class="docutils literal notranslate"><span class="pre">DTWKNN</span></code>)<a class="headerlink" href="#dynamic-time-warping-k-nearest-neighbors-classifier-dtwknn" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line">Recall that the isolated sequences we are dealing with are represented as
+multivariate time series of different durations.</div>
+<div class="line">Suppose that our sequences are all <span class="math notranslate nohighlight">\(D\)</span>-dimensional. The main requirement of
+<a class="reference external" href="https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm">k-Nearest Neighbor</a>
+(<span class="math notranslate nohighlight">\(k\)</span>-NN) classifiers is that each example must have the same number of
+dimensions – and hence, be in the same feature space. This is indeed the case with
+our <span class="math notranslate nohighlight">\(D\)</span>-dimensional sequences. However, we can’t use <span class="math notranslate nohighlight">\(k\)</span>-NN with simple
+distance metrics such as Euclidean distance because we are comparing sequences
+(which represent an ordered collection of points in <span class="math notranslate nohighlight">\(D\)</span>-dimensional space)
+rather than individual points in <span class="math notranslate nohighlight">\(D\)</span>-dimensional space.</div>
+</div>
+<p>One distance metric that allows us to compare multivariate sequences of different length
+is <a class="reference external" href="https://en.wikipedia.org/wiki/Dynamic_time_warping">Dynamic Time Warping</a>. Coupling this metric
+with <span class="math notranslate nohighlight">\(k\)</span>-NN creates a powerful classifier that assigns the class of a new
+observation sequence by looking at the classes of observation sequences with similar patterns.</p>
+<p>However, <span class="math notranslate nohighlight">\(k\)</span>-NN classifiers suffer from the fact that they are non-parametric,
+which means that when predicting the class for a new observation sequence,
+we must look back at every observation sequence that was used to fit the model.
+To speed up prediction times, we have chosen to use a constrained DTW algorithm that
+sacrifices accuracy by calculating an approximate distance, but saves <strong>a lot</strong> of time.
+This is the <a class="reference external" href="https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf">FastDTW</a>
+implementation, which has a <cite>radius</cite> parameter for controlling the imposed constraint on the distance calculation.</p>
+<p>This approximate DTW <span class="math notranslate nohighlight">\(k\)</span>-NN classifier is implemented by the <code class="xref py py-class docutils literal notranslate"><span class="pre">DTWKNN</span></code> class.</p>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sequentia.classifiers</span> <span class="kn">import</span> <span class="n">DTWKNN</span>
+
+<span class="c1"># Create some sample data</span>
+<span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">10</span> <span class="o">*</span> <span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;class0&#39;</span><span class="p">,</span> <span class="s1">&#39;class1&#39;</span><span class="p">,</span> <span class="s1">&#39;class1&#39;</span><span class="p">]</span>
+
+<span class="c1"># Create and fit the classifier</span>
+<span class="n">clf</span> <span class="o">=</span> <span class="n">DTWKNN</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="c1"># Predict labels for the training data (just as an example)</span>
+<span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>For more elaborate examples, please have a look at the <a class="reference external" href="https://nbviewer.jupyter.org/github/eonu/sequentia/tree/master/notebooks">example notebooks</a>.</p>
+</div>
+<div class="section" id="api-reference">
+<h2>API reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="sequentia.classifiers.dtwknn.DTWKNN">
+<em class="property">class </em><code class="sig-prename descclassname">sequentia.classifiers.dtwknn.</code><code class="sig-name descname">DTWKNN</code><span class="sig-paren">(</span><em class="sig-param">k</em>, <em class="sig-param">radius</em>, <em class="sig-param">metric: scipy.spatial.distance.euclidean</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/sequentia/classifiers/dtwknn/dtwknn.html#DTWKNN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sequentia.classifiers.dtwknn.DTWKNN" title="Permalink to this definition">¶</a></dt>
+<dd><p>A k-Nearest Neighbor classifier that compares differing length observation sequences using the efficient FastDTW dynamic time warping algorithm.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>k: int</strong></dt><dd><p>Number of neighbors.</p>
+</dd>
+<dt><strong>radius: int</strong></dt><dd><p>Radius parameter for FastDTW.</p>
+<p>See: <a class="reference external" href="https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf">Stan Salvador, and Philip Chan. “FastDTW: Toward accurate dynamic time warping in linear time and space.” Intelligent Data Analysis 11.5 (2007), 561-580.</a></p>
+</dd>
+<dt><strong>metric: callable</strong></dt><dd><p>Distance metric for FastDTW.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt id="sequentia.classifiers.dtwknn.DTWKNN.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">X</em>, <em class="sig-param">y</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/sequentia/classifiers/dtwknn/dtwknn.html#DTWKNN.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sequentia.classifiers.dtwknn.DTWKNN.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fits the classifier by adding labeled training observation sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X: List[numpy.ndarray]</strong></dt><dd><p>A list of multiple observation sequences.</p>
+</dd>
+<dt><strong>y: List[str]</strong></dt><dd><p>A list of labels for the observation sequences.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="sequentia.classifiers.dtwknn.DTWKNN.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">X</em>, <em class="sig-param">verbose=True</em>, <em class="sig-param">n_jobs=1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/sequentia/classifiers/dtwknn/dtwknn.html#DTWKNN.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sequentia.classifiers.dtwknn.DTWKNN.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predicts the label for an observation sequence (or multiple sequences).</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>X: numpy.ndarray or List[numpy.ndarray]</strong></dt><dd><p>An individual observation sequence or a list of multiple observation sequences.</p>
+</dd>
+<dt><strong>verbose: bool</strong></dt><dd><p>Whether to display a progress bar or not.</p>
+</dd>
+<dt><strong>n_jobs: int</strong></dt><dd><div class="line-block">
+<div class="line">The number of jobs to run in parallel.</div>
+<div class="line">Setting this to -1 will use all available CPU cores.</div>
+</div>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>prediction(s): str or List[str]</dt><dd><p>The predicted label(s) for the observation sequence(s).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="sequentia.classifiers.dtwknn.DTWKNN.evaluate">
+<code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">X</em>, <em class="sig-param">y</em>, <em class="sig-param">labels=None</em>, <em class="sig-param">verbose=True</em>, <em class="sig-param">n_jobs=1</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/sequentia/classifiers/dtwknn/dtwknn.html#DTWKNN.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sequentia.classifiers.dtwknn.DTWKNN.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates the performance of the classifier on a batch of observation sequences and their labels.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>X: List[numpy.ndarray]</strong></dt><dd><p>A list of multiple observation sequences.</p>
+</dd>
+<dt><strong>y: List[str]</strong></dt><dd><p>A list of labels for the observation sequences.</p>
+</dd>
+<dt><strong>labels: List[str]</strong></dt><dd><p>A list of labels for ordering the axes of the confusion matrix.</p>
+</dd>
+<dt><strong>verbose: bool</strong></dt><dd><p>Whether to display a progress bar for predictions or not.</p>
+</dd>
+<dt><strong>n_jobs: int</strong></dt><dd><div class="line-block">
+<div class="line">The number of jobs to run in parallel.</div>
+<div class="line">Setting this to -1 will use all available CPU cores.</div>
+</div>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>accuracy: float</dt><dd><p>The categorical accuracy of the classifier on the observation sequences.</p>
+</dd>
+<dt>confusion: numpy.ndarray</dt><dd><p>The confusion matrix representing the discrepancy between predicted and actual labels.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../preprocessing/normalize.html" class="btn btn-neutral float-right" title="Normalization (normalize)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="hmm.html" class="btn btn-neutral float-left" title="Hidden Markov Model (HMM)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019-2020, Edwin Onuonga
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

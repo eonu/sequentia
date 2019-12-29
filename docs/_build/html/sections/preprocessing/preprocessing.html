@@ -1,0 +1,317 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Combined Preprocessing (Preprocess) &mdash; sequentia 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="Discrete Fourier Transform (fft)" href="fft.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> sequentia
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Sequentia</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classifiers and Models</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../classifiers/hmm.html">Hidden Markov Model (<code class="docutils literal notranslate"><span class="pre">HMM</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../classifiers/hmm.html#ensemble-hidden-markov-model-classifier-hmmclassifier">Ensemble Hidden Markov Model Classifier (<code class="docutils literal notranslate"><span class="pre">HMMClassifier</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../classifiers/dtwknn.html">Dynamic Time Warping <cite>k</cite>-Nearest Neighbors Classifier (<code class="docutils literal notranslate"><span class="pre">DTWKNN</span></code>)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Preprocessing Methods</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="normalize.html">Normalization (<code class="docutils literal notranslate"><span class="pre">normalize</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="downsample.html">Downsampling (<code class="docutils literal notranslate"><span class="pre">downsample</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fft.html">Discrete Fourier Transform (<code class="docutils literal notranslate"><span class="pre">fft</span></code>)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Combined Preprocessing (<code class="docutils literal notranslate"><span class="pre">Preprocess</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api-reference">API reference</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">sequentia</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+      <li>Combined Preprocessing (<code class="docutils literal notranslate"><span class="pre">Preprocess</span></code>)</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/sections/preprocessing/preprocessing.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="combined-preprocessing-preprocess">
+<span id="combined"></span><h1>Combined Preprocessing (<code class="docutils literal notranslate"><span class="pre">Preprocess</span></code>)<a class="headerlink" href="#combined-preprocessing-preprocess" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Preprocess</span></code> class provides a way of efficiently applying multiple
+preprocessing transformations to provided input observation sequences.</p>
+<p>For further information, please see the <a class="reference external" href="https://nbviewer.jupyter.org/github/eonu/sequentia/blob/master/notebooks/2%20-%20Preprocessing%20%28Tutorial%29.ipynb#Combining-preprocessing-methods-(Preprocess)">preprocessing tutorial notebook</a>.</p>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sequentia.preprocessing</span> <span class="kn">import</span> <span class="n">Preprocess</span>
+
+<span class="c1"># Create some sample data</span>
+<span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">10</span> <span class="o">*</span> <span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]</span>
+
+<span class="c1"># Create the Preprocess object</span>
+<span class="n">pre</span> <span class="o">=</span> <span class="n">Preprocess</span><span class="p">()</span>
+<span class="n">pre</span><span class="o">.</span><span class="n">normalize</span><span class="p">()</span>
+<span class="n">pre</span><span class="o">.</span><span class="n">downsample</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;average&#39;</span><span class="p">)</span>
+<span class="n">pre</span><span class="o">.</span><span class="n">fft</span><span class="p">()</span>
+
+<span class="c1"># Transform the data applying transformations in order</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">pre</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="api-reference">
+<h2>API reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="sequentia.preprocessing.Preprocess">
+<em class="property">class </em><code class="sig-prename descclassname">sequentia.preprocessing.</code><code class="sig-name descname">Preprocess</code><a class="reference internal" href="../../_modules/sequentia/preprocessing/preprocess.html#Preprocess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sequentia.preprocessing.Preprocess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Efficiently applies multiple preprocessing transformations to provided input observation sequences.</p>
+<dl class="method">
+<dt id="sequentia.preprocessing.Preprocess.normalize">
+<code class="sig-name descname">normalize</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/sequentia/preprocessing/preprocess.html#Preprocess.normalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sequentia.preprocessing.Preprocess.normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalizes an observation sequence (or multiple sequences) by centering observations around the mean.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sequentia.preprocessing.Preprocess.downsample">
+<code class="sig-name descname">downsample</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">n</em>, <em class="sig-param">method='decimate'</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/sequentia/preprocessing/preprocess.html#Preprocess.downsample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sequentia.preprocessing.Preprocess.downsample" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Downsamples an observation sequence (or multiple sequences) by either:</dt><dd><ul class="simple">
+<li><p>Decimating the next <span class="math notranslate nohighlight">\(n-1\)</span> observations</p></li>
+<li><p>Averaging the current observation with the next <span class="math notranslate nohighlight">\(n-1\)</span> observations</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>n: int</strong></dt><dd><p>Downsample factor.</p>
+</dd>
+<dt><strong>method: {‘decimate’, ‘average’}</strong></dt><dd><p>The downsampling method.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="sequentia.preprocessing.Preprocess.fft">
+<code class="sig-name descname">fft</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/sequentia/preprocessing/preprocess.html#Preprocess.fft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sequentia.preprocessing.Preprocess.fft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies a Discrete Fourier Transform to the input observation sequence(s).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sequentia.preprocessing.Preprocess.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">X</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/sequentia/preprocessing/preprocess.html#Preprocess.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sequentia.preprocessing.Preprocess.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies the preprocessing transformations to the provided input observation sequence(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X: List[numpy.ndarray]</strong></dt><dd><p>A list of multiple observation sequences.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>transformed: List[numpy.ndarray]</dt><dd><p>The input observation sequences with preprocessing transformations applied in order.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="fft.html" class="btn btn-neutral float-left" title="Discrete Fourier Transform (fft)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019-2020, Edwin Onuonga
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

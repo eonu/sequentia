@@ -1,0 +1,327 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>sequentia.classifiers.hmm.hmm_classifier &mdash; sequentia 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> sequentia
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Sequentia</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Classifiers and Models</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../sections/classifiers/hmm.html">Hidden Markov Model (<code class="docutils literal notranslate"><span class="pre">HMM</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../sections/classifiers/hmm.html#ensemble-hidden-markov-model-classifier-hmmclassifier">Ensemble Hidden Markov Model Classifier (<code class="docutils literal notranslate"><span class="pre">HMMClassifier</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../sections/classifiers/dtwknn.html">Dynamic Time Warping <cite>k</cite>-Nearest Neighbors Classifier (<code class="docutils literal notranslate"><span class="pre">DTWKNN</span></code>)</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Preprocessing Methods</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../sections/preprocessing/normalize.html">Normalization (<code class="docutils literal notranslate"><span class="pre">normalize</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../sections/preprocessing/downsample.html">Downsampling (<code class="docutils literal notranslate"><span class="pre">downsample</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../sections/preprocessing/fft.html">Discrete Fourier Transform (<code class="docutils literal notranslate"><span class="pre">fft</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../sections/preprocessing/preprocessing.html">Combined Preprocessing (<code class="docutils literal notranslate"><span class="pre">Preprocess</span></code>)</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">sequentia</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>sequentia.classifiers.hmm.hmm_classifier</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for sequentia.classifiers.hmm.hmm_classifier</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">.hmm</span> <span class="kn">import</span> <span class="n">HMM</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span>
+<span class="kn">from</span> <span class="nn">...internals</span> <span class="kn">import</span> <span class="n">Validator</span>
+
+<div class="viewcode-block" id="HMMClassifier"><a class="viewcode-back" href="../../../../sections/classifiers/hmm.html#sequentia.classifiers.hmm.HMMClassifier">[docs]</a><span class="k">class</span> <span class="nc">HMMClassifier</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;An ensemble classifier that combines individual :class:`~HMM` objects, which model isolated sequences from different classes.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_val</span> <span class="o">=</span> <span class="n">Validator</span><span class="p">()</span>
+
+<div class="viewcode-block" id="HMMClassifier.fit"><a class="viewcode-back" href="../../../../sections/classifiers/hmm.html#sequentia.classifiers.hmm.HMMClassifier.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">models</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fits the ensemble classifier with a collection of :class:`~HMM` objects.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        models: List[HMM] or Dict[Any, HMM]</span>
+<span class="sd">            A collection of :class:`~HMM` objects to use for classification.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">HMM</span><span class="p">)</span> <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Expected all models to be HMM objects&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">HMM</span><span class="p">)</span> <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">values</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Expected all models to be HMM objects&#39;</span><span class="p">)</span>
+            <span class="n">models</span> <span class="o">=</span> <span class="n">values</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Expected models to be a list or dict of HMM objects&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_models</span> <span class="o">=</span> <span class="n">models</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Must fit the classifier with at least one HMM&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HMMClassifier.predict"><a class="viewcode-back" href="../../../../sections/classifiers/hmm.html#sequentia.classifiers.hmm.HMMClassifier.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_scores</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Predicts the label for an observation sequence (or multiple sequences) according to maximum likelihood or posterior scores.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: numpy.ndarray or List[numpy.ndarray]</span>
+<span class="sd">            An individual observation sequence or a list of multiple observation sequences.</span>
+
+<span class="sd">        prior: bool</span>
+<span class="sd">            Whether to calculate a prior for each model and perform MAP estimation by scoring with</span>
+<span class="sd">            the joint probability (or un-normalized posterior) :math:`\mathbb{P}(O, \lambda_c)=\mathbb{P}(O|\lambda_c)\mathbb{P}(\lambda_c)`.</span>
+
+<span class="sd">            If this parameter is set to false, then the negative log likelihoods</span>
+<span class="sd">            :math:`\mathbb{P}(O|\lambda_c)` generated from the models&#39; :func:`~HMM.forward` function are used.</span>
+
+<span class="sd">        return_scores: bool</span>
+<span class="sd">            Whether to return the scores of each model on the observation sequence(s).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        prediction(s): str or List[str]</span>
+<span class="sd">            The predicted label(s) for the observation sequence(s).</span>
+
+<span class="sd">            If ``return_scores`` is true, then for each observation sequence, a tuple `(label, scores)` is returned for each label,</span>
+<span class="sd">            consisting of the `scores` of each HMM and the `label` of the HMM with the best score.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_val</span><span class="o">.</span><span class="n">boolean</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;prior&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_val</span><span class="o">.</span><span class="n">boolean</span><span class="p">(</span><span class="n">return_scores</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;return_scores&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_val</span><span class="o">.</span><span class="n">observation_sequences</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">allow_single</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_models</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;The classifier needs to be fitted before predictions are made&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+        <span class="n">total_seqs</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">n_seqs</span> <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_models</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span> <span class="c1"># Single observation sequence</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="p">[(</span><span class="n">model</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">n_seqs</span> <span class="o">/</span> <span class="n">total_seqs</span><span class="p">)</span> <span class="o">*</span> <span class="n">prior</span><span class="p">)</span> <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_models</span><span class="p">]</span>
+            <span class="n">best</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">best</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">scores</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_scores</span> <span class="k">else</span> <span class="n">best</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c1"># Multiple observation sequences</span>
+            <span class="n">predictions</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
+                <span class="n">scores</span> <span class="o">=</span> <span class="p">[(</span><span class="n">model</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">n_seqs</span> <span class="o">/</span> <span class="n">total_seqs</span><span class="p">)</span> <span class="o">*</span> <span class="n">prior</span><span class="p">)</span> <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_models</span><span class="p">]</span>
+                <span class="n">best</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">predictions</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">best</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">scores</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_scores</span> <span class="k">else</span> <span class="n">best</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">predictions</span></div>
+
+<div class="viewcode-block" id="HMMClassifier.evaluate"><a class="viewcode-back" href="../../../../sections/classifiers/hmm.html#sequentia.classifiers.hmm.HMMClassifier.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Evaluates the performance of the classifier on a batch of observation sequences and their labels.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: List[numpy.ndarray]</span>
+<span class="sd">            A list of multiple observation sequences.</span>
+
+<span class="sd">        y: List[str]</span>
+<span class="sd">            A list of labels for the observation sequences.</span>
+
+<span class="sd">        prior: bool</span>
+<span class="sd">            Whether to calculate a prior for each model and perform MAP estimation by scoring with</span>
+<span class="sd">            the joint probability (or un-normalized posterior) :math:`\mathbb{P}(O, \lambda_c)=\mathbb{P}(O|\lambda_c)\mathbb{P}(\lambda_c)`.</span>
+
+<span class="sd">            If this parameter is set to false, then the negative log likelihoods</span>
+<span class="sd">            :math:`\mathbb{P}(O|\lambda_c)` generated from the models&#39; :func:`~HMM.forward` function are used.</span>
+
+<span class="sd">        labels: List[str]</span>
+<span class="sd">            A list of labels for ordering the axes of the confusion matrix.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        accuracy: float</span>
+<span class="sd">            The categorical accuracy of the classifier on the observation sequences.</span>
+
+<span class="sd">        confusion: numpy.ndarray</span>
+<span class="sd">            The confusion matrix representing the discrepancy between predicted and actual labels.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_val</span><span class="o">.</span><span class="n">observation_sequences_and_labels</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_val</span><span class="o">.</span><span class="n">boolean</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;prior&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_val</span><span class="o">.</span><span class="n">list_of_strings</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;confusion matrix labels&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Classify each observation sequence and calculate confusion matrix</span>
+        <span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">prior</span><span class="p">,</span> <span class="n">return_scores</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">cm</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">cm</span><span class="p">),</span> <span class="n">cm</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019-2020, Edwin Onuonga
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
