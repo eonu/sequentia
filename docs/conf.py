@@ -44,6 +44,9 @@ autodoc_member_order = 'bysource'
 autosummary_generate = True
 numpydoc_show_class_members = False
 
+# Set master document
+master_doc = 'index'
+
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 source_suffix = ['.rst', '.md']
