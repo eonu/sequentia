@@ -1,25 +1,29 @@
-<h1 align="center">
-  <img src="https://i.ibb.co/42GkhfR/sequentia.png" width="275px" alt="Sequentia">
-</h1>
+<p align="center">
+  <h1 align="center">
+    <img src="https://i.ibb.co/42GkhfR/sequentia.png" width="275px" alt="Sequentia">
+  </h1>
+</p>
 
 <p align="center">
   <em>A machine learning interface for isolated temporal sequence classification algorithms in Python.</em>
 </p>
 
-<div align="center">
-  <a href="https://pypi.org/project/sequentia">
-    <img src="https://img.shields.io/pypi/v/sequentia?style=flat-square" alt="PyPI"/>
-  </a>
-  <a href="https://pypi.org/project/sequentia">
-    <img src="https://img.shields.io/pypi/pyversions/sequentia?style=flat-square" alt="PyPI - Python Version"/>
-  </a>
-  <a href="https://raw.githubusercontent.com/eonu/sequentia/master/LICENSE">
-    <img src="https://img.shields.io/pypi/l/sequentia?style=flat-square" alt="PyPI - License"/>
-  </a>
-  <a href="https://sequentia.readthedocs.io/en/latest">
-    <img src="https://readthedocs.org/projects/sequentia/badge/?version=latest&style=flat-square" alt="Read The Docs - Documentation">
-  </a>
-</div>
+<p align="center">
+  <div align="center">
+    <a href="https://pypi.org/project/sequentia">
+      <img src="https://img.shields.io/pypi/v/sequentia?style=flat-square" alt="PyPI"/>
+    </a>
+    <a href="https://pypi.org/project/sequentia">
+      <img src="https://img.shields.io/pypi/pyversions/sequentia?style=flat-square" alt="PyPI - Python Version"/>
+    </a>
+    <a href="https://raw.githubusercontent.com/eonu/sequentia/master/LICENSE">
+      <img src="https://img.shields.io/pypi/l/sequentia?style=flat-square" alt="PyPI - License"/>
+    </a>
+    <a href="https://sequentia.readthedocs.io/en/latest">
+      <img src="https://readthedocs.org/projects/sequentia/badge/?version=latest&style=flat-square" alt="Read The Docs - Documentation">
+    </a>
+  </div>
+</p>
 
 ## Introduction
 
