@@ -27,7 +27,7 @@ class DTWKNN:
         Distance metric for FastDTW.
     """
 
-    def __init__(self, k, radius, metric: euclidean):
+    def __init__(self, k, radius, metric=euclidean):
         self._val = Validator()
         self._k = self._val.restricted_integer(
             k, lambda x: x > 0, desc='number of neighbors', expected='greater than zero')
