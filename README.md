@@ -56,8 +56,9 @@ Sequentia offers the use of **multivariate observation sequences with differing 
 ### Preprocessing methods
 
 - [x] Normalization
-- [x] Downsampling (by decimation and averaging)
-- [x] Discrete (Fast) Fourier Transform
+- [x] Downsampling (decimation and averaging)
+- [x] Filtering (mean and median)
+- [x] Discrete Fourier Transform
 
 ### Parallelization
 

@@ -47,6 +47,7 @@ Sequentia offers some appropriate classification algorithms for these kinds of t
 
    sections/preprocessing/normalize.rst
    sections/preprocessing/downsample.rst
+   sections/preprocessing/filtrate.rst
    sections/preprocessing/fft.rst
    sections/preprocessing/preprocessing.rst
 

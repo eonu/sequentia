@@ -1,5 +1,5 @@
 import numpy as np
-from .methods import _normalize, _downsample, _fft
+from .methods import _normalize, _downsample, _fft, _filtrate
 from ..internals import Validator
 
 class Preprocess:
@@ -33,6 +33,24 @@ class Preprocess:
     def fft(self):
         """Applies a Discrete Fourier Transform to the input observation sequence(s)."""
         self._transforms.append((_fft, {}))
+
+    def filtrate(self, n, method='median'):
+        """Applies a mean or median filter to the input observation sequence(s).
+
+        **Note**: Applying a filter with a window size of :math:`n` will remove the last :math:`n-1`
+        time frames (or observations) from the observation sequence.
+
+        Parameters
+        ----------
+        n: int
+            Window size.
+
+        method: {'mean', 'median'}
+            The filtering method.
+        """
+        self._val.restricted_integer(n, lambda x: x > 1, desc='window size', expected='greater than one')
+        self._val.one_of(method, ['mean', 'median'], desc='filtering method')
+        self._transforms.append((_filtrate, {'n': n, 'method': method}))
 
     def transform(self, X):
         """Applies the preprocessing transformations to the provided input observation sequence(s).
