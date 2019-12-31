@@ -1,2 +1,2 @@
-from .methods import downsample, normalize, fft
+from .methods import downsample, normalize, fft, filtrate
 from .preprocess import Preprocess

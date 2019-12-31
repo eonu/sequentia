@@ -95,3 +95,42 @@ def _fft(X):
         return [transform(x) for x in X]
     elif isinstance(X, np.ndarray):
         return transform(X)
+
+def filtrate(X, n, method):
+    """Applies a mean or median filter to the input observation sequence(s).
+
+    **Note**: Applying a filter with a window size of :math:`n` will remove the last :math:`n-1`
+    time frames (or observations) from the observation sequence.
+
+    Parameters
+    ----------
+    X: numpy.ndarray or List[numpy.ndarray]
+        An individual observation sequence or a list of multiple observation sequences.
+
+    n: int
+        Window size.
+
+    method: {'mean', 'median'}
+        The filtering method.
+
+    Returns
+    -------
+    filtered: numpy.ndarray or List[numpy.ndarray]
+        The filtered input observation sequence(s).
+    """
+    val = Validator()
+    val.observation_sequences(X, allow_single=True)
+    val.restricted_integer(n, lambda x: x > 1, desc='window size', expected='greater than one')
+    val.one_of(method, ['mean', 'median'], desc='filtering method')
+    return _filtrate(X, n, method)
+
+def _filtrate(X, n, method):
+    def transform(x):
+        N = len(x)
+        measure = np.mean if method == 'mean' else np.median
+        return np.array([measure(x[i:i+n], axis=0) for i in range(N - n + 1)])
+
+    if isinstance(X, list):
+        return [transform(x) for x in X]
+    elif isinstance(X, np.ndarray):
+        return transform(X)
