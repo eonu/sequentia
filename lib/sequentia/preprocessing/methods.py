@@ -53,6 +53,14 @@ def downsample(X, n, method='decimate'):
     val.observation_sequences(X, allow_single=True)
     val.restricted_integer(n, lambda x: x > 1, desc='downsample factor', expected='greater than one')
     val.one_of(method, ['decimate', 'average'], desc='downsampling method')
+
+    if isinstance(X, np.ndarray):
+        val.restricted_integer(n, lambda x: x <= len(X),
+            desc='downsample factor', expected='no greater than the number of frames')
+    else:
+        val.restricted_integer(n, lambda x: x <= min(len(x) for x in X),
+            desc='downsample factor', expected='no greater than the number of frames in the shortest sequence')
+
     return _downsample(X, n, method)
 
 def _downsample(X, n, method):
@@ -122,6 +130,14 @@ def filtrate(X, n, method):
     val.observation_sequences(X, allow_single=True)
     val.restricted_integer(n, lambda x: x > 1, desc='window size', expected='greater than one')
     val.one_of(method, ['mean', 'median'], desc='filtering method')
+
+    if isinstance(X, np.ndarray):
+        val.restricted_integer(n, lambda x: x <= len(X),
+            desc='window size', expected='no greater than the number of frames')
+    else:
+        val.restricted_integer(n, lambda x: x <= min(len(x) for x in X),
+            desc='window size', expected='no greater than the number of frames in the shortest sequence')
+
     return _filtrate(X, n, method)
 
 def _filtrate(X, n, method):
