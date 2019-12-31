@@ -3,7 +3,7 @@ from .methods import _normalize, _downsample, _fft, _filtrate
 from ..internals import Validator
 
 class Preprocess:
-    """Efficiently applies multiple preprocessing transformations to provided input observation sequences."""
+    """Efficiently applies multiple preprocessing transformations to the provided input observation sequence(s)."""
 
     def __init__(self):
         self._transforms = []
@@ -57,15 +57,15 @@ class Preprocess:
 
         Parameters
         ----------
-        X: List[numpy.ndarray]
-            A list of multiple observation sequences.
+        X: numpy.ndarray or List[numpy.ndarray]
+            An individual observation sequence or a list of multiple observation sequences.
 
         Returns
         -------
-        transformed: List[numpy.ndarray]
-            The input observation sequences with preprocessing transformations applied in order.
+        transformed: numpy.ndarray or List[numpy.ndarray]
+            The input observation sequence(s) with preprocessing transformations applied in order.
         """
-        self._val.observation_sequences(X)
+        self._val.observation_sequences(X, allow_single=True)
 
         X_transform = X
         for transform, kwargs in self._transforms:
