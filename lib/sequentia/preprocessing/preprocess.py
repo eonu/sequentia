@@ -69,5 +69,19 @@ class Preprocess:
 
         X_transform = X
         for transform, kwargs in self._transforms:
+            if transform == _downsample:
+                if isinstance(X_transform, np.ndarray):
+                    self._val.restricted_integer(kwargs['n'], lambda x: x <= len(X_transform),
+                        desc='downsample factor', expected='no greater than the number of frames')
+                else:
+                    self._val.restricted_integer(kwargs['n'], lambda x: x <= min(len(x) for x in X_transform),
+                        desc='downsample factor', expected='no greater than the number of frames in the shortest sequence')
+            elif transform == _filtrate:
+                if isinstance(X, np.ndarray):
+                    self._val.restricted_integer(kwargs['n'], lambda x: x <= len(X),
+                        desc='window size', expected='no greater than the number of frames')
+                else:
+                    self._val.restricted_integer(kwargs['n'], lambda x: x <= min(len(x) for x in X),
+                        desc='window size', expected='no greater than the number of frames in the shortest sequence')
             X_transform = transform(X_transform, **kwargs)
         return X_transform
