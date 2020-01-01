@@ -11,5 +11,8 @@ pre.filtrate(n=5, method='median')
 pre.downsample(n=5, method='decimate')
 pre.fft()
 
+# View a summary of the preprocessing steps
+pre.summary()
+
 # Transform the data applying transformations in order
 X = pre.transform(X)

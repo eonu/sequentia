@@ -82,3 +82,42 @@ class Preprocess:
                         desc='window size', expected='no greater than the number of frames in the shortest sequence')
             X_transform = transform(X_transform, **kwargs)
         return X_transform
+
+    def summary(self):
+        """Displays an ordered summary of the preprocessing transformations."""
+        if len(self._transforms) == 0:
+            raise RuntimeError('At least one preprocessing transformation is required')
+
+        steps = []
+
+        for i, (transform, kwargs) in enumerate(self._transforms):
+            idx = i + 1
+            if transform == _normalize:
+                steps.append(('{}. Normalization'.format(idx), None))
+            elif transform == _downsample:
+                header = 'Decimating' if kwargs['method'] == 'decimate' else 'Averaging'
+                steps.append((
+                    '{}. Downsampling:'.format(idx),
+                    '   {} with downsample factor (n={})'.format(header, kwargs['n'])
+                ))
+            elif transform == _fft:
+                steps.append(('{}. Discrete Fourier Transform'.format(idx), None))
+            elif transform == _filtrate:
+                steps.append((
+                    '{}. Filtering:'.format(idx),
+                    '   {} filter with window size (n={})'.format(kwargs['method'].capitalize(), kwargs['n'])
+                ))
+
+        title = 'Preprocessing summary:'
+        length = max(max(len(h), 0 if b is None else len(b)) for h, b in steps)
+        length = len(title) if length < len(title) else length
+
+        print(title.center(length, ' '))
+        print('=' * length)
+        for i, (head, body) in enumerate(steps):
+            print(head)
+            if body is not None:
+                print(body)
+            if i != len(steps) - 1:
+                print('-' * length)
+        print('=' * length)
