@@ -35,18 +35,18 @@ class Preprocess:
         self._transforms.append((_fft, {}))
 
     def filtrate(self, n, method='median'):
-        """Applies a mean or median filter to the input observation sequence(s).
+        """Applies a median or mean filter to the input observation sequence(s).
 
         Parameters
         ----------
         n: int
             Window size.
 
-        method: {'mean', 'median'}
+        method: {'median', 'mean'}
             The filtering method.
         """
         self._val.restricted_integer(n, lambda x: x > 1, desc='window size', expected='greater than one')
-        self._val.one_of(method, ['mean', 'median'], desc='filtering method')
+        self._val.one_of(method, ['median', 'mean'], desc='filtering method')
         self._transforms.append((_filtrate, {'n': n, 'method': method}))
 
     def transform(self, X):
