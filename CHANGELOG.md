@@ -1,3 +1,20 @@
+## [0.5.0](https://github.com/eonu/sequentia/releases/tag/v0.5.0)
+
+#### Major changes
+
+- Add `Preprocess.summary()` to display an ordered summary of preprocessing transformations. ([#54](https://github.com/eonu/sequentia/pull/54))
+- Add mean and median filtering preprocessing methods. ([#48](https://github.com/eonu/sequentia/pull/48))
+- Use median filtering and decimation downsampling by default. ([#53](https://github.com/eonu/sequentia/pull/52))
+- Modify preprocessing boundary conditions ([#51](https://github.com/eonu/sequentia/pull/51)):
+  - Use a bi-directional window for filtering to resolve boundary problems.
+  - Modify downsampling method to downsample residual observations.
+
+#### Minor changes
+
+- Add supported topologies (left-right and ergodic) to feature list. ([#53](https://github.com/eonu/sequentia/pull/53))
+- Add restrictions on preprocessing parameters: downsample factor and window size. ([#50](https://github.com/eonu/sequentia/pull/50))
+- Allow `Preprocess` class to be used to apply preprocessing transformations to a single observation sequence. ([#49](https://github.com/eonu/sequentia/pull/49))
+
 ## [0.4.0](https://github.com/eonu/sequentia/releases/tag/v0.4.0)
 
 #### Major changes
