@@ -37,9 +37,6 @@ class Preprocess:
     def filtrate(self, n, method='median'):
         """Applies a mean or median filter to the input observation sequence(s).
 
-        **Note**: Applying a filter with a window size of :math:`n` will remove the last :math:`n-1`
-        time frames (or observations) from the observation sequence.
-
         Parameters
         ----------
         n: int
