@@ -69,9 +69,10 @@ def _downsample(X, n, method):
         if method == 'decimate':
             return np.delete(x, [i for i in range(N) if i % n != 0], 0)
         elif method == 'average':
-            pad = (n - (len(x) % n)) % n
-            padded = np.vstack((x, np.tile(x[-1, :], (pad, 1))))
-            return padded.T.reshape(-1, n).mean(1).reshape(D, -1).T
+            r = len(x) % n
+            xn, xr = (x, None) if r == 0 else (x[:-r], x[-r:])
+            dxn = xn.T.reshape(-1, n).mean(axis=1).reshape(D, -1).T
+            return dxn if xr is None else np.vstack((dxn, xr.mean(axis=0)))
 
     if isinstance(X, list):
         return [transform(x) for x in X]
@@ -107,9 +108,6 @@ def _fft(X):
 def filtrate(X, n, method):
     """Applies a mean or median filter to the input observation sequence(s).
 
-    **Note**: Applying a filter with a window size of :math:`n` will remove the last :math:`n-1`
-    time frames (or observations) from the observation sequence.
-
     Parameters
     ----------
     X: numpy.ndarray or List[numpy.ndarray]
@@ -142,9 +140,14 @@ def filtrate(X, n, method):
 
 def _filtrate(X, n, method):
     def transform(x):
-        N = len(x)
         measure = np.mean if method == 'mean' else np.median
-        return np.array([measure(x[i:i+n], axis=0) for i in range(N - n + 1)])
+        filtered = []
+        right = n // 2
+        left = (n - 1) - right
+        for i in range(len(x)):
+            l, m, r = x[((i - left) * (left < i)):i], x[i], x[(i + 1):(i + 1 + right)]
+            filtered.append(measure(np.vstack((l, m, r)), axis=0))
+        return np.array(filtered)
 
     if isinstance(X, list):
         return [transform(x) for x in X]
