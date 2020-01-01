@@ -4,7 +4,7 @@ Filtering (``filtrate``)
 =============================
 
 Filtering removes or reduces some unwanted components (such as noise) from an observation sequence
-according to some window size and one of two methods: **mean** and **median** filtering.
+according to some window size and one of two methods: **median** and **mean** filtering.
 
 Suppose we have an observation sequence :math:`\mathbf{o}^{(1)}\mathbf{o}^{(2)}\ldots\mathbf{o}^{(T)}`
 and we are filtering with a window size of :math:`n`. Filtering replaces every observation :math:`\mathbf{o}^{(t)}`

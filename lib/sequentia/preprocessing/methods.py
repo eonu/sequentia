@@ -105,8 +105,8 @@ def _fft(X):
     elif isinstance(X, np.ndarray):
         return transform(X)
 
-def filtrate(X, n, method):
-    """Applies a mean or median filter to the input observation sequence(s).
+def filtrate(X, n, method='median'):
+    """Applies a median or mean filter to the input observation sequence(s).
 
     Parameters
     ----------
@@ -116,7 +116,7 @@ def filtrate(X, n, method):
     n: int
         Window size.
 
-    method: {'mean', 'median'}
+    method: {'median', 'mean'}
         The filtering method.
 
     Returns
@@ -127,7 +127,7 @@ def filtrate(X, n, method):
     val = Validator()
     val.observation_sequences(X, allow_single=True)
     val.restricted_integer(n, lambda x: x > 1, desc='window size', expected='greater than one')
-    val.one_of(method, ['mean', 'median'], desc='filtering method')
+    val.one_of(method, ['median', 'mean'], desc='filtering method')
 
     if isinstance(X, np.ndarray):
         val.restricted_integer(n, lambda x: x <= len(X),
@@ -140,7 +140,7 @@ def filtrate(X, n, method):
 
 def _filtrate(X, n, method):
     def transform(x):
-        measure = np.mean if method == 'mean' else np.median
+        measure = np.median if method == 'median' else np.mean
         filtered = []
         right = n // 2
         left = (n - 1) - right
