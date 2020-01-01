@@ -48,10 +48,11 @@ Sequentia offers the use of **multivariate observation sequences with differing 
 ### Classication algorithms
 
 - [x] Ensemble Hidden Markov Models (via [Pomegranate](https://github.com/jmschrei/pomegranate) [[1]](#references))
-  - [x] Multivariate Gaussian emission distributions
-  - [ ] Gaussian Mixture Model emission distributions (soon!)
+  - [x] Multivariate Gaussian Emissions
+  - [ ] Gaussian Mixture Model Emissions (_soon!_)
+  - [x] Left-Right and Ergodic Topologies
 - [x] Approximate Dynamic Time Warping k-Nearest Neighbors (implemented with [FastDTW](https://github.com/slaypni/fastdtw) [[2]](#references))
-- [ ] Long Short-Term Memory Networks (soon!)
+- [ ] Long Short-Term Memory Networks (_soon!_)
 
 ### Preprocessing methods
 
