@@ -6,10 +6,18 @@ class Validator:
     def observation_sequences(self, X, allow_single=False):
         """Validates observation sequence(s).
 
-        Parameters:
-            X {np.ndarray, list(np.ndarray)} - An individual observation sequence or
-                a list of multiple observation sequences.
-            allow_single {bool} - Whether to allow an individual observation sequence.
+        Parameters
+        ----------
+        X: numpy.ndarray or List[numpy.ndarray]
+            An individual observation sequence or a list of multiple observation sequences.
+
+        allow_single: bool
+            Whether to allow an individual observation sequence.
+
+        Returns
+        -------
+        X: numpy.ndarray or List[numpy.ndarray]
+            The original input observation sequence(s) if valid.
         """
         if isinstance(X, (list, np.ndarray) if allow_single else list):
             if isinstance(X, list):
@@ -32,9 +40,21 @@ class Validator:
     def observation_sequences_and_labels(self, X, y):
         """Validates observation sequences and corresponding labels.
 
-        Parameters:
-            X {list(np.ndarray)} - A list of multiple observation sequences.
-            y {list(str)} - A list of labels for the observation sequences.
+        Parameters
+        ----------
+        X: List[numpy.ndarray]
+            A list of multiple observation sequences.
+
+        y: List[str]
+            A list of labels for the observation sequences.
+
+        Returns
+        -------
+        X: List[numpy.ndarray]
+            The original input observation sequences if valid.
+
+        y: List[str]
+            The original input labels if valid.
         """
         self.observation_sequences(X, allow_single=False)
         self.list_of_strings(y, desc='labels')
@@ -45,9 +65,18 @@ class Validator:
     def integer(self, item, desc):
         """Validates an integer.
 
-        Parameters:
-            item {int} - The item to validate.
-            desc {str} - A description of the item being validated.
+        Parameters
+        ----------
+        item: int
+            The item to validate.
+
+        desc: str
+            A description of the item being validated.
+
+        Returns
+        -------
+        item: int
+            The original input item if valid.
         """
         if not isinstance(item, int):
             raise TypeError("Expected {} to be an integer".format(desc))
@@ -56,9 +85,18 @@ class Validator:
     def string(self, item, desc):
         """Validates a string.
 
-        Parameters:
-            item {int} - The item to validate.
-            desc {str} - A description of the item being validated.
+        Parameters
+        ----------
+        item: str
+            The item to validate.
+
+        desc: str
+            A description of the item being validated.
+
+        Returns
+        -------
+        item: str
+            The original input item if valid.
         """
         if not isinstance(item, str):
             raise TypeError("Expected {} to be a string".format(desc))
@@ -67,9 +105,18 @@ class Validator:
     def boolean(self, item, desc):
         """Validates a boolean.
 
-        Parameters:
-            item {int} - The item to validate.
-            desc {str} - A description of the item being validated.
+        Parameters
+        ----------
+        item: bool
+            The item to validate.
+
+        desc: str
+            A description of the item being validated.
+
+        Returns
+        -------
+        item: bool
+            The original input item if valid.
         """
         if not isinstance(item, bool):
             raise TypeError("Expected {} to be a boolean".format(desc))
@@ -78,10 +125,21 @@ class Validator:
     def one_of(self, item, items, desc):
         """Validates that an item is one of some permitted values.
 
-        Parameters:
-            item {any} - The item to validate.
-            items {list(any)} - The list of permitted values to check against.
-            desc {str} - A description of the item being validated.
+        Parameters
+        ----------
+        item: Any
+            The item to validate.
+
+        items: List[Any]
+            The list of permitted values to check against.
+
+        desc: str
+            A description of the item being validated.
+
+        Returns
+        -------
+        item: Any
+            The original input item if valid.
         """
         if not item in items:
             raise ValueError('Expected {} to be one of {}'.format(desc, items))
@@ -90,11 +148,24 @@ class Validator:
     def restricted_integer(self, item, condition, desc, expected):
         """Validates an integer and checks that it satisfies some condition.
 
-        Parameters:
-            item {int} - The item to validate.
-            condition {lambda} - A condition to check the item against.
-            desc {str} - A description of the item being validated.
-            expected {str} - A description of the condition, or expected value.
+        Parameters
+        ----------
+        item: int
+            The item to validate.
+
+        condition: lambda
+            A condition to check the item against.
+
+        desc: str
+            A description of the item being validated.
+
+        expected: str
+            A description of the condition, or expected value.
+
+        Returns
+        -------
+        item: int
+            The original input item if valid.
         """
         if isinstance(item, int):
             if not condition(item):
@@ -106,11 +177,24 @@ class Validator:
     def restricted_float(self, item, condition, desc, expected):
         """Validates a float and checks that it satisfies some condition.
 
-        Parameters:
-            item {float} - The item to validate.
-            condition {lambda} - A condition to check the item against.
-            desc {str} - A description of the item being validated.
-            expected {str} - A description of the condition, or expected value.
+        Parameters
+        ----------
+        item: float
+            The item to validate.
+
+        condition: lambda
+            A condition to check the item against.
+
+        desc: str
+            A description of the item being validated.
+
+        expected: str
+            A description of the condition, or expected value.
+
+        Returns
+        -------
+        item: float
+            The original input item if valid.
         """
         if isinstance(item, float):
             if not condition(item):
@@ -122,9 +206,18 @@ class Validator:
     def list_of_strings(self, items, desc):
         """Validates a list and checks that it consists entirely of strings.
 
-        Parameters:
-            items {list(str)} - The item to validate.
-            desc {str} - A description of the item being validated.
+        Parameters
+        ----------
+        items: List[str]
+            The item to validate.
+
+        desc: str
+            A description of the item being validated.
+
+        Returns
+        -------
+        items: List[str]
+            The original input items if valid.
         """
         if isinstance(items, list):
             if not all(isinstance(item, str) for item in items):
