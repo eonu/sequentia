@@ -33,8 +33,7 @@ class Validator:
         """Validates observation sequences and corresponding labels.
 
         Parameters:
-            X {np.ndarray, list(np.ndarray)} - An individual observation sequence or
-                a list of multiple observation sequences.
+            X {list(np.ndarray)} - A list of multiple observation sequences.
             y {list(str)} - A list of labels for the observation sequences.
         """
         self.observation_sequences(X, allow_single=False)
@@ -131,5 +130,5 @@ class Validator:
             if not all(isinstance(item, str) for item in items):
                 raise ValueError('Expected all {} to be strings'.format(desc))
         else:
-            raise ValueError('Expected {} to be a list of strings'.format(desc))
+            raise TypeError('Expected {} to be a list of strings'.format(desc))
         return items
