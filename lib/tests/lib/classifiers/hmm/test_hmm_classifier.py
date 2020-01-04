@@ -180,7 +180,6 @@ def test_evaluate_with_prior_no_labels():
     acc, cm = hmm_clf.evaluate(X, Y, prior=True, labels=None)
     assert isinstance(acc, float)
     assert isinstance(cm, np.ndarray)
-    assert cm.shape == (3, 3)
 
 def test_evaluate_no_prior_with_labels():
     """Evaluate with no prior and confusion matrix labels"""
@@ -194,4 +193,3 @@ def test_evaluate_no_prior_no_labels():
     acc, cm = hmm_clf.evaluate(X, Y, prior=False, labels=None)
     assert isinstance(acc, float)
     assert isinstance(cm, np.ndarray)
-    assert cm.shape == (3, 3)
