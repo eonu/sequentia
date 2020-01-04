@@ -1,12 +1,12 @@
 import numpy as np
 from numpy.testing import assert_allclose, assert_almost_equal
 
-def assert_arrays_equal(a, b):
+def assert_equal(a, b):
     assert_allclose(a, b, rtol=1e-5)
 
-def assert_all_arrays_equal(A, B):
+def assert_all_equal(A, B):
     for a, b in zip(A, B):
-        assert_arrays_equal(a, b)
+        assert_equal(a, b)
 
 def assert_distribution(a):
     if a.ndim == 1:

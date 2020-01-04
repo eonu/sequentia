@@ -5,7 +5,7 @@ from sequentia.preprocessing import (
     downsample, normalize, fft, filtrate,
     _downsample, _normalize, _fft, _filtrate
 )
-from ...support import assert_arrays_equal, assert_all_arrays_equal
+from ...support import assert_equal, assert_all_equal
 
 # Set seed for reproducible randomness
 seed = 0
@@ -52,11 +52,11 @@ def test_normalize_adds_transform():
 
 def test_normalize_single():
     """Applying normalization to a single observation sequence"""
-    assert_arrays_equal(norm.transform(X), normalize(X))
+    assert_equal(norm.transform(X), normalize(X))
 
 def test_normalize_multiple():
     """Applying normalization to multiple observation sequences"""
-    assert_all_arrays_equal(norm.transform(Xs), normalize(Xs))
+    assert_all_equal(norm.transform(Xs), normalize(Xs))
 
 def test_normalize_summary(capsys):
     """Summary of a normalization transformation"""
@@ -79,11 +79,11 @@ def test_fft_adds_transform():
 
 def test_fft_single():
     """Applying discrete fourier transformation to a single observation sequence"""
-    assert_arrays_equal(fourier.transform(X), fft(X))
+    assert_equal(fourier.transform(X), fft(X))
 
 def test_fft_multiple():
     """Applying discrete fourier transformation to multiple observation sequences"""
-    assert_all_arrays_equal(fourier.transform(Xs), fft(Xs))
+    assert_all_equal(fourier.transform(Xs), fft(Xs))
 
 def test_fft_summary(capsys):
     """Summary of a discrete fourier transformation"""
@@ -106,11 +106,11 @@ def test_downsample_adds_transform():
 
 def test_downsample_single():
     """Applying downsampling to a single observation sequence"""
-    assert_arrays_equal(down.transform(X), downsample(X, **down_kwargs))
+    assert_equal(down.transform(X), downsample(X, **down_kwargs))
 
 def test_downsample_multiple():
     """Applying downsampling to multiple observation sequences"""
-    assert_all_arrays_equal(down.transform(Xs), downsample(Xs, **down_kwargs))
+    assert_all_equal(down.transform(Xs), downsample(Xs, **down_kwargs))
 
 def test_downsample_summary(capsys):
     """Summary of a downsampling transformation"""
@@ -134,11 +134,11 @@ def test_filtrate_adds_transform():
 
 def test_filtrate_single():
     """Applying filtering to a single observation sequence"""
-    assert_arrays_equal(filt.transform(X), filtrate(X, **filt_kwargs))
+    assert_equal(filt.transform(X), filtrate(X, **filt_kwargs))
 
 def test_filtrate_multiple():
     """Applying filtering to multiple observation sequences"""
-    assert_all_arrays_equal(filt.transform(Xs), filtrate(Xs, **filt_kwargs))
+    assert_all_equal(filt.transform(Xs), filtrate(Xs, **filt_kwargs))
 
 def test_filtrate_summary(capsys):
     """Summary of a filtering transformation"""
@@ -172,7 +172,7 @@ def test_combined_single():
     X_pre = filtrate(X_pre, **filt_kwargs)
     X_pre = downsample(X_pre, **down_kwargs)
     X_pre = fft(X_pre)
-    assert_arrays_equal(combined.transform(X), X_pre)
+    assert_equal(combined.transform(X), X_pre)
 
 def test_combined_multiple():
     """Applying combined transformations to multiple observation sequences"""
@@ -181,7 +181,7 @@ def test_combined_multiple():
     Xs_pre = filtrate(Xs_pre, **filt_kwargs)
     Xs_pre = downsample(Xs_pre, **down_kwargs)
     Xs_pre = fft(Xs_pre)
-    assert_all_arrays_equal(combined.transform(Xs), Xs_pre)
+    assert_all_equal(combined.transform(Xs), Xs_pre)
 
 def test_combined_summary(capsys):
     """Summary with combined transformations applied"""

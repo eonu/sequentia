@@ -1,1 +1,1 @@
-from .assertions import assert_arrays_equal, assert_all_arrays_equal, assert_distribution
+from .assertions import assert_equal, assert_all_equal, assert_distribution

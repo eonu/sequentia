@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 from numpy.testing import assert_array_equal
 from sequentia.internals import Validator
+from ...support import assert_equal
 
 val = Validator()
 
@@ -326,3 +327,31 @@ def test_list_of_strings_wrong_list_type():
 def test_list_of_strings_correct_list_type():
     """Correct list element types"""
     assert val.list_of_strings(['a', 'b', 'c'], 'test') == ['a', 'b', 'c']
+
+# ======================== #
+# Validator.random_state() #
+# ======================== #
+
+def test_random_state_none():
+    """None random state"""
+    s1 = np.random.RandomState(seed=0)
+    s2 = val.random_state(None)
+    assert_equal(s1.random((5, 5)), s2.random((5, 5)))
+
+def test_random_state_int():
+    """Integer random state (seed)"""
+    s1 = np.random.RandomState(seed=0)
+    s2 = val.random_state(0)
+    assert_equal(s1.random((5, 5)), s2.random((5, 5)))
+
+def test_random_state_numpy():
+    """numpy.random.RandomState random state"""
+    s1 = np.random.RandomState(seed=0)
+    s2 = val.random_state(s1)
+    assert s1 == s2
+
+def test_random_state_invalid():
+    """Invalid random state"""
+    with pytest.raises(TypeError) as e:
+        val.random_state('0')
+    assert str(e.value) == 'Expected random state to be of type: None, int, or numpy.random.RandomState'

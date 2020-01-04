@@ -225,3 +225,25 @@ class Validator:
         else:
             raise TypeError('Expected {} to be a list of strings'.format(desc))
         return items
+
+    def random_state(self, state):
+        """Validates a random state object or seed.
+
+        Parameters
+        ----------
+        state: None, int, numpy.random.RandomState
+            A random state object or seed.
+
+        Returns
+        -------
+        state: numpy.random.RandomState
+            A random state object.
+        """
+        if state is None:
+            return np.random.RandomState(seed=0)
+        elif isinstance(state, int):
+            return np.random.RandomState(seed=state)
+        elif isinstance(state, np.random.RandomState):
+            return state
+        else:
+            raise TypeError('Expected random state to be of type: None, int, or numpy.random.RandomState')

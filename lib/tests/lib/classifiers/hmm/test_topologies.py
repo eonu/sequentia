@@ -4,7 +4,7 @@ import numpy as np
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', category=DeprecationWarning)
     from sequentia.classifiers import _Topology, _LeftRightTopology, _ErgodicTopology
-from ....support import assert_arrays_equal, assert_all_arrays_equal, assert_distribution
+from ....support import assert_equal, assert_all_equal, assert_distribution
 
 # Set seed for reproducible randomness
 seed = 0
@@ -24,7 +24,7 @@ def test_uniform_initial_min():
     topology = _Topology(n_states=1, random_state=rng)
     initial = topology.uniform_initial()
     assert_distribution(initial)
-    assert_arrays_equal(initial, np.array([
+    assert_equal(initial, np.array([
         1.
     ]))
 
@@ -33,7 +33,7 @@ def test_uniform_initial_small():
     topology = _Topology(n_states=2, random_state=rng)
     initial = topology.uniform_initial()
     assert_distribution(initial)
-    assert_arrays_equal(initial, np.array([
+    assert_equal(initial, np.array([
         0.5, 0.5
     ]))
 
@@ -42,7 +42,7 @@ def test_uniform_initial_many():
     topology = _Topology(n_states=5, random_state=rng)
     initial = topology.uniform_initial()
     assert_distribution(initial)
-    assert_arrays_equal(initial, np.array([
+    assert_equal(initial, np.array([
         0.2, 0.2, 0.2, 0.2, 0.2
     ]))
 
@@ -55,7 +55,7 @@ def test_random_initial_min():
     topology = _Topology(n_states=1, random_state=rng)
     initial = topology.random_initial()
     assert_distribution(initial)
-    assert_arrays_equal(initial, np.array([
+    assert_equal(initial, np.array([
         1.
     ]))
 
@@ -64,7 +64,7 @@ def test_random_initial_small():
     topology = _Topology(n_states=2, random_state=rng)
     initial = topology.random_initial()
     assert_distribution(initial)
-    assert_arrays_equal(initial, np.array([
+    assert_equal(initial, np.array([
         0.57633871, 0.42366129
     ]))
 
@@ -73,7 +73,7 @@ def test_random_initial_many():
     topology = _Topology(n_states=5, random_state=rng)
     initial = topology.random_initial()
     assert_distribution(initial)
-    assert_arrays_equal(initial, np.array([
+    assert_equal(initial, np.array([
         0.15210286, 0.10647349, 0.20059295, 0.11120171, 0.42962898
     ]))
 
@@ -90,7 +90,7 @@ def test_left_right_uniform_transitions_min():
     topology = _LeftRightTopology(n_states=1, random_state=rng)
     transitions = topology.uniform_transitions()
     assert_distribution(transitions)
-    assert_arrays_equal(transitions, np.array([
+    assert_equal(transitions, np.array([
         [1.]
     ]))
 
@@ -99,9 +99,9 @@ def test_left_right_uniform_transitions_small():
     topology = _LeftRightTopology(n_states=2, random_state=rng)
     transitions = topology.uniform_transitions()
     assert_distribution(transitions)
-    assert_arrays_equal(transitions, np.array([
+    assert_equal(transitions, np.array([
         [0.5, 0.5],
-        [0., 1.]
+        [0. , 1. ]
     ]))
 
 def test_left_right_uniform_transitions_many():
@@ -109,12 +109,12 @@ def test_left_right_uniform_transitions_many():
     topology = _LeftRightTopology(n_states=5, random_state=rng)
     transitions = topology.uniform_transitions()
     assert_distribution(transitions)
-    assert_arrays_equal(transitions, np.array([
-        [0.2, 0.2, 0.2, 0.2, 0.2],
-        [0., 0.25, 0.25, 0.25, 0.25],
-        [0., 0., 0.33333333, 0.33333333, 0.33333333],
-        [0., 0., 0., 0.5, 0.5],
-        [0., 0., 0., 0., 1.]
+    assert_equal(transitions, np.array([
+        [0.2, 0.2 , 0.2       , 0.2       , 0.2       ],
+        [0. , 0.25, 0.25      , 0.25      , 0.25      ],
+        [0. , 0.  , 0.33333333, 0.33333333, 0.33333333],
+        [0. , 0.  , 0.        , 0.5       , 0.5       ] ,
+        [0. , 0.  , 0.        , 0.        , 1.        ]
     ]))
 
 # --------------------------------------- #
@@ -126,7 +126,7 @@ def test_left_right_random_transitions_min():
     topology = _LeftRightTopology(n_states=1, random_state=rng)
     transitions = topology.random_transitions()
     assert_distribution(transitions)
-    assert_arrays_equal(transitions, np.array([
+    assert_equal(transitions, np.array([
         [1.]
     ]))
 
@@ -135,9 +135,9 @@ def test_left_right_random_transitions_small():
     topology = _LeftRightTopology(n_states=2, random_state=rng)
     transitions = topology.random_transitions()
     assert_distribution(transitions)
-    assert_arrays_equal(transitions, np.array([
+    assert_equal(transitions, np.array([
         [0.23561633, 0.76438367],
-        [0., 1.]
+        [0.        , 1.        ]
     ]))
 
 def test_left_right_random_transitions_many():
@@ -145,12 +145,12 @@ def test_left_right_random_transitions_many():
     topology = _LeftRightTopology(n_states=5, random_state=rng)
     transitions = topology.random_transitions()
     assert_distribution(transitions)
-    assert_arrays_equal(transitions, np.array([
-        [0.56841967, 0.01612013, 0.01994328, 0.0044685, 0.39104841],
-        [0., 0.25134034, 0.43904868, 0.20609306, 0.10351793],
-        [0., 0., 0.27462001, 0.12291279, 0.60246721],
-        [0., 0., 0., 0.61951739, 0.38048261],
-        [0., 0., 0., 0., 1.]
+    assert_equal(transitions, np.array([
+        [0.56841967, 0.01612013, 0.01994328, 0.0044685 , 0.39104841],
+        [0.        , 0.25134034, 0.43904868, 0.20609306, 0.10351793],
+        [0.        , 0.        , 0.27462001, 0.12291279, 0.60246721],
+        [0.        , 0.        , 0.        , 0.61951739, 0.38048261],
+        [0.        , 0.        , 0.        , 0.        , 1.        ]
     ]))
 
 # ----------------------------------------- #
@@ -180,7 +180,7 @@ def test_ergodic_uniform_transitions_min():
     topology = _ErgodicTopology(n_states=1, random_state=rng)
     transitions = topology.uniform_transitions()
     assert_distribution(transitions)
-    assert_arrays_equal(transitions, np.array([
+    assert_equal(transitions, np.array([
         [1.]
     ]))
 
@@ -189,7 +189,7 @@ def test_ergodic_uniform_transitions_small():
     topology = _ErgodicTopology(n_states=2, random_state=rng)
     transitions = topology.uniform_transitions()
     assert_distribution(transitions)
-    assert_arrays_equal(transitions, np.array([
+    assert_equal(transitions, np.array([
         [0.5, 0.5],
         [0.5, 0.5]
     ]))
@@ -199,7 +199,7 @@ def test_ergodic_uniform_transitions_many():
     topology = _ErgodicTopology(n_states=5, random_state=rng)
     transitions = topology.uniform_transitions()
     assert_distribution(transitions)
-    assert_arrays_equal(transitions, np.array([
+    assert_equal(transitions, np.array([
         [0.2, 0.2, 0.2, 0.2, 0.2],
         [0.2, 0.2, 0.2, 0.2, 0.2],
         [0.2, 0.2, 0.2, 0.2, 0.2],
@@ -216,7 +216,7 @@ def test_ergodic_random_transitions_min():
     topology = _ErgodicTopology(n_states=1, random_state=rng)
     transitions = topology.random_transitions()
     assert_distribution(transitions)
-    assert_arrays_equal(transitions, np.array([
+    assert_equal(transitions, np.array([
         [1.]
     ]))
 
@@ -225,7 +225,7 @@ def test_ergodic_random_transitions_small():
     topology = _ErgodicTopology(n_states=2, random_state=rng)
     transitions = topology.random_transitions()
     assert_distribution(transitions)
-    assert_arrays_equal(transitions, np.array([
+    assert_equal(transitions, np.array([
         [0.87353002, 0.12646998],
         [0.88622334, 0.11377666]
     ]))
@@ -235,12 +235,12 @@ def test_ergodic_random_transitions_many():
     topology = _ErgodicTopology(n_states=5, random_state=rng)
     transitions = topology.random_transitions()
     assert_distribution(transitions)
-    assert_arrays_equal(transitions, np.array([
+    assert_equal(transitions, np.array([
         [0.46537016, 0.12619365, 0.07474032, 0.32619324, 0.00750262],
         [0.38836848, 0.00103519, 0.24911885, 0.06922191, 0.29225557],
-        [0.5312161, 0.04639154, 0.13922816, 0.14542372, 0.13774047],
-        [0.0361995, 0.43772711, 0.08498809, 0.26867251, 0.17241279],
-        [0.06373359, 0.30347054, 0.09117514, 0.38445582, 0.1571649]
+        [0.5312161 , 0.04639154, 0.13922816, 0.14542372, 0.13774047],
+        [0.0361995 , 0.43772711, 0.08498809, 0.26867251, 0.17241279],
+        [0.06373359, 0.30347054, 0.09117514, 0.38445582, 0.1571649 ]
     ]))
 
 # --------------------------------------- #
