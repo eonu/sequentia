@@ -1,14 +1,11 @@
 import pytest
 import warnings
 import numpy as np
-from numpy.testing import assert_allclose
 from copy import deepcopy
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', category=DeprecationWarning)
     import pomegranate as pg
-    from sequentia.classifiers import (
-        HMM, _LeftRightTopology, _ErgodicTopology
-    )
+from sequentia.classifiers import HMM, _LeftRightTopology, _ErgodicTopology
 from ....support import assert_equal, assert_not_equal
 
 # Set seed for reproducible randomness
@@ -281,8 +278,7 @@ def test_n_seqs_without_fit():
     hmm = deepcopy(hmm_lr)
     hmm.set_random_initial()
     hmm.set_random_transitions()
-    with warnings.catch_warnings(), pytest.raises(AttributeError) as e:
-        warnings.filterwarnings('ignore', category=DeprecationWarning)
+    with pytest.raises(AttributeError) as e:
         hmm.n_seqs
     assert str(e.value) == 'The model has not been fitted and has not seen any observation sequences'
 
@@ -304,7 +300,6 @@ def test_initial_without_setting():
     """Get initial state distribution without setting it"""
     hmm = deepcopy(hmm_lr)
     with pytest.raises(AttributeError) as e:
-        warnings.filterwarnings('ignore', category=DeprecationWarning)
         hmm.initial
     assert str(e.value) == 'No initial state distribution has been defined'
 
@@ -316,7 +311,6 @@ def test_transitions_without_setting():
     """Get transition matrix without setting it"""
     hmm = deepcopy(hmm_lr)
     with pytest.raises(AttributeError) as e:
-        warnings.filterwarnings('ignore', category=DeprecationWarning)
         hmm.transitions
     assert str(e.value) == 'No transition matrix has been defined'
 

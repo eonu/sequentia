@@ -1,9 +1,7 @@
 import pytest
 import warnings
 import numpy as np
-with warnings.catch_warnings():
-    warnings.filterwarnings('ignore', category=DeprecationWarning)
-    from sequentia.classifiers import _Topology, _LeftRightTopology, _ErgodicTopology
+from sequentia.classifiers import _Topology, _LeftRightTopology, _ErgodicTopology
 from ....support import assert_equal, assert_all_equal, assert_distribution
 
 # Set seed for reproducible randomness
