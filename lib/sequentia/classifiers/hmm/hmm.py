@@ -1,7 +1,7 @@
 import numpy as np
 import pomegranate as pg
-from .topologies.ergodic import ErgodicTopology
-from .topologies.left_right import LeftRightTopology
+from .topologies.ergodic import _ErgodicTopology
+from .topologies.left_right import _LeftRightTopology
 from ...internals import Validator
 
 class HMM:
@@ -56,9 +56,9 @@ class HMM:
             raise TypeError('Expected random state to be of type: None, int, or numpy.random.RandomState')
 
         if topology == 'ergodic':
-            self._topology = ErgodicTopology(self._n_states, self._random_state)
+            self._topology = _ErgodicTopology(self._n_states, self._random_state)
         elif topology == 'left-right':
-            self._topology = LeftRightTopology(self._n_states, self._random_state)
+            self._topology = _LeftRightTopology(self._n_states, self._random_state)
 
     def set_uniform_initial(self):
         """Sets a uniform initial state distribution."""

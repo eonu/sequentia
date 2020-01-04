@@ -1,7 +1,7 @@
 import numpy as np
-from .topology import Topology
+from .topology import _Topology
 
-class LeftRightTopology(Topology):
+class _LeftRightTopology(_Topology):
     """Represents the topology for a left-right HMM, imposing an upper-triangular transition matrix."""
 
     def __init__(self, n_states: int, random_state: np.random.RandomState):

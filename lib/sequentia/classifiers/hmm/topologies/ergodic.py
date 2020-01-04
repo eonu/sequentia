@@ -1,8 +1,8 @@
 import numpy as np
 from warnings import warn
-from .topology import Topology
+from .topology import _Topology
 
-class ErgodicTopology(Topology):
+class _ErgodicTopology(_Topology):
     """Represents the topology for an ergodic HMM, imposing non-zero probabilities in the transition matrix."""
 
     def __init__(self, n_states: int, random_state: np.random.RandomState):

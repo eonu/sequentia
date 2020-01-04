@@ -1,6 +1,6 @@
 import numpy as np
 
-class Topology:
+class _Topology:
     """Represents a topology for a HMM, imposing restrictions on the transition matrix and initial state distribution."""
 
     def __init__(self, n_states: int, random_state: np.random.RandomState):
