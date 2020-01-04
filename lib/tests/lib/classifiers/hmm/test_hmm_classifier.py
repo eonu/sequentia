@@ -2,7 +2,6 @@ import pytest
 import warnings
 import numpy as np
 from copy import deepcopy
-import pomegranate as pg
 from sequentia.classifiers import HMM, HMMClassifier
 from ....support import assert_equal, assert_not_equal
 
