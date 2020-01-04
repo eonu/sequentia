@@ -12,7 +12,7 @@ np.random.seed(seed)
 rng = np.random.RandomState(seed)
 
 # Set of possible labels
-labels = [f'c{i}' for i in range(5)]
+labels = ['c{}'.format(i) for i in range(5)]
 
 # Create and fit some sample HMMs
 hmm_list, hmm_dict = [], {}

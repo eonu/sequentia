@@ -2,7 +2,7 @@ import numpy as np
 from sequentia.classifiers import HMM, HMMClassifier
 
 # Set of possible labels
-labels = [f'class{i}' for i in range(5)]
+labels = ['class{}'.format(i) for i in range(5)]
 
 # Create and fit some sample HMMs
 hmms = []
