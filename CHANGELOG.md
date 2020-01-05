@@ -1,3 +1,19 @@
+## [0.6.0](https://github.com/eonu/sequentia/releases/tag/v0.6.0)
+
+#### Major changes
+
+- Add package tests and Travis CI support. ([#56](https://github.com/eonu/sequentia/pull/56))
+- Remove Python v3.8+ support. ([#56](https://github.com/eonu/sequentia/pull/56))
+- Rename `normalize` preprocessing method to `center`, since it just centers an observation sequence. ([#62](https://github.com/eonu/sequentia/pull/62))
+- Add `standardize` preprocessing method for standardizing (standard scaling) an observation sequence. ([#63](https://github.com/eonu/sequentia/pull/63))
+- Add `trim_zeros` preprocessing method for removing zero-observations from an observation sequence. ([#67](https://github.com/eonu/sequentia/pull/67))
+
+#### Minor changes
+
+- (_Internal_) Add `Validator.random_state` for validating random state objects and seeds. ([#56](https://github.com/eonu/sequentia/pull/56))
+- (_Internal_) Internalize `Validator` and topology (`Topology`, `ErgodicTopology`, `LeftRightTopology`) classes. ([#57](https://github.com/eonu/sequentia/pull/57))
+- (_Internal_) Use proper documentation format for topology classes. ([#58](https://github.com/eonu/sequentia/pull/58))
+
 ## [0.5.0](https://github.com/eonu/sequentia/releases/tag/v0.5.0)
 
 #### Major changes
@@ -36,17 +52,17 @@
 #### Major changes
 - Add multi-processing support for `DTWKNN` predictions. ([#29](https://github.com/eonu/sequentia/pull/29))
 - Rename the `fit_transform()` function in `Preprocess` to `transform()` since there is nothing being fitted. ([#35](https://github.com/eonu/sequentia/pull/35))
-- Modify package classifiers in `setup.py` ([#31](https://github.com/eonu/sequentia/pull/31)):
+- (_Internal_) Modify package classifiers in `setup.py` ([#31](https://github.com/eonu/sequentia/pull/31)):
   - Set development status classifier to `Pre-Alpha`.
   - Add Python version classifiers for v3.5+.
   - Specify UNIX and macOS operating system classifiers.
 
 #### Minor changes
-- Finish tutorial and example notebooks. ([#35](https://github.com/eonu/sequentia/pull/35))
-- Rename `examples` directory to `notebooks`. ([#32](https://github.com/eonu/sequentia/pull/32))
-- Host notebooks statically on [nbviewer](https://github.com/jupyter/nbviewer). ([#32](https://github.com/eonu/sequentia/pull/32))
-- Add reference to Pomegranate [paper](http://jmlr.org/papers/volume18/17-636/17-636.pdf) and [repository](https://github.com/jmschrei/pomegranate). ([#30](https://github.com/eonu/sequentia/pull/30))
-- Add badges to `README.md`. ([#28](https://github.com/eonu/sequentia/pull/28))
+- (_Internal_) Finish tutorial and example notebooks. ([#35](https://github.com/eonu/sequentia/pull/35))
+- (_Internal_) Rename `examples` directory to `notebooks`. ([#32](https://github.com/eonu/sequentia/pull/32))
+- (_Internal_) Host notebooks statically on [nbviewer](https://github.com/jupyter/nbviewer). ([#32](https://github.com/eonu/sequentia/pull/32))
+- (_Internal_) Add reference to Pomegranate [paper](http://jmlr.org/papers/volume18/17-636/17-636.pdf) and [repository](https://github.com/jmschrei/pomegranate). ([#30](https://github.com/eonu/sequentia/pull/30))
+- (_Internal_) Add badges to `README.md`. ([#28](https://github.com/eonu/sequentia/pull/28))
 
 ## [0.1.0](https://github.com/eonu/sequentia/releases/tag/v0.1.0)
 
