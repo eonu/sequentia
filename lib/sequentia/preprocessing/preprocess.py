@@ -15,8 +15,9 @@ class Preprocess:
 
     def downsample(self, n, method='decimate'):
         """Downsamples an observation sequence (or multiple sequences) by either:
-            - Decimating the next :math:`n-1` observations
-            - Averaging the current observation with the next :math:`n-1` observations
+
+        - Decimating the next :math:`n-1` observations
+        - Averaging the current observation with the next :math:`n-1` observations
 
         Parameters
         ----------
