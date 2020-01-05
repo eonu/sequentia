@@ -1,9 +1,9 @@
-.. _normalize:
+.. _center:
 
-Normalization (``normalize``)
+Centering (``center``)
 =============================
 
-Normalizing centers an observation sequence about the mean of its observations – that is, given:
+Centers an observation sequence about the mean of its observations – that is, given:
 
 .. math::
 
@@ -22,12 +22,12 @@ Where :math:`\overline{o_d}` represents the mean of the :math:`d^\text{th}` feat
 
 We subtract :math:`\boldsymbol{\mu}` from each observation, or row in :math:`O`. This centers the observations.
 
-For further information, please see the `preprocessing tutorial notebook <https://nbviewer.jupyter.org/github/eonu/sequentia/blob/master/notebooks/2%20-%20Preprocessing%20%28Tutorial%29.ipynb#Normalization-(normalize)>`_.
+For further information, please see the `preprocessing tutorial notebook <https://nbviewer.jupyter.org/github/eonu/sequentia/blob/master/notebooks/2%20-%20Preprocessing%20%28Tutorial%29.ipynb#Centering-(center)>`_.
 
 Example
 -------
 
-.. literalinclude:: ../../_includes/examples/preprocessing/normalize.py
+.. literalinclude:: ../../_includes/examples/preprocessing/center.py
     :language: python
     :linenos:
 
@@ -35,4 +35,4 @@ API reference
 -------------
 
 .. automodule:: sequentia.preprocessing
-.. autofunction:: normalize
+.. autofunction:: center

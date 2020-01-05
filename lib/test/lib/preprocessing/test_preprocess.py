@@ -2,8 +2,8 @@ import pytest
 import numpy as np
 from sequentia.preprocessing import (
     Preprocess,
-    downsample, normalize, fft, filtrate,
-    _downsample, _normalize, _fft, _filtrate
+    downsample, center, fft, filtrate,
+    _downsample, _center, _fft, _filtrate
 )
 from ...support import assert_equal, assert_all_equal
 
@@ -16,9 +16,9 @@ rng = np.random.RandomState(seed)
 X = rng.random((7, 2))
 Xs = [i * rng.random((3 * i, 2)) for i in range(1, 4)]
 
-# Normalization preprocessor
+# Centering preprocessor
 norm = Preprocess()
-norm.normalize()
+norm.center()
 
 # Discrete Fourier Transform preprocessor
 fourier = Preprocess()
@@ -36,35 +36,35 @@ filt.filtrate(**filt_kwargs)
 
 # Combined preprocessor
 combined = Preprocess()
-combined.normalize()
+combined.center()
 combined.filtrate(**filt_kwargs)
 combined.downsample(**down_kwargs)
 combined.fft()
 
-# ====================== #
-# Preprocess.normalize() #
-# ====================== #
+# =================== #
+# Preprocess.center() #
+# =================== #
 
-def test_normalize_adds_transform():
-    """Applying a single normalization transformation"""
+def test_center_adds_transform():
+    """Applying a single centering transformation"""
     assert len(norm._transforms) == 1
-    assert norm._transforms[0] == (_normalize, {})
+    assert norm._transforms[0] == (_center, {})
 
-def test_normalize_single():
-    """Applying normalization to a single observation sequence"""
-    assert_equal(norm.transform(X), normalize(X))
+def test_center_single():
+    """Applying centering to a single observation sequence"""
+    assert_equal(norm.transform(X), center(X))
 
-def test_normalize_multiple():
-    """Applying normalization to multiple observation sequences"""
-    assert_all_equal(norm.transform(Xs), normalize(Xs))
+def test_center_multiple():
+    """Applying centering to multiple observation sequences"""
+    assert_all_equal(norm.transform(Xs), center(Xs))
 
-def test_normalize_summary(capsys):
-    """Summary of a normalization transformation"""
+def test_center_summary(capsys):
+    """Summary of a centering transformation"""
     norm.summary()
     assert capsys.readouterr().out == (
         'Preprocessing summary:\n'
         '======================\n'
-        '1. Normalization\n'
+        '1. Centering\n'
         '======================\n'
     )
 
@@ -159,7 +159,7 @@ def test_combined_adds_transforms():
     """Applying multiple filtering transformations"""
     assert len(combined._transforms) == 4
     assert combined._transforms == [
-        (_normalize, {}),
+        (_center, {}),
         (_filtrate, filt_kwargs),
         (_downsample, down_kwargs),
         (_fft, {})
@@ -168,7 +168,7 @@ def test_combined_adds_transforms():
 def test_combined_single():
     """Applying combined transformations to a single observation sequence"""
     X_pre = X
-    X_pre = normalize(X_pre)
+    X_pre = center(X_pre)
     X_pre = filtrate(X_pre, **filt_kwargs)
     X_pre = downsample(X_pre, **down_kwargs)
     X_pre = fft(X_pre)
@@ -177,7 +177,7 @@ def test_combined_single():
 def test_combined_multiple():
     """Applying combined transformations to multiple observation sequences"""
     Xs_pre = Xs
-    Xs_pre = normalize(Xs_pre)
+    Xs_pre = center(Xs_pre)
     Xs_pre = filtrate(Xs_pre, **filt_kwargs)
     Xs_pre = downsample(Xs_pre, **down_kwargs)
     Xs_pre = fft(Xs_pre)
@@ -189,7 +189,7 @@ def test_combined_summary(capsys):
     assert capsys.readouterr().out == (
         '          Preprocessing summary:          \n'
         '==========================================\n'
-        '1. Normalization\n'
+        '1. Centering\n'
         '------------------------------------------\n'
         '2. Filtering:\n'
         '   Median filter with window size (n=3)\n'
