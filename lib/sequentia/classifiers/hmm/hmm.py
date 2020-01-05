@@ -2,7 +2,7 @@ import numpy as np
 import pomegranate as pg
 from .topologies.ergodic import _ErgodicTopology
 from .topologies.left_right import _LeftRightTopology
-from ...internals import Validator
+from ...internals import _Validator
 
 class HMM:
     """A hidden Markov model representing an isolated temporal sequence class.
@@ -40,7 +40,7 @@ class HMM:
     """
 
     def __init__(self, label, n_states, topology='left-right', random_state=None):
-        self._val = Validator()
+        self._val = _Validator()
         self._label = self._val.string(label, 'model label')
         self._n_states = self._val.restricted_integer(
             n_states, lambda x: x > 0, desc='number of states', expected='greater than zero')

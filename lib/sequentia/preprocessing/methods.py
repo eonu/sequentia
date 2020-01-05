@@ -1,6 +1,6 @@
 import scipy.fftpack
 import numpy as np
-from ..internals import Validator
+from ..internals import _Validator
 
 def normalize(X):
     """Normalizes an observation sequence (or multiple sequences) by centering observations around the mean.
@@ -15,7 +15,7 @@ def normalize(X):
     normalized: numpy.ndarray or List[numpy.ndarray]
         The normalized input observation sequence(s).
     """
-    val = Validator()
+    val = _Validator()
     val.observation_sequences(X, allow_single=True)
     return _normalize(X)
 
@@ -49,7 +49,7 @@ def downsample(X, n, method='decimate'):
     downsampled: numpy.ndarray or List[numpy.ndarray]
         The downsampled input observation sequence(s).
     """
-    val = Validator()
+    val = _Validator()
     val.observation_sequences(X, allow_single=True)
     val.restricted_integer(n, lambda x: x > 1, desc='downsample factor', expected='greater than one')
     val.one_of(method, ['decimate', 'average'], desc='downsampling method')
@@ -92,7 +92,7 @@ def fft(X):
     transformed: numpy.ndarray or List[numpy.ndarray]
         The transformed input observation sequence(s).
     """
-    val = Validator()
+    val = _Validator()
     val.observation_sequences(X, allow_single=True)
     return _fft(X)
 
@@ -124,7 +124,7 @@ def filtrate(X, n, method='median'):
     filtered: numpy.ndarray or List[numpy.ndarray]
         The filtered input observation sequence(s).
     """
-    val = Validator()
+    val = _Validator()
     val.observation_sequences(X, allow_single=True)
     val.restricted_integer(n, lambda x: x > 1, desc='window size', expected='greater than one')
     val.one_of(method, ['median', 'mean'], desc='filtering method')

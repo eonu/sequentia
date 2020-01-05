@@ -1,6 +1,6 @@
 import numpy as np
 
-class Validator:
+class _Validator:
     """Performs internal validations on various input types."""
 
     def observation_sequences(self, X, allow_single=False):
