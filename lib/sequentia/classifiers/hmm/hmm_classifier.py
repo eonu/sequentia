@@ -1,13 +1,13 @@
 import numpy as np
 from .hmm import HMM
 from sklearn.metrics import confusion_matrix
-from ...internals import Validator
+from ...internals import _Validator
 
 class HMMClassifier:
     """An ensemble classifier that combines individual :class:`~HMM` objects, which model isolated sequences from different classes."""
 
     def __init__(self):
-        self._val = Validator()
+        self._val = _Validator()
 
     def fit(self, models):
         """Fits the ensemble classifier with a collection of :class:`~HMM` objects.

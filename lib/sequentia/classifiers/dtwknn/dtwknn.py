@@ -8,7 +8,7 @@ from fastdtw import fastdtw
 from collections import Counter
 from scipy.spatial.distance import euclidean
 from sklearn.metrics import confusion_matrix
-from ...internals import Validator
+from ...internals import _Validator
 
 class DTWKNN:
     """A k-Nearest Neighbor classifier that compares differing length observation sequences using the efficient FastDTW dynamic time warping algorithm.
@@ -28,7 +28,7 @@ class DTWKNN:
     """
 
     def __init__(self, k, radius, metric=euclidean):
-        self._val = Validator()
+        self._val = _Validator()
         self._k = self._val.restricted_integer(
             k, lambda x: x > 0, desc='number of neighbors', expected='greater than zero')
         self._radius = self._val.restricted_integer(

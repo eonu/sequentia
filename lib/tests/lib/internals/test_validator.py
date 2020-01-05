@@ -1,13 +1,13 @@
 import pytest
 import numpy as np
 from numpy.testing import assert_array_equal
-from sequentia.internals import Validator
+from sequentia.internals import _Validator
 from ...support import assert_equal
 
-val = Validator()
+val = _Validator()
 
 # ================================= #
-# Validator.observation_sequences() #
+# _Validator.observation_sequences() #
 # ================================= #
 
 def test_single_observation_sequence_with_single():
@@ -167,7 +167,7 @@ def test_multiple_observation_sequence_wrong_list_type_without_single():
     assert str(e.value) == 'Each observation sequence must be a numpy.ndarray'
 
 # ============================================ #
-# Validator.observation_sequences_and_labels() #
+# _Validator.observation_sequences_and_labels() #
 # ============================================ #
 
 def test_observation_sequences_and_labels_same_length():
@@ -185,7 +185,7 @@ def test_observation_sequences_and_labels_diff_length():
     assert str(e.value) == 'Expected the same number of observation sequences and labels'
 
 # =================== #
-# Validator.integer() #
+# _Validator.integer() #
 # =================== #
 
 def test_integer_with_correct_type():
@@ -205,7 +205,7 @@ def test_integer_with_wrong_type():
     assert str(e.value) == 'Expected test to be an integer'
 
 # ================== #
-# Validator.string() #
+# _Validator.string() #
 # ================== #
 
 def test_string_with_correct_type():
@@ -219,7 +219,7 @@ def test_string_with_wrong_type():
     assert str(e.value) == 'Expected test to be a string'
 
 # =================== #
-# Validator.boolean() #
+# _Validator.boolean() #
 # =================== #
 
 def test_boolean_with_correct_type():
@@ -233,7 +233,7 @@ def test_boolean_with_wrong_type():
     assert str(e.value) == 'Expected test to be a boolean'
 
 # ================== #
-# Validator.one_of() #
+# _Validator.one_of() #
 # ================== #
 
 def test_one_of_correct_with_multiple_types():
@@ -257,7 +257,7 @@ def test_one_of_incorrect_with_single_type():
     assert str(e.value) == "Expected test to be one of [0, 1, 3]"
 
 # ============================== #
-# Validator.restricted_integer() #
+# _Validator.restricted_integer() #
 # ============================== #
 
 def test_restricted_integer_wrong_type_meets_condition():
@@ -283,7 +283,7 @@ def test_restricted_integer_correct_type_does_not_meet_condition():
     assert str(e.value) == 'Expected test to be greater than zero'
 
 # ============================ #
-# Validator.restricted_float() #
+# _Validator.restricted_float() #
 # ============================ #
 
 def test_restricted_integer_wrong_type_meets_condition():
@@ -309,7 +309,7 @@ def test_restricted_integer_correct_type_does_not_meet_condition():
     assert str(e.value) == 'Expected test to be greater than zero'
 
 # =========================== #
-# Validator.list_of_strings() #
+# _Validator.list_of_strings() #
 # =========================== #
 
 def test_list_of_strings_wrong_type():
@@ -329,7 +329,7 @@ def test_list_of_strings_correct_list_type():
     assert val.list_of_strings(['a', 'b', 'c'], 'test') == ['a', 'b', 'c']
 
 # ======================== #
-# Validator.random_state() #
+# _Validator.random_state() #
 # ======================== #
 
 def test_random_state_none():

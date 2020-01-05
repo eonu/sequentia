@@ -1,13 +1,13 @@
 import numpy as np
 from .methods import _normalize, _downsample, _fft, _filtrate
-from ..internals import Validator
+from ..internals import _Validator
 
 class Preprocess:
     """Efficiently applies multiple preprocessing transformations to the provided input observation sequence(s)."""
 
     def __init__(self):
         self._transforms = []
-        self._val = Validator()
+        self._val = _Validator()
 
     def normalize(self):
         """Normalizes an observation sequence (or multiple sequences) by centering observations around the mean."""
