@@ -59,7 +59,7 @@ Sequentia offers the use of **multivariate observation sequences with differing 
 
 ### Preprocessing methods
 
-- [x] Centering
+- [x] Centering and standardization
 - [x] Downsampling (decimation and averaging)
 - [x] Filtering (mean and median)
 - [x] Discrete Fourier Transform
