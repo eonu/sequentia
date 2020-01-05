@@ -1,5 +1,5 @@
 import numpy as np
-from .methods import _center, _downsample, _fft, _filtrate
+from .methods import _center, _standardize, _downsample, _fft, _filtrate
 from ..internals import _Validator
 
 class Preprocess:
@@ -12,6 +12,11 @@ class Preprocess:
     def center(self):
         """Centers an observation sequence (or multiple sequences) by centering observations around the mean."""
         self._transforms.append((_center, {}))
+
+    def standardize(self):
+        """Standardizes an observation sequence (or multiple sequences) by transforming observations
+        so that they have zero mean and unit variance."""
+        self._transforms.append((_standardize, {}))
 
     def downsample(self, n, method='decimate'):
         """Downsamples an observation sequence (or multiple sequences) by either:
@@ -95,8 +100,10 @@ class Preprocess:
             idx = i + 1
             if transform == _center:
                 steps.append(('{}. Centering'.format(idx), None))
+            elif transform == _standardize:
+                steps.append(('{}. Standardization'.format(idx), None))
             elif transform == _downsample:
-                header = 'Decimating' if kwargs['method'] == 'decimate' else 'Averaging'
+                header = 'Decimation' if kwargs['method'] == 'decimate' else 'Averaging'
                 steps.append((
                     '{}. Downsampling:'.format(idx),
                     '   {} with downsample factor (n={})'.format(header, kwargs['n'])

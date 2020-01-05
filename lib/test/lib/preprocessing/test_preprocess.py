@@ -2,8 +2,8 @@ import pytest
 import numpy as np
 from sequentia.preprocessing import (
     Preprocess,
-    downsample, center, fft, filtrate,
-    _downsample, _center, _fft, _filtrate
+    downsample, center, standardize, fft, filtrate,
+    _downsample, _center, _standardize, _fft, _filtrate
 )
 from ...support import assert_equal, assert_all_equal
 
@@ -17,8 +17,12 @@ X = rng.random((7, 2))
 Xs = [i * rng.random((3 * i, 2)) for i in range(1, 4)]
 
 # Centering preprocessor
-norm = Preprocess()
-norm.center()
+cent = Preprocess()
+cent.center()
+
+# Standardizing preprocessor
+standard = Preprocess()
+standard.standardize()
 
 # Discrete Fourier Transform preprocessor
 fourier = Preprocess()
@@ -37,6 +41,7 @@ filt.filtrate(**filt_kwargs)
 # Combined preprocessor
 combined = Preprocess()
 combined.center()
+combined.standardize()
 combined.filtrate(**filt_kwargs)
 combined.downsample(**down_kwargs)
 combined.fft()
@@ -47,24 +52,51 @@ combined.fft()
 
 def test_center_adds_transform():
     """Applying a single centering transformation"""
-    assert len(norm._transforms) == 1
-    assert norm._transforms[0] == (_center, {})
+    assert len(cent._transforms) == 1
+    assert cent._transforms[0] == (_center, {})
 
 def test_center_single():
     """Applying centering to a single observation sequence"""
-    assert_equal(norm.transform(X), center(X))
+    assert_equal(cent.transform(X), center(X))
 
 def test_center_multiple():
     """Applying centering to multiple observation sequences"""
-    assert_all_equal(norm.transform(Xs), center(Xs))
+    assert_all_equal(cent.transform(Xs), center(Xs))
 
 def test_center_summary(capsys):
     """Summary of a centering transformation"""
-    norm.summary()
+    cent.summary()
     assert capsys.readouterr().out == (
         'Preprocessing summary:\n'
         '======================\n'
         '1. Centering\n'
+        '======================\n'
+    )
+
+# ======================== #
+# Preprocess.standardize() #
+# ======================== #
+
+def test_standardize_adds_transform():
+    """Applying a single standardizing transformation"""
+    assert len(standard._transforms) == 1
+    assert standard._transforms[0] == (_standardize, {})
+
+def test_standardize_single():
+    """Applying standardization to a single observation sequence"""
+    assert_equal(standard.transform(X), standardize(X))
+
+def test_standardize_multiple():
+    """Applying standardization to multiple observation sequences"""
+    assert_all_equal(standard.transform(Xs), standardize(Xs))
+
+def test_standardize_summary(capsys):
+    """Summary of a standardizing transformation"""
+    standard.summary()
+    assert capsys.readouterr().out == (
+        'Preprocessing summary:\n'
+        '======================\n'
+        '1. Standardization\n'
         '======================\n'
     )
 
@@ -119,7 +151,7 @@ def test_downsample_summary(capsys):
         '          Preprocessing summary:          \n'
         '==========================================\n'
         '1. Downsampling:\n'
-        '   Decimating with downsample factor (n=3)\n'
+        '   Decimation with downsample factor (n=3)\n'
         '==========================================\n'
     )
 
@@ -157,9 +189,10 @@ def test_filtrate_summary(capsys):
 
 def test_combined_adds_transforms():
     """Applying multiple filtering transformations"""
-    assert len(combined._transforms) == 4
+    assert len(combined._transforms) == 5
     assert combined._transforms == [
         (_center, {}),
+        (_standardize, {}),
         (_filtrate, filt_kwargs),
         (_downsample, down_kwargs),
         (_fft, {})
@@ -169,6 +202,7 @@ def test_combined_single():
     """Applying combined transformations to a single observation sequence"""
     X_pre = X
     X_pre = center(X_pre)
+    X_pre = standardize(X_pre)
     X_pre = filtrate(X_pre, **filt_kwargs)
     X_pre = downsample(X_pre, **down_kwargs)
     X_pre = fft(X_pre)
@@ -178,6 +212,7 @@ def test_combined_multiple():
     """Applying combined transformations to multiple observation sequences"""
     Xs_pre = Xs
     Xs_pre = center(Xs_pre)
+    Xs_pre = standardize(Xs_pre)
     Xs_pre = filtrate(Xs_pre, **filt_kwargs)
     Xs_pre = downsample(Xs_pre, **down_kwargs)
     Xs_pre = fft(Xs_pre)
@@ -191,13 +226,15 @@ def test_combined_summary(capsys):
         '==========================================\n'
         '1. Centering\n'
         '------------------------------------------\n'
-        '2. Filtering:\n'
+        '2. Standardization\n'
+        '------------------------------------------\n'
+        '3. Filtering:\n'
         '   Median filter with window size (n=3)\n'
         '------------------------------------------\n'
-        '3. Downsampling:\n'
-        '   Decimating with downsample factor (n=3)\n'
+        '4. Downsampling:\n'
+        '   Decimation with downsample factor (n=3)\n'
         '------------------------------------------\n'
-        '4. Discrete Fourier Transform\n'
+        '5. Discrete Fourier Transform\n'
         '==========================================\n'
     )
 
