@@ -6,6 +6,7 @@ X = [np.random.random((20 * i, 3)) for i in range(1, 4)]
 
 # Create the Preprocess object
 pre = Preprocess()
+pre.trim_zeros()
 pre.center()
 pre.standardize()
 pre.filtrate(n=5, method='median')

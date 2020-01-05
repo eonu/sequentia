@@ -2,8 +2,8 @@ import pytest
 import numpy as np
 from sequentia.preprocessing import (
     Preprocess,
-    downsample, center, standardize, fft, filtrate,
-    _downsample, _center, _standardize, _fft, _filtrate
+    trim_zeros, downsample, center, standardize, fft, filtrate,
+    _trim_zeros, _downsample, _center, _standardize, _fft, _filtrate
 )
 from ...support import assert_equal, assert_all_equal
 
@@ -15,6 +15,10 @@ rng = np.random.RandomState(seed)
 # Sample data
 X = rng.random((7, 2))
 Xs = [i * rng.random((3 * i, 2)) for i in range(1, 4)]
+
+# Zero-trimming preprocessor
+trim = Preprocess()
+trim.trim_zeros()
 
 # Centering preprocessor
 cent = Preprocess()
@@ -40,11 +44,39 @@ filt.filtrate(**filt_kwargs)
 
 # Combined preprocessor
 combined = Preprocess()
+combined.trim_zeros()
 combined.center()
 combined.standardize()
 combined.filtrate(**filt_kwargs)
 combined.downsample(**down_kwargs)
 combined.fft()
+
+# ======================= #
+# Preprocess.trim_zeros() #
+# ======================= #
+
+def test_trim_zeros_adds_transform():
+    """Applying a single zero-trimming transformation"""
+    assert len(trim._transforms) == 1
+    assert trim._transforms[0] == (_trim_zeros, {})
+
+def test_trim_zeros_single():
+    """Applying zero-trimming to a single observation sequence"""
+    assert_equal(trim.transform(X), trim_zeros(X))
+
+def test_trim_zeros_multiple():
+    """Applying zero-trimming to multiple observation sequences"""
+    assert_all_equal(trim.transform(Xs), trim_zeros(Xs))
+
+def test_trim_zeros_summary(capsys):
+    """Summary of a zero-trimming transformation"""
+    trim.summary()
+    assert capsys.readouterr().out == (
+        'Preprocessing summary:\n'
+        '======================\n'
+        '1. Zero-trimming\n'
+        '======================\n'
+    )
 
 # =================== #
 # Preprocess.center() #
@@ -189,8 +221,9 @@ def test_filtrate_summary(capsys):
 
 def test_combined_adds_transforms():
     """Applying multiple filtering transformations"""
-    assert len(combined._transforms) == 5
+    assert len(combined._transforms) == 6
     assert combined._transforms == [
+        (_trim_zeros, {}),
         (_center, {}),
         (_standardize, {}),
         (_filtrate, filt_kwargs),
@@ -201,6 +234,7 @@ def test_combined_adds_transforms():
 def test_combined_single():
     """Applying combined transformations to a single observation sequence"""
     X_pre = X
+    X_pre = trim_zeros(X_pre)
     X_pre = center(X_pre)
     X_pre = standardize(X_pre)
     X_pre = filtrate(X_pre, **filt_kwargs)
@@ -211,6 +245,7 @@ def test_combined_single():
 def test_combined_multiple():
     """Applying combined transformations to multiple observation sequences"""
     Xs_pre = Xs
+    Xs_pre = trim_zeros(Xs_pre)
     Xs_pre = center(Xs_pre)
     Xs_pre = standardize(Xs_pre)
     Xs_pre = filtrate(Xs_pre, **filt_kwargs)
@@ -224,17 +259,19 @@ def test_combined_summary(capsys):
     assert capsys.readouterr().out == (
         '          Preprocessing summary:          \n'
         '==========================================\n'
-        '1. Centering\n'
+        '1. Zero-trimming\n'
         '------------------------------------------\n'
-        '2. Standardization\n'
+        '2. Centering\n'
         '------------------------------------------\n'
-        '3. Filtering:\n'
+        '3. Standardization\n'
+        '------------------------------------------\n'
+        '4. Filtering:\n'
         '   Median filter with window size (n=3)\n'
         '------------------------------------------\n'
-        '4. Downsampling:\n'
+        '5. Downsampling:\n'
         '   Decimation with downsample factor (n=3)\n'
         '------------------------------------------\n'
-        '5. Discrete Fourier Transform\n'
+        '6. Discrete Fourier Transform\n'
         '==========================================\n'
     )
 

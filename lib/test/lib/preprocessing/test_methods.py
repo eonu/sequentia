@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from sequentia.preprocessing import downsample, center, standardize, fft, filtrate
+from sequentia.preprocessing import trim_zeros, downsample, center, standardize, fft, filtrate
 from ...support import assert_equal, assert_all_equal
 
 # Set seed for reproducible randomness
@@ -12,6 +12,55 @@ rng = np.random.RandomState(seed)
 X_even = rng.random((6, 2))
 X_odd = rng.random((7, 2))
 Xs = [i * rng.random((3 * i, 2)) for i in range(1, 4)]
+
+# Zero-padded sample data
+zeros = np.zeros((3, 2))
+X_padded = np.vstack((zeros, X_even, zeros))
+Xs_padded = [np.vstack((zeros, x, zeros)) for x in Xs]
+
+# ============ #
+# trim_zeros() #
+# ============ #
+
+def test_trim_zeros_single():
+    """Trim a single zero-padded observation sequence"""
+    assert_equal(trim_zeros(X_padded), np.array([
+        [0.5488135 , 0.71518937],
+        [0.60276338, 0.54488318],
+        [0.4236548 , 0.64589411],
+        [0.43758721, 0.891773  ],
+        [0.96366276, 0.38344152],
+        [0.79172504, 0.52889492]
+    ]))
+
+def test_trim_zeros_multiple():
+    """Trim multiple zero-padded observation sequences"""
+    assert_all_equal(trim_zeros(Xs_padded), [
+        np.array([
+            [0.14335329, 0.94466892],
+            [0.52184832, 0.41466194],
+            [0.26455561, 0.77423369]
+        ]),
+        np.array([
+            [0.91230066, 1.1368679 ],
+            [0.0375796 , 1.23527099],
+            [1.22419145, 1.23386799],
+            [1.88749616, 1.3636406 ],
+            [0.7190158 , 0.87406391],
+            [1.39526239, 0.12045094]
+        ]),
+        np.array([
+            [2.00030015, 2.01191361],
+            [0.63114768, 0.38677889],
+            [0.94628505, 1.09113231],
+            [1.71059031, 1.31580454],
+            [2.96512151, 0.30613443],
+            [0.62663027, 0.48392855],
+            [1.95932498, 0.75987481],
+            [1.39893232, 0.73327678],
+            [0.47690875, 0.33112542]
+        ])
+    ])
 
 # ======== #
 # center() #
