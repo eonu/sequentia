@@ -28,10 +28,38 @@ def _center(X):
     elif isinstance(X, np.ndarray):
         return transform(X)
 
+def standardize(X):
+    """Standardizes an observation sequence (or multiple sequences) by transforming observations
+    so that they have zero mean and unit variance.
+
+    Parameters
+    ----------
+    X: numpy.ndarray or List[numpy.ndarray]
+        An individual observation sequence or a list of multiple observation sequences.
+
+    Returns
+    -------
+    standardized: numpy.ndarray or List[numpy.ndarray]
+        The standardized input observation sequence(s).
+    """
+    val = _Validator()
+    val.observation_sequences(X, allow_single=True)
+    return _standardize(X)
+
+def _standardize(X):
+    def transform(x):
+        return (x - x.mean(axis=0)) / x.std(axis=0)
+
+    if isinstance(X, list):
+        return [transform(x) for x in X]
+    elif isinstance(X, np.ndarray):
+        return transform(X)
+
 def downsample(X, n, method='decimate'):
     """Downsamples an observation sequence (or multiple sequences) by either:
-        - Decimating the next :math:`n-1` observations
-        - Averaging the current observation with the next :math:`n-1` observations
+
+    - Decimating the next :math:`n-1` observations
+    - Averaging the current observation with the next :math:`n-1` observations
 
     Parameters
     ----------

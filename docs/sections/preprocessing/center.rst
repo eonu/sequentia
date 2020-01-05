@@ -1,7 +1,7 @@
 .. _center:
 
 Centering (``center``)
-=============================
+======================
 
 Centers an observation sequence about the mean of its observations – that is, given:
 

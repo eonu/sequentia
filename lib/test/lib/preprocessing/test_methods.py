@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from sequentia.preprocessing import downsample, center, fft, filtrate
+from sequentia.preprocessing import downsample, center, standardize, fft, filtrate
 from ...support import assert_equal, assert_all_equal
 
 # Set seed for reproducible randomness
@@ -66,6 +66,62 @@ def test_center_multiple():
             [0.54652042 , -0.06456623],
             [-0.01387224, -0.09116426],
             [-0.93589581, -0.49331562]
+        ])
+    ])
+
+# ============= #
+# standardize() #
+# ============= #
+
+def test_standardize_single_even():
+    """Standardize a single even-length observation sequence"""
+    assert_equal(standardize(X_even), np.array([
+        [-0.40964472,  0.60551094],
+        [-0.13067455, -0.45932478],
+        [-1.05682966,  0.17224387],
+        [-0.98478635,  1.70959629],
+        [ 1.73550526, -1.46873528],
+        [ 0.84643002, -0.55929105]
+    ]))
+
+def test_standardize_single_odd():
+    """Standardize a single odd-length observation sequence"""
+    assert_equal(standardize(X_odd), np.array([
+        [ 0.40527155,  0.83146609],
+        [-1.03275681, -2.32879115],
+        [-1.17979099,  0.48102837],
+        [ 1.01320338,  0.62196325],
+        [ 1.59321247,  0.35490986],
+        [ 0.09693924,  0.28469405],
+        [-0.89607884, -0.24527047]
+    ]))
+
+def test_standardize_multiple():
+    """Standardize multiple observation sequences"""
+    assert_all_equal(standardize(Xs), [
+        np.array([
+            [-1.05545468,  1.05686059],
+            [ 1.34290313, -1.34223879],
+            [-0.28744845,  0.2853782 ]
+        ]),
+        np.array([
+            [-0.20256659,  0.34141162],
+            [-1.71691396,  0.57661018],
+            [ 0.33738952,  0.57325679],
+            [ 1.4857256 ,  0.88343331],
+            [-0.53718803, -0.28673041],
+            [ 0.63355347, -2.08798149]
+        ]),
+        np.array([
+            [ 0.75393018,  2.22884906],
+            [-1.0030964 , -0.82147823],
+            [-0.59868217,  0.50057122],
+            [ 0.38214698,  0.922274  ],
+            [ 1.99208067, -0.97284537],
+            [-1.00889357, -0.63913134],
+            [ 0.70134695, -0.12118881],
+            [-0.01780218, -0.17111248],
+            [-1.20103046, -0.92593806]
         ])
     ])
 
