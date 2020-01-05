@@ -1,6 +1,6 @@
 import numpy as np
 
-class Topology:
+class _Topology:
     """Represents a topology for a HMM, imposing restrictions on the transition matrix and initial state distribution."""
 
     def __init__(self, n_states: int, random_state: np.random.RandomState):
@@ -48,7 +48,7 @@ class Topology:
             raise TypeError('Initial state distribution must be a numpy.ndarray')
         if not initial.shape == (self._n_states,):
             raise ValueError('Initial state distribution must be of shape (n_states,)')
-        if not initial.sum() == 1:
+        if not np.isclose(initial.sum(), 1):
             raise ValueError('Initial state distribution must sum to one')
 
     def validate_transitions(self, transitions: np.ndarray) -> None:

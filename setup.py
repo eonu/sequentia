@@ -29,7 +29,6 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
         'License :: OSI Approved :: MIT License',
         'Operating System :: Unix',
         'Operating System :: MacOS',
@@ -38,7 +37,7 @@ setup(
         'Topic :: Scientific/Engineering',
         'Natural Language :: English'
     ],
-    python_requires='>=3.5',
+    python_requires='>=3.5,<3.8',
     install_requires = [
         'numpy>=1.17,<2',
         'pomegranate>=0.11,<1',

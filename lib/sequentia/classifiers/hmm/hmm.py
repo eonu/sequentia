@@ -1,7 +1,7 @@
 import numpy as np
 import pomegranate as pg
-from .topologies.ergodic import ErgodicTopology
-from .topologies.left_right import LeftRightTopology
+from .topologies.ergodic import _ErgodicTopology
+from .topologies.left_right import _LeftRightTopology
 from ...internals import Validator
 
 class HMM:
@@ -45,20 +45,12 @@ class HMM:
         self._n_states = self._val.restricted_integer(
             n_states, lambda x: x > 0, desc='number of states', expected='greater than zero')
         self._val.one_of(topology, ['ergodic', 'left-right'], desc='topology')
-
-        if random_state is None:
-            self._random_state = np.random.RandomState()
-        elif isinstance(random_state, np.random.RandomState):
-            self._random_state = random_state
-        elif isinstance(random_state, int):
-            self._random_state = np.random.RandomState(seed=random_state)
-        else:
-            raise TypeError('Expected random state to be of type: None, int, or numpy.random.RandomState')
+        self._random_state = self._val.random_state(random_state)
 
         if topology == 'ergodic':
-            self._topology = ErgodicTopology(self._n_states, self._random_state)
+            self._topology = _ErgodicTopology(self._n_states, self._random_state)
         elif topology == 'left-right':
-            self._topology = LeftRightTopology(self._n_states, self._random_state)
+            self._topology = _LeftRightTopology(self._n_states, self._random_state)
 
     def set_uniform_initial(self):
         """Sets a uniform initial state distribution."""
@@ -134,6 +126,11 @@ class HMM:
         negative log-likelihood: float
             The negative log-likelihood of the model generating the observation sequence.
         """
+        try:
+            self._model
+        except AttributeError as e:
+            raise AttributeError('The model must be fitted before running the forward algorithm') from e
+
         if not isinstance(sequence, np.ndarray):
             raise TypeError('Sequence of observations must be a numpy.ndarray')
         if not sequence.ndim == 2:

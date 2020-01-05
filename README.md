@@ -22,6 +22,9 @@
     <a href="https://sequentia.readthedocs.io/en/latest">
       <img src="https://readthedocs.org/projects/sequentia/badge/?version=latest&style=flat-square" alt="Read The Docs - Documentation">
     </a>
+    <a href="https://travis-ci.org/eonu/sequentia">
+      <img src="https://img.shields.io/travis/eonu/sequentia?logo=travis&style=flat-square" alt="Travis - Build">
+    </a>
   </div>
 </p>
 
