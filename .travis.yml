@@ -14,4 +14,4 @@ install:
   - pip install -r lib/tests/requirements.txt
 
 # Test script
-script: pytest lib/tests
+script: pytest lib/test
