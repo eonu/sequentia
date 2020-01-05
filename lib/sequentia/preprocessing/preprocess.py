@@ -1,5 +1,7 @@
 import numpy as np
-from .methods import _center, _standardize, _downsample, _fft, _filtrate
+from .methods import (
+    _trim_zeros, _center, _standardize, _downsample, _fft, _filtrate
+)
 from ..internals import _Validator
 
 class Preprocess:
@@ -8,6 +10,10 @@ class Preprocess:
     def __init__(self):
         self._transforms = []
         self._val = _Validator()
+
+    def trim_zeros(self):
+        """Trim zero-observations from the input observation sequence(s)."""
+        self._transforms.append((_trim_zeros, {}))
 
     def center(self):
         """Centers an observation sequence (or multiple sequences) by centering observations around the mean."""
@@ -115,6 +121,8 @@ class Preprocess:
                     '{}. Filtering:'.format(idx),
                     '   {} filter with window size (n={})'.format(kwargs['method'].capitalize(), kwargs['n'])
                 ))
+            elif transform == _trim_zeros:
+                steps.append(('{}. Zero-trimming'.format(idx), None))
 
         title = 'Preprocessing summary:'
         length = max(max(len(h), 0 if b is None else len(b)) for h, b in steps)

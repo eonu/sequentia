@@ -2,6 +2,32 @@ import scipy.fftpack
 import numpy as np
 from ..internals import _Validator
 
+def trim_zeros(X):
+    """Trim zero-observations from the input observation sequence(s).
+
+    Parameters
+    ----------
+    X: numpy.ndarray or List[numpy.ndarray]
+        An individual observation sequence or a list of multiple observation sequences.
+
+    Returns
+    -------
+    trimmed: numpy.ndarray or List[numpy.ndarray]
+        The zero-trimmed input observation sequence(s).
+    """
+    val = _Validator()
+    val.observation_sequences(X, allow_single=True)
+    return _trim_zeros(X)
+
+def _trim_zeros(X):
+    def transform(x):
+        return x[~np.all(x == 0, axis=1)]
+
+    if isinstance(X, list):
+        return [transform(x) for x in X]
+    elif isinstance(X, np.ndarray):
+        return transform(X)
+
 def center(X):
     """Centers an observation sequence (or multiple sequences) by centering observations around the mean.
 

@@ -45,6 +45,7 @@ Sequentia offers some appropriate classification algorithms for these kinds of t
    :maxdepth: 1
    :caption: Preprocessing Methods
 
+   sections/preprocessing/trim_zeros.rst
    sections/preprocessing/center.rst
    sections/preprocessing/standardize.rst
    sections/preprocessing/downsample.rst
