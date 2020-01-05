@@ -6,9 +6,9 @@ from ...support import assert_equal
 
 val = _Validator()
 
-# ================================= #
+# ================================== #
 # _Validator.observation_sequences() #
-# ================================= #
+# ================================== #
 
 def test_single_observation_sequence_with_single():
     """Single observation sequence with allow_single=True"""
@@ -166,9 +166,9 @@ def test_multiple_observation_sequence_wrong_list_type_without_single():
         val.observation_sequences(X, allow_single=False)
     assert str(e.value) == 'Each observation sequence must be a numpy.ndarray'
 
-# ============================================ #
+# ============================================= #
 # _Validator.observation_sequences_and_labels() #
-# ============================================ #
+# ============================================= #
 
 def test_observation_sequences_and_labels_same_length():
     """Observation sequences and labels with the same length."""
@@ -184,9 +184,9 @@ def test_observation_sequences_and_labels_diff_length():
         val.observation_sequences_and_labels(X, y)
     assert str(e.value) == 'Expected the same number of observation sequences and labels'
 
-# =================== #
+# ==================== #
 # _Validator.integer() #
-# =================== #
+# ==================== #
 
 def test_integer_with_correct_type():
     """Integer type"""
@@ -204,9 +204,9 @@ def test_integer_with_wrong_type():
         val.integer('a', desc='test')
     assert str(e.value) == 'Expected test to be an integer'
 
-# ================== #
+# =================== #
 # _Validator.string() #
-# ================== #
+# =================== #
 
 def test_string_with_correct_type():
     """String type"""
@@ -218,9 +218,9 @@ def test_string_with_wrong_type():
         val.string(1, desc='test')
     assert str(e.value) == 'Expected test to be a string'
 
-# =================== #
+# ==================== #
 # _Validator.boolean() #
-# =================== #
+# ==================== #
 
 def test_boolean_with_correct_type():
     """Boolean type"""
@@ -232,9 +232,9 @@ def test_boolean_with_wrong_type():
         val.boolean(1, desc='test')
     assert str(e.value) == 'Expected test to be a boolean'
 
-# ================== #
+# =================== #
 # _Validator.one_of() #
-# ================== #
+# =================== #
 
 def test_one_of_correct_with_multiple_types():
     """List of multiple types with a correct input"""
@@ -256,9 +256,9 @@ def test_one_of_incorrect_with_single_type():
         val.one_of(2, [0, 1, 3], desc='test')
     assert str(e.value) == "Expected test to be one of [0, 1, 3]"
 
-# ============================== #
+# =============================== #
 # _Validator.restricted_integer() #
-# ============================== #
+# =============================== #
 
 def test_restricted_integer_wrong_type_meets_condition():
     """Incorrect type that meets the condition"""
@@ -282,9 +282,9 @@ def test_restricted_integer_correct_type_does_not_meet_condition():
         val.restricted_integer(-1, lambda x: x > 0, 'test', 'greater than zero')
     assert str(e.value) == 'Expected test to be greater than zero'
 
-# ============================ #
+# ============================= #
 # _Validator.restricted_float() #
-# ============================ #
+# ============================= #
 
 def test_restricted_integer_wrong_type_meets_condition():
     """Incorrect type that meets the condition"""
@@ -308,9 +308,9 @@ def test_restricted_integer_correct_type_does_not_meet_condition():
         val.restricted_float(-1.1, lambda x: x > 0, 'test', 'greater than zero')
     assert str(e.value) == 'Expected test to be greater than zero'
 
-# =========================== #
+# ============================ #
 # _Validator.list_of_strings() #
-# =========================== #
+# ============================ #
 
 def test_list_of_strings_wrong_type():
     """Incorrect type"""
@@ -328,9 +328,9 @@ def test_list_of_strings_correct_list_type():
     """Correct list element types"""
     assert val.list_of_strings(['a', 'b', 'c'], 'test') == ['a', 'b', 'c']
 
-# ======================== #
+# ========================= #
 # _Validator.random_state() #
-# ======================== #
+# ========================= #
 
 def test_random_state_none():
     """None random state"""
