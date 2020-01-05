@@ -1,5 +1,5 @@
 from .methods import (
-    downsample, normalize, fft, filtrate,
-    _downsample, _normalize, _fft, _filtrate
+    downsample, center, fft, filtrate,
+    _downsample, _center, _fft, _filtrate
 )
 from .preprocess import Preprocess

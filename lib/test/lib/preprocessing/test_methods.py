@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from sequentia.preprocessing import downsample, normalize, fft, filtrate
+from sequentia.preprocessing import downsample, center, fft, filtrate
 from ...support import assert_equal, assert_all_equal
 
 # Set seed for reproducible randomness
@@ -13,13 +13,13 @@ X_even = rng.random((6, 2))
 X_odd = rng.random((7, 2))
 Xs = [i * rng.random((3 * i, 2)) for i in range(1, 4)]
 
-# =========== #
-# normalize() #
-# =========== #
+# ======== #
+# center() #
+# ======== #
 
-def test_normalize_single_even():
-    """Normalize a single even-length observation sequence"""
-    assert_equal(normalize(X_even), np.array([
+def test_center_single_even():
+    """Center a single even-length observation sequence"""
+    assert_equal(center(X_even), np.array([
         [-0.07922094, 0.09684335 ],
         [-0.02527107, -0.07346283],
         [-0.20437965, 0.0275481  ],
@@ -28,9 +28,9 @@ def test_normalize_single_even():
         [0.16369059 , -0.0894511 ]
     ]))
 
-def test_normalize_single_odd():
-    """Normalize a single odd-length observation sequence"""
-    assert_equal(normalize(X_odd), np.array([
+def test_center_single_odd():
+    """Center a single odd-length observation sequence"""
+    assert_equal(center(X_odd), np.array([
         [0.14006915 , 0.2206014  ],
         [-0.35693936, -0.61786594],
         [-0.40775702, 0.1276246  ],
@@ -40,9 +40,9 @@ def test_normalize_single_odd():
         [-0.30970099, -0.06507422]
     ]))
 
-def test_normalize_multiple():
-    """Normalize multiple observation sequences"""
-    assert_all_equal(normalize(Xs), [
+def test_center_multiple():
+    """Center multiple observation sequences"""
+    assert_all_equal(center(Xs), [
         np.array([
             [-0.16656579, 0.23348073 ],
             [0.21192925 , -0.29652624],

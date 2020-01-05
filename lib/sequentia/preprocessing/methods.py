@@ -2,8 +2,8 @@ import scipy.fftpack
 import numpy as np
 from ..internals import _Validator
 
-def normalize(X):
-    """Normalizes an observation sequence (or multiple sequences) by centering observations around the mean.
+def center(X):
+    """Centers an observation sequence (or multiple sequences) by centering observations around the mean.
 
     Parameters
     ----------
@@ -12,14 +12,14 @@ def normalize(X):
 
     Returns
     -------
-    normalized: numpy.ndarray or List[numpy.ndarray]
-        The normalized input observation sequence(s).
+    centered: numpy.ndarray or List[numpy.ndarray]
+        The centered input observation sequence(s).
     """
     val = _Validator()
     val.observation_sequences(X, allow_single=True)
-    return _normalize(X)
+    return _center(X)
 
-def _normalize(X):
+def _center(X):
     def transform(x):
         return x - x.mean(axis=0)
 
