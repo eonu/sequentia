@@ -104,7 +104,7 @@ To classify a new observation sequence :math:`O'`, this works by:
 These steps are summarized in the diagram below.
 
 .. image:: https://i.ibb.co/gPymgs4/classifier.png
-    :alt: Ensemble HMM Classifier System
+    :alt: HMM Classifier
     :width: 400
 
 Example
