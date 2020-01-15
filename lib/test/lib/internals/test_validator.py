@@ -1,8 +1,7 @@
 import pytest
 import numpy as np
-from numpy.testing import assert_array_equal
 from sequentia.internals import _Validator
-from ...support import assert_equal
+from ...support import assert_equal, assert_all_equal
 
 val = _Validator()
 
@@ -13,19 +12,22 @@ val = _Validator()
 def test_single_observation_sequence_with_single():
     """Single observation sequence with allow_single=True"""
     x = np.arange(8).reshape(-1, 2)
-    assert_array_equal(x, val.observation_sequences(x, allow_single=True))
+    assert_equal(x, val.observation_sequences(x, allow_single=True))
 
 def test_single_observation_sequence_1d_flat_with_single():
     """Single flat 1D observation sequence with allow_single=True"""
     x = np.arange(4)
-    with pytest.raises(ValueError) as e:
-        val.observation_sequences(x, allow_single=True)
-    assert str(e.value) == 'Observation sequence must be two-dimensional'
+    assert_equal(val.observation_sequences(x, allow_single=True), np.array([
+        [0],
+        [1],
+        [2],
+        [3]
+    ]))
 
 def test_single_observation_sequence_1d_with_single():
     """Single non-flat 1D observation sequence with allow_single=True"""
     x = np.arange(4).reshape(-1, 1)
-    assert_array_equal(x, val.observation_sequences(x, allow_single=True))
+    assert_equal(x, val.observation_sequences(x, allow_single=True))
 
 def test_single_observation_sequence_wrong_type_with_single():
     """Single observation sequence with wrong type and allow_single=True"""
@@ -37,7 +39,7 @@ def test_single_observation_sequence_wrong_type_with_single():
 def test_multiple_observation_sequences_with_single():
     """Multiple observation sequences with allow_single=True"""
     X = [np.arange(8).reshape(-1, 2), np.arange(12).reshape(-1, 2)]
-    assert X == val.observation_sequences(X, allow_single=True)
+    assert_all_equal(X, val.observation_sequences(X, allow_single=True))
 
 def test_multiple_observation_sequences_diff_dims_with_single():
     """Multiple observation sequences with different dimensionality and allow_single=True"""
@@ -48,22 +50,38 @@ def test_multiple_observation_sequences_diff_dims_with_single():
 
 def test_multiple_observation_sequences_1d_some_flat_with_single():
     """Multiple 1D (flat and non-flat) observation sequences with allow_single=True"""
-    X = [np.arange(4).reshape(-1, 1), np.arange(8)]
-    with pytest.raises(ValueError) as e:
-        val.observation_sequences(X, allow_single=True)
-    assert str(e.value) == 'Each observation sequence must be two-dimensional'
+    X = [np.arange(2).reshape(-1, 1), np.arange(3)]
+    assert_all_equal(val.observation_sequences(X, allow_single=True), [
+        np.array([
+            [0],
+            [1]
+        ]),
+        np.array([
+            [0],
+            [1],
+            [2]
+        ])
+    ])
 
 def test_multiple_observation_sequences_1d_all_flat_with_single():
     """Multiple flat 1D observation sequences with allow_single=True"""
-    X = [np.arange(4), np.arange(8)]
-    with pytest.raises(ValueError) as e:
-        val.observation_sequences(X, allow_single=True)
-    assert str(e.value) == 'Each observation sequence must be two-dimensional'
+    X = [np.arange(2), np.arange(3)]
+    assert_all_equal(val.observation_sequences(X, allow_single=True), [
+        np.array([
+            [0],
+            [1]
+        ]),
+        np.array([
+            [0],
+            [1],
+            [2]
+        ])
+    ])
 
 def test_multiple_observation_sequences_1d_with_single():
     """Multiple 1D observation sequences with allow_single=True"""
     X = [np.arange(8).reshape(-1, 1), np.arange(12).reshape(-1, 1)]
-    assert X == val.observation_sequences(X, allow_single=True)
+    assert_all_equal(X, val.observation_sequences(X, allow_single=True))
 
 def test_multiple_observation_sequences_some_wrong_type_with_single():
     """Multiple observation sequences with different types and allow_single=True"""
@@ -95,10 +113,12 @@ def test_single_observation_sequence_without_single():
 
 def test_single_observation_sequence_1d_flat_without_single():
     """Single flat 1D observation sequence with allow_single=False"""
-    x = np.arange(4)
-    with pytest.raises(TypeError) as e:
-        val.observation_sequences(x, allow_single=False)
-    assert str(e.value) == 'Expected a list of observation sequences, each of type numpy.ndarray'
+    x = np.arange(3)
+    assert_equal(val.observation_sequences(x, allow_single=True), np.array([
+        [0],
+        [1],
+        [2]
+    ]))
 
 def test_single_observation_sequence_1d_without_single():
     """Single non-flat 1D observation sequence with allow_single=False"""
@@ -117,7 +137,7 @@ def test_single_observation_sequence_wrong_type_without_single():
 def test_multiple_observation_sequences_without_single():
     """Multiple observation sequences with allow_single=False"""
     X = [np.arange(8).reshape(-1, 2), np.arange(12).reshape(-1, 2)]
-    assert X == val.observation_sequences(X, allow_single=False)
+    assert_all_equal(X, val.observation_sequences(X, allow_single=False))
 
 def test_multiple_observation_sequences_diff_dims_without_single():
     """Multiple observation sequences with different dimensionality and allow_single=False"""
@@ -128,22 +148,38 @@ def test_multiple_observation_sequences_diff_dims_without_single():
 
 def test_multiple_observation_sequences_1d_some_flat_without_single():
     """Multiple 1D (flat and non-flat) observation sequences with allow_single=False"""
-    X = [np.arange(4).reshape(-1, 1), np.arange(8)]
-    with pytest.raises(ValueError) as e:
-        val.observation_sequences(X, allow_single=False)
-    assert str(e.value) == 'Each observation sequence must be two-dimensional'
+    X = [np.arange(2).reshape(-1, 1), np.arange(3)]
+    assert_all_equal(val.observation_sequences(X, allow_single=False), [
+        np.array([
+            [0],
+            [1]
+        ]),
+        np.array([
+            [0],
+            [1],
+            [2]
+        ])
+    ])
 
 def test_multiple_observation_sequences_1d_all_flat_without_single():
     """Multiple flat 1D observation sequences with allow_single=False"""
-    X = [np.arange(4), np.arange(8)]
-    with pytest.raises(ValueError) as e:
-        val.observation_sequences(X, allow_single=False)
-    assert str(e.value) == 'Each observation sequence must be two-dimensional'
+    X = [np.arange(2), np.arange(3)]
+    assert_all_equal(val.observation_sequences(X, allow_single=False), [
+        np.array([
+            [0],
+            [1]
+        ]),
+        np.array([
+            [0],
+            [1],
+            [2]
+        ])
+    ])
 
 def test_multiple_observation_sequences_1d_without_single():
     """Multiple 1D observation sequences with allow_single=False"""
     X = [np.arange(8).reshape(-1, 1), np.arange(12).reshape(-1, 1)]
-    assert X == val.observation_sequences(X, allow_single=False)
+    assert_all_equal(X, val.observation_sequences(X, allow_single=False))
 
 def test_multiple_observation_sequence_some_wrong_type_without_single():
     """Multiple observation sequences with different types and allow_single=False"""

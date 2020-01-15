@@ -74,9 +74,7 @@ class Preprocess:
         transformed: numpy.ndarray or List[numpy.ndarray]
             The input observation sequence(s) with preprocessing transformations applied in order.
         """
-        self._val.observation_sequences(X, allow_single=True)
-
-        X_transform = X
+        X_transform = self._val.observation_sequences(X, allow_single=True)
         for transform, kwargs in self._transforms:
             if transform == _downsample:
                 if isinstance(X_transform, np.ndarray):

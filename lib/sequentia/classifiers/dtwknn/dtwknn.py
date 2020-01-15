@@ -73,7 +73,7 @@ class DTWKNN:
         except AttributeError:
             raise RuntimeError('The classifier needs to be fitted before predictions are made')
 
-        self._val.observation_sequences(X, allow_single=True)
+        X = self._val.observation_sequences(X, allow_single=True)
         self._val.boolean(verbose, desc='verbose')
         self._val.restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
 
@@ -145,7 +145,7 @@ class DTWKNN:
         confusion: numpy.ndarray
             The confusion matrix representing the discrepancy between predicted and actual labels.
         """
-        self._val.observation_sequences_and_labels(X, y)
+        X, y = self._val.observation_sequences_and_labels(X, y)
         self._val.boolean(verbose, desc='verbose')
 
         if labels is not None:

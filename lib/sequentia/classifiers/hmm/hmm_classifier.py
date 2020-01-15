@@ -61,7 +61,7 @@ class HMMClassifier:
         """
         self._val.boolean(prior, desc='prior')
         self._val.boolean(return_scores, desc='return_scores')
-        self._val.observation_sequences(X, allow_single=True)
+        X = self._val.observation_sequences(X, allow_single=True)
 
         try:
             self._models
@@ -111,7 +111,7 @@ class HMMClassifier:
         confusion: numpy.ndarray
             The confusion matrix representing the discrepancy between predicted and actual labels.
         """
-        self._val.observation_sequences_and_labels(X, y)
+        X, y = self._val.observation_sequences_and_labels(X, y)
         self._val.boolean(prior, desc='prior')
 
         if labels is not None:
