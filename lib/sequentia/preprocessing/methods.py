@@ -16,7 +16,7 @@ def trim_zeros(X):
         The zero-trimmed input observation sequence(s).
     """
     val = _Validator()
-    val.observation_sequences(X, allow_single=True)
+    X = val.observation_sequences(X, allow_single=True)
     return _trim_zeros(X)
 
 def _trim_zeros(X):
@@ -42,7 +42,7 @@ def center(X):
         The centered input observation sequence(s).
     """
     val = _Validator()
-    val.observation_sequences(X, allow_single=True)
+    X = val.observation_sequences(X, allow_single=True)
     return _center(X)
 
 def _center(X):
@@ -69,7 +69,7 @@ def standardize(X):
         The standardized input observation sequence(s).
     """
     val = _Validator()
-    val.observation_sequences(X, allow_single=True)
+    X = val.observation_sequences(X, allow_single=True)
     return _standardize(X)
 
 def _standardize(X):
@@ -104,7 +104,7 @@ def downsample(X, n, method='decimate'):
         The downsampled input observation sequence(s).
     """
     val = _Validator()
-    val.observation_sequences(X, allow_single=True)
+    X = val.observation_sequences(X, allow_single=True)
     val.restricted_integer(n, lambda x: x > 1, desc='downsample factor', expected='greater than one')
     val.one_of(method, ['decimate', 'average'], desc='downsampling method')
 
@@ -147,7 +147,7 @@ def fft(X):
         The transformed input observation sequence(s).
     """
     val = _Validator()
-    val.observation_sequences(X, allow_single=True)
+    X = val.observation_sequences(X, allow_single=True)
     return _fft(X)
 
 def _fft(X):
@@ -179,7 +179,7 @@ def filtrate(X, n, method='median'):
         The filtered input observation sequence(s).
     """
     val = _Validator()
-    val.observation_sequences(X, allow_single=True)
+    X = val.observation_sequences(X, allow_single=True)
     val.restricted_integer(n, lambda x: x > 1, desc='window size', expected='greater than one')
     val.one_of(method, ['median', 'mean'], desc='filtering method')
 

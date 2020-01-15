@@ -1,4 +1,5 @@
 import numpy as np
+from copy import copy
 
 class _Validator:
     """Performs internal validations on various input types."""
@@ -19,17 +20,21 @@ class _Validator:
         X: numpy.ndarray or List[numpy.ndarray]
             The original input observation sequence(s) if valid.
         """
+        X = copy(X)
         if isinstance(X, (list, np.ndarray) if allow_single else list):
             if isinstance(X, list):
-                if not all(isinstance(sequence, np.ndarray) for sequence in X):
-                    raise TypeError('Each observation sequence must be a numpy.ndarray')
-                if not all(sequence.ndim == 2 for sequence in X):
-                    raise ValueError('Each observation sequence must be two-dimensional')
-                if not all(sequence.shape[1] == X[0].shape[1] for sequence in X):
-                    raise ValueError('Each observation sequence must have the same dimensionality')
+                for i, x in enumerate(X):
+                    if not isinstance(x, np.ndarray):
+                        raise TypeError('Each observation sequence must be a numpy.ndarray')
+                    if not x.ndim <= 2:
+                        raise ValueError('Each observation sequence must be at most two-dimensional')
+                    x = X[i] = (x if x.ndim == 2 else np.atleast_2d(x).T).astype(float)
+                    if not x.shape[1] == X[0].shape[1]:
+                        raise ValueError('Each observation sequence must have the same dimensionality')
             elif isinstance(X, np.ndarray):
-                if not X.ndim == 2:
-                    raise ValueError('Observation sequence must be two-dimensional')
+                if not X.ndim <= 2:
+                    raise ValueError('Observation sequence must be at most two-dimensional')
+                X = (X if X.ndim == 2 else np.atleast_2d(X).T).astype(float)
         else:
             if allow_single:
                 raise TypeError('Expected an individual observation sequence or a list of multiple observation sequences, each of type numpy.ndarray')

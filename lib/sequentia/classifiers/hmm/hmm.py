@@ -81,7 +81,7 @@ class HMM:
             | The number of jobs to run in parallel.
             | Setting this to -1 will use all available CPU cores.
         """
-        self._val.observation_sequences(X)
+        X = self._val.observation_sequences(X)
         self._val.restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
 
         try:
@@ -131,10 +131,7 @@ class HMM:
         except AttributeError as e:
             raise AttributeError('The model must be fitted before running the forward algorithm') from e
 
-        if not isinstance(sequence, np.ndarray):
-            raise TypeError('Sequence of observations must be a numpy.ndarray')
-        if not sequence.ndim == 2:
-            raise ValueError('Sequence of observations must be two-dimensional')
+        sequence = self._val.observation_sequences(sequence, allow_single=True)
         if not sequence.shape[1] == self._n_features:
             raise ValueError('Number of observation features must match the dimensionality of the original data used to fit the model')
 
