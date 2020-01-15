@@ -65,7 +65,7 @@ A score for how likely a HMM is to generate an observation sequence is given by 
 :math:`\mathbb{P}(O|\lambda_c)` of the HMM :math:`\lambda_c` generating the observation sequence :math:`O`.
 
 **Note**: The likelihood does not account for the fact that a particular observation class
-may occur more or less frequently than other observation classes. Once an ensemble of :class:`~HMM` objects
+may occur more or less frequently than other observation classes. Once a group of :class:`~HMM` objects
 (represented by a :class:`~HMMClassifier`) is created and configured, this can be accounted for by
 calculating the joint probability (or un-normalized posterior)
 :math:`\mathbb{P}(O, \lambda_c)=\mathbb{P}(O|\lambda_c)\mathbb{P}(\lambda_c)`
@@ -88,10 +88,10 @@ API reference
 .. autoclass:: sequentia.classifiers.hmm.HMM
     :members:
 
-Ensemble Hidden Markov Model Classifier (``HMMClassifier``)
-===========================================================
+Hidden Markov Model Classifier (``HMMClassifier``)
+==================================================
 
-Multiple HMMs can be combined to form an ensemble multi-class classifier.
+Multiple HMMs can be combined to form a multi-class classifier.
 To classify a new observation sequence :math:`O'`, this works by:
 
 1. | Creating and training the HMMs :math:`\lambda_1, \lambda_2, \ldots, \lambda_N`.
