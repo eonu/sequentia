@@ -50,7 +50,7 @@ Sequentia offers the use of **multivariate observation sequences with differing 
 
 ### Classication algorithms
 
-- [x] Ensemble Hidden Markov Models (via [Pomegranate](https://github.com/jmschrei/pomegranate) [[1]](#references))
+- [x] Hidden Markov Models (via [Pomegranate](https://github.com/jmschrei/pomegranate) [[1]](#references))
   - [x] Multivariate Gaussian Emissions
   - [ ] Gaussian Mixture Model Emissions (_soon!_)
   - [x] Left-Right and Ergodic Topologies
