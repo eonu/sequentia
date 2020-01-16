@@ -1,3 +1,13 @@
+## [0.6.1](https://github.com/eonu/sequentia/releases/tag/v0.6.1)
+
+#### Major changes
+
+- Remove strict requirement of Numpy arrays being two-dimensional by using `numpy.atleast_2d` to convert one-dimensional arrays into 2D. ([#70](https://github.com/eonu/sequentia/pull/70))
+
+#### Minor changes
+
+- As the HMM classifier is not a true ensemble of HMMs (since each HMM doesn't really contribute to the classification), it is no longer referred to as an ensemble. ([#69](https://github.com/eonu/sequentia/pull/69))
+
 ## [0.6.0](https://github.com/eonu/sequentia/releases/tag/v0.6.0)
 
 #### Major changes
