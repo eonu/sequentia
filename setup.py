@@ -18,6 +18,7 @@ setup(
     long_description_content_type = 'text/markdown',
     url = 'https://github.com/eonu/sequentia',
     project_urls = {
+        'Documentation': 'https://sequentia.readthedocs.io/en/latest',
         'Bug Tracker': 'https://github.com/eonu/sequentia/issues',
         'Source Code': 'https://github.com/eonu/sequentia'
     },
