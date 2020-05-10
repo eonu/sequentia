@@ -471,7 +471,7 @@ def test_save_no_extension():
     finally:
         os.remove('test')
 
-def test_save_with_extensions():
+def test_save_with_extension():
     """Save a HMM into a file with a .json extension"""
     try:
         hmm = deepcopy(hmm_e)

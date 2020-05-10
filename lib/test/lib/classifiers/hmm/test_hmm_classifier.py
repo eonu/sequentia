@@ -241,13 +241,13 @@ def test_save_no_extension():
     finally:
         os.remove('test')
 
-def test_save_with_extensions():
+def test_save_with_extension():
     """Save a HMM classifier into a file with a .json extension"""
     try:
-        hmm_clf.save('test.h5')
-        assert os.path.isfile('test.h5')
+        hmm_clf.save('test.json')
+        assert os.path.isfile('test.json')
     finally:
-        os.remove('test.h5')
+        os.remove('test.json')
 
 # ==================== #
 # HMMClassifier.load() #
