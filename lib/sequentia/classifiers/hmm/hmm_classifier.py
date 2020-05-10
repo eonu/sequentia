@@ -1,3 +1,4 @@
+import json
 import numpy as np
 from .hmm import HMM
 from sklearn.metrics import confusion_matrix
@@ -122,3 +123,33 @@ class HMMClassifier:
         cm = confusion_matrix(y, predictions, labels=labels)
 
         return np.sum(np.diag(cm)) / np.sum(cm), cm
+
+    def as_dict(self):
+        """TODO: Document"""
+
+        try:
+            self._models
+        except AttributeError as e:
+            raise AttributeError('The classifier needs to be fitted before it can be exported to a dict') from e
+
+        return {'models': [model.as_dict() for model in self._models]}
+
+    def save(self, path):
+        """TODO: Document"""
+
+        data = self.as_dict()
+        with open(path, 'w') as f:
+            json.dump(data, f, indent=4)
+
+    @classmethod
+    def load(cls, path, random_state=None):
+        """TODO: Document"""
+
+        # Load the serialized HMM classifier as JSON
+        with open(path, 'r') as f:
+            data = json.load(f)
+
+        clf = cls()
+        clf._models = [HMM.load(model, random_state=random_state) for model in data['models']]
+
+        return clf

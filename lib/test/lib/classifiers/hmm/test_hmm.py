@@ -1,5 +1,7 @@
 import pytest
 import warnings
+import os
+import json
 import numpy as np
 from copy import deepcopy
 with warnings.catch_warnings():
@@ -21,9 +23,9 @@ x = rng.random((15, 3))
 hmm_lr = HMM(label='c1', n_states=5, topology='left-right', random_state=rng)
 hmm_e = HMM(label='c1', n_states=5, topology='ergodic', random_state=rng)
 
-# ========================= #
-# HMM.set_uniform_initial() #
-# ========================= #
+# ================================================== #
+# HMM.set_uniform_initial() + HMM.initial (property) #
+# ================================================== #
 
 def test_left_right_uniform_initial():
     """Uniform initial state distribution for a left-right HMM"""
@@ -41,9 +43,9 @@ def test_ergodic_uniform_initial():
         0.2, 0.2, 0.2, 0.2, 0.2
     ]))
 
-# ======================== #
-# HMM.set_random_initial() #
-# ======================== #
+# ================================================= #
+# HMM.set_random_initial() + HMM.initial (property) #
+# ================================================= #
 
 def test_left_right_random_initial():
     """Random initial state distribution for a left-right HMM"""
@@ -61,9 +63,9 @@ def test_ergodic_random_initial():
         0.35029635, 0.13344569, 0.02784745, 0.33782453, 0.15058597
     ]))
 
-# ====================================================== #
-# HMM.set_uniform_transitions() + HMM.initial (property) #
-# ====================================================== #
+# ========================================================== #
+# HMM.set_uniform_transitions() + HMM.transitions (property) #
+# ========================================================== #
 
 def test_left_right_uniform_transitions():
     """Uniform transition matrix for a left-right HMM"""
@@ -388,3 +390,196 @@ def test_ergodic_transitions_ergodic():
     transitions = topology.random_transitions()
     hmm.transitions = transitions
     assert_equal(hmm.transitions, transitions)
+
+# ============= #
+# HMM.as_dict() #
+# ============= #
+
+def test_as_dict_unfitted():
+    """Export an unfitted HMM to dict"""
+    hmm = deepcopy(hmm_e)
+    with pytest.raises(AttributeError) as e:
+        hmm.as_dict()
+    assert str(e.value) == 'The model needs to be fitted before it can be exported to a dict'
+
+def test_as_dict_fitted():
+    """Export a fitted HMM to dict"""
+    hmm = deepcopy(hmm_e)
+    hmm.set_uniform_initial()
+    hmm.set_uniform_transitions()
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', category=DeprecationWarning)
+        hmm.fit(X)
+    d = hmm.as_dict()
+
+    assert d['label'] == 'c1'
+    assert d['n_states'] == 5
+    assert d['topology'] == 'ergodic'
+    assert_equal(d['model']['initial'], np.array([
+        0.2, 0.2, 0.2, 0.2, 0.2
+    ]))
+    assert_equal(d['model']['transitions'], np.array([
+        [0.2, 0.2, 0.2, 0.2, 0.2],
+        [0.2, 0.2, 0.2, 0.2, 0.2],
+        [0.2, 0.2, 0.2, 0.2, 0.2],
+        [0.2, 0.2, 0.2, 0.2, 0.2],
+        [0.2, 0.2, 0.2, 0.2, 0.2]
+    ]))
+    assert d['model']['n_seqs'] == 3
+    assert d['model']['n_features'] == 3
+    assert isinstance(d['model']['hmm'], dict)
+
+def test_as_dict_with_nan():
+    """Export a HMM with NaN parameters to dict"""
+    hmm = HMM(label='test', n_states=5, topology='left-right')
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', category=DeprecationWarning)
+        hmm.fit([np.arange((2 + j * 20) * 30).reshape(-1, 3) for j in range(1, 4)])
+    with pytest.raises(ValueError) as e:
+        hmm.as_dict()
+    assert str(e.value) == 'Encountered NaN value(s) in HMM parameters'
+
+# ========== #
+# HMM.save() #
+# ========== #
+
+def test_save_directory():
+    """Save a HMM into a directory"""
+    hmm = deepcopy(hmm_e)
+    hmm.set_uniform_initial()
+    hmm.set_uniform_transitions()
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', category=DeprecationWarning)
+        hmm.fit(X)
+    with pytest.raises(IsADirectoryError) as e:
+        hmm.save('.')
+    assert str(e.value) == "[Errno 21] Is a directory: '.'"
+
+def test_save_no_extension():
+    """Save a HMM into a file without an extension"""
+    try:
+        hmm = deepcopy(hmm_e)
+        hmm.set_uniform_initial()
+        hmm.set_uniform_transitions()
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
+            hmm.fit(X)
+        hmm.save('test')
+        assert os.path.isfile('test')
+    finally:
+        os.remove('test')
+
+def test_save_with_extensions():
+    """Save a HMM into a file with a .json extension"""
+    try:
+        hmm = deepcopy(hmm_e)
+        hmm.set_uniform_initial()
+        hmm.set_uniform_transitions()
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
+            hmm.fit(X)
+        hmm.save('test.json')
+        assert os.path.isfile('test.json')
+    finally:
+        os.remove('test.json')
+
+# ========== #
+# HMM.load() #
+# ========== #
+
+def test_load_invalid_dict():
+    """Load a HMM from an invalid dict"""
+    with pytest.raises(KeyError) as e:
+        HMM.load({})
+
+def test_load_dict():
+    """Load a HMM from a valid dict"""
+    hmm = deepcopy(hmm_e)
+    hmm.set_uniform_initial()
+    hmm.set_uniform_transitions()
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', category=DeprecationWarning)
+        hmm.fit(X)
+    hmm = HMM.load(hmm.as_dict())
+
+    assert isinstance(hmm, HMM)
+    assert hmm._label == 'c1'
+    assert hmm._n_states == 5
+    assert isinstance(hmm._topology, _ErgodicTopology)
+    assert_equal(hmm._initial, np.array([
+        0.2, 0.2, 0.2, 0.2, 0.2
+    ]))
+    assert_equal(hmm._transitions, np.array([
+        [0.2, 0.2, 0.2, 0.2, 0.2],
+        [0.2, 0.2, 0.2, 0.2, 0.2],
+        [0.2, 0.2, 0.2, 0.2, 0.2],
+        [0.2, 0.2, 0.2, 0.2, 0.2],
+        [0.2, 0.2, 0.2, 0.2, 0.2]
+    ]))
+    assert hmm._n_seqs == 3
+    assert hmm._n_features == 3
+    assert isinstance(hmm._model, pg.HiddenMarkovModel)
+
+def test_load_invalid_path():
+    """Load a HMM from a directory"""
+    with pytest.raises(IsADirectoryError) as e:
+        HMM.load('.')
+
+def test_load_inexistent_path():
+    """Load a HMM from an inexistent path"""
+    with pytest.raises(FileNotFoundError) as e:
+        HMM.load('test')
+
+def test_load_invalid_format():
+    """Load a HMM from an illegally formatted file"""
+    try:
+        with open('test', 'w') as f:
+            f.write('illegal')
+        with pytest.raises(json.decoder.JSONDecodeError) as e:
+            HMM.load('test')
+    finally:
+        os.remove('test')
+
+def test_load_invalid_json():
+    """Load a HMM from an invalid JSON file"""
+    try:
+        with open('test', 'w') as f:
+            f.write("{}")
+        with pytest.raises(KeyError) as e:
+            HMM.load('test')
+    finally:
+        os.remove('test')
+
+def test_load_path():
+    """Load a HMM from a valid JSON file"""
+    try:
+        hmm = deepcopy(hmm_e)
+        hmm.set_uniform_initial()
+        hmm.set_uniform_transitions()
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
+            hmm.fit(X)
+        hmm.save('test')
+        hmm = HMM.load('test')
+
+        assert isinstance(hmm, HMM)
+        assert hmm._label == 'c1'
+        assert hmm._n_states == 5
+        assert isinstance(hmm._topology, _ErgodicTopology)
+        assert_equal(hmm._initial, np.array([
+            0.2, 0.2, 0.2, 0.2, 0.2
+        ]))
+        assert_equal(hmm._transitions, np.array([
+            [0.2, 0.2, 0.2, 0.2, 0.2],
+            [0.2, 0.2, 0.2, 0.2, 0.2],
+            [0.2, 0.2, 0.2, 0.2, 0.2],
+            [0.2, 0.2, 0.2, 0.2, 0.2],
+            [0.2, 0.2, 0.2, 0.2, 0.2]
+        ]))
+        assert hmm._n_seqs == 3
+        assert hmm._n_features == 3
+        assert isinstance(hmm._model, pg.HiddenMarkovModel)
+    finally:
+        os.remove('test')

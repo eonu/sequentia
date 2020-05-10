@@ -2,6 +2,7 @@ import tqdm
 import tqdm.auto
 import random
 import numpy as np
+import h5py
 from joblib import Parallel, delayed
 from multiprocessing import cpu_count
 from fastdtw import fastdtw
@@ -156,3 +157,42 @@ class DTWKNN:
         cm = confusion_matrix(y, predictions, labels=labels)
 
         return np.sum(np.diag(cm)) / np.sum(cm), cm
+
+    def save(self, path):
+        """TODO: Document"""
+        # TODO: Tests
+
+        try:
+            (self._X, self._y)
+        except AttributeError:
+            raise RuntimeError('The classifier needs to be fitted before it can be saved')
+
+        with h5py.File(path, 'w') as f:
+            # Store hyper-parameters (k, radius)
+            params = f.create_group('params')
+            params.create_dataset('k', data=self._k)
+            params.create_dataset('radius', data=self._radius)
+
+            # Store training data and labels (X, y)
+            data = f.create_group('data')
+            X = data.create_group('X')
+            for i, x in enumerate(self._X):
+                X.create_dataset(str(i), data=x)
+            data.create_dataset('y', data=np.string_(self._y))
+
+    @classmethod
+    def load(cls, path, encoding='utf-8', metric=euclidean):
+        """TODO: Document"""
+        # TODO: Tests
+
+        with h5py.File(path, 'r') as f:
+            # Deserialize the model hyper-parameters
+            params = f['params']
+            clf = cls(k=int(params['k'][()]), radius=int(params['radius'][()]), metric=metric)
+
+            # Deserialize the training data and labels
+            X, y = f['data']['X'], f['data']['y']
+            clf._X = [np.array(X[k]) for k in X.keys()]
+            clf._y = [label.decode(encoding) for label in y]
+
+        return clf

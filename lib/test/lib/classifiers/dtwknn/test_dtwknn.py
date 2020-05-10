@@ -214,3 +214,14 @@ def test_evaluate_with_no_labels_k3_r10_no_verbose(capsys):
     assert 'Classifying examples' not in capsys.readouterr().err
     assert isinstance(acc, float)
     assert isinstance(cm, np.ndarray)
+
+# ============= #
+# DTWKNN.save() #
+# ============= #
+
+
+
+# ============= #
+# DTWKNN.load() #
+# ============= #
+

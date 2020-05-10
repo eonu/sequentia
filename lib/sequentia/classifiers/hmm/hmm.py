@@ -1,3 +1,4 @@
+import json
 import numpy as np
 import pomegranate as pg
 from .topologies.ergodic import _ErgodicTopology
@@ -175,3 +176,59 @@ class HMM:
     def transitions(self, probabilities):
         self._topology.validate_transitions(probabilities)
         self._transitions = probabilities
+
+    def as_dict(self):
+        """TODO: Document"""
+
+        try:
+            self._model
+        except AttributeError as e:
+            raise AttributeError('The model needs to be fitted before it can be exported to a dict') from e
+
+        model = self._model.to_json()
+
+        if 'NaN' in model:
+            raise ValueError('Encountered NaN value(s) in HMM parameters')
+        else:
+            return {
+                'label': self._label,
+                'n_states': self._n_states,
+                'topology': 'ergodic' if isinstance(self._topology, _ErgodicTopology) else 'left-right',
+                'model': {
+                    'initial': self._initial.tolist(),
+                    'transitions': self._transitions.tolist(),
+                    'n_seqs': self._n_seqs,
+                    'n_features': self._n_features,
+                    'hmm': json.loads(model)
+                }
+            }
+
+    def save(self, path):
+        """TODO: Document"""
+
+        data = self.as_dict()
+        with open(path, 'w') as f:
+            json.dump(data, f, indent=4)
+
+    @classmethod
+    def load(cls, data, random_state=None):
+        """TODO: Document"""
+
+        # Load the serialized HMM data
+        if isinstance(data, dict):
+            pass
+        elif isinstance(data, str):
+            with open(data, 'r') as f:
+                data = json.load(f)
+        else:
+            pass
+
+        # Deserialize the data into a HMM object
+        hmm = cls(data['label'], data['n_states'], data['topology'], random_state=random_state)
+        hmm._initial = np.array(data['model']['initial'])
+        hmm._transitions = np.array(data['model']['transitions'])
+        hmm._n_seqs = data['model']['n_seqs']
+        hmm._n_features = data['model']['n_features']
+        hmm._model = pg.HiddenMarkovModel.from_json(json.dumps(data['model']['hmm']))
+
+        return hmm
