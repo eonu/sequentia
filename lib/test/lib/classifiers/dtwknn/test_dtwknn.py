@@ -225,7 +225,6 @@ def test_save_directory():
     """Save a DTWKNN classifier into a directory"""
     with pytest.raises(OSError) as e:
         clfs[2].save('.')
-    assert str(e.value) == "Unable to create file (unable to open file: name = '.', errno = 21, error message = 'Is a directory', flags = 13, o_flags = 602)"
 
 def test_save_no_extension():
     """Save a DTWKNN classifier into a file without an extension"""
