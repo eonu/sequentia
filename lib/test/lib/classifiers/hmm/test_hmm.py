@@ -431,7 +431,7 @@ def test_as_dict_fitted():
 
 def test_as_dict_with_nan():
     """Export a HMM with NaN parameters to dict"""
-    hmm = HMM(label='test', n_states=5, topology='left-right', random_state=4)
+    hmm = HMM(label='test', n_states=50, topology='left-right', random_state=rng)
     hmm.set_random_initial()
     hmm.set_random_transitions()
     with warnings.catch_warnings():
