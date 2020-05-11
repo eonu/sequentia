@@ -1,8 +1,13 @@
 import pytest
 import warnings
+import os
+import json
 import numpy as np
 from copy import deepcopy
-from sequentia.classifiers import HMM, HMMClassifier
+with warnings.catch_warnings():
+    warnings.filterwarnings('ignore', category=DeprecationWarning)
+    import pomegranate as pg
+from sequentia.classifiers import HMM, HMMClassifier, _ErgodicTopology
 from ....support import assert_equal, assert_not_equal
 
 # Set seed for reproducible randomness
@@ -33,6 +38,14 @@ x, y = X[0], 'c1'
 # Fit a classifier
 hmm_clf = HMMClassifier()
 hmm_clf.fit(hmm_list)
+
+# Fit a classifier (with no NaN values)
+hmm_clf_no_nan = HMMClassifier()
+hmm = HMM(label='c1', n_states=5, topology='ergodic', random_state=rng)
+hmm.set_uniform_initial()
+hmm.set_uniform_transitions()
+hmm.fit([rng.random((10 * i, 3)) for i in range(1, 4)])
+hmm_clf_no_nan.fit([hmm])
 
 # =================== #
 # HMMClassifier.fit() #
@@ -192,3 +205,108 @@ def test_evaluate_no_prior_no_labels():
     acc, cm = hmm_clf.evaluate(X, Y, prior=False, labels=None)
     assert isinstance(acc, float)
     assert isinstance(cm, np.ndarray)
+
+# ======================= #
+# HMMClassifier.as_dict() #
+# ======================= #
+
+def test_as_dict_unfitted():
+    """Export an unfitted HMM classifier to dict"""
+    with pytest.raises(AttributeError) as e:
+        HMMClassifier().as_dict()
+    assert str(e.value) == 'The classifier needs to be fitted before it can be exported to a dict'
+
+def test_as_dict_fitted():
+    """Export a fitted HMM classifier to dict"""
+    d = hmm_clf_no_nan.as_dict()
+
+    assert isinstance(d['models'], list)
+    assert len(d['models']) == 1
+    assert d['models'][0]['label'] == 'c1'
+    assert d['models'][0]['n_states'] == 5
+    assert d['models'][0]['topology'] == 'ergodic'
+    assert np.array(d['models'][0]['model']['initial']).shape == (5,)
+    assert np.array(d['models'][0]['model']['transitions']).shape == (5, 5)
+    assert d['models'][0]['model']['n_seqs'] == 3
+    assert d['models'][0]['model']['n_features'] == 3
+    assert isinstance(d['models'][0]['model']['hmm'], dict)
+
+# ==================== #
+# HMMClassifier.save() #
+# ==================== #
+
+def test_save_directory():
+    """Save a HMM classifier into a directory"""
+    with pytest.raises(IsADirectoryError) as e:
+        hmm_clf_no_nan.save('.')
+    assert str(e.value) == "[Errno 21] Is a directory: '.'"
+
+def test_save_no_extension():
+    """Save a HMM classifier into a file without an extension"""
+    try:
+        hmm_clf_no_nan.save('test')
+        assert os.path.isfile('test')
+    finally:
+        os.remove('test')
+
+def test_save_with_extension():
+    """Save a HMM classifier into a file with a .json extension"""
+    try:
+        hmm_clf_no_nan.save('test.json')
+        assert os.path.isfile('test.json')
+    finally:
+        os.remove('test.json')
+
+# ==================== #
+# HMMClassifier.load() #
+# ==================== #
+
+def test_load_invalid_path():
+    """Load a HMM classifier from a directory"""
+    with pytest.raises(IsADirectoryError) as e:
+        HMMClassifier.load('.')
+
+def test_load_inexistent_path():
+    """Load a HMM classifier from an inexistent path"""
+    with pytest.raises(FileNotFoundError) as e:
+        HMMClassifier.load('test')
+
+def test_load_invalid_format():
+    """Load a HMM classifier from an illegally formatted file"""
+    try:
+        with open('test', 'w') as f:
+            f.write('illegal')
+        with pytest.raises(json.decoder.JSONDecodeError) as e:
+            HMMClassifier.load('test')
+    finally:
+        os.remove('test')
+
+def test_load_invalid_json():
+    """Load a HMM classifier from an invalid JSON file"""
+    try:
+        with open('test', 'w') as f:
+            f.write("{}")
+        with pytest.raises(KeyError) as e:
+            HMMClassifier.load('test')
+    finally:
+        os.remove('test')
+
+def test_load_path():
+    """Load a HMM classifier from a valid JSON file"""
+    try:
+        hmm_clf_no_nan.save('test')
+        h = HMMClassifier.load('test')
+
+        assert isinstance(h, HMMClassifier)
+        assert isinstance(h._models, list)
+        assert len(h._models) == 1
+        assert h._models[0]._label == 'c1'
+        assert h._models[0]._n_states == 5
+        assert isinstance(h._models[0]._topology, _ErgodicTopology)
+        assert h._models[0]._initial.shape == (5,)
+        assert h._models[0]._transitions.shape == (5, 5)
+        assert h._models[0]._n_seqs == 3
+        assert h._models[0]._n_features == 3
+        assert isinstance(h._models[0]._model, pg.HiddenMarkovModel)
+    finally:
+        os.remove('test')

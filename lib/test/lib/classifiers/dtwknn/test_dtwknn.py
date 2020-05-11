@@ -1,11 +1,13 @@
 import pytest
 import warnings
+import os
+import h5py
 import numpy as np
 from copy import deepcopy
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', category=DeprecationWarning)
     from sequentia.classifiers import DTWKNN
-from ....support import assert_equal, assert_not_equal
+from ....support import assert_equal, assert_all_equal, assert_not_equal
 
 # Set seed for reproducible randomness
 seed = 0
@@ -214,3 +216,72 @@ def test_evaluate_with_no_labels_k3_r10_no_verbose(capsys):
     assert 'Classifying examples' not in capsys.readouterr().err
     assert isinstance(acc, float)
     assert isinstance(cm, np.ndarray)
+
+# ============= #
+# DTWKNN.save() #
+# ============= #
+
+def test_save_directory():
+    """Save a DTWKNN classifier into a directory"""
+    with pytest.raises(OSError) as e:
+        clfs[2].save('.')
+
+def test_save_no_extension():
+    """Save a DTWKNN classifier into a file without an extension"""
+    try:
+        clfs[2].save('test')
+        assert os.path.isfile('test')
+    finally:
+        os.remove('test')
+
+def test_save_with_extension():
+    """Save a DTWKNN classifier into a file with a .h5 extension"""
+    try:
+        clfs[2].save('test.h5')
+        assert os.path.isfile('test.h5')
+    finally:
+        os.remove('test.h5')
+
+# ============= #
+# DTWKNN.load() #
+# ============= #
+
+def test_load_invalid_path():
+    """Load a DTWKNN classifier from a directory"""
+    with pytest.raises(OSError) as e:
+        DTWKNN.load('.')
+
+def test_load_inexistent_path():
+    """Load a DTWKNN classifier from an inexistent path"""
+    with pytest.raises(OSError) as e:
+        DTWKNN.load('test')
+
+def test_load_invalid_format():
+    """Load a DTWKNN classifier from an illegally formatted file"""
+    try:
+        with open('test', 'w') as f:
+            f.write('illegal')
+        with pytest.raises(OSError) as e:
+            DTWKNN.load('test')
+    finally:
+        os.remove('test')
+
+def test_load_path():
+    """Load a DTWKNN classifier from a valid HDF5 file"""
+    try:
+        clfs[2].save('test')
+        clf = DTWKNN.load('test')
+
+        assert isinstance(clf, DTWKNN)
+        assert clf._k == 3
+        assert clf._radius == 10
+        assert isinstance(clf._X, list)
+        assert len(clf._X) == len(X)
+        assert isinstance(clf._X[0], np.ndarray)
+        assert_all_equal(clf._X, X)
+        assert isinstance(clf._y, list)
+        assert len(clf._y) == len(y)
+        assert isinstance(clf._y[0], str)
+        assert all(y1 == y2 for y1, y2 in zip(clf._y, y))
+    finally:
+        os.remove('test')
