@@ -436,7 +436,7 @@ def test_as_dict_with_nan():
     hmm.set_random_transitions()
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore', category=DeprecationWarning)
-        hmm.fit([np.arange((2 + j * 20) * 30).reshape(-1, 3) for j in range(1, 4)])
+        hmm.fit([np.arange((2 + j * 20) * 30).reshape(-1, 3) for j in range(1, 2)])
     with pytest.raises(ValueError) as e:
         hmm.as_dict()
     assert str(e.value) == 'Encountered NaN value(s) in HMM parameters'
