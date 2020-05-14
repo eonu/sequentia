@@ -1,7 +1,7 @@
-.. _filtrate:
+.. _filter:
 
-Filtering (``filtrate``)
-=============================
+Filtering (``Filter``)
+======================
 
 Filtering removes or reduces some unwanted components (such as noise) from an observation sequence
 according to some window size and one of two methods: **median** and **mean** filtering.
@@ -13,18 +13,8 @@ with either the mean or median of the window of observations of size :math:`n` c
 - For median filtering: :math:`\mathbf{o}^{(t)\prime}=\mathrm{med}\underbrace{\left[\ldots, \mathbf{o}^{(t-1)}, \mathbf{o}^{(t)}, \mathbf{o}^{(t+1)}, \ldots\right]}_n`
 - For mean filtering: :math:`\mathbf{o}^{(t)\prime}=\mathrm{mean}\underbrace{\left[\ldots, \mathbf{o}^{(t-1)}, \mathbf{o}^{(t)}, \mathbf{o}^{(t+1)}, \ldots\right]}_n`
 
-For further information, please see the `preprocessing tutorial notebook <https://nbviewer.jupyter.org/github/eonu/sequentia/blob/master/notebooks/2%20-%20Preprocessing%20%28Tutorial%29.ipynb#Filtering-(filtrate)>`_.
-
-Example
--------
-
-.. literalinclude:: ../../_includes/examples/preprocessing/filtrate.py
-    :language: python
-    :linenos:
-
 API reference
 -------------
 
-.. automodule:: sequentia.preprocessing
-   :noindex:
-.. autofunction:: filtrate
+.. autoclass:: sequentia.preprocessing.Filter
+   :members: fit, fit_transform, transform, __call__
