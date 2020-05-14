@@ -6,6 +6,7 @@ from ..internals import _Validator
 __all__ = ['Transform', 'Equalize', 'TrimZeros', 'MinMaxScale', 'Center', 'Standardize', 'Downsample', 'Filter']
 
 class Transform:
+    """Base class representing a single transformation."""
     def __init__(self):
         self._val = _Validator()
 
@@ -37,8 +38,26 @@ class Transform:
         """
         raise NotImplementedError
 
+    def __call__(self, X, verbose=False):
+        """Alias of the :meth:`transform` method."""
+        return self.transform(X, verbose)
+
     def _apply(self, transform, X, verbose):
-        """TODO"""
+        """Applies the transformation to the observation sequence(s).
+
+        Parameters
+        ----------
+        transform: callable
+            The transformation to apply.
+
+        X: numpy.ndarray or List[numpy.ndarray]
+            An individual observation sequence or a list of multiple observation sequences.
+
+        Returns
+        -------
+        transformed: numpy.ndarray or List[numpy.ndarray]
+            The transformed input observation sequence(s).
+        """
         X = self._val.observation_sequences(X, allow_single=True)
         verbose = self._val.boolean(verbose, 'verbose')
 
@@ -60,15 +79,27 @@ class Transform:
                 self._unfit()
 
     def fit(self, X):
-        """TODO"""
+        """Fit the transformation on the provided observation sequence(s) (without transforming them).
+
+        Parameters
+        ----------
+        X: numpy.ndarray or List[numpy.ndarray]
+            An individual observation sequence or a list of multiple observation sequences.
+        """
         self._val.observation_sequences(X, allow_single=True)
 
     def _unfit(self):
-        """TODO"""
+        """Unfit the transformation by resetting the parameters to their default settings."""
         pass
 
     def _is_fitted(self):
-        """TODO"""
+        """Check whether or not the transformation is fitted on some observation sequence(s).
+
+        Returns
+        -------
+        fitted: bool
+            Whether or not the transformation is fitted.
+        """
         return False
 
     def fit_transform(self, X, verbose=False):
@@ -97,13 +128,6 @@ class Equalize(Transform):
         self.length = None
 
     def fit(self, X):
-        """Fits the transformation with the length of the longest provided sequence.
-
-        Parameters
-        ----------
-        X: numpy.ndarray or List[numpy.ndarray]
-            An individual observation sequence or a list of multiple observation sequences.
-        """
         X = self._val.observation_sequences(X, allow_single=True)
         self.length = max(len(x) for x in X) if isinstance(X, list) else len(X)
 
@@ -123,7 +147,18 @@ class Equalize(Transform):
         return self._apply(equalize, X, verbose)
 
 class TrimZeros(Transform):
-    """Trim zero-observations from the input observation sequence(s)."""
+    """Trim zero-observations from the input observation sequence(s).
+
+    Examples
+    --------
+    >>> # Create some sample data
+    >>> z = np.zeros((4, 3))
+    >>> x = lambda i: np.vstack((z, np.random.random((10 * i, 3)), z))
+    >>> X = [x(i) for i in range(1, 4)]
+    >>> # Zero-trim the data
+    >>> X = TrimZeros()(X)
+    """
+
     def _describe(self):
         return 'Remove zero-observations'
 
@@ -139,8 +174,11 @@ class MinMaxScale(Transform):
     ----------
     scale: tuple(int, int)
         The range of the transformed observation sequence features.
+
+    independent: bool
+        Whether to independently compute the minimum and maximum to scale each observation sequence.
     """
-    def __init__(self, scale=(0, 1)):
+    def __init__(self, scale=(0, 1), independent=True):
         super().__init__()
         if not isinstance(scale, tuple):
             raise TypeError('TODO')
@@ -149,35 +187,139 @@ class MinMaxScale(Transform):
         if not scale[0] < scale[1]:
             raise ValueError('TODO')
         self.scale = scale
+        self.independent = self._val.boolean(independent, 'independent')
+        if not self.independent:
+            self.min, self.max = None, None
+
+    def fit(self, X):
+        X = self._val.observation_sequences(X, allow_single=True)
+        if not self.independent:
+            X_concat = np.vstack(X) if isinstance(X, list) else X
+            self.min, self.max = X_concat.min(axis=0), X_concat.max(axis=0)
+
+    def _unfit(self):
+        if not self.independent:
+            self.min, self.max = None, None
+
+    def _is_fitted(self):
+        return False if self.independent else (self.min is not None) and (self.max is not None)
 
     def _describe(self):
-        return 'Min-max scaling into range {}'.format(self.scale)
+        if not self.independent:
+            return 'Min-max scaling into range {}'.format(self.scale)
+        else:
+            return 'Min-max scaling into range {} (independent)'.format(self.scale)
 
     def transform(self, X, verbose=False):
-        def min_max_scale(x):
-            min_, max_ = self.scale
-            scale = (max_ - min_) / (x.max(axis=0) - x.min(axis=0))
-            return scale * x + min_ - x.min(axis=0) * scale
+        if not self.independent:
+            def min_max_scale(x):
+                min_, max_ = self.scale
+                scale = (max_ - min_) / (self.max - self.min)
+                return scale * x + min_ - self.min * scale
+        else:
+            def min_max_scale(x):
+                min_, max_ = self.scale
+                scale = (max_ - min_) / (x.max(axis=0) - x.min(axis=0))
+                return scale * x + min_ - x.min(axis=0) * scale
         return self._apply(min_max_scale, X, verbose)
 
 class Center(Transform):
-    """Centers the observation sequence features around their means. Results in zero-mean features."""
+    """Centers the observation sequence features around their means. Results in zero-mean features.
+
+    Parameters
+    ----------
+    independent: bool
+        Whether to independently compute the mean to scale each observation sequence.
+
+    Examples
+    --------
+    >>> # Create some sample data
+    >>> X = [np.random.random((10 * i, 3)) for i in range(1, 4)]
+    >>> # Center the data
+    >>> X = Center()(X)
+    """
+    def __init__(self, independent=True):
+        super().__init__()
+        self.independent = self._val.boolean(independent, 'independent')
+        if not self.independent:
+            self.mean = None
+
+    def fit(self, X):
+        X = self._val.observation_sequences(X, allow_single=True)
+        if not self.independent:
+            X_concat = np.vstack(X) if isinstance(X, list) else X
+            self.mean = X_concat.mean(axis=0)
+
+    def _unfit(self):
+        if not self.independent:
+            self.mean = None
+
+    def _is_fitted(self):
+        return False if self.independent else (self.mean is not None)
+
     def _describe(self):
-        return 'Centering around mean (zero mean)'
+        if not self.independent:
+            return 'Centering around mean (zero mean)'
+        else:
+            return 'Centering around mean (zero mean) (independent)'
 
     def transform(self, X, verbose=False):
-        def center(x):
-            return x - x.mean(axis=0)
+        if not self.independent:
+            def center(x):
+                return x - self.mean
+        else:
+            def center(x):
+                return x - x.mean(axis=0)
         return self._apply(center, X, verbose)
 
 class Standardize(Transform):
-    """Centers the observation sequence features around their means, then scales them by their deviations. Results in zero-mean, unit-variance features."""
+    """Centers the observation sequence features around their means, then scales them by their deviations.
+    Results in zero-mean, unit-variance features.
+
+    Parameters
+    ----------
+    independent: bool
+        Whether to independently compute the mean and standard deviation to scale each observation sequence.
+
+    Examples
+    --------
+    >>> # Create some sample data
+    >>> X = [np.random.random((10 * i, 3)) for i in range(1, 4)]
+    >>> # Standardize the data
+    >>> X = Standardize()(X)
+    """
+    def __init__(self, independent=True):
+        super().__init__()
+        self.independent = self._val.boolean(independent, 'independent')
+        if not self.independent:
+            self.mean, self.std = None, None
+
+    def fit(self, X):
+        X = self._val.observation_sequences(X, allow_single=True)
+        if not self.independent:
+            X_concat = np.vstack(X) if isinstance(X, list) else X
+            self.mean, self.std = X_concat.mean(axis=0), X_concat.std(axis=0)
+
+    def _unfit(self):
+        if not self.independent:
+            self.mean, self.std = None, None
+
+    def _is_fitted(self):
+        return False if self.independent else (self.mean is not None) and (self.std is not None)
+
     def _describe(self):
-        return 'Standard scaling (zero mean, unit variance)'
+        if not self.independent:
+            return 'Standard scaling (zero mean, unit variance)'
+        else:
+            return 'Standard scaling (zero mean, unit variance) (independent)'
 
     def transform(self, X, verbose=False):
-        def standardize(x):
-            return (x - x.mean(axis=0)) / x.std(axis=0)
+        if not self.independent:
+            def standardize(x):
+                return (x - self.mean) / self.std
+        else:
+            def standardize(x):
+                return (x - x.mean(axis=0)) / x.std(axis=0)
         return self._apply(standardize, X, verbose)
 
 class Downsample(Transform):
@@ -193,6 +335,13 @@ class Downsample(Transform):
 
     method: {'decimate', 'mean'}
         The downsampling method.
+
+    Examples
+    --------
+    >>> # Create some sample data
+    >>> X = [np.random.random((10 * i, 3)) for i in range(1, 4)]
+    >>> # Downsample the data with downsample factor 5 and decimation
+    >>> X = Downsample(factor=5, method='decimate')(X)
     """
     def __init__(self, factor, method='decimate'):
         super().__init__()
@@ -235,6 +384,13 @@ class Filter(Transform):
 
     method: {'median', 'mean'}
         The filtering method.
+
+    Examples
+    --------
+    >>> # Create some sample data
+    >>> X = [np.random.random((10 * i, 3)) for i in range(1, 4)]
+    >>> # Filter the data with window size 5 and median filtering
+    >>> X = Filter(window_size=5, method='median')(X)
     """
     def __init__(self, window_size, method='median'):
         super().__init__()

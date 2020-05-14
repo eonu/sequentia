@@ -45,12 +45,14 @@ Sequentia offers some appropriate classification algorithms for these kinds of t
    :maxdepth: 1
    :caption: Preprocessing Methods
 
+   sections/preprocessing/introduction.rst
+   sections/preprocessing/equalize.rst
    sections/preprocessing/trim_zeros.rst
+   sections/preprocessing/min_max_scale.rst
    sections/preprocessing/center.rst
    sections/preprocessing/standardize.rst
    sections/preprocessing/downsample.rst
-   sections/preprocessing/filtrate.rst
-   sections/preprocessing/fft.rst
+   sections/preprocessing/filter.rst
    sections/preprocessing/preprocessing.rst
 
 Documentation Search and Index

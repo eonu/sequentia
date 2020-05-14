@@ -13,6 +13,23 @@ class Preprocess:
     ----------
     steps: List[Transform]
         A list of preprocessing transformations.
+
+    Examples
+    --------
+    >>> # Create some sample data
+    >>> X = [np.random.random((20 * i, 3)) for i in range(1, 4)]
+    >>> # Create the Preprocess object
+    >>> pre = Preprocess([
+    >>>     TrimZeros(),
+    >>>     Center(),
+    >>>     Standardize(),
+    >>>     Filter(window_size=5, method='median'),
+    >>>     Downsample(factor=5, method='decimate')
+    >>> ])
+    >>> # View a summary of the preprocessing steps
+    >>> pre.summary()
+    >>> # Transform the data applying transformations in order
+    >>> X = pre(X)
     """
 
     def __init__(self, steps):
@@ -44,8 +61,26 @@ class Preprocess:
             X_t = step.transform(X_t, verbose=False)
         return X_t
 
+    def __call__(self, X, verbose=False):
+        """Alias of the :meth:`transform` method.
+
+        See Also
+        --------
+        transform: Applies the transformation.
+        """
+        return self.transform(X, verbose)
+
     def _fit(self, X, verbose):
-        """TODO"""
+        """Fit the preprocessing transformations with the provided observation sequence(s).
+
+        Parameters
+        ----------
+        X: numpy.ndarray or List[numpy.ndarray]
+            An individual observation sequence or a list of multiple observation sequences.
+
+        verbose: bool
+            Whether or not to display a progress bar when fitting transformations.
+        """
         X = self._val.observation_sequences(X, allow_single=True)
         X_t = copy(X)
         pbar = tqdm(self.steps, desc='Fitting transformations', disable=not(verbose and len(self.steps) > 1), leave=True, ncols='100%')
