@@ -1,8 +1,4 @@
-import tqdm
-import tqdm.auto
-import random
-import numpy as np
-import h5py
+import tqdm, tqdm.auto, random, numpy as np, h5py
 from joblib import Parallel, delayed
 from multiprocessing import cpu_count
 from fastdtw import fastdtw

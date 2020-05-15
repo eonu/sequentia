@@ -1,6 +1,4 @@
-import json
-import numpy as np
-import pomegranate as pg
+import numpy as np, pomegranate as pg, json
 from .topologies.ergodic import _ErgodicTopology
 from .topologies.left_right import _LeftRightTopology
 from ...internals import _Validator

@@ -1,8 +1,4 @@
-import pytest
-import warnings
-import os
-import h5py
-import numpy as np
+import pytest, warnings, os, h5py, numpy as np
 from copy import deepcopy
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', category=DeprecationWarning)

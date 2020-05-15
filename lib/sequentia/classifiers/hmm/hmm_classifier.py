@@ -1,5 +1,4 @@
-import json
-import numpy as np
+import numpy as np, json
 from .hmm import HMM
 from sklearn.metrics import confusion_matrix
 from ...internals import _Validator
