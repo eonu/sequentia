@@ -50,7 +50,7 @@ modeling. Mathematically, a left-right HMM is defined by an upper-triangular tra
 
 If we allow transitions to any state at any time, this HMM topology is known as **ergodic**.
 
-**Note**: Ergodicity is mathematically defined as having a transition matrix with no non-zero entries.
+**Note**: Ergodicity is mathematically defined as having a transition matrix with no zero entries.
 Using the ergodic topology in Sequentia will still permit zero entries in the transition matrix,
 but will issue a warning stating that those probabilities will not be learned.
 
