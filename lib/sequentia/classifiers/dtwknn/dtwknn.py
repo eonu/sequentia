@@ -77,41 +77,38 @@ class DTWKNN:
         # FastDTW distance measure
         distance = lambda x1, x2: fastdtw(x1, x2, radius=self._radius, dist=self._metric)[0]
 
-        def find_modes(distances):
-            idx = np.argpartition(distances, self._k)[:self._k]
-            neighbor_labels = [self._y[i] for i in idx]
-            # Find the modal labels
-            counter = Counter(neighbor_labels)
-            max_count = max(counter.values())
-            return [k for k, v in counter.items() if v == max_count]
-
         if isinstance(X, np.ndarray):
             distances = [distance(X, x) for x in tqdm.auto.tqdm(self._X, desc='Calculating distances', disable=not(verbose))]
-            modes = find_modes(distances)
-            # Randomly select one of the modal labels
-            return random.choice(modes)
+            return self._find_nearest(distances)
         else:
             if n_jobs == 1:
                 labels = []
                 for O in tqdm.auto.tqdm(X, desc='Classifying examples', disable=not(verbose)):
                     distances = [distance(O, x) for x in self._X]
-                    modes = find_modes(distances)
-                    # Randomly select one of the modal labels
-                    labels.append(random.choice(modes))
+                    labels.append(self._find_nearest(distances))
                 return labels
             else:
-                def parallel_predict(process, X_chunk):
-                    labels = []
-                    for O in tqdm.tqdm(X_chunk, desc='Classifying examples (process {})'.format(process), disable=not(verbose), position=process-1):
-                        distances = [distance(O, x) for x in self._X]
-                        modes = find_modes(distances)
-                        labels.append(random.choice(modes))
-                    return labels
-
                 n_jobs = cpu_count() if n_jobs == -1 else n_jobs
                 X_chunks = [list(chunk) for chunk in np.array_split(X, n_jobs)]
-                labels = Parallel(n_jobs=n_jobs)(delayed(parallel_predict)(i+1, chunk) for i, chunk in enumerate(X_chunks))
+                labels = Parallel(n_jobs=n_jobs)(delayed(self._parallel_predict)(i+1, chunk, distance, verbose) for i, chunk in enumerate(X_chunks))
                 return [label for sublist in labels for label in sublist] # Flatten the resulting array
+
+    def _find_nearest(self, distances):
+        idx = np.argpartition(distances, self._k)[:self._k]
+        neighbor_labels = [self._y[i] for i in idx]
+        # Find the most common (mode) labels
+        counter = Counter(neighbor_labels)
+        max_count = max(counter.values())
+        modes = [k for k, v in counter.items() if v == max_count]
+        # Randomly pick from the set of labels with the maximum count
+        return random.choice(modes)
+
+    def _parallel_predict(self, process, chunk, distance, verbose):
+        labels = []
+        for O in tqdm.tqdm(chunk, desc='Classifying examples (process {})'.format(process), disable=not(verbose), position=process-1):
+            distances = [distance(O, x) for x in self._X]
+            labels.append(self._find_nearest(distances))
+        return labels
 
     def evaluate(self, X, y, labels=None, verbose=True, n_jobs=1):
         """Evaluates the performance of the classifier on a batch of observation sequences and their labels.
