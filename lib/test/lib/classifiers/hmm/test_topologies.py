@@ -1,6 +1,4 @@
-import pytest
-import warnings
-import numpy as np
+import pytest, warnings, numpy as np
 from sequentia.classifiers import _Topology, _LeftRightTopology, _ErgodicTopology
 from ....support import assert_equal, assert_all_equal, assert_distribution
 

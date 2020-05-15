@@ -1,5 +1,4 @@
-import pytest
-import numpy as np
+import pytest, numpy as np
 from sequentia.internals import _Validator
 from ...support import assert_equal, assert_all_equal
 

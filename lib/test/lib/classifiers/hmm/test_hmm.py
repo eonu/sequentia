@@ -1,8 +1,4 @@
-import pytest
-import warnings
-import os
-import json
-import numpy as np
+import pytest, warnings, os, json, numpy as np
 from copy import deepcopy
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', category=DeprecationWarning)
