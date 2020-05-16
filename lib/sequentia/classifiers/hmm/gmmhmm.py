@@ -1,8 +1,4 @@
 import numpy as np, pomegranate as pg, json
-from .topologies.ergodic import _ErgodicTopology
-from .topologies.left_right import _LeftRightTopology
-from .topologies.strict_left_right import _StrictLeftRightTopology
-from ...internals import _Validator
 from .hmm import HMM
 
 class GMMHMM(HMM):
@@ -77,16 +73,17 @@ class GMMHMM(HMM):
         self._n_seqs = len(X)
         self._n_features = X[0].shape[1]
 
+        # Create a mixture distribution of multivariate Gaussian emission components using combined samples for initial parameter estimation
         concat = np.concatenate(X)
         if self._covariance == 'diagonal':
-            # Create a mixture distribution of diagonal covariance multivariate Gaussian emission components using combined samples for initial parameter esimation
+            # Use diagonal covariance matrices
             dist = pg.GeneralMixtureModel(
                 [pg.MultivariateGaussianDistribution(concat.mean(axis=0), concat.std(axis=0) * np.eye(self._n_features)) for _ in range(self._n_components)],
                 self._random_state.dirichlet(np.ones(self._n_components)
             )
         )
         else:
-            # Create a mixture distribution of full covariance multivariate Gaussian emission components using combined samples for initial parameter esimation
+            # Use full covariance matrices
             dist = pg.GeneralMixtureModel.from_samples(pg.MultivariateGaussianDistribution, self._n_components, concat)
 
         # Create the HMM object

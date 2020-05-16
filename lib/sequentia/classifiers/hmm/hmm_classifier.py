@@ -5,7 +5,8 @@ from sklearn.metrics import confusion_matrix
 from ...internals import _Validator
 
 class HMMClassifier:
-    """A classifier that combines individual :class:`~HMM` objects, which model isolated sequences from different classes."""
+    """A classifier that combines individual :class:`~HMM` and/or :class:`~GMMHMM` objects,
+    which model isolated sequences from different classes."""
 
     def __init__(self):
         self._val = _Validator()
