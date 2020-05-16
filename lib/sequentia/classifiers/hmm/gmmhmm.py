@@ -130,7 +130,7 @@ class GMMHMM(HMM):
                 'n_states': self._n_states,
                 'n_components': self._n_components,
                 'covariance': self._covariance,
-                'topology': 'ergodic' if isinstance(self._topology, _ErgodicTopology) else 'left-right',
+                'topology': self._topologies[self._topology.__class__],
                 'model': {
                     'initial': self._initial.tolist(),
                     'transitions': self._transitions.tolist(),
