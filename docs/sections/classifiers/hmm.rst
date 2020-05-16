@@ -48,14 +48,17 @@ from transitioning to previous states (this is shown in the figure above). This 
 to what known as a **left-right** HMM, and is the most commonly used type of HMM for sequential
 modeling. Mathematically, a left-right HMM is defined by an upper-triangular transition matrix.
 
+A **strict left-right** topology is one in which transitions are only permitted to the current state
+and the next state, i.e. no state-jumping is permitted.
+
 If we allow transitions to any state at any time, this HMM topology is known as **ergodic**.
 
 **Note**: Ergodicity is mathematically defined as having a transition matrix with no zero entries.
 Using the ergodic topology in Sequentia will still permit zero entries in the transition matrix,
 but will issue a warning stating that those probabilities will not be learned.
 
-Sequentia offers both topologies, specified by a string parameter ``topology`` in the
-:class:`~HMM` constructor that takes values `'left-right'` or `'ergodic'`.
+Sequentia offers all three topologies, specified by a string parameter ``topology`` in the
+:class:`~HMM` constructor that takes values `'left-right'`, `'strict-left-right'` or `'ergodic'`.
 
 Making Predictions
 ------------------
