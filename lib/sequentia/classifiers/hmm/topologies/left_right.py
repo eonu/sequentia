@@ -13,9 +13,6 @@ class _LeftRightTopology(_Topology):
         A random state object for reproducible randomness.
     """
 
-    def __init__(self, n_states: int, random_state: np.random.RandomState):
-        super().__init__(n_states, random_state)
-
     def uniform_transitions(self) -> np.ndarray:
         """Sets the transition matrix as uniform (equal probability of transitioning
             to all other possible states from each state) corresponding to the topology.
@@ -33,7 +30,7 @@ class _LeftRightTopology(_Topology):
     def random_transitions(self) -> np.ndarray:
         """Sets the transition matrix as random (random probability of transitioning
         to all other possible states from each state) by sampling probabilities
-        from a Dirichlet distribution - according to the topology.
+        from a Dirichlet distribution, according to the topology.
 
         Parameters
         ----------

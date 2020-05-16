@@ -1,6 +1,7 @@
 import numpy as np, pomegranate as pg, json
 from .topologies.ergodic import _ErgodicTopology
 from .topologies.left_right import _LeftRightTopology
+from .topologies.strict_left_right import _StrictLeftRightTopology
 from ...internals import _Validator
 
 class HMM:
@@ -14,7 +15,7 @@ class HMM:
     n_states: int
         The number of states for the model.
 
-    topology: {'ergodic', 'left-right'}
+    topology: {'ergodic', 'left-right', 'strict-left-right'}
         The topology for the model.
 
     random_state: numpy.random.RandomState, int, optional
@@ -43,13 +44,13 @@ class HMM:
         self._label = self._val.string(label, 'model label')
         self._n_states = self._val.restricted_integer(
             n_states, lambda x: x > 0, desc='number of states', expected='greater than zero')
-        self._val.one_of(topology, ['ergodic', 'left-right'], desc='topology')
+        self._val.one_of(topology, ['ergodic', 'left-right', 'strict-left-right'], desc='topology')
         self._random_state = self._val.random_state(random_state)
-
-        if topology == 'ergodic':
-            self._topology = _ErgodicTopology(self._n_states, self._random_state)
-        elif topology == 'left-right':
-            self._topology = _LeftRightTopology(self._n_states, self._random_state)
+        self._topology = {
+            'ergodic': _ErgodicTopology,
+            'left-right': _LeftRightTopology,
+            'strict-left-right': _StrictLeftRightTopology
+        }[topology](self._n_states, self._random_state)
 
     def set_uniform_initial(self):
         """Sets a uniform initial state distribution."""
