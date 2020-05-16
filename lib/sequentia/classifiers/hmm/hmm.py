@@ -196,6 +196,7 @@ class HMM:
             raise ValueError('Encountered NaN value(s) in HMM parameters')
         else:
             return {
+                'type': 'HMM',
                 'label': self._label,
                 'n_states': self._n_states,
                 'topology': 'ergodic' if isinstance(self._topology, _ErgodicTopology) else 'left-right',

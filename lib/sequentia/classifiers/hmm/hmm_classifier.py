@@ -1,5 +1,6 @@
 import numpy as np, json
 from .hmm import HMM
+from .gmmhmm import GMMHMM
 from sklearn.metrics import confusion_matrix
 from ...internals import _Validator
 
@@ -10,11 +11,11 @@ class HMMClassifier:
         self._val = _Validator()
 
     def fit(self, models):
-        """Fits the classifier with a collection of :class:`~HMM` objects.
+        """Fits the classifier with a collection of :class:`~HMM` and/or :class:`~GMMHMM` objects.
 
         Parameters
         ----------
-        models: List[HMM] or Dict[Any, HMM]
+        models: List[HMM, GMMHMM] or Dict[Any, HMM/GMMHMM]
             A collection of :class:`~HMM` objects to use for classification.
         """
         if isinstance(models, list):
@@ -127,8 +128,8 @@ class HMMClassifier:
         """Serializes the :class:`HMMClassifier` object into a `dict`, ready to be stored in JSON format.
 
         .. note::
-            Serializing a :class:`HMMClassifier` implicitly serializes the internal :class:`HMM` objects
-            by calling :meth:`HMM.as_dict` and storing all of the model data in a single `dict`.
+            Serializing a :class:`HMMClassifier` implicitly serializes the internal :class:`HMM` or :class:`GMMHMM` objects
+            by calling :meth:`HMM.as_dict` or `GMMHMM.as_dict` and storing all of the model data in a single `dict`.
 
         Returns
         -------
@@ -138,6 +139,7 @@ class HMMClassifier:
         See Also
         --------
         HMM.as_dict: The serialization function used for individual :class:`HMM` objects.
+        GMMHMM.as_dict: The serialization function used for individual :class:`GMMHMM` objects.
         """
 
         try:
@@ -192,6 +194,18 @@ class HMMClassifier:
             data = json.load(f)
 
         clf = cls()
-        clf._models = [HMM.load(model, random_state=random_state) for model in data['models']]
+        clf._models = []
+
+        for model in data['models']:
+            # Retrieve the type of HMM
+            if model['type'] == 'HMM':
+                hmm = HMM
+            elif model['type'] == 'GMMHMM':
+                hmm = GMMHMM
+            else:
+                raise ValueError("Expected 'type' field to be either 'HMM' or 'GMMHMM'")
+
+            # Deserialize the HMM and add it to the classifier
+            clf._models.append(hmm.load(model, random_state=random_state))
 
         return clf
