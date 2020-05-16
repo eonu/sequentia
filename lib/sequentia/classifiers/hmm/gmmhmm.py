@@ -170,6 +170,14 @@ class GMMHMM(HMM):
         else:
             pass
 
+        # Check that JSON is in the "correct" format
+        if data['type'] == 'HMM':
+            raise ValueError('You must use the HMM class to deserialize a stored HMM model')
+        elif data['type'] == 'GMMHMM':
+            pass
+        else:
+            raise ValueError("Attempted to deserialize an invalid model - expected 'type' field to be 'GMMHMM'")
+
         # Deserialize the data into a GMMHMM object
         gmmhmm = cls(data['label'], data['n_states'], data['n_components'], data['covariance'], data['topology'], random_state=random_state)
         gmmhmm._initial = np.array(data['model']['initial'])
