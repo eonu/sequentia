@@ -130,7 +130,7 @@ class HMMClassifier:
 
         .. note::
             Serializing a :class:`HMMClassifier` implicitly serializes the internal :class:`HMM` or :class:`GMMHMM` objects
-            by calling :meth:`HMM.as_dict` or `GMMHMM.as_dict` and storing all of the model data in a single `dict`.
+            by calling :meth:`HMM.as_dict` or :meth:`GMMHMM.as_dict` and storing all of the model data in a single `dict`.
 
         Returns
         -------
