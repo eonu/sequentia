@@ -575,6 +575,7 @@ def test_as_dict_fitted():
         hmm.fit(X)
     d = hmm.as_dict()
 
+    assert d['type'] == 'HMM'
     assert d['label'] == 'c1'
     assert d['n_states'] == 5
     assert d['topology'] == 'ergodic'
@@ -647,7 +648,7 @@ def test_load_invalid_dict():
 
 def test_load_dict():
     """Load a HMM from a valid dict"""
-    hmm = deepcopy(hmm_e)
+    hmm = deepcopy(hmm_lr)
     hmm.set_uniform_initial()
     hmm.set_uniform_transitions()
     with warnings.catch_warnings():
@@ -658,16 +659,16 @@ def test_load_dict():
     assert isinstance(hmm, HMM)
     assert hmm._label == 'c1'
     assert hmm._n_states == 5
-    assert isinstance(hmm._topology, _ErgodicTopology)
+    assert isinstance(hmm._topology, _LeftRightTopology)
     assert_equal(hmm._initial, np.array([
-        0.2, 0.2, 0.2, 0.2, 0.2
+        1.00000000e+00, 2.15235240e-10, 2.65940585e-11, 2.39579877e-13, 2.86304419e-15
     ]))
     assert_equal(hmm._transitions, np.array([
-        [0.2, 0.2, 0.2, 0.2, 0.2],
-        [0.2, 0.2, 0.2, 0.2, 0.2],
-        [0.2, 0.2, 0.2, 0.2, 0.2],
-        [0.2, 0.2, 0.2, 0.2, 0.2],
-        [0.2, 0.2, 0.2, 0.2, 0.2]
+        [0.00000000e+00, 2.03956144e-01, 4.41043371e-01, 3.54753419e-01, 2.47065801e-04],
+        [0.00000000e+00, 3.32109714e-02, 8.89846426e-01, 7.55129472e-02, 1.42965568e-03],
+        [0.00000000e+00, 0.00000000e+00, 4.78646029e-01, 4.51166735e-01, 7.01872357e-02],
+        [0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 4.77883007e-01, 5.22116993e-01],
+        [0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 1.00000000e+00]
     ]))
     assert hmm._n_seqs == 3
     assert hmm._n_features == 3
@@ -706,7 +707,7 @@ def test_load_invalid_json():
 def test_load_path():
     """Load a HMM from a valid JSON file"""
     try:
-        hmm = deepcopy(hmm_e)
+        hmm = deepcopy(hmm_slr)
         hmm.set_uniform_initial()
         hmm.set_uniform_transitions()
         with warnings.catch_warnings():
@@ -718,16 +719,16 @@ def test_load_path():
         assert isinstance(hmm, HMM)
         assert hmm._label == 'c1'
         assert hmm._n_states == 5
-        assert isinstance(hmm._topology, _ErgodicTopology)
+        assert isinstance(hmm._topology, _StrictLeftRightTopology)
         assert_equal(hmm._initial, np.array([
-            0.2, 0.2, 0.2, 0.2, 0.2
+            1.00000000e+00, 8.17583139e-17, 3.68732352e-49, 3.20095727e-33, 4.52958070e-34
         ]))
         assert_equal(hmm._transitions, np.array([
-            [0.2, 0.2, 0.2, 0.2, 0.2],
-            [0.2, 0.2, 0.2, 0.2, 0.2],
-            [0.2, 0.2, 0.2, 0.2, 0.2],
-            [0.2, 0.2, 0.2, 0.2, 0.2],
-            [0.2, 0.2, 0.2, 0.2, 0.2]
+            [0.00000000e+00, 1.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00],
+            [0.00000000e+00, 6.66666667e-01, 3.33333333e-01, 0.00000000e+00, 0.00000000e+00],
+            [0.00000000e+00, 0.00000000e+00, 8.84889735e-10, 9.99999999e-01, 0.00000000e+00],
+            [0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 6.03077553e-01, 3.96922447e-01],
+            [0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 1.00000000e+00]
         ]))
         assert hmm._n_seqs == 3
         assert hmm._n_features == 3

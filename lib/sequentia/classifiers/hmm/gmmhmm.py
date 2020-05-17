@@ -102,6 +102,14 @@ class GMMHMM(HMM):
         self._initial = inner_tx[self._n_states]
         self._transitions = inner_tx[:self._n_states]
 
+    @property
+    def n_components(self):
+        return self._n_components
+
+    @property
+    def covariance(self):
+        return self._covariance
+
     def as_dict(self):
         """Serializes the :class:`GMMHMM` object into a `dict`, ready to be stored in JSON format.
 
