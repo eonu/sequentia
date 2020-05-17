@@ -49,6 +49,7 @@ def test_as_dict_fitted():
     hmm = deepcopy(hmm_diag)
     hmm.set_uniform_initial()
     hmm.set_uniform_transitions()
+    before = hmm.initial, hmm.transitions
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore', category=DeprecationWarning)
         hmm.fit(X)
@@ -60,16 +61,8 @@ def test_as_dict_fitted():
     assert d['n_components'] == 5
     assert d['covariance'] == 'diagonal'
     assert d['topology'] == 'left-right'
-    assert_equal(d['model']['initial'], np.array([
-        1.0, 0.0, 1.5900681624889484e-35, 4.496137626463639e-37, 7.327577727627556e-35
-    ]))
-    assert_equal(d['model']['transitions'], np.array([
-        [0.00000000e+00, 6.66666667e-01, 4.68887399e-07, 3.33332730e-01, 1.34734441e-07],
-        [0.00000000e+00, 0.00000000e+00, 9.99999875e-01, 2.43928881e-08, 1.00588498e-07],
-        [0.00000000e+00, 0.00000000e+00, 3.22840529e-02, 9.35801370e-01, 3.19145768e-02],
-        [0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 5.18319902e-01, 4.81680098e-01],
-        [0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 1.00000000e+00]
-    ]))
+    assert_not_equal(d['model']['initial'], before[0])
+    assert_not_equal(d['model']['transitions'], before[1])
     assert d['model']['n_seqs'] == 3
     assert d['model']['n_features'] == 3
     assert isinstance(d['model']['hmm'], dict)
@@ -118,9 +111,9 @@ def test_save_with_extension():
     finally:
         os.remove('test.json')
 
-# ========== #
-# HMM.load() #
-# ========== #
+# ============= #
+# GMMHMM.load() #
+# ============= #
 
 def test_load_invalid_dict():
     """Load a GMMHMM from an invalid dict"""
@@ -132,6 +125,7 @@ def test_load_dict():
     hmm = deepcopy(hmm_diag)
     hmm.set_uniform_initial()
     hmm.set_uniform_transitions()
+    before = hmm.initial, hmm.transitions
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore', category=DeprecationWarning)
         hmm.fit(X)
@@ -143,16 +137,8 @@ def test_load_dict():
     assert hmm._n_components == 5
     assert hmm._covariance == 'diagonal'
     assert isinstance(hmm._topology, _LeftRightTopology)
-    assert_equal(hmm._initial, np.array([
-        1.00000000e+00, 0.00000000e+00, 1.59006816e-35, 4.49613763e-37, 7.32757773e-35
-    ]))
-    assert_equal(hmm._transitions, np.array([
-        [0.00000000e+00, 6.66666667e-01, 4.68887399e-07, 3.33332730e-01, 1.34734441e-07],
-        [0.00000000e+00, 0.00000000e+00, 9.99999875e-01, 2.43928881e-08, 1.00588498e-07],
-        [0.00000000e+00, 0.00000000e+00, 3.22840529e-02, 9.35801370e-01, 3.19145768e-02],
-        [0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 5.18319902e-01, 4.81680098e-01],
-        [0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 1.00000000e+00]
-    ]))
+    assert_not_equal(hmm._initial, before[0])
+    assert_not_equal(hmm._transitions, before[1])
     assert hmm._n_seqs == 3
     assert hmm._n_features == 3
     assert isinstance(hmm._model, pg.HiddenMarkovModel)
@@ -190,9 +176,10 @@ def test_load_invalid_json():
 def test_load_path():
     """Load a GMMHMM from a valid JSON file"""
     try:
-        hmm = deepcopy(hmm_full)
+        hmm = deepcopy(hmm_diag)
         hmm.set_uniform_initial()
         hmm.set_uniform_transitions()
+        before = hmm.initial, hmm.transitions
         with warnings.catch_warnings():
             warnings.filterwarnings('ignore', category=DeprecationWarning)
             hmm.fit(X)
@@ -204,17 +191,9 @@ def test_load_path():
         assert hmm._n_states == 5
         assert hmm._n_components == 5
         assert isinstance(hmm._topology, _LeftRightTopology)
-        assert hmm._covariance == 'full'
-        assert_equal(hmm._initial, np.array([
-            1.00000000e+000, 7.42563882e-211, 0.00000000e+000, 0.00000000e+000, 3.62089287e-116
-        ]))
-        assert_equal(hmm._transitions, np.array([
-            [4.70308755e-01, 3.53127465e-01, 1.76563780e-01, 0.00000000e+00, 4.39410884e-63],
-            [0.00000000e+00, 1.43953898e-01, 8.56046102e-01, 9.59514247e-23, 1.26148657e-53],
-            [0.00000000e+00, 0.00000000e+00, 3.99999989e-01, 6.00000011e-01, 3.58675736e-22],
-            [0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 5.00000064e-01, 4.99999936e-01],
-            [0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 1.00000000e+00]
-        ]))
+        assert hmm._covariance == 'diagonal'
+        assert_not_equal(hmm._initial, before[0])
+        assert_not_equal(hmm._transitions, before[1])
         assert hmm._n_seqs == 3
         assert hmm._n_features == 3
         assert isinstance(hmm._model, pg.HiddenMarkovModel)

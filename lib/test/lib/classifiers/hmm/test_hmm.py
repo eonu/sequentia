@@ -651,6 +651,7 @@ def test_load_dict():
     hmm = deepcopy(hmm_lr)
     hmm.set_uniform_initial()
     hmm.set_uniform_transitions()
+    before = hmm.initial, hmm.transitions
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore', category=DeprecationWarning)
         hmm.fit(X)
@@ -660,16 +661,8 @@ def test_load_dict():
     assert hmm._label == 'c1'
     assert hmm._n_states == 5
     assert isinstance(hmm._topology, _LeftRightTopology)
-    assert_equal(hmm._initial, np.array([
-        1.00000000e+00, 2.15235240e-10, 2.65940585e-11, 2.39579877e-13, 2.86304419e-15
-    ]))
-    assert_equal(hmm._transitions, np.array([
-        [0.00000000e+00, 2.03956144e-01, 4.41043371e-01, 3.54753419e-01, 2.47065801e-04],
-        [0.00000000e+00, 3.32109714e-02, 8.89846426e-01, 7.55129472e-02, 1.42965568e-03],
-        [0.00000000e+00, 0.00000000e+00, 4.78646029e-01, 4.51166735e-01, 7.01872357e-02],
-        [0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 4.77883007e-01, 5.22116993e-01],
-        [0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 1.00000000e+00]
-    ]))
+    assert_not_equal(hmm._initial, before[0])
+    assert_not_equal(hmm._transitions, before[1])
     assert hmm._n_seqs == 3
     assert hmm._n_features == 3
     assert isinstance(hmm._model, pg.HiddenMarkovModel)
