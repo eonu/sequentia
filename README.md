@@ -30,7 +30,7 @@
 
 ## Introduction
 
-<img src="https://i.ibb.co/gPymgs4/classifier.png" width="40%" align="right"></img>
+<img src="https://i.ibb.co/jVD2S4b/classifier.png" width="40%" align="right"></img>
 
 Temporal sequences are sequences of observations that occur over time. Changing patterns over time naturally provide many interesting opportunities and challenges for machine learning.
 

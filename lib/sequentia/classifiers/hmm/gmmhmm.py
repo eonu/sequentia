@@ -169,7 +169,7 @@ class GMMHMM(HMM):
         as_dict: Generates a `dict` representation of the :class:`GMMHMM`.
         """
 
-        # Load the serialized GMMHMM data
+        # Load the serialized GMM-HMM data
         if isinstance(data, dict):
             pass
         elif isinstance(data, str):
@@ -186,7 +186,7 @@ class GMMHMM(HMM):
         else:
             raise ValueError("Attempted to deserialize an invalid model - expected 'type' field to be 'GMMHMM'")
 
-        # Deserialize the data into a GMMHMM object
+        # Deserialize the data into a GMM-HMM object
         gmmhmm = cls(data['label'], data['n_states'], data['n_components'], data['covariance'], data['topology'], random_state=random_state)
         gmmhmm._initial = np.array(data['model']['initial'])
         gmmhmm._transitions = np.array(data['model']['transitions'])

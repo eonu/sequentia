@@ -40,7 +40,7 @@ extensions = [
     'm2r'
 ]
 
-# autodoc_member_order = 'bysource'
+autodoc_member_order = 'bysource'
 autosummary_generate = True
 numpydoc_show_class_members = False
 
