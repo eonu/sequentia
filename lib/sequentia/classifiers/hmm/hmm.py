@@ -194,6 +194,7 @@ class HMM:
             raise ValueError('Encountered NaN value(s) in HMM parameters')
         else:
             return {
+                'type': 'HMM',
                 'label': self._label,
                 'n_states': self._n_states,
                 'topology': self._topologies[self._topology.__class__],
@@ -255,6 +256,14 @@ class HMM:
                 data = json.load(f)
         else:
             pass
+
+        # Check that JSON is in the "correct" format
+        if data['type'] == 'HMM':
+            pass
+        elif data['type'] == 'GMMHMM':
+            raise ValueError('You must use the GMMHMM class to deserialize a stored GMMHMM model')
+        else:
+            raise ValueError("Attempted to deserialize an invalid model - expected 'type' field to be 'HMM'")
 
         # Deserialize the data into a HMM object
         hmm = cls(data['label'], data['n_states'], data['topology'], random_state=random_state)

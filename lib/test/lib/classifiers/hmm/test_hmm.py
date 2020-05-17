@@ -575,6 +575,7 @@ def test_as_dict_fitted():
         hmm.fit(X)
     d = hmm.as_dict()
 
+    assert d['type'] == 'HMM'
     assert d['label'] == 'c1'
     assert d['n_states'] == 5
     assert d['topology'] == 'ergodic'
@@ -647,9 +648,10 @@ def test_load_invalid_dict():
 
 def test_load_dict():
     """Load a HMM from a valid dict"""
-    hmm = deepcopy(hmm_e)
+    hmm = deepcopy(hmm_lr)
     hmm.set_uniform_initial()
     hmm.set_uniform_transitions()
+    before = hmm.initial, hmm.transitions
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore', category=DeprecationWarning)
         hmm.fit(X)
@@ -658,17 +660,9 @@ def test_load_dict():
     assert isinstance(hmm, HMM)
     assert hmm._label == 'c1'
     assert hmm._n_states == 5
-    assert isinstance(hmm._topology, _ErgodicTopology)
-    assert_equal(hmm._initial, np.array([
-        0.2, 0.2, 0.2, 0.2, 0.2
-    ]))
-    assert_equal(hmm._transitions, np.array([
-        [0.2, 0.2, 0.2, 0.2, 0.2],
-        [0.2, 0.2, 0.2, 0.2, 0.2],
-        [0.2, 0.2, 0.2, 0.2, 0.2],
-        [0.2, 0.2, 0.2, 0.2, 0.2],
-        [0.2, 0.2, 0.2, 0.2, 0.2]
-    ]))
+    assert isinstance(hmm._topology, _LeftRightTopology)
+    assert_not_equal(hmm._initial, before[0])
+    assert_not_equal(hmm._transitions, before[1])
     assert hmm._n_seqs == 3
     assert hmm._n_features == 3
     assert isinstance(hmm._model, pg.HiddenMarkovModel)
@@ -706,7 +700,7 @@ def test_load_invalid_json():
 def test_load_path():
     """Load a HMM from a valid JSON file"""
     try:
-        hmm = deepcopy(hmm_e)
+        hmm = deepcopy(hmm_slr)
         hmm.set_uniform_initial()
         hmm.set_uniform_transitions()
         with warnings.catch_warnings():
@@ -718,16 +712,16 @@ def test_load_path():
         assert isinstance(hmm, HMM)
         assert hmm._label == 'c1'
         assert hmm._n_states == 5
-        assert isinstance(hmm._topology, _ErgodicTopology)
+        assert isinstance(hmm._topology, _StrictLeftRightTopology)
         assert_equal(hmm._initial, np.array([
-            0.2, 0.2, 0.2, 0.2, 0.2
+            1.00000000e+00, 8.17583139e-17, 3.68732352e-49, 3.20095727e-33, 4.52958070e-34
         ]))
         assert_equal(hmm._transitions, np.array([
-            [0.2, 0.2, 0.2, 0.2, 0.2],
-            [0.2, 0.2, 0.2, 0.2, 0.2],
-            [0.2, 0.2, 0.2, 0.2, 0.2],
-            [0.2, 0.2, 0.2, 0.2, 0.2],
-            [0.2, 0.2, 0.2, 0.2, 0.2]
+            [0.00000000e+00, 1.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00],
+            [0.00000000e+00, 6.66666667e-01, 3.33333333e-01, 0.00000000e+00, 0.00000000e+00],
+            [0.00000000e+00, 0.00000000e+00, 8.84889735e-10, 9.99999999e-01, 0.00000000e+00],
+            [0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 6.03077553e-01, 3.96922447e-01],
+            [0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 1.00000000e+00]
         ]))
         assert hmm._n_seqs == 3
         assert hmm._n_features == 3

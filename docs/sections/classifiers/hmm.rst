@@ -91,10 +91,47 @@ API reference
 .. autoclass:: sequentia.classifiers.hmm.HMM
     :members:
 
+Hidden Markov Model with Gaussian Mixture Emissions (``GMMHMM``)
+================================================================
+
+The assumption that a single multivariate Gaussian emission distribution
+is accurate and representative enough to model the probability of observation
+vectors of any state of a HMM is often a very strong and naive one.
+
+Instead, a more powerful approach is to represent the emission distribution as
+a mixture of multiple multivariate Gaussian densities. An emission distribution
+for state :math:`m`, formed by a mixture of :math:`G` multivariate Gaussian densities is defined as:
+
+.. math::
+    b_m(\mathbf{o}^{(t)}) = \sum_{g=1}^G c_g^{(m)} \mathcal{N}\big(\mathbf{o}^{(t)}\ ;\ \boldsymbol\mu_g^{(m)}, \Sigma_g^{(m)}\big)
+
+where :math:`\mathbf{o}^{(t)}` is an observation vector at time :math:`t`,
+:math:`c_g^{(m)}` is a *mixing coefficient* such that :math:`\sum_{g=1}^G c_g^{(m)} = 1`
+and :math:`\boldsymbol\mu_g^{(m)}` and :math:`\Sigma_g^{(m)}` are the mean vector
+and covariance matrix of the :math:`g^\text{th}` mixture component of the :math:`m^\text{th}`
+state, respectively.
+
+Even in the case that multiple Gaussian densities are not needed, the mixing coefficients
+can be adjusted so that irrelevant Gaussians are omitted and only a single Gaussian remains.
+
+Example
+-------
+
+.. literalinclude:: ../../_includes/examples/classifiers/gmmhmm.py
+    :language: python
+    :linenos:
+
+API reference
+-------------
+
+.. autoclass:: sequentia.classifiers.hmm.GMMHMM
+    :inherited-members:
+    :members:
+
 Hidden Markov Model Classifier (``HMMClassifier``)
 ==================================================
 
-Multiple HMMs can be combined to form a multi-class classifier.
+Multiple HMMs (and/or GMMHMMs) can be combined to form a multi-class classifier.
 To classify a new observation sequence :math:`O'`, this works by:
 
 1. | Creating and training the HMMs :math:`\lambda_1, \lambda_2, \ldots, \lambda_N`.

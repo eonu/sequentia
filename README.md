@@ -52,7 +52,7 @@ Sequentia offers the use of multivariate observation sequences with varying dura
 
 - [x] Hidden Markov Models (via [Pomegranate](https://github.com/jmschrei/pomegranate) [[1]](#references))
   - [x] Multivariate Gaussian Emissions
-  - [ ] Gaussian Mixture Model Emissions (_soon!_)
+  - [x] Gaussian Mixture Model Emissions (full and diagonal covariances)
   - [x] Left-Right and Ergodic Topologies
 - [x] Approximate Dynamic Time Warping k-Nearest Neighbors (implemented with [FastDTW](https://github.com/slaypni/fastdtw) [[2]](#references))
 - [ ] Long Short-Term Memory Networks (_soon!_)
@@ -66,8 +66,6 @@ Sequentia offers the use of multivariate observation sequences with varying dura
 ### Parallelization
 
 - [x] Multi-processing for DTW k-NN predictions
-
-> **Disclaimer**: The package currently remains largely untested and is still in its early stages – _use with caution_!
 
 ## Installation
 
