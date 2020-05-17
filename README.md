@@ -30,8 +30,6 @@
 
 ## Introduction
 
-<img src="https://i.ibb.co/jVD2S4b/classifier.png" width="40%" align="right"></img>
-
 Temporal sequences are sequences of observations that occur over time. Changing patterns over time naturally provide many interesting opportunities and challenges for machine learning.
 
 This library specifically aims to tackle classification problems for isolated temporal sequences by creating an interface to a number of classification algorithms.
@@ -58,7 +56,7 @@ Sequentia offers the use of multivariate observation sequences with varying dura
 - [ ] Long Short-Term Memory Networks (_soon!_)
 
 <p align="center">
-  <img src="https://i.ibb.co/jVD2S4b/classifier.png" width="70%"/>
+  <img src="https://i.ibb.co/jVD2S4b/classifier.png"/>
   Structure of a multi-class HMM isolated sequence classifier
 </p>
 
