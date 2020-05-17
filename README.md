@@ -57,6 +57,13 @@ Sequentia offers the use of multivariate observation sequences with varying dura
 - [x] Approximate Dynamic Time Warping k-Nearest Neighbors (implemented with [FastDTW](https://github.com/slaypni/fastdtw) [[2]](#references))
 - [ ] Long Short-Term Memory Networks (_soon!_)
 
+<p align="center">
+  <img src="https://i.ibb.co/jVD2S4b/classifier.png" width="70%"></img>
+  <caption>
+    <em>Structure of a multi-class HMM isolated sequence classifier</em>
+  </caption>
+</p>
+
 ### Preprocessing methods
 
 - [x] Centering, standardization and min-max scaling
