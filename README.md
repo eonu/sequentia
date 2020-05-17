@@ -56,7 +56,7 @@ Sequentia offers the use of multivariate observation sequences with varying dura
 - [ ] Long Short-Term Memory Networks (_soon!_)
 
 <p align="center">
-  <img src="https://i.ibb.co/jVD2S4b/classifier.png"/>
+  <img src="https://i.ibb.co/jVD2S4b/classifier.png" width="600px"/>
   Structure of a multi-class HMM isolated sequence classifier
 </p>
 
