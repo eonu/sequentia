@@ -67,7 +67,7 @@ class HMMClassifier:
         X = self._val.observation_sequences(X, allow_single=True)
         if isinstance(prior, dict):
             assert len(prior) == len(self._models), 'There must be a class prior for each HMM or class'
-            assert all(model.label in prior for model in self.models), 'There must be a class prior for each HMM or class'
+            assert all(model.label in prior for model in self._models), 'There must be a class prior for each HMM or class'
             assert all(isinstance(p, (int, float)) for p in prior.values()), 'Class priors must be numerical'
             assert all(0. <= p <= 1. for p in prior.values()), 'Class priors must each be between zero and one'
             assert np.isclose(sum(prior.values()), 1.), 'Class priors must form a probability distribution by summing to one'
@@ -87,7 +87,7 @@ class HMMClassifier:
             prior = {model.label:(1. / len(self._models)) for model in self._models}
 
         def _map(sequence):
-            scores = [(model.label, model.forward(sequence) - np.log(prior[model])) for model in self._models]
+            scores = [(model.label, model.forward(sequence) - np.log(prior[model.label])) for model in self._models]
             best = min(scores, key=lambda x: x[1])
             return (best[0], scores) if return_scores else best[0]
 
