@@ -131,21 +131,24 @@ API reference
 Hidden Markov Model Classifier (``HMMClassifier``)
 ==================================================
 
-Multiple HMMs (and/or GMMHMMs) can be combined to form a multi-class classifier.
+Multiple HMMs (and/or GMM-HMMs) can be combined to form a multi-class classifier.
 To classify a new observation sequence :math:`O'`, this works by:
 
-1. | Creating and training the HMMs :math:`\lambda_1, \lambda_2, \ldots, \lambda_N`.
+1. | Creating and training the HMMs :math:`\lambda_1, \lambda_2, \ldots, \lambda_C`.
 
-2. | Calculating the likelihoods :math:`\mathbb{P}(O'|\lambda_1), \mathbb{P}(O'|\lambda_2), \ldots, \mathbb{P}(O'|\lambda_N)` of each model generating :math:`O'`.
-   | **Note**: You can also used the un-normalized posterior :math:`\mathbb{P}(O'|\lambda_c)\mathbb{P}(\lambda_c)` instead of the likelihood.
+2. | Calculating the likelihoods :math:`\mathbb{P}(O'|\lambda_1), \mathbb{P}(O'|\lambda_2), \ldots, \mathbb{P}(O'|\lambda_C)` of each model generating :math:`O'`.
 
-3. | Choose the class represented by the HMM with the highest likelihood – that is, :math:`c^*=\mathop{\arg\max}_{c\in\{1,\ldots,N\}}{\mathbb{P}(O'|\lambda_c)}`.
+3. | Scaling the likelihoods by priors :math:`\mathbb{P}(\lambda_1), \mathbb{P}(\lambda_2), \ldots, \mathbb{P}(\lambda_C)`, producing un-normalized posteriors
+    :math:`\mathbb{P}(O'|\lambda_c)\mathbb{P}(\lambda_c)`.
+
+4. | Performing MAP classification by choosing the class represented by the HMM with the highest posterior – that is,
+    :math:`c^*=\mathop{\arg\max}_{c\in\{1,\ldots,C\}}{\mathbb{P}(O'|\lambda_c)\mathbb{P}(\lambda_c)}`.
 
 These steps are summarized in the diagram below.
 
-.. image:: https://i.ibb.co/gPymgs4/classifier.png
+.. image:: /_static/classifier.png
     :alt: HMM Classifier
-    :width: 400
+    :width: 600
 
 Example
 -------

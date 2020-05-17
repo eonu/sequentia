@@ -35,7 +35,7 @@ class HMMClassifier:
         else:
             raise RuntimeError('Must fit the classifier with at least one HMM')
 
-    def predict(self, X, prior=True, return_scores=False):
+    def predict(self, X, prior='frequency', return_scores=False):
         """Predicts the label for an observation sequence (or multiple sequences) according to maximum likelihood or posterior scores.
 
         Parameters
@@ -43,12 +43,15 @@ class HMMClassifier:
         X: numpy.ndarray or List[numpy.ndarray]
             An individual observation sequence or a list of multiple observation sequences.
 
-        prior: bool
-            Whether to calculate a prior for each model and perform MAP estimation by scoring with
-            the joint probability (or un-normalized posterior) :math:`\mathbb{P}(O, \lambda_c)=\mathbb{P}(O|\lambda_c)\mathbb{P}(\lambda_c)`.
+        prior: {'frequency', 'uniform'} or Dict[str, float]
+            How the prior for each model is calculated to perform MAP estimation by scoring with
+            the joint probability (or un-normalized posterior) :math:`\mathbb{P}(O, \lambda_c)=\mathbb{P}(O|\lambda_c)\mathbb{P}(\lambda_c)`,
+            where the likelihood :math:`\mathbb{P}(O|\lambda_c)` is generated from the models' :func:`~HMM.forward` function.
 
-            If this parameter is set to false, then the negative log likelihoods
-            :math:`\mathbb{P}(O|\lambda_c)` generated from the models' :func:`~HMM.forward` function are used.
+            - `'frequency'`: Calculate the prior :math:`\mathbb{P}(\lambda_c)` as the proportion of training examples in class :math:`c`.
+            - `'uniform'`: Set the priors uniformly such that :math:`\mathbb{P}(\lambda_c)=\\frac{1}{C}` for each class :math:`c\in\{1,\ldots,C\}`.
+
+            Alternatively, class priors can be specified in a ``dict``, e.g. ``{'class1': 0.1, 'class2': 0.3, 'class3': 0.6}``.
 
         return_scores: bool
             Whether to return the scores of each model on the observation sequence(s).
@@ -61,30 +64,37 @@ class HMMClassifier:
             If ``return_scores`` is true, then for each observation sequence, a tuple `(label, scores)` is returned for each label,
             consisting of the `scores` of each HMM and the `label` of the HMM with the best score.
         """
-        self._val.boolean(prior, desc='prior')
-        self._val.boolean(return_scores, desc='return_scores')
         X = self._val.observation_sequences(X, allow_single=True)
+        if isinstance(prior, dict):
+            assert len(prior) == len(self._models), 'There must be a class prior for each HMM or class'
+            assert all(model.label in prior for model in self._models), 'There must be a class prior for each HMM or class'
+            assert all(isinstance(p, (int, float)) for p in prior.values()), 'Class priors must be numerical'
+            assert all(0. <= p <= 1. for p in prior.values()), 'Class priors must each be between zero and one'
+            assert np.isclose(sum(prior.values()), 1.), 'Class priors must form a probability distribution by summing to one'
+        else:
+            self._val.one_of(prior, ['frequency', 'uniform'], desc='prior')
+        self._val.boolean(return_scores, desc='return_scores')
 
         try:
             self._models
         except AttributeError as e:
             raise AttributeError('The classifier needs to be fitted before predictions are made') from e
 
-        total_seqs = sum(model.n_seqs for model in self._models)
+        if prior == 'frequency':
+            total_seqs = sum(model.n_seqs for model in self._models)
+            prior = {model.label:(model.n_seqs / total_seqs) for model in self._models}
+        elif prior == 'uniform':
+            prior = {model.label:(1. / len(self._models)) for model in self._models}
 
-        if isinstance(X, np.ndarray): # Single observation sequence
-            scores = [(model.label, model.forward(X) - np.log(model.n_seqs / total_seqs) * prior) for model in self._models]
+        def _map(sequence):
+            scores = [(model.label, model.forward(sequence) - np.log(prior[model.label])) for model in self._models]
             best = min(scores, key=lambda x: x[1])
             return (best[0], scores) if return_scores else best[0]
-        else: # Multiple observation sequences
-            predictions = []
-            for x in X:
-                scores = [(model.label, model.forward(x) - np.log(model.n_seqs / total_seqs) * prior) for model in self._models]
-                best = min(scores, key=lambda x: x[1])
-                predictions.append((best[0], scores) if return_scores else best[0])
-            return predictions
 
-    def evaluate(self, X, y, prior=True, labels=None):
+        # Return MAP predictions (and scores) for observation sequence(s)
+        return _map(X) if isinstance(X, np.ndarray) else [_map(sequence) for sequence in X]
+
+    def evaluate(self, X, y, prior='frequency', labels=None):
         """Evaluates the performance of the classifier on a batch of observation sequences and their labels.
 
         Parameters
@@ -95,12 +105,15 @@ class HMMClassifier:
         y: List[str]
             A list of labels for the observation sequences.
 
-        prior: bool
-            Whether to calculate a prior for each model and perform MAP estimation by scoring with
-            the joint probability (or un-normalized posterior) :math:`\mathbb{P}(O, \lambda_c)=\mathbb{P}(O|\lambda_c)\mathbb{P}(\lambda_c)`.
+        prior: {'frequency', 'uniform'} or Dict[str, float]
+            How the prior for each model is calculated to perform MAP estimation by scoring with
+            the joint probability (or un-normalized posterior) :math:`\mathbb{P}(O, \lambda_c)=\mathbb{P}(O|\lambda_c)\mathbb{P}(\lambda_c)`,
+            where the likelihood :math:`\mathbb{P}(O|\lambda_c)` is generated from the models' :func:`~HMM.forward` function.
 
-            If this parameter is set to false, then the negative log likelihoods
-            :math:`\mathbb{P}(O|\lambda_c)` generated from the models' :func:`~HMM.forward` function are used.
+            - `'frequency'`: Calculate the prior :math:`\mathbb{P}(\lambda_c)` as the proportion of training examples in class :math:`c`.
+            - `'uniform'`: Set the priors uniformly such that :math:`\mathbb{P}(\lambda_c)=\\frac{1}{C}` for each class :math:`c\in\{1,\ldots,C\}`.
+
+            Alternatively, class priors can be specified in a ``dict``, e.g. ``{'class1': 0.1, 'class2': 0.3, 'class3': 0.6}``.
 
         labels: List[str]
             A list of labels for ordering the axes of the confusion matrix.
@@ -114,7 +127,6 @@ class HMMClassifier:
             The confusion matrix representing the discrepancy between predicted and actual labels.
         """
         X, y = self._val.observation_sequences_and_labels(X, y)
-        self._val.boolean(prior, desc='prior')
 
         if labels is not None:
             self._val.list_of_strings(labels, desc='confusion matrix labels')

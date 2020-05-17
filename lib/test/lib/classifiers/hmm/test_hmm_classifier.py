@@ -100,7 +100,7 @@ def test_fit_invalid():
 
 def test_predict_single_with_prior_with_return_scores():
     """Predict a single observation sequence with a prior and returned scores"""
-    prediction = hmm_clf.predict(x, prior=True, return_scores=True)
+    prediction = hmm_clf.predict(x, prior='frequency', return_scores=True)
     assert isinstance(prediction, tuple)
     assert isinstance(prediction[0], str)
     assert isinstance(prediction[1], list)
@@ -111,12 +111,12 @@ def test_predict_single_with_prior_with_return_scores():
 
 def test_predict_single_with_prior_no_return_scores():
     """Predict a single observation sequence with a prior and no returned scores"""
-    prediction = hmm_clf.predict(x, prior=True, return_scores=False)
+    prediction = hmm_clf.predict(x, prior='frequency', return_scores=False)
     assert isinstance(prediction, str)
 
 def test_predict_single_no_prior_with_return_scores():
     """Predict a single observation sequence with no prior and returned scores"""
-    prediction = hmm_clf.predict(x, prior=False, return_scores=True)
+    prediction = hmm_clf.predict(x, prior='uniform', return_scores=True)
     assert isinstance(prediction, tuple)
     assert isinstance(prediction[0], str)
     assert isinstance(prediction[1], list)
@@ -127,12 +127,12 @@ def test_predict_single_no_prior_with_return_scores():
 
 def test_predict_single_no_prior_no_return_scores():
     """Predict a single observation sequence with no prior and no returned scores"""
-    prediction = hmm_clf.predict(x, prior=False, return_scores=False)
+    prediction = hmm_clf.predict(x, prior='uniform', return_scores=False)
     assert isinstance(prediction, str)
 
 def test_predict_multiple_with_prior_with_return_scores():
     """Predict multiple observation sequences with a prior and returned scores"""
-    predictions = hmm_clf.predict(X, prior=True, return_scores=True)
+    predictions = hmm_clf.predict(X, prior='frequency', return_scores=True)
     assert isinstance(predictions, list)
     assert len(predictions) == 3
     # First prediction
@@ -147,13 +147,13 @@ def test_predict_multiple_with_prior_with_return_scores():
 
 def test_predict_multiple_with_prior_no_return_scores():
     """Predict multiple observation sequences with a prior and no returned scores"""
-    predictions = hmm_clf.predict(X, prior=True, return_scores=False)
+    predictions = hmm_clf.predict(X, prior='frequency', return_scores=False)
     assert isinstance(predictions, list)
     assert len(predictions) == 3
 
 def test_predict_multiple_no_prior_with_return_scores():
     """Predict multiple observation sequences with no prior and returned scores"""
-    predictions = hmm_clf.predict(X, prior=False, return_scores=True)
+    predictions = hmm_clf.predict(X, prior='uniform', return_scores=True)
     assert isinstance(predictions, list)
     assert len(predictions) == 3
     # First prediction
@@ -168,7 +168,7 @@ def test_predict_multiple_no_prior_with_return_scores():
 
 def test_predict_single_no_prior_no_return_scores():
     """Predict multiple observation sequences with no prior and no returned scores"""
-    predictions = hmm_clf.predict(X, prior=False, return_scores=False)
+    predictions = hmm_clf.predict(X, prior='uniform', return_scores=False)
     assert isinstance(predictions, list)
     assert len(predictions) == 3
 
@@ -178,27 +178,27 @@ def test_predict_single_no_prior_no_return_scores():
 
 def test_evaluate_with_prior_with_labels():
     """Evaluate with a prior and confusion matrix labels"""
-    acc, cm = hmm_clf.evaluate(X, Y, prior=True, labels=['c0', 'c1', 'c2', 'c3', 'c4'])
+    acc, cm = hmm_clf.evaluate(X, Y, prior='frequency', labels=['c0', 'c1', 'c2', 'c3', 'c4'])
     assert isinstance(acc, float)
     assert isinstance(cm, np.ndarray)
     assert cm.shape == (5, 5)
 
 def test_evaluate_with_prior_no_labels():
     """Evaluate with a prior and no confusion matrix labels"""
-    acc, cm = hmm_clf.evaluate(X, Y, prior=True, labels=None)
+    acc, cm = hmm_clf.evaluate(X, Y, prior='frequency', labels=None)
     assert isinstance(acc, float)
     assert isinstance(cm, np.ndarray)
 
 def test_evaluate_no_prior_with_labels():
     """Evaluate with no prior and confusion matrix labels"""
-    acc, cm = hmm_clf.evaluate(X, Y, prior=False, labels=['c0', 'c1', 'c2', 'c3', 'c4'])
+    acc, cm = hmm_clf.evaluate(X, Y, prior='uniform', labels=['c0', 'c1', 'c2', 'c3', 'c4'])
     assert isinstance(acc, float)
     assert isinstance(cm, np.ndarray)
     assert cm.shape == (5, 5)
 
 def test_evaluate_no_prior_no_labels():
     """Evaluate with no prior and no confusion matrix labels"""
-    acc, cm = hmm_clf.evaluate(X, Y, prior=False, labels=None)
+    acc, cm = hmm_clf.evaluate(X, Y, prior='uniform', labels=None)
     assert isinstance(acc, float)
     assert isinstance(cm, np.ndarray)
 
