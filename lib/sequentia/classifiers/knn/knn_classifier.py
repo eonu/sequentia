@@ -6,7 +6,7 @@ from scipy.spatial.distance import euclidean
 from sklearn.metrics import confusion_matrix
 from ...internals import _Validator
 
-class DTWKNN:
+class KNNClassifier:
     """A k-Nearest Neighbor classifier that compares differing length observation sequences using the efficient FastDTW dynamic time warping algorithm.
 
     Parameters
@@ -177,7 +177,7 @@ class DTWKNN:
         return np.sum(np.diag(cm)) / np.sum(cm), cm
 
     def save(self, path):
-        """Stores the :class:`DTWKNN` object into a `HDF5 <https://support.hdfgroup.org/HDF5/doc/H5.intro.html>`_ file.
+        """Stores the :class:`KNNClassifier` object into a `HDF5 <https://support.hdfgroup.org/HDF5/doc/H5.intro.html>`_ file.
 
         .. note:
             As :math:`k`-NN is a non-parametric classification algorithms, saving the classifier simply saves
@@ -186,7 +186,7 @@ class DTWKNN:
         Parameters
         ----------
         path: str
-            File path (with or without `.h5` extension) to store the HDF5-serialized :class:`DTWKNN` object.
+            File path (with or without `.h5` extension) to store the HDF5-serialized :class:`KNNClassifier` object.
         """
 
         try:
@@ -209,7 +209,7 @@ class DTWKNN:
 
     @classmethod
     def load(cls, path, encoding='utf-8', metric=euclidean, weighting=(lambda x: 1)):
-        """Deserializes a HDF5-serialized :class:`DTWKNN` object.
+        """Deserializes a HDF5-serialized :class:`KNNClassifier` object.
 
         Parameters
         ----------
@@ -223,19 +223,19 @@ class DTWKNN:
                 Supported string encodings in Python can be found `here <https://docs.python.org/3/library/codecs.html#standard-encodings>`_.
 
         metric: callable
-            Distance metric for FastDTW (see :class:`DTWKNN`).
+            Distance metric for FastDTW (see :class:`KNNClassifier`).
 
         weighting: callable
-            A function that specifies how distance weighting should be performed (see :class:`DTWKNN`).
+            A function that specifies how distance weighting should be performed (see :class:`KNNClassifier`).
 
         Returns
         -------
-        deserialized: :class:`DTWKNN`
-            The deserialized DTWKNN classifier object.
+        deserialized: :class:`KNNClassifier`
+            The deserialized DTW :math:`k`-NN classifier object.
 
         See Also
         --------
-        save: Serializes a :class:`DTWKNN` into a HDF5 file.
+        save: Serializes a :class:`KNNClassifier` into a HDF5 file.
         """
 
         with h5py.File(path, 'r') as f:
