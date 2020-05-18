@@ -38,21 +38,23 @@ Despite these types of sequences sounding very specific, you probably observe so
 
 **Some examples of classification problems for isolated temporal sequences include classifying**:
 
-- isolated word utterances in speech audio signals,
-- isolated hand-written characters according to their pen-tip trajectories,
-- isolated hand or head gestures in a video or motion-capture recording.
+- word utterances in speech audio signals,
+- hand-written characters according to their pen-tip trajectories,
+- hand or head gestures in a video or motion-capture recording.
 
 ## Features
 
-Sequentia offers the use of multivariate observation sequences with varying durations, in conjunction with the following algorithms and methods:
+Sequentia offers the use of multivariate observation sequences with varying durations in conjunction with the following algorithms and methods:
 
 ### Classification algorithms
 
 - [x] Hidden Markov Models (via [Pomegranate](https://github.com/jmschrei/pomegranate) [[1]](#references))
-  - [x] Multivariate Gaussian Emissions
-  - [x] Gaussian Mixture Model Emissions (full and diagonal covariances)
-  - [x] Left-Right and Ergodic Topologies
+  - [x] Multivariate Gaussian emissions
+  - [x] Gaussian Mixture Model emissions (full and diagonal covariances)
+  - [x] Left-right and ergodic topologies
 - [x] Approximate Dynamic Time Warping k-Nearest Neighbors (implemented with [FastDTW](https://github.com/slaypni/fastdtw) [[2]](#references))
+  - [x] Custom distance-weighted predictions
+  - [x] Multi-processed predictions
 - [ ] Long Short-Term Memory Networks (_soon!_)
 
 <p align="center">
@@ -65,10 +67,6 @@ Sequentia offers the use of multivariate observation sequences with varying dura
 - [x] Centering, standardization and min-max scaling
 - [x] Decimation and mean downsampling
 - [x] Mean and median filtering
-
-### Parallelization
-
-- [x] Multi-processing for DTW k-NN predictions
 
 ## Installation
 
