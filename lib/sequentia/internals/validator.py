@@ -252,3 +252,24 @@ class _Validator:
             return state
         else:
             raise TypeError('Expected random state to be of type: None, int, or numpy.random.RandomState')
+
+    def func(self, item, desc):
+        """Validates a callable.
+
+        Parameters
+        ----------
+        item: callable
+            The item to validate.
+
+        desc: str
+            A description of the item being validated.
+
+        Returns
+        -------
+        item: callable
+            The original input item if valid.
+        """
+        if callable(item):
+            return item
+        else:
+            raise TypeError('Expected {} to be callable'.format(desc))

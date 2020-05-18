@@ -2,7 +2,6 @@ import tqdm, tqdm.auto, random, numpy as np, h5py
 from joblib import Parallel, delayed
 from multiprocessing import cpu_count
 from fastdtw import fastdtw
-from collections import Counter
 from scipy.spatial.distance import euclidean
 from sklearn.metrics import confusion_matrix
 from ...internals import _Validator
@@ -22,15 +21,31 @@ class DTWKNN:
 
     metric: callable
         Distance metric for FastDTW.
+
+    weighting: callable
+        A function that specifies how distance weighting should be performed. Using a constant-valued function to set all weights equally is equivalent to no weighting (which is the default configuration).
+        Common weighting functions are :math:`e^{- \\alpha x}` or :math:`\\frac{1}{x}`, where :math:`x` is the DTW distance between two observation sequences.
+
+        A weighting function should *ideally* be defined at :math:`x=0` in the rare event that two observation sequences are perfectly aligned
+        (i.e. have zero DTW distance).
+
+        - **Input**: :math:`x \geq 0`, a DTW distance between two observation sequences.
+        - **Output**: A floating point value representing the weight used to perform nearest neighbor classification.
+
+        .. note::
+            Depending on your distance *metric*, it may be desirable to restrict DTW distances to a small range if you intend to use a weighting function.
+
+            Using the :class:`~MinMaxScale` or :class:`~Standardize` preprocessing transformations to scale your features helps to ensure that distances remain small.
     """
 
-    def __init__(self, k, radius, metric=euclidean):
+    def __init__(self, k, radius, metric=euclidean, weighting=(lambda x: 1)):
         self._val = _Validator()
         self._k = self._val.restricted_integer(
             k, lambda x: x > 0, desc='number of neighbors', expected='greater than zero')
         self._radius = self._val.restricted_integer(
             radius, lambda x: x > 0, desc='radius parameter', expected='greater than zero')
-        self._metric = metric
+        self._metric = self._val.func(metric, 'DTW distance metric')
+        self._weighting = self._val.func(weighting, 'distance weighting function')
 
     def fit(self, X, y):
         """Fits the classifier by adding labeled training observation sequences.
@@ -83,8 +98,8 @@ class DTWKNN:
         else:
             if n_jobs == 1:
                 labels = []
-                for O in tqdm.auto.tqdm(X, desc='Classifying examples', disable=not(verbose)):
-                    distances = [distance(O, x) for x in self._X]
+                for sequence in tqdm.auto.tqdm(X, desc='Classifying examples', disable=not(verbose)):
+                    distances = [distance(sequence, x) for x in self._X]
                     labels.append(self._find_nearest(distances))
                 return labels
             else:
@@ -94,19 +109,29 @@ class DTWKNN:
                 return [label for sublist in labels for label in sublist] # Flatten the resulting array
 
     def _find_nearest(self, distances):
+        # Find the indices of the k nearest points
         idx = np.argpartition(distances, self._k)[:self._k]
-        neighbor_labels = [self._y[i] for i in idx]
-        # Find the most common (mode) labels
-        counter = Counter(neighbor_labels)
-        max_count = max(counter.values())
-        modes = [k for k, v in counter.items() if v == max_count]
-        # Randomly pick from the set of labels with the maximum count
-        return random.choice(modes)
+
+        # Calculate class scores by accumulating weighted distances
+        class_scores = {}
+        for i in idx:
+            label = self._y[i]
+            if label in class_scores:
+                class_scores[label] += self._weighting(distances[i])
+            else:
+                class_scores[label] = 0
+
+        # Find the labels with the maximum class score
+        max_score = max(class_scores.values())
+        max_labels = [k for k, v in class_scores.items() if v == max_score]
+
+        # Randomly pick from the set of labels with the maximum class score
+        return random.choice(max_labels)
 
     def _parallel_predict(self, process, chunk, distance, verbose):
         labels = []
-        for O in tqdm.tqdm(chunk, desc='Classifying examples (process {})'.format(process), disable=not(verbose), position=process-1):
-            distances = [distance(O, x) for x in self._X]
+        for sequence in tqdm.tqdm(chunk, desc='Classifying examples (process {})'.format(process), disable=not(verbose), position=process-1):
+            distances = [distance(sequence, x) for x in self._X]
             labels.append(self._find_nearest(distances))
         return labels
 
@@ -183,7 +208,7 @@ class DTWKNN:
             data.create_dataset('y', data=np.string_(self._y))
 
     @classmethod
-    def load(cls, path, encoding='utf-8', metric=euclidean):
+    def load(cls, path, encoding='utf-8', metric=euclidean, weighting=(lambda x: 1)):
         """Deserializes a HDF5-serialized :class:`DTWKNN` object.
 
         Parameters
@@ -198,7 +223,10 @@ class DTWKNN:
                 Supported string encodings in Python can be found `here <https://docs.python.org/3/library/codecs.html#standard-encodings>`_.
 
         metric: callable
-            Distance metric for FastDTW.
+            Distance metric for FastDTW (see :class:`DTWKNN`).
+
+        weighting: callable
+            A function that specifies how distance weighting should be performed (see :class:`DTWKNN`).
 
         Returns
         -------
