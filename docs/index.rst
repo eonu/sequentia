@@ -39,18 +39,20 @@ Sequentia offers some appropriate classification algorithms for these kinds of t
    :caption: Classifiers and Models
 
    sections/classifiers/hmm.rst
-   sections/classifiers/dtwknn.rst
+   sections/classifiers/knn.rst
 
 .. toctree::
    :maxdepth: 1
    :caption: Preprocessing Methods
 
+   sections/preprocessing/introduction.rst
+   sections/preprocessing/equalize.rst
    sections/preprocessing/trim_zeros.rst
+   sections/preprocessing/min_max_scale.rst
    sections/preprocessing/center.rst
    sections/preprocessing/standardize.rst
    sections/preprocessing/downsample.rst
-   sections/preprocessing/filtrate.rst
-   sections/preprocessing/fft.rst
+   sections/preprocessing/filter.rst
    sections/preprocessing/preprocessing.rst
 
 Documentation Search and Index

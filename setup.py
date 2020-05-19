@@ -3,7 +3,7 @@
 from __future__ import print_function
 from setuptools import setup, find_packages
 
-VERSION = '0.6.1'
+VERSION = '0.7.0'
 
 with open('README.md', 'r') as fh:
     long_description = fh.read()
@@ -41,11 +41,12 @@ setup(
     python_requires='>=3.5,<3.8',
     install_requires = [
         'numpy>=1.17,<2',
-        'pomegranate>=0.11,<1',
+        'pomegranate==0.12.0',
         'fastdtw>=0.3,<0.4',
         'scipy>=1.3,<2',
         'scikit-learn>=0.22,<1',
         'tqdm>=4.36,<5',
-        'joblib>=0.14,<1'
+        'joblib>=0.14,<1',
+        'h5py>=2.10,<2.11'
     ]
 )

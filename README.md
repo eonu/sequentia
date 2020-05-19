@@ -30,8 +30,6 @@
 
 ## Introduction
 
-<img src="https://i.ibb.co/gPymgs4/classifier.png" width="40%" align="right"></img>
-
 Temporal sequences are sequences of observations that occur over time. Changing patterns over time naturally provide many interesting opportunities and challenges for machine learning.
 
 This library specifically aims to tackle classification problems for isolated temporal sequences by creating an interface to a number of classification algorithms.
@@ -40,39 +38,39 @@ Despite these types of sequences sounding very specific, you probably observe so
 
 **Some examples of classification problems for isolated temporal sequences include classifying**:
 
-- isolated word utterances in speech audio signals,
-- isolated hand-written characters according to their pen-tip trajectories,
-- isolated hand or head gestures in a video or motion-capture recording.
+- word utterances in speech audio signals,
+- hand-written characters according to their pen-tip trajectories,
+- hand or head gestures in a video or motion-capture recording.
 
 ## Features
 
-Sequentia offers the use of **multivariate observation sequences with differing durations** in conjunction with the following algorithms and methods.
+Sequentia offers the use of multivariate observation sequences with varying durations in conjunction with the following algorithms and methods:
 
-### Classication algorithms
+### Classification algorithms
 
 - [x] Hidden Markov Models (via [Pomegranate](https://github.com/jmschrei/pomegranate) [[1]](#references))
-  - [x] Multivariate Gaussian Emissions
-  - [ ] Gaussian Mixture Model Emissions (_soon!_)
-  - [x] Left-Right and Ergodic Topologies
+  - [x] Multivariate Gaussian emissions
+  - [x] Gaussian Mixture Model emissions (full and diagonal covariances)
+  - [x] Left-right and ergodic topologies
 - [x] Approximate Dynamic Time Warping k-Nearest Neighbors (implemented with [FastDTW](https://github.com/slaypni/fastdtw) [[2]](#references))
+  - [x] Custom distance-weighted predictions
+  - [x] Multi-processed predictions
 - [ ] Long Short-Term Memory Networks (_soon!_)
+
+<p align="center">
+  <img src="https://i.ibb.co/jVD2S4b/classifier.png" width="60%"/><br/>
+  Example of a classification algorithm: a multi-class HMM isolated sequence classifier
+</p>
 
 ### Preprocessing methods
 
-- [x] Centering and standardization
-- [x] Downsampling (decimation and averaging)
-- [x] Filtering (mean and median)
-- [x] Discrete Fourier Transform
-
-### Parallelization
-
-- [x] Multi-processing for DTW k-NN predictions
-
-> **Disclaimer**: The package currently remains largely untested and is still in its early pre-alpha stages – _use with caution_!
+- [x] Centering, standardization and min-max scaling
+- [x] Decimation and mean downsampling
+- [x] Mean and median filtering
 
 ## Installation
 
-```
+```console
 pip install sequentia
 ```
 
@@ -82,7 +80,7 @@ Documentation for the package is available on [Read The Docs](https://sequentia.
 
 ## Tutorials and examples
 
-For tutorials and examples on the usage of Sequentia, [look at the notebooks here](https://nbviewer.jupyter.org/github/eonu/sequentia/tree/master/notebooks/)!
+For tutorials and examples on the usage of Sequentia, [look at the notebooks here](https://nbviewer.jupyter.org/github/eonu/sequentia/tree/master/notebooks/).
 
 ## References
 

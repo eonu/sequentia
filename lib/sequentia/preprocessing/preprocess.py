@@ -1,67 +1,44 @@
 import numpy as np
-from .methods import (
-    _trim_zeros, _center, _standardize, _downsample, _fft, _filtrate
-)
+from copy import copy
+from tqdm.auto import tqdm
+from .transforms import Transform
 from ..internals import _Validator
 
+__all__ = ['Preprocess']
+
 class Preprocess:
-    """Efficiently applies multiple preprocessing transformations to the provided input observation sequence(s)."""
+    """A pipeline of preprocessing transformations.
 
-    def __init__(self):
-        self._transforms = []
+    Parameters
+    ----------
+    steps: List[Transform]
+        A list of preprocessing transformations.
+
+    Examples
+    --------
+    >>> # Create some sample data
+    >>> X = [np.random.random((20 * i, 3)) for i in range(1, 4)]
+    >>> # Create the Preprocess object
+    >>> pre = Preprocess([
+    >>>     TrimZeros(),
+    >>>     Center(),
+    >>>     Standardize(),
+    >>>     Filter(window_size=5, method='median'),
+    >>>     Downsample(factor=5, method='decimate')
+    >>> ])
+    >>> # View a summary of the preprocessing steps
+    >>> pre.summary()
+    >>> # Transform the data applying transformations in order
+    >>> X = pre(X)
+    """
+
+    def __init__(self, steps):
+        if not (isinstance(steps, list) and all(isinstance(step, Transform) for step in steps)):
+            raise TypeError("Expected steps to be list of Transform objects")
         self._val = _Validator()
+        self.steps = steps
 
-    def trim_zeros(self):
-        """Trim zero-observations from the input observation sequence(s)."""
-        self._transforms.append((_trim_zeros, {}))
-
-    def center(self):
-        """Centers an observation sequence (or multiple sequences) by centering observations around the mean."""
-        self._transforms.append((_center, {}))
-
-    def standardize(self):
-        """Standardizes an observation sequence (or multiple sequences) by transforming observations
-        so that they have zero mean and unit variance."""
-        self._transforms.append((_standardize, {}))
-
-    def downsample(self, n, method='decimate'):
-        """Downsamples an observation sequence (or multiple sequences) by either:
-
-        - Decimating the next :math:`n-1` observations
-        - Averaging the current observation with the next :math:`n-1` observations
-
-        Parameters
-        ----------
-        n: int
-            Downsample factor.
-
-        method: {'decimate', 'average'}
-            The downsampling method.
-        """
-        self._val.restricted_integer(n, lambda x: x > 1, desc='downsample factor', expected='greater than one')
-        self._val.one_of(method, ['decimate', 'average'], desc='downsampling method')
-        self._transforms.append((_downsample, {'n': n, 'method': method}))
-
-    def fft(self):
-        """Applies a Discrete Fourier Transform to the input observation sequence(s)."""
-        self._transforms.append((_fft, {}))
-
-    def filtrate(self, n, method='median'):
-        """Applies a median or mean filter to the input observation sequence(s).
-
-        Parameters
-        ----------
-        n: int
-            Window size.
-
-        method: {'median', 'mean'}
-            The filtering method.
-        """
-        self._val.restricted_integer(n, lambda x: x > 1, desc='window size', expected='greater than one')
-        self._val.one_of(method, ['median', 'mean'], desc='filtering method')
-        self._transforms.append((_filtrate, {'n': n, 'method': method}))
-
-    def transform(self, X):
+    def transform(self, X, verbose=False):
         """Applies the preprocessing transformations to the provided input observation sequence(s).
 
         Parameters
@@ -69,58 +46,90 @@ class Preprocess:
         X: numpy.ndarray or List[numpy.ndarray]
             An individual observation sequence or a list of multiple observation sequences.
 
+        verbose: bool
+            Whether or not to display a progress bar when applying transformations.
+
         Returns
         -------
         transformed: numpy.ndarray or List[numpy.ndarray]
             The input observation sequence(s) with preprocessing transformations applied in order.
         """
-        X_transform = self._val.observation_sequences(X, allow_single=True)
-        for transform, kwargs in self._transforms:
-            if transform == _downsample:
-                if isinstance(X_transform, np.ndarray):
-                    self._val.restricted_integer(kwargs['n'], lambda x: x <= len(X_transform),
-                        desc='downsample factor', expected='no greater than the number of frames')
-                else:
-                    self._val.restricted_integer(kwargs['n'], lambda x: x <= min(len(x) for x in X_transform),
-                        desc='downsample factor', expected='no greater than the number of frames in the shortest sequence')
-            elif transform == _filtrate:
-                if isinstance(X, np.ndarray):
-                    self._val.restricted_integer(kwargs['n'], lambda x: x <= len(X),
-                        desc='window size', expected='no greater than the number of frames')
-                else:
-                    self._val.restricted_integer(kwargs['n'], lambda x: x <= min(len(x) for x in X),
-                        desc='window size', expected='no greater than the number of frames in the shortest sequence')
-            X_transform = transform(X_transform, **kwargs)
-        return X_transform
+        X_t = copy(X)
+        pbar = tqdm(self.steps, desc='Applying transformations', disable=not(verbose and len(self.steps) > 1), leave=True, ncols='100%')
+        for step in pbar:
+            pbar.set_description("Applying transformations - {}".format(step._describe()))
+            X_t = step.transform(X_t, verbose=False)
+        return X_t
+
+    def __call__(self, X, verbose=False):
+        """Alias of the :meth:`transform` method.
+
+        See Also
+        --------
+        transform: Applies the transformation.
+        """
+        return self.transform(X, verbose)
+
+    def _fit(self, X, verbose):
+        """Fit the preprocessing transformations with the provided observation sequence(s).
+
+        Parameters
+        ----------
+        X: numpy.ndarray or List[numpy.ndarray]
+            An individual observation sequence or a list of multiple observation sequences.
+
+        verbose: bool
+            Whether or not to display a progress bar when fitting transformations.
+        """
+        X = self._val.observation_sequences(X, allow_single=True)
+        X_t = copy(X)
+        pbar = tqdm(self.steps, desc='Fitting transformations', disable=not(verbose and len(self.steps) > 1), leave=True, ncols='100%')
+        for step in pbar:
+            pbar.set_description("Fitting transformations - {}".format(step._describe()))
+            X_t = step.fit_transform(X_t, verbose=False)
+        return X_t
+
+    def fit(self, X, verbose=False):
+        """Fit the preprocessing transformations with the provided observation sequence(s).
+
+        Parameters
+        ----------
+        X: numpy.ndarray or List[numpy.ndarray]
+            An individual observation sequence or a list of multiple observation sequences.
+
+        verbose: bool
+            Whether or not to display a progress bar when fitting transformations.
+        """
+        self._fit(X, verbose)
+
+    def fit_transform(self, X, verbose=False):
+        """Fit the preprocessing transformations with the provided observation sequence(s) and transform them.
+
+        Parameters
+        ----------
+        X: numpy.ndarray or List[numpy.ndarray]
+            An individual observation sequence or a list of multiple observation sequences.
+
+        verbose: bool
+            Whether or not to display a progress bar when fitting and applying transformations.
+
+        Returns
+        -------
+        transformed: numpy.ndarray or List[numpy.ndarray]
+            The input observation sequence(s) with preprocessing transformations applied in order.
+        """
+        return self._fit(X, verbose)
 
     def summary(self):
         """Displays an ordered summary of the preprocessing transformations."""
-        if len(self._transforms) == 0:
+        if len(self.steps) == 0:
             raise RuntimeError('At least one preprocessing transformation is required')
 
         steps = []
 
-        for i, (transform, kwargs) in enumerate(self._transforms):
-            idx = i + 1
-            if transform == _center:
-                steps.append(('{}. Centering'.format(idx), None))
-            elif transform == _standardize:
-                steps.append(('{}. Standardization'.format(idx), None))
-            elif transform == _downsample:
-                header = 'Decimation' if kwargs['method'] == 'decimate' else 'Averaging'
-                steps.append((
-                    '{}. Downsampling:'.format(idx),
-                    '   {} with downsample factor (n={})'.format(header, kwargs['n'])
-                ))
-            elif transform == _fft:
-                steps.append(('{}. Discrete Fourier Transform'.format(idx), None))
-            elif transform == _filtrate:
-                steps.append((
-                    '{}. Filtering:'.format(idx),
-                    '   {} filter with window size (n={})'.format(kwargs['method'].capitalize(), kwargs['n'])
-                ))
-            elif transform == _trim_zeros:
-                steps.append(('{}. Zero-trimming'.format(idx), None))
+        for i, step in enumerate(self.steps, start=1):
+            class_name, description = step.__class__.__name__, step._describe()
+            steps.append(('{}. {}'.format(i, class_name), '   {}'.format(description)))
 
         title = 'Preprocessing summary:'
         length = max(max(len(h), 0 if b is None else len(b)) for h, b in steps)

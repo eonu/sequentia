@@ -1,9 +1,8 @@
 import numpy as np
-from warnings import warn
 from .topology import _Topology
 
-class _ErgodicTopology(_Topology):
-    """Represents the topology for an ergodic HMM, imposing non-zero probabilities in the transition matrix.
+class _StrictLeftRightTopology(_Topology):
+    """Represents the topology for a strict left-right HMM.
 
     Parameters
     ----------
@@ -23,19 +22,27 @@ class _ErgodicTopology(_Topology):
         transitions: numpy.ndarray
             The uniform transition matrix of shape `(n_states, n_states)`.
         """
-        return np.ones((self._n_states, self._n_states)) / self._n_states
+        transitions = np.zeros((self._n_states, self._n_states))
+        for i, row in enumerate(transitions[:-1]):
+            row[i:(i+2)] = np.ones(2) / 2
+        transitions[self._n_states - 1][self._n_states - 1] = 1
+        return transitions
 
     def random_transitions(self) -> np.ndarray:
         """Sets the transition matrix as random (random probability of transitioning
         to all other possible states from each state) by sampling probabilities
-        from a Dirichlet distribution - according to the topology.
+        from a Dirichlet distribution, according to the topology.
 
         Parameters
         ----------
         transitions: numpy.ndarray
             The random transition matrix of shape `(n_states, n_states)`.
         """
-        return self._random_state.dirichlet(np.ones(self._n_states), size=self._n_states)
+        transitions = np.zeros((self._n_states, self._n_states))
+        for i, row in enumerate(transitions[:-1]):
+            row[i:(i+2)] = self._random_state.dirichlet(np.ones(2))
+        transitions[self._n_states - 1][self._n_states - 1] = 1
+        return transitions
 
     def validate_transitions(self, transitions: np.ndarray) -> None:
         """Validates a transition matrix according to the topology's restrictions.
@@ -46,5 +53,7 @@ class _ErgodicTopology(_Topology):
             The transition matrix to validate.
         """
         super().validate_transitions(transitions)
-        if not np.all(transitions > 0):
-            warn('Zero probabilities in ergodic transition matrix - these transition probabilities will not be learned')
+        if not np.allclose(transitions, np.triu(transitions)):
+            raise ValueError('Left-right transition matrix must be upper-triangular')
+        if not np.allclose(transitions, np.diag(np.diag(transitions)) + np.diag(np.diag(transitions, k=1), k=1)):
+            raise ValueError('Strict left-right transition matrix must only consist of a diagonal and upper diagonal')

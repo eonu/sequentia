@@ -1,7 +1,5 @@
-import pytest
-import warnings
-import numpy as np
-from sequentia.classifiers import _Topology, _LeftRightTopology, _ErgodicTopology
+import pytest, warnings, numpy as np
+from sequentia.classifiers import _Topology, _LeftRightTopology, _ErgodicTopology, _StrictLeftRightTopology
 from ....support import assert_equal, assert_all_equal, assert_distribution
 
 # Set seed for reproducible randomness
@@ -255,5 +253,99 @@ def test_ergodic_validate_transitions_invalid():
 def test_ergodic_validate_transitions_valid():
     """Validate a valid ergodic transition matrix"""
     topology = _ErgodicTopology(n_states=5, random_state=rng)
+    transitions = topology.random_transitions()
+    topology.validate_transitions(transitions)
+
+# ======================== #
+# _StrictLeftRightTopology #
+# ======================== #
+
+# ---------------------------------------------- #
+# _StrictLeftRightTopology.uniform_transitions() #
+# ---------------------------------------------- #
+
+def test_strict_left_right_uniform_transitions_min():
+    """Generate a uniform strict left-right transition matrix with minimal states"""
+    topology = _StrictLeftRightTopology(n_states=1, random_state=rng)
+    transitions = topology.uniform_transitions()
+    assert_distribution(transitions)
+    assert_equal(transitions, np.array([
+        [1.]
+    ]))
+
+def test_strict_left_right_uniform_transitions_small():
+    """Generate a uniform strict left-right transition matrix with few states"""
+    topology = _StrictLeftRightTopology(n_states=2, random_state=rng)
+    transitions = topology.uniform_transitions()
+    assert_distribution(transitions)
+    assert_equal(transitions, np.array([
+        [0.5, 0.5],
+        [0. , 1. ]
+    ]))
+
+def test_strict_left_right_uniform_transitions_many():
+    """Generate a uniform strict left-right transition matrix with many states"""
+    topology = _StrictLeftRightTopology(n_states=5, random_state=rng)
+    transitions = topology.uniform_transitions()
+    assert_distribution(transitions)
+    assert_equal(transitions, np.array([
+        [0.5, 0.5 , 0.        , 0.        , 0.        ],
+        [0. , 0.5 , 0.5       , 0.        , 0.        ],
+        [0. , 0.  , 0.5       , 0.5       , 0.        ],
+        [0. , 0.  , 0.        , 0.5       , 0.5       ],
+        [0. , 0.  , 0.        , 0.        , 1.        ]
+    ]))
+
+# --------------------------------------------- #
+# _StrictLeftRightTopology.random_transitions() #
+# --------------------------------------------- #
+
+def test_strict_left_right_random_transitions_min():
+    """Generate a random strict left-right transition matrix with minimal states"""
+    topology = _StrictLeftRightTopology(n_states=1, random_state=rng)
+    transitions = topology.random_transitions()
+    assert_distribution(transitions)
+    assert_equal(transitions, np.array([
+        [1.]
+    ]))
+
+def test_strict_left_right_random_transitions_small():
+    """Generate a random strict left-right transition matrix with few states"""
+    topology = _StrictLeftRightTopology(n_states=2, random_state=rng)
+    transitions = topology.random_transitions()
+    assert_distribution(transitions)
+    assert_equal(transitions, np.array([
+        [0.87426829, 0.12573171],
+        [0.        , 1.        ]
+    ]))
+
+def test_strict_left_right_random_transitions_many():
+    """Generate a random strict left-right transition matrix with many states"""
+    topology = _StrictLeftRightTopology(n_states=5, random_state=rng)
+    transitions = topology.random_transitions()
+    assert_distribution(transitions)
+    assert_equal(transitions, np.array([
+        [0.9294571 , 0.0705429 , 0.        , 0.        , 0.        ],
+        [0.        , 0.92269318, 0.07730682, 0.        , 0.        ],
+        [0.        , 0.        , 0.86161736, 0.13838264, 0.        ],
+        [0.        , 0.        , 0.        , 0.13863688, 0.86136312],
+        [0.        , 0.        , 0.        , 0.        , 1.        ]
+    ]))
+
+# ----------------------------------------------- #
+# _StrictLeftRightTopology.validate_transitions() #
+# ----------------------------------------------- #
+
+def test_strict_left_right_validate_transitions_invalid():
+    """Validate an invalid strict left-right transition matrix"""
+    topology = _StrictLeftRightTopology(n_states=5, random_state=rng)
+    transitions = _ErgodicTopology(n_states=5, random_state=rng).random_transitions()
+    with pytest.raises(ValueError) as e:
+        topology.validate_transitions(transitions)
+    assert str(e.value) == 'Left-right transition matrix must be upper-triangular'
+
+def test_strict_left_right_validate_transitions_valid():
+    """Validate a valid strict left-right transition matrix"""
+    topology = _StrictLeftRightTopology(n_states=5, random_state=rng)
     transitions = topology.random_transitions()
     topology.validate_transitions(transitions)

@@ -1,7 +1,7 @@
-.. _dtwknn:
+.. _knn:
 
-Dynamic Time Warping `k`-Nearest Neighbors Classifier (``DTWKNN``)
-==================================================================
+Dynamic Time Warping `k`-Nearest Neighbors Classifier (``KNNClassifier``)
+=========================================================================
 
 | Recall that the isolated sequences we are dealing with are represented as
   multivariate time series of different durations.
@@ -27,12 +27,12 @@ sacrifices accuracy by calculating an approximate distance, but saves **a lot** 
 This is the `FastDTW <https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf>`_
 implementation, which has a `radius` parameter for controlling the imposed constraint on the distance calculation.
 
-This approximate DTW :math:`k`-NN classifier is implemented by the :class:`~DTWKNN` class.
+This approximate DTW :math:`k`-NN classifier is implemented by the :class:`~KNNClassifier` class.
 
 Example
 -------
 
-.. literalinclude:: ../../_includes/examples/classifiers/dtwknn.py
+.. literalinclude:: ../../_includes/examples/classifiers/knn_classifier.py
     :language: python
     :linenos:
 
@@ -41,5 +41,5 @@ For more elaborate examples, please have a look at the `example notebooks <https
 API reference
 -------------
 
-.. autoclass:: sequentia.classifiers.dtwknn.DTWKNN
+.. autoclass:: sequentia.classifiers.knn.KNNClassifier
     :members:

@@ -1,11 +1,9 @@
-import pytest
-import warnings
-import numpy as np
+import pytest, warnings, os, h5py, numpy as np
 from copy import deepcopy
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', category=DeprecationWarning)
-    from sequentia.classifiers import DTWKNN
-from ....support import assert_equal, assert_not_equal
+    from sequentia.classifiers import KNNClassifier
+from ....support import assert_equal, assert_all_equal, assert_not_equal
 
 # Set seed for reproducible randomness
 seed = 0
@@ -20,17 +18,17 @@ y = ['c1', 'c1', 'c0', 'c1', 'c1', 'c0']
 x = X[0]
 
 clfs = [
-    DTWKNN(k=1, radius=1),
-    DTWKNN(k=2, radius=5),
-    DTWKNN(k=3, radius=10)
+    KNNClassifier(k=1, radius=1),
+    KNNClassifier(k=2, radius=5),
+    KNNClassifier(k=3, radius=10)
 ]
 
 for clf in clfs:
     clf.fit(X, y)
 
-# ============ #
-# DTWKNN.fit() #
-# ============ #
+# =================== #
+# KNNClassifier.fit() #
+# =================== #
 
 def test_fit_sets_attributes():
     """Check that fitting sets the hidden attributes"""
@@ -39,14 +37,14 @@ def test_fit_sets_attributes():
     assert clf._X == X
     assert clf._y == y
 
-# ================ #
-# DTWKNN.predict() #
-# ================ #
+# ======================= #
+# KNNClassifier.predict() #
+# ======================= #
 
 def test_predict_without_fit():
     """Predict without fitting the model"""
     with pytest.raises(RuntimeError) as e:
-        DTWKNN(k=1, radius=1).predict(x, verbose=False)
+        KNNClassifier(k=1, radius=1).predict(x, verbose=False)
     assert str(e.value) == 'The classifier needs to be fitted before predictions are made'
 
 def test_predict_single_k1_r1_verbose(capsys):
@@ -121,9 +119,9 @@ def test_predict_multiple_k3_r10_no_verbose(capsys):
     assert 'Classifying examples' not in capsys.readouterr().err
     assert len(predictions) == 6
 
-# ================= #
-# DTWKNN.evaluate() #
-# ================= #
+# ======================== #
+# KNNClassifier.evaluate() #
+# ======================== #
 
 def test_evaluate_with_labels_k1_r1_verbose(capsys):
     """Verbosely evaluate observation sequences with labels (k=1, r=1)"""
@@ -214,3 +212,72 @@ def test_evaluate_with_no_labels_k3_r10_no_verbose(capsys):
     assert 'Classifying examples' not in capsys.readouterr().err
     assert isinstance(acc, float)
     assert isinstance(cm, np.ndarray)
+
+# ==================== #
+# KNNClassifier.save() #
+# ==================== #
+
+def test_save_directory():
+    """Save a KNNClassifier classifier into a directory"""
+    with pytest.raises(OSError) as e:
+        clfs[2].save('.')
+
+def test_save_no_extension():
+    """Save a KNNClassifier classifier into a file without an extension"""
+    try:
+        clfs[2].save('test')
+        assert os.path.isfile('test')
+    finally:
+        os.remove('test')
+
+def test_save_with_extension():
+    """Save a KNNClassifier classifier into a file with a .h5 extension"""
+    try:
+        clfs[2].save('test.h5')
+        assert os.path.isfile('test.h5')
+    finally:
+        os.remove('test.h5')
+
+# ==================== #
+# KNNClassifier.load() #
+# ==================== #
+
+def test_load_invalid_path():
+    """Load a KNNClassifier classifier from a directory"""
+    with pytest.raises(OSError) as e:
+        KNNClassifier.load('.')
+
+def test_load_inexistent_path():
+    """Load a KNNClassifier classifier from an inexistent path"""
+    with pytest.raises(OSError) as e:
+        KNNClassifier.load('test')
+
+def test_load_invalid_format():
+    """Load a KNNClassifier classifier from an illegally formatted file"""
+    try:
+        with open('test', 'w') as f:
+            f.write('illegal')
+        with pytest.raises(OSError) as e:
+            KNNClassifier.load('test')
+    finally:
+        os.remove('test')
+
+def test_load_path():
+    """Load a KNNClassifier classifier from a valid HDF5 file"""
+    try:
+        clfs[2].save('test')
+        clf = KNNClassifier.load('test')
+
+        assert isinstance(clf, KNNClassifier)
+        assert clf._k == 3
+        assert clf._radius == 10
+        assert isinstance(clf._X, list)
+        assert len(clf._X) == len(X)
+        assert isinstance(clf._X[0], np.ndarray)
+        assert_all_equal(clf._X, X)
+        assert isinstance(clf._y, list)
+        assert len(clf._y) == len(y)
+        assert isinstance(clf._y[0], str)
+        assert all(y1 == y2 for y1, y2 in zip(clf._y, y))
+    finally:
+        os.remove('test')

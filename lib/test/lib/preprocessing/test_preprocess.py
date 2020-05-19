@@ -1,10 +1,5 @@
-import pytest
-import numpy as np
-from sequentia.preprocessing import (
-    Preprocess,
-    trim_zeros, downsample, center, standardize, fft, filtrate,
-    _trim_zeros, _downsample, _center, _standardize, _fft, _filtrate
-)
+import pytest, numpy as np
+from sequentia.preprocessing import *
 from ...support import assert_equal, assert_all_equal
 
 # Set seed for reproducible randomness
@@ -16,271 +11,271 @@ rng = np.random.RandomState(seed)
 X = rng.random((7, 2))
 Xs = [i * rng.random((3 * i, 2)) for i in range(1, 4)]
 
+# Length equalizing preprocessor
+equalize = Preprocess([Equalize()])
+
 # Zero-trimming preprocessor
-trim = Preprocess()
-trim.trim_zeros()
+trim = Preprocess([TrimZeros()])
+
+# Min-max scaling preprocessor
+min_max_scale_kwargs = {'scale': (-5, 5), 'independent': False}
+min_max_scale = Preprocess([MinMaxScale(**min_max_scale_kwargs)])
 
 # Centering preprocessor
-cent = Preprocess()
-cent.center()
+cent = Preprocess([Center()])
 
 # Standardizing preprocessor
-standard = Preprocess()
-standard.standardize()
-
-# Discrete Fourier Transform preprocessor
-fourier = Preprocess()
-fourier.fft()
+standard = Preprocess([Standardize()])
 
 # Downsampling preprocessor
-down = Preprocess()
-down_kwargs = {'n': 3, 'method': 'decimate'}
-down.downsample(**down_kwargs)
+down_kwargs = {'factor': 3, 'method': 'decimate'}
+down = Preprocess([Downsample(**down_kwargs)])
 
 # Filtering preprocessor
-filt = Preprocess()
-filt_kwargs = {'n': 3, 'method': 'median'}
-filt.filtrate(**filt_kwargs)
+filt_kwargs = {'window_size': 3, 'method': 'median'}
+filt = Preprocess([Filter(**filt_kwargs)])
 
 # Combined preprocessor
-combined = Preprocess()
-combined.trim_zeros()
-combined.center()
-combined.standardize()
-combined.filtrate(**filt_kwargs)
-combined.downsample(**down_kwargs)
-combined.fft()
+combined = Preprocess([
+    Equalize(),
+    TrimZeros(),
+    MinMaxScale(**min_max_scale_kwargs),
+    Center(),
+    Standardize(),
+    Filter(**filt_kwargs),
+    Downsample(**down_kwargs)
+])
 
-# ======================= #
-# Preprocess.trim_zeros() #
-# ======================= #
+# ======== #
+# Equalize #
+# ======== #
 
-def test_trim_zeros_adds_transform():
-    """Applying a single zero-trimming transformation"""
-    assert len(trim._transforms) == 1
-    assert trim._transforms[0] == (_trim_zeros, {})
+def test_equalize_single():
+    """Applying length equalizing to a single observation sequence"""
+    assert_equal(equalize(X), Equalize()(X))
+
+def test_equalize_multiple():
+    """Applying length equalizing to multiple observation sequences"""
+    assert_all_equal(equalize(Xs), Equalize()(Xs))
+
+def test_equalize_summary(capsys):
+    """Summary of a length equalizing transformation"""
+    equalize.summary()
+    assert capsys.readouterr().out == (
+        '   Preprocessing summary:   \n'
+        '============================\n'
+        '1. Equalize\n'
+        '   Equalize sequence lengths\n'
+        '============================\n'
+    )
+
+# ========= #
+# TrimZeros #
+# ========= #
 
 def test_trim_zeros_single():
     """Applying zero-trimming to a single observation sequence"""
-    assert_equal(trim.transform(X), trim_zeros(X))
+    assert_equal(trim(X), TrimZeros()(X))
 
 def test_trim_zeros_multiple():
     """Applying zero-trimming to multiple observation sequences"""
-    assert_all_equal(trim.transform(Xs), trim_zeros(Xs))
+    assert_all_equal(trim(Xs), TrimZeros()(Xs))
 
 def test_trim_zeros_summary(capsys):
     """Summary of a zero-trimming transformation"""
     trim.summary()
     assert capsys.readouterr().out == (
-        'Preprocessing summary:\n'
-        '======================\n'
-        '1. Zero-trimming\n'
-        '======================\n'
+        '   Preprocessing summary:  \n'
+        '===========================\n'
+        '1. TrimZeros\n   '
+        'Remove zero-observations\n'
+        '===========================\n'
     )
 
-# =================== #
-# Preprocess.center() #
-# =================== #
+# =========== #
+# MinMaxScale #
+# =========== #
 
-def test_center_adds_transform():
-    """Applying a single centering transformation"""
-    assert len(cent._transforms) == 1
-    assert cent._transforms[0] == (_center, {})
+def test_min_max_scale_single():
+    """Applying min-max scaling to a single observation sequence"""
+    assert_equal(min_max_scale(X), MinMaxScale(**min_max_scale_kwargs)(X))
+
+def test_min_max_scale_multiple():
+    """Applying min-max scaling to multiple observation sequences"""
+    assert_all_equal(min_max_scale(Xs), MinMaxScale(**min_max_scale_kwargs)(Xs))
+
+def test_min_max_scale_summary(capsys):
+    """Summary of a min-max scaling transformation"""
+    min_max_scale.summary()
+    assert capsys.readouterr().out == (
+        '        Preprocessing summary:       \n'
+        '=====================================\n'
+        '1. MinMaxScale\n'
+        '   Min-max scaling into range (-5, 5)\n'
+        '=====================================\n'
+    )
+
+# ====== #
+# Center #
+# ====== #
 
 def test_center_single():
     """Applying centering to a single observation sequence"""
-    assert_equal(cent.transform(X), center(X))
+    assert_equal(cent(X), Center()(X))
 
 def test_center_multiple():
     """Applying centering to multiple observation sequences"""
-    assert_all_equal(cent.transform(Xs), center(Xs))
+    assert_all_equal(cent(Xs), Center()(Xs))
 
 def test_center_summary(capsys):
     """Summary of a centering transformation"""
     cent.summary()
     assert capsys.readouterr().out == (
-        'Preprocessing summary:\n'
-        '======================\n'
-        '1. Centering\n'
-        '======================\n'
+        '              Preprocessing summary:              \n'
+        '==================================================\n'
+        '1. Center\n'
+        '   Centering around mean (zero mean) (independent)\n'
+        '==================================================\n'
     )
 
-# ======================== #
-# Preprocess.standardize() #
-# ======================== #
-
-def test_standardize_adds_transform():
-    """Applying a single standardizing transformation"""
-    assert len(standard._transforms) == 1
-    assert standard._transforms[0] == (_standardize, {})
+# =========== #
+# Standardize #
+# =========== #
 
 def test_standardize_single():
     """Applying standardization to a single observation sequence"""
-    assert_equal(standard.transform(X), standardize(X))
+    assert_equal(standard(X), Standardize()(X))
 
 def test_standardize_multiple():
     """Applying standardization to multiple observation sequences"""
-    assert_all_equal(standard.transform(Xs), standardize(Xs))
+    assert_all_equal(standard(Xs), Standardize()(Xs))
 
 def test_standardize_summary(capsys):
     """Summary of a standardizing transformation"""
     standard.summary()
     assert capsys.readouterr().out == (
-        'Preprocessing summary:\n'
-        '======================\n'
-        '1. Standardization\n'
-        '======================\n'
+        '                   Preprocessing summary:                   \n'
+        '============================================================\n'
+        '1. Standardize\n'
+        '   Standard scaling (zero mean, unit variance) (independent)\n'
+        '============================================================\n'
     )
 
-# ================ #
-# Preprocess.fft() #
-# ================ #
-
-def test_fft_adds_transform():
-    """Applying a single discrete fourier transformation"""
-    assert len(fourier._transforms) == 1
-    assert fourier._transforms[0] == (_fft, {})
-
-def test_fft_single():
-    """Applying discrete fourier transformation to a single observation sequence"""
-    assert_equal(fourier.transform(X), fft(X))
-
-def test_fft_multiple():
-    """Applying discrete fourier transformation to multiple observation sequences"""
-    assert_all_equal(fourier.transform(Xs), fft(Xs))
-
-def test_fft_summary(capsys):
-    """Summary of a discrete fourier transformation"""
-    fourier.summary()
-    assert capsys.readouterr().out == (
-        '    Preprocessing summary:   \n'
-        '=============================\n'
-        '1. Discrete Fourier Transform\n'
-        '=============================\n'
-    )
-
-# ======================= #
-# Preprocess.downsample() #
-# ======================= #
-
-def test_downsample_adds_transform():
-    """Applying a single downsampling transformation"""
-    assert len(down._transforms) == 1
-    assert down._transforms[0] == (_downsample, down_kwargs)
+# ========== #
+# Downsample #
+# ========== #
 
 def test_downsample_single():
     """Applying downsampling to a single observation sequence"""
-    assert_equal(down.transform(X), downsample(X, **down_kwargs))
+    assert_equal(down(X), Downsample(**down_kwargs)(X))
 
 def test_downsample_multiple():
     """Applying downsampling to multiple observation sequences"""
-    assert_all_equal(down.transform(Xs), downsample(Xs, **down_kwargs))
+    assert_all_equal(down(Xs), Downsample(**down_kwargs)(Xs))
 
 def test_downsample_summary(capsys):
     """Summary of a downsampling transformation"""
     down.summary()
     assert capsys.readouterr().out == (
-        '          Preprocessing summary:          \n'
-        '==========================================\n'
-        '1. Downsampling:\n'
-        '   Decimation with downsample factor (n=3)\n'
-        '==========================================\n'
+        '         Preprocessing summary:         \n'
+        '========================================\n'
+        '1. Downsample\n'
+        '   Decimation downsampling with factor 3\n'
+        '========================================\n'
     )
 
-# ===================== #
-# Preprocess.filtrate() #
-# ===================== #
+# ====== #
+# Filter #
+# ====== #
 
-def test_filtrate_adds_transform():
-    """Applying a single filtering transformation"""
-    assert len(filt._transforms) == 1
-    assert filt._transforms[0] == (_filtrate, filt_kwargs)
-
-def test_filtrate_single():
+def test_filter_single():
     """Applying filtering to a single observation sequence"""
-    assert_equal(filt.transform(X), filtrate(X, **filt_kwargs))
+    assert_equal(filt(X), Filter(**filt_kwargs)(X))
 
-def test_filtrate_multiple():
+def test_filter_multiple():
     """Applying filtering to multiple observation sequences"""
-    assert_all_equal(filt.transform(Xs), filtrate(Xs, **filt_kwargs))
+    assert_all_equal(filt(Xs), Filter(**filt_kwargs)(Xs))
 
-def test_filtrate_summary(capsys):
+def test_filter_summary(capsys):
     """Summary of a filtering transformation"""
     filt.summary()
     assert capsys.readouterr().out == (
-        '         Preprocessing summary:        \n'
-        '=======================================\n'
-        '1. Filtering:\n'
-        '   Median filter with window size (n=3)\n'
-        '=======================================\n'
+        '        Preprocessing summary:        \n'
+        '======================================\n'
+        '1. Filter\n'
+        '   Median filtering with window-size 3\n'
+        '======================================\n'
     )
 
 # ======================== #
 # Combined transformations #
 # ======================== #
 
-def test_combined_adds_transforms():
-    """Applying multiple filtering transformations"""
-    assert len(combined._transforms) == 6
-    assert combined._transforms == [
-        (_trim_zeros, {}),
-        (_center, {}),
-        (_standardize, {}),
-        (_filtrate, filt_kwargs),
-        (_downsample, down_kwargs),
-        (_fft, {})
-    ]
+combined = Preprocess([
+    Equalize(),
+    TrimZeros(),
+    MinMaxScale(**min_max_scale_kwargs),
+    Center(),
+    Standardize(),
+    Filter(**filt_kwargs),
+    Downsample(**down_kwargs)
+])
 
 def test_combined_single():
     """Applying combined transformations to a single observation sequence"""
     X_pre = X
-    X_pre = trim_zeros(X_pre)
-    X_pre = center(X_pre)
-    X_pre = standardize(X_pre)
-    X_pre = filtrate(X_pre, **filt_kwargs)
-    X_pre = downsample(X_pre, **down_kwargs)
-    X_pre = fft(X_pre)
-    assert_equal(combined.transform(X), X_pre)
+    X_pre = Equalize()(X_pre)
+    X_pre = TrimZeros()(X_pre)
+    X_pre = MinMaxScale(**min_max_scale_kwargs)(X_pre)
+    X_pre = Center()(X_pre)
+    X_pre = Standardize()(X_pre)
+    X_pre = Filter(**filt_kwargs)(X_pre)
+    X_pre = Downsample(**down_kwargs)(X_pre)
+    assert_equal(combined(X), X_pre)
 
 def test_combined_multiple():
     """Applying combined transformations to multiple observation sequences"""
     Xs_pre = Xs
-    Xs_pre = trim_zeros(Xs_pre)
-    Xs_pre = center(Xs_pre)
-    Xs_pre = standardize(Xs_pre)
-    Xs_pre = filtrate(Xs_pre, **filt_kwargs)
-    Xs_pre = downsample(Xs_pre, **down_kwargs)
-    Xs_pre = fft(Xs_pre)
-    assert_all_equal(combined.transform(Xs), Xs_pre)
+    Xs_pre = Equalize()(Xs_pre)
+    Xs_pre = TrimZeros()(Xs_pre)
+    Xs_pre = MinMaxScale(**min_max_scale_kwargs)(Xs_pre)
+    Xs_pre = Center()(Xs_pre)
+    Xs_pre = Standardize()(Xs_pre)
+    Xs_pre = Filter(**filt_kwargs)(Xs_pre)
+    Xs_pre = Downsample(**down_kwargs)(Xs_pre)
+    assert_all_equal(combined(Xs), Xs_pre)
 
 def test_combined_summary(capsys):
     """Summary with combined transformations applied"""
     combined.summary()
     assert capsys.readouterr().out == (
-        '          Preprocessing summary:          \n'
-        '==========================================\n'
-        '1. Zero-trimming\n'
-        '------------------------------------------\n'
-        '2. Centering\n'
-        '------------------------------------------\n'
-        '3. Standardization\n'
-        '------------------------------------------\n'
-        '4. Filtering:\n'
-        '   Median filter with window size (n=3)\n'
-        '------------------------------------------\n'
-        '5. Downsampling:\n'
-        '   Decimation with downsample factor (n=3)\n'
-        '------------------------------------------\n'
-        '6. Discrete Fourier Transform\n'
-        '==========================================\n'
+        '                   Preprocessing summary:                   \n'
+        '============================================================\n'
+        '1. Equalize\n'
+        '   Equalize sequence lengths\n'
+        '------------------------------------------------------------\n'
+        '2. TrimZeros\n'
+        '   Remove zero-observations\n'
+        '------------------------------------------------------------\n'
+        '3. MinMaxScale\n'
+        '   Min-max scaling into range (-5, 5)\n'
+        '------------------------------------------------------------\n'
+        '4. Center\n'
+        '   Centering around mean (zero mean) (independent)\n'
+        '------------------------------------------------------------\n'
+        '5. Standardize\n'
+        '   Standard scaling (zero mean, unit variance) (independent)\n'
+        '------------------------------------------------------------\n'
+        '6. Filter\n'
+        '   Median filtering with window-size 3\n'
+        '------------------------------------------------------------\n'
+        '7. Downsample\n'
+        '   Decimation downsampling with factor 3\n'
+        '============================================================\n'
     )
-
-# ==================== #
-# Preprocess.summary() #
-# ==================== #
 
 def test_empty_summary():
     """Summary without any transformations applied"""
     with pytest.raises(RuntimeError) as e:
-        Preprocess().summary()
+        Preprocess([]).summary()
     assert str(e.value) == 'At least one preprocessing transformation is required'

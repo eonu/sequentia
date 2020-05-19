@@ -48,14 +48,17 @@ from transitioning to previous states (this is shown in the figure above). This 
 to what known as a **left-right** HMM, and is the most commonly used type of HMM for sequential
 modeling. Mathematically, a left-right HMM is defined by an upper-triangular transition matrix.
 
+A **strict left-right** topology is one in which transitions are only permitted to the current state
+and the next state, i.e. no state-jumping is permitted.
+
 If we allow transitions to any state at any time, this HMM topology is known as **ergodic**.
 
-**Note**: Ergodicity is mathematically defined as having a transition matrix with no non-zero entries.
+**Note**: Ergodicity is mathematically defined as having a transition matrix with no zero entries.
 Using the ergodic topology in Sequentia will still permit zero entries in the transition matrix,
 but will issue a warning stating that those probabilities will not be learned.
 
-Sequentia offers both topologies, specified by a string parameter ``topology`` in the
-:class:`~HMM` constructor that takes values `'left-right'` or `'ergodic'`.
+Sequentia offers all three topologies, specified by a string parameter ``topology`` in the
+:class:`~HMM` constructor that takes values `'left-right'`, `'strict-left-right'` or `'ergodic'`.
 
 Making Predictions
 ------------------
@@ -88,24 +91,64 @@ API reference
 .. autoclass:: sequentia.classifiers.hmm.HMM
     :members:
 
+Hidden Markov Model with Gaussian Mixture Emissions (``GMMHMM``)
+================================================================
+
+The assumption that a single multivariate Gaussian emission distribution
+is accurate and representative enough to model the probability of observation
+vectors of any state of a HMM is often a very strong and naive one.
+
+Instead, a more powerful approach is to represent the emission distribution as
+a mixture of multiple multivariate Gaussian densities. An emission distribution
+for state :math:`m`, formed by a mixture of :math:`G` multivariate Gaussian densities is defined as:
+
+.. math::
+    b_m(\mathbf{o}^{(t)}) = \sum_{g=1}^G c_g^{(m)} \mathcal{N}\big(\mathbf{o}^{(t)}\ ;\ \boldsymbol\mu_g^{(m)}, \Sigma_g^{(m)}\big)
+
+where :math:`\mathbf{o}^{(t)}` is an observation vector at time :math:`t`,
+:math:`c_g^{(m)}` is a *mixing coefficient* such that :math:`\sum_{g=1}^G c_g^{(m)} = 1`
+and :math:`\boldsymbol\mu_g^{(m)}` and :math:`\Sigma_g^{(m)}` are the mean vector
+and covariance matrix of the :math:`g^\text{th}` mixture component of the :math:`m^\text{th}`
+state, respectively.
+
+Even in the case that multiple Gaussian densities are not needed, the mixing coefficients
+can be adjusted so that irrelevant Gaussians are omitted and only a single Gaussian remains.
+
+Example
+-------
+
+.. literalinclude:: ../../_includes/examples/classifiers/gmmhmm.py
+    :language: python
+    :linenos:
+
+API reference
+-------------
+
+.. autoclass:: sequentia.classifiers.hmm.GMMHMM
+    :inherited-members:
+    :members:
+
 Hidden Markov Model Classifier (``HMMClassifier``)
 ==================================================
 
-Multiple HMMs can be combined to form a multi-class classifier.
+Multiple HMMs (and/or GMM-HMMs) can be combined to form a multi-class classifier.
 To classify a new observation sequence :math:`O'`, this works by:
 
-1. | Creating and training the HMMs :math:`\lambda_1, \lambda_2, \ldots, \lambda_N`.
+1. | Creating and training the HMMs :math:`\lambda_1, \lambda_2, \ldots, \lambda_C`.
 
-2. | Calculating the likelihoods :math:`\mathbb{P}(O'|\lambda_1), \mathbb{P}(O'|\lambda_2), \ldots, \mathbb{P}(O'|\lambda_N)` of each model generating :math:`O'`.
-   | **Note**: You can also used the un-normalized posterior :math:`\mathbb{P}(O'|\lambda_c)\mathbb{P}(\lambda_c)` instead of the likelihood.
+2. | Calculating the likelihoods :math:`\mathbb{P}(O'|\lambda_1), \mathbb{P}(O'|\lambda_2), \ldots, \mathbb{P}(O'|\lambda_C)` of each model generating :math:`O'`.
 
-3. | Choose the class represented by the HMM with the highest likelihood – that is, :math:`c^*=\mathop{\arg\max}_{c\in\{1,\ldots,N\}}{\mathbb{P}(O'|\lambda_c)}`.
+3. | Scaling the likelihoods by priors :math:`\mathbb{P}(\lambda_1), \mathbb{P}(\lambda_2), \ldots, \mathbb{P}(\lambda_C)`, producing un-normalized posteriors
+    :math:`\mathbb{P}(O'|\lambda_c)\mathbb{P}(\lambda_c)`.
+
+4. | Performing MAP classification by choosing the class represented by the HMM with the highest posterior – that is,
+    :math:`c^*=\mathop{\arg\max}_{c\in\{1,\ldots,C\}}{\mathbb{P}(O'|\lambda_c)\mathbb{P}(\lambda_c)}`.
 
 These steps are summarized in the diagram below.
 
-.. image:: https://i.ibb.co/gPymgs4/classifier.png
+.. image:: /_static/classifier.png
     :alt: HMM Classifier
-    :width: 400
+    :width: 600
 
 Example
 -------
