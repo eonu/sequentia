@@ -241,11 +241,11 @@ class KNNClassifier:
         with h5py.File(path, 'r') as f:
             # Deserialize the model hyper-parameters
             params = f['params']
-            clf = cls(k=int(params['k'][()]), radius=int(params['radius'][()]), metric=metric)
+            clf = cls(k=int(params['k'][()]), radius=int(params['radius'][()]), metric=metric, weighting=weighting)
 
             # Deserialize the training data and labels
             X, y = f['data']['X'], f['data']['y']
-            clf._X = [np.array(X[k]) for k in X.keys()]
+            clf._X = [np.array(X[k]) for k in sorted(X.keys(), key=lambda k: int(k))]
             clf._y = [label.decode(encoding) for label in y]
 
         return clf
