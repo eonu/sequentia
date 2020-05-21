@@ -1,3 +1,11 @@
+## [0.7.1](https://github.com/eonu/sequentia/releases/tag/v0.7.1)
+
+#### Major changes
+
+- Fix deserialization for `KNNClassifier`. ([#93](https://github.com/eonu/sequentia/pull/93))
+  - Sort HDF5 keys before loading as `numpy.ndarray`s.
+  - Pass `weighting` function into deserialization constructor.
+
 ## [0.7.0](https://github.com/eonu/sequentia/releases/tag/v0.7.0)
 
 #### Major changes
