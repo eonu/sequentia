@@ -13,7 +13,13 @@ import subprocess
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath('..'))
+try:
+    # Sigment is installed
+    import sequentia
+except ImportError:
+    # Sigment is run from its source checkout
+    sys.path.insert(0, os.path.abspath('../lib'))
+    import sequentia
 
 subprocess.call('pip install numpydoc sphinx_rtd_theme m2r', shell=True)
 
@@ -24,7 +30,7 @@ copyright = '2019-2020, Edwin Onuonga'
 author = 'Edwin Onuonga'
 
 # The full version, including alpha/beta/rc tags
-release = '0.7.0'
+release = sequentia.__version__
 
 # -- General configuration ---------------------------------------------------
 
