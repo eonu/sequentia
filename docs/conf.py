@@ -6,9 +6,7 @@
 
 # -- Path setup --------------------------------------------------------------
 
-import sys
-import os
-import subprocess
+import sys, os, subprocess
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
