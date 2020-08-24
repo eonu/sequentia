@@ -48,7 +48,7 @@ Sequentia offers the use of multivariate observation sequences with varying dura
 
 ### Classification algorithms
 
-- [x] Hidden Markov Models (via [Pomegranate](https://github.com/jmschrei/pomegranate) [[1]](#references))<br/><em>Learning with the Baum-Welch algorithm <a href="#references">[2]</a></em>
+- [x] Hidden Markov Models (via [Pomegranate](https://github.com/jmschrei/pomegranate) [[1]](#references))<br/>Learning with the Baum-Welch algorithm <a href="#references">[2]</a>
   - [x] Multivariate Gaussian emissions
   - [x] Gaussian Mixture Model emissions (full and diagonal covariances)
   - [x] Left-right and ergodic topologies
