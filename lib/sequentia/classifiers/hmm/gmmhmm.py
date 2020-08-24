@@ -2,7 +2,7 @@ import numpy as np, pomegranate as pg, json
 from .hmm import HMM
 
 class GMMHMM(HMM):
-    """A hidden Markov model representing an isolated temporal sequence class,
+    """A hidden Markov model representing an isolated sequence class,
     with mixtures of multivariate Gaussian components representing state emission distributions.
 
     Parameters
