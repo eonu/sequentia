@@ -1,3 +1,9 @@
+## [0.7.2](https://github.com/eonu/sequentia/releases/tag/v0.7.2)
+
+#### Major changes
+
+- Stop referring to sequences as temporal, as non-temporal sequences can also be used. ([#103](https://github.com/eonu/sequentia/pull/103))
+
 ## [0.7.1](https://github.com/eonu/sequentia/releases/tag/v0.7.1)
 
 #### Major changes
