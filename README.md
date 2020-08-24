@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <em>A machine learning interface for isolated temporal sequence classification algorithms in Python.</em>
+  <em>A machine learning interface for isolated sequence classification algorithms in Python.</em>
 </p>
 
 <p align="center">
@@ -30,32 +30,31 @@
 
 ## Introduction
 
-Temporal sequences are sequences of observations that occur over time. Changing patterns over time naturally provide many interesting opportunities and challenges for machine learning.
+Sequential data is one of the most commonly observed forms of data. These can range from time series (sequences of observations occurring through time) to non-temporal sequences such as DNA nucleotides. Time series such as audio signals and stock prices are often of particular interest as changing patterns over time naturally provide many interesting opportunities and challenges for machine learning.
 
-This library specifically aims to tackle classification problems for isolated temporal sequences by creating an interface to a number of classification algorithms.
+This library specifically aims to tackle classification problems for isolated sequences by creating an interface to a number of classification algorithms.
 
 Despite these types of sequences sounding very specific, you probably observe some of them on a regular basis!
 
-**Some examples of classification problems for isolated temporal sequences include classifying**:
+**Some examples of classification problems for isolated sequences include classifying**:
 
-- word utterances in speech audio signals,
-- hand-written characters according to their pen-tip trajectories,
-- hand or head gestures in a video or motion-capture recording.
+- a word utterance by its speech audio signal,
+- a hand-written character according to its pen-tip trajectory,
+- a hand or head gesture in a video or motion-capture recording.
 
 ## Features
 
-Sequentia offers the use of multivariate observation sequences with varying durations in conjunction with the following algorithms and methods:
+Sequentia offers the use of multivariate observation sequences with varying durations using the following methods:
 
 ### Classification algorithms
 
-- [x] Hidden Markov Models (via [Pomegranate](https://github.com/jmschrei/pomegranate) [[1]](#references))
+- [x] Hidden Markov Models (via [Pomegranate](https://github.com/jmschrei/pomegranate) [[1]](#references))<br/><em>Learning with the Baum-Welch algorithm <a href="#references">[2]</a></em>
   - [x] Multivariate Gaussian emissions
   - [x] Gaussian Mixture Model emissions (full and diagonal covariances)
   - [x] Left-right and ergodic topologies
-- [x] Approximate Dynamic Time Warping k-Nearest Neighbors (implemented with [FastDTW](https://github.com/slaypni/fastdtw) [[2]](#references))
+- [x] Approximate Dynamic Time Warping k-Nearest Neighbors (implemented with [FastDTW](https://github.com/slaypni/fastdtw) [[3]](#references))
   - [x] Custom distance-weighted predictions
   - [x] Multi-processed predictions
-- [ ] Long Short-Term Memory Networks (_soon!_)
 
 <p align="center">
   <img src="https://i.ibb.co/jVD2S4b/classifier.png" width="60%"/><br/>
@@ -94,6 +93,12 @@ For tutorials and examples on the usage of Sequentia, [look at the notebooks her
     </tr>
     <tr>
       <td>[2]</td>
+      <td>
+        <a href=https://web.ece.ucsb.edu/Faculty/Rabiner/ece259/Reprints/tutorial%20on%20hmm%20and%20applications.pdf">Lawrence R. Rabiner. <b>"A Tutorial on Hidden Markov Models and Selected Applications in Speech Recognition"</b> Proceedings of the IEEE 77 (1989), no. 2, pp. 257-86.</a>
+      </td>
+    </tr>
+    <tr>
+      <td>[3]</td>
       <td>
         <a href="https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf">Stan Salvador, and Philip Chan. <b>"FastDTW: Toward accurate dynamic time warping in linear time and space."</b> Intelligent Data Analysis 11.5 (2007), 561-580.</a>
       </td>

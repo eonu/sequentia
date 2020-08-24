@@ -5,7 +5,7 @@ from .topologies.strict_left_right import _StrictLeftRightTopology
 from ...internals import _Validator
 
 class HMM:
-    """A hidden Markov model representing an isolated temporal sequence class.
+    """A hidden Markov model representing an isolated sequence class.
 
     Parameters
     ----------
