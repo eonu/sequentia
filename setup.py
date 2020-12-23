@@ -41,7 +41,7 @@ setup(
     python_requires='>=3.5,<3.8',
     install_requires = [
         'numpy>=1.17,<2',
-        'pomegranate==0.12.0',
+        'hmmlearn==0.2.4',
         'fastdtw>=0.3,<0.4',
         'scipy>=1.3,<2',
         'scikit-learn>=0.22,<1',
