@@ -54,7 +54,7 @@ class _Validator:
         X: List[numpy.ndarray]
             A list of multiple observation sequences.
 
-        y: List[Any]
+        y: Iterable[str/numeric]
             A list of labels for the observation sequences.
 
         Returns
@@ -62,10 +62,12 @@ class _Validator:
         X: List[numpy.ndarray]
             The original input observation sequences if valid.
 
-        y: List[Any]
+        y: Iterable[str/numeric]
             The original input labels if valid.
         """
         self.observation_sequences(X, allow_single=False)
+        self.iterable(y, 'labels')
+        self.string_or_numeric(y[0], 'each label')
         if not all(isinstance(label, type(y[0])) for label in y[1:]):
             raise TypeError('Expected all labels to be of the same type')
         if not len(X) == len(y):
@@ -160,7 +162,7 @@ class _Validator:
         item: Any
             The item to validate.
 
-        items: List[Any]
+        items: Iterable[Any]
             The list of permitted values to check against.
 
         desc: str
@@ -270,7 +272,7 @@ class _Validator:
             A random state object.
         """
         if state is None:
-            return np.random.RandomState(seed=0)
+            return np.random.RandomState(seed=None)
         elif isinstance(state, int):
             return np.random.RandomState(seed=state)
         elif isinstance(state, np.random.RandomState):
@@ -316,6 +318,7 @@ class _Validator:
             The original input item if valid.
         """
 
-        if not isinstance(item, Iterable):
+        if isinstance(item, Iterable) and hasattr(item, '__len__'):
+            return item
+        else:
             raise TypeError("Expected {} to be an iterable".format(desc))
-        return item
