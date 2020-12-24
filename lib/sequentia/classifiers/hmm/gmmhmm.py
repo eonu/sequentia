@@ -18,7 +18,7 @@ class GMMHMM:
     n_components: int > 0
         The number of mixture components used in the emission distribution for each state.
 
-    covariance: {'spherical', 'diag', 'full', 'tied'}
+    covariance_type: {'spherical', 'diag', 'full', 'tied'}
         The covariance matrix type.
 
     topology: {'ergodic', 'left-right', 'strict-left-right'}
@@ -46,7 +46,7 @@ class GMMHMM:
 
     TODO: Add all other fields
     """
-    def __init__(self, label, n_states, n_components=1, covariance='full', topology='left-right', random_state=None):
+    def __init__(self, label, n_states, n_components=1, covariance_type='full', topology='left-right', random_state=None):
         self._val = _Validator()
         self._label = self._val.string_or_numeric(label, 'model label')
         self._label = label
@@ -54,7 +54,7 @@ class GMMHMM:
             n_states, lambda x: x > 0, desc='number of states', expected='greater than zero')
         self._n_components = self._val.restricted_integer(
             n_components, lambda x: x > 0, desc='number of mixture components', expected='greater than zero')
-        self._covariance = self._val.one_of(covariance, ['spherical', 'diag', 'full', 'tied'], desc='covariance matrix type')
+        self._covariance_type = self._val.one_of(covariance_type, ['spherical', 'diag', 'full', 'tied'], desc='covariance matrix type')
         self._val.one_of(topology, ['ergodic', 'left-right', 'strict-left-right'], desc='topology')
         self._random_state = self._val.random_state(random_state)
         self._topology = {
@@ -102,18 +102,17 @@ class GMMHMM:
         self._model = hmmlearn.hmm.GMMHMM(
             n_components=self._n_states,
             n_mix=self._n_components,
-            covariance_type=self._covariance,
-            algorithm='map',
+            covariance_type=self._covariance_type,
             random_state=self._random_state,
-            init_params='mcw' # only initialize means, covariances and mixture weights
+            init_params='mcw', # only initialize means, covariances and mixture weights
         )
-        self._model.startprob_, self._model.transprob_ = self._initial, self._transitions
+        self._model.startprob_, self._model.transmat_ = self._initial, self._transitions
 
         # Perform the Baum-Welch algorithm to fit the model to the observations
         self._model.fit(np.vstack(X), [len(x) for x in X])
 
         # Update the initial state distribution and transitions to reflect the updated parameters
-        self._initial, self._transitions = self._model.startprob_, self._model.transprob_
+        self._initial, self._transitions = self._model.startprob_, self._model.transmat_
 
     def forward(self, x):
         """Runs the forward algorithm to calculate the (log) likelihood of the model generating an observation sequence.
@@ -154,8 +153,8 @@ class GMMHMM:
         return self._n_components
 
     @property
-    def covariance(self):
-        return self._covariance
+    def covariance_type(self):
+        return self._covariance_type
 
     @property
     def n_seqs(self):
