@@ -622,9 +622,3 @@ def test_strict_left_right_transitions_strict_left_right():
     transitions = topology.random_transitions()
     hmm.transitions = transitions
     assert_equal(hmm.transitions, transitions)
-
-# ============================== #
-# GMMHMM (serialize/deserialize) #
-# ============================== #
-
-#

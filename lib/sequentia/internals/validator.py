@@ -1,6 +1,9 @@
-import numbers, numpy as np
-from collections import Iterable
+import sys, numbers, numpy as np
 from copy import copy
+if sys.version_info >= (3, 3):
+    from collections.abc import Iterable
+else:
+    from collections import Iterable
 
 class _Validator:
     """Performs internal validations on various input types."""

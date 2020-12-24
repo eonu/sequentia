@@ -88,7 +88,7 @@ class HMMClassifier:
         elif prior == 'uniform':
             prior = {model.label:(1. / len(self._models)) for model in self._models}
         else:
-            prior = {model.label:prior[self._encoder.transform(model.label)] for model in self._models}
+            prior = {model.label:prior[self._encoder.transform([model.label]).item()] for model in self._models}
 
         # Convert single observation sequence to a singleton list
         X = [X] if isinstance(X, np.ndarray) else X
