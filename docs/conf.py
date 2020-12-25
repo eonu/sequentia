@@ -19,7 +19,7 @@ except ImportError:
     sys.path.insert(0, os.path.abspath('../lib'))
     import sequentia
 
-subprocess.call('pip install numpydoc sphinx_rtd_theme m2r', shell=True)
+subprocess.call('pip install numpydoc sphinx_rtd_theme m2r2', shell=True)
 
 # -- Project information -----------------------------------------------------
 
@@ -41,7 +41,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'numpydoc',
-    'm2r'
+    'm2r2'
 ]
 
 autodoc_member_order = 'bysource'

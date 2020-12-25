@@ -3,7 +3,7 @@
 from __future__ import print_function
 from setuptools import setup, find_packages
 
-VERSION = '0.7.2'
+VERSION = '0.10.0a1'
 
 with open('README.md', 'r') as fh:
     long_description = fh.read()
@@ -27,9 +27,9 @@ setup(
     packages = find_packages(where='lib'),
     classifiers = [
         'Development Status :: 2 - Pre-Alpha',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'License :: OSI Approved :: MIT License',
         'Operating System :: Unix',
         'Operating System :: MacOS',
@@ -38,10 +38,10 @@ setup(
         'Topic :: Scientific/Engineering',
         'Natural Language :: English'
     ],
-    python_requires='>=3.5,<3.8',
+    python_requires='>=3.6,<3.9',
     install_requires = [
         'numpy>=1.17,<2',
-        'pomegranate==0.12.0',
+        'hmmlearn==0.2.4',
         'fastdtw>=0.3,<0.4',
         'scipy>=1.3,<2',
         'scikit-learn>=0.22,<1',
