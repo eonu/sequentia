@@ -48,11 +48,10 @@ Sequentia offers the use of multivariate observation sequences with varying dura
 
 ### Classification algorithms
 
-- [x] Hidden Markov Models (via [Pomegranate](https://github.com/jmschrei/pomegranate) [[1]](#references))<br/>Learning with the Baum-Welch algorithm <a href="#references">[2]</a>
-  - [x] Multivariate Gaussian emissions
-  - [x] Gaussian Mixture Model emissions (full and diagonal covariances)
-  - [x] Left-right and ergodic topologies
-- [x] Approximate Dynamic Time Warping k-Nearest Neighbors (implemented with [FastDTW](https://github.com/slaypni/fastdtw) [[3]](#references))
+- [x] Hidden Markov Models (via [hmmlearn](https://github.com/hmmlearn/hmmlearn)<br/>Learning with the Baum-Welch algorithm^[[1]](#references)^
+  - [x] Gaussian Mixture Model emissions
+  - [x] Linear, left-right and ergodic topologies
+- [x] Approximate Dynamic Time Warping k-Nearest Neighbors (implemented with [FastDTW](https://github.com/slaypni/fastdtw)^[[2]](#references))^
   - [x] Custom distance-weighted predictions
   - [x] Multi-processed predictions
 
@@ -88,17 +87,11 @@ For tutorials and examples on the usage of Sequentia, [look at the notebooks her
     <tr>
       <td>[1]</td>
       <td>
-        <a href="http://jmlr.org/papers/volume18/17-636/17-636.pdf">Jacob Schreiber. <b>"pomegranate: Fast and Flexible Probabilistic Modeling in Python."</b> Journal of Machine Learning Research 18 (2018), (164):1-6.</a>
-      </td>
-    </tr>
-    <tr>
-      <td>[2]</td>
-      <td>
         <a href=https://web.ece.ucsb.edu/Faculty/Rabiner/ece259/Reprints/tutorial%20on%20hmm%20and%20applications.pdf">Lawrence R. Rabiner. <b>"A Tutorial on Hidden Markov Models and Selected Applications in Speech Recognition"</b> Proceedings of the IEEE 77 (1989), no. 2, pp. 257-86.</a>
       </td>
     </tr>
     <tr>
-      <td>[3]</td>
+      <td>[2]</td>
       <td>
         <a href="https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf">Stan Salvador, and Philip Chan. <b>"FastDTW: Toward accurate dynamic time warping in linear time and space."</b> Intelligent Data Analysis 11.5 (2007), 561-580.</a>
       </td>
