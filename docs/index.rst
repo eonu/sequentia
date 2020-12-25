@@ -11,7 +11,8 @@
 About
 =====
 
-Sequentia is a collection of machine learning algorithms for performing the classification of isolated sequences.
+Sequentia is a Python package that provides implementations of a selection of machine learning algorithms
+for performing the classification of isolated sequences.
 
 Each isolated sequence is generally modeled as a section of a longer multivariate time series
 that represents the entire sequence. Naturally, this fits the description of many types of problems such as:

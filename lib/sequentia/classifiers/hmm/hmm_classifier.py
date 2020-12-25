@@ -47,7 +47,7 @@ class HMMClassifier:
             - `'frequency'`: Calculate the prior :math:`\mathbb{P}(\lambda_c)` as the proportion of training examples in class :math:`c`.
             - `'uniform'`: Set the priors uniformly such that :math:`\mathbb{P}(\lambda_c)=\\frac{1}{C}` for each class :math:`c\in\{1,\ldots,C\}`.
 
-            Alternatively, class priors can be specified in an iterable of floats, e.g. ``[0.1, 0.3, 0.6]``.
+            Alternatively, class priors can be specified in an iterable of floats, e.g. `[0.1, 0.3, 0.6]`.
 
         return_scores: bool
             Whether to return the scores of each model on the observation sequence(s).
@@ -123,7 +123,7 @@ class HMMClassifier:
             - `'frequency'`: Calculate the prior :math:`\mathbb{P}(\lambda_c)` as the proportion of training examples in class :math:`c`.
             - `'uniform'`: Set the priors uniformly such that :math:`\mathbb{P}(\lambda_c)=\\frac{1}{C}` for each class :math:`c\in\{1,\ldots,C\}`.
 
-            Alternatively, class priors can be specified in an iterable of floats, e.g. ``[0.1, 0.3, 0.6]``.
+            Alternatively, class priors can be specified in an iterable of floats, e.g. `[0.1, 0.3, 0.6]`.
 
         Returns
         -------

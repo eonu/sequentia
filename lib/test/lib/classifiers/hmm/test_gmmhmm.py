@@ -1,6 +1,6 @@
 import pytest, warnings, os, numpy as np, hmmlearn.hmm
 from copy import deepcopy
-from sequentia.classifiers import GMMHMM, _LeftRightTopology, _ErgodicTopology, _StrictLeftRightTopology
+from sequentia.classifiers import GMMHMM, _LeftRightTopology, _ErgodicTopology, _LinearTopology
 from ....support import assert_equal, assert_not_equal
 
 # Set seed for reproducible randomness
@@ -15,7 +15,7 @@ x = rng.random((15, 3))
 # Unparameterized HMMs
 hmm_lr = GMMHMM(label='c1', n_states=5, topology='left-right', random_state=rng)
 hmm_e = GMMHMM(label='c1', n_states=5, topology='ergodic', random_state=rng)
-hmm_slr = GMMHMM(label='c1', n_states=5, topology='strict-left-right', random_state=rng)
+hmm_lin = GMMHMM(label='c1', n_states=5, topology='linear', random_state=rng)
 
 # ======================================================== #
 # GMMHMM.set_uniform_initial() + GMMHMM.initial (property) #
@@ -37,9 +37,9 @@ def test_ergodic_uniform_initial():
         0.2, 0.2, 0.2, 0.2, 0.2
     ]))
 
-def test_strict_left_right_uniform_initial():
-    """Uniform initial state distribution for a strict left-right HMM"""
-    hmm = deepcopy(hmm_slr)
+def test_linear_uniform_initial():
+    """Uniform initial state distribution for a linear HMM"""
+    hmm = deepcopy(hmm_lin)
     hmm.set_uniform_initial()
     assert_equal(hmm.initial, np.array([
         0.2, 0.2, 0.2, 0.2, 0.2
@@ -65,9 +65,9 @@ def test_ergodic_random_initial():
         0.35029635, 0.13344569, 0.02784745, 0.33782453, 0.15058597
     ]))
 
-def test_strict_left_right_random_initial():
-    """Random initial state distribution for a strict left-right HMM"""
-    hmm = deepcopy(hmm_slr)
+def test_linear_random_initial():
+    """Random initial state distribution for a linear HMM"""
+    hmm = deepcopy(hmm_lin)
     hmm.set_random_initial()
     assert_equal(hmm.initial, np.array([
         0.35029635, 0.13344569, 0.02784745, 0.33782453, 0.15058597
@@ -101,9 +101,9 @@ def test_ergodic_uniform_transitions():
         [0.2, 0.2, 0.2, 0.2, 0.2]
     ]))
 
-def test_strict_left_right_uniform_transitions():
-    """Uniform transition matrix for a strict left-right HMM"""
-    hmm = deepcopy(hmm_slr)
+def test_linear_uniform_transitions():
+    """Uniform transition matrix for a linear HMM"""
+    hmm = deepcopy(hmm_lin)
     hmm.set_uniform_transitions()
     assert_equal(hmm.transitions, np.array([
         [0.5, 0.5, 0. , 0. , 0. ],
@@ -141,9 +141,9 @@ def test_ergodic_random_transitions():
         [0.21312406, 0.35221103, 0.08556524, 0.06613143, 0.28296824]
     ]))
 
-def test_strict_left_right_random_transitions():
-    """Random transition matrix for a strict left-right HMM"""
-    hmm = deepcopy(hmm_slr)
+def test_linear_random_transitions():
+    """Random transition matrix for a linear HMM"""
+    hmm = deepcopy(hmm_lin)
     hmm.set_random_transitions()
     assert_equal(hmm.transitions, np.array([
         [0.72413873, 0.27586127, 0.        , 0.        , 0.        ],
@@ -300,9 +300,9 @@ def test_ergodic_fit_updates_random_transitions():
     hmm.fit(X)
     assert_not_equal(hmm.transitions, before)
 
-def test_strict_left_right_fit_updates_uniform_initial():
-    """Check fitting with a uniform initial state distribution of a strict left-right HMM"""
-    hmm = deepcopy(hmm_slr)
+def test_linear_fit_updates_uniform_initial():
+    """Check fitting with a uniform initial state distribution of a linear HMM"""
+    hmm = deepcopy(hmm_lin)
     hmm.set_uniform_initial()
     hmm.set_uniform_transitions()
     assert_equal(hmm.initial, np.array([
@@ -312,9 +312,9 @@ def test_strict_left_right_fit_updates_uniform_initial():
     hmm.fit(X)
     assert_not_equal(hmm.initial, before)
 
-def test_strict_left_right_fit_updates_random_initial():
-    """Check fitting with a random initial state distribution of a strict left-right HMM"""
-    hmm = deepcopy(hmm_slr)
+def test_linear_fit_updates_random_initial():
+    """Check fitting with a random initial state distribution of a linear HMM"""
+    hmm = deepcopy(hmm_lin)
     hmm.set_random_initial()
     hmm.set_random_transitions()
     assert_equal(hmm.initial, np.array([
@@ -324,9 +324,9 @@ def test_strict_left_right_fit_updates_random_initial():
     hmm.fit(X)
     assert_not_equal(hmm.initial, before)
 
-def test_strict_left_right_fit_updates_uniform_transitions():
-    """Check fitting with a uniform transition matrix of a strict left-right HMM"""
-    hmm = deepcopy(hmm_slr)
+def test_linear_fit_updates_uniform_transitions():
+    """Check fitting with a uniform transition matrix of a linear HMM"""
+    hmm = deepcopy(hmm_lin)
     hmm.set_uniform_initial()
     hmm.set_uniform_transitions()
     before = hmm.transitions
@@ -340,9 +340,9 @@ def test_strict_left_right_fit_updates_uniform_transitions():
     hmm.fit(X)
     assert_not_equal(hmm.transitions, before)
 
-def test_strict_left_right_fit_updates_random_transitions():
-    """Check fitting with a random transition matrix of a strict left-right HMM"""
-    hmm = deepcopy(hmm_slr)
+def test_linear_fit_updates_random_transitions():
+    """Check fitting with a random transition matrix of a linear HMM"""
+    hmm = deepcopy(hmm_lin)
     hmm.set_random_initial()
     hmm.set_random_transitions()
     before = hmm.transitions
@@ -385,9 +385,9 @@ def test_ergodic_forward():
     hmm.fit(X)
     assert isinstance(hmm.forward(x), float)
 
-def test_strict_left_right_forward():
-    """Forward algorithm on a strict left-right HMM"""
-    hmm = deepcopy(hmm_slr)
+def test_linear_forward():
+    """Forward algorithm on a linear HMM"""
+    hmm = deepcopy(hmm_lin)
     hmm.set_random_initial()
     hmm.set_random_transitions()
     hmm.fit(X)
@@ -484,10 +484,10 @@ def test_left_right_initial_ergodic():
     hmm.initial = initial
     assert_equal(hmm.initial, initial)
 
-def test_left_right_initial_strict_left_right():
-    """Set an initial state distribution generated by a left-right topology on an strict left-right HMM"""
+def test_left_right_initial_linear():
+    """Set an initial state distribution generated by a left-right topology on an linear HMM"""
     hmm = deepcopy(hmm_lr)
-    topology = _StrictLeftRightTopology(n_states=5, random_state=rng)
+    topology = _LinearTopology(n_states=5, random_state=rng)
     initial = topology.random_initial()
     hmm.initial = initial
     assert_equal(hmm.initial, initial)
@@ -508,34 +508,34 @@ def test_ergodic_initial_ergodic():
     hmm.initial = initial
     assert_equal(hmm.initial, initial)
 
-def test_ergodic_initial_strict_left_right():
-    """Set an initial state distribution generated by an ergodic topology on a strict left-right HMM"""
+def test_ergodic_initial_linear():
+    """Set an initial state distribution generated by an ergodic topology on a linear HMM"""
     hmm = deepcopy(hmm_e)
-    topology = _StrictLeftRightTopology(n_states=5, random_state=rng)
+    topology = _LinearTopology(n_states=5, random_state=rng)
     initial = topology.random_initial()
     hmm.initial = initial
     assert_equal(hmm.initial, initial)
 
-def test_strict_left_right_initial_left_right():
-    """Set an initial state distribution generated by a strict left-right topology on a left-right HMM"""
-    hmm = deepcopy(hmm_slr)
+def test_linear_initial_left_right():
+    """Set an initial state distribution generated by a linear topology on a left-right HMM"""
+    hmm = deepcopy(hmm_lin)
     topology = _LeftRightTopology(n_states=5, random_state=rng)
     initial = topology.random_initial()
     hmm.initial = initial
     assert_equal(hmm.initial, initial)
 
-def test_strict_left_right_initial_ergodic():
-    """Set an initial state distribution generated by a strict left-right topology on an ergodic HMM"""
-    hmm = deepcopy(hmm_slr)
+def test_linear_initial_ergodic():
+    """Set an initial state distribution generated by a linear topology on an ergodic HMM"""
+    hmm = deepcopy(hmm_lin)
     topology = _ErgodicTopology(n_states=5, random_state=rng)
     initial = topology.random_initial()
     hmm.initial = initial
     assert_equal(hmm.initial, initial)
 
-def test_strict_left_right_initial_strict_left_right():
-    """Set an initial state distribution generated by a strict left-right topology on an strict left-right HMM"""
-    hmm = deepcopy(hmm_slr)
-    topology = _StrictLeftRightTopology(n_states=5, random_state=rng)
+def test_linear_initial_linear():
+    """Set an initial state distribution generated by a linear topology on an linear HMM"""
+    hmm = deepcopy(hmm_lin)
+    topology = _LinearTopology(n_states=5, random_state=rng)
     initial = topology.random_initial()
     hmm.initial = initial
     assert_equal(hmm.initial, initial)
@@ -561,10 +561,10 @@ def test_left_right_transitions_ergodic():
         hmm.transitions = transitions
     assert str(e.value) == 'Left-right transition matrix must be upper-triangular'
 
-def test_left_right_transitions_strict_left_right():
-    """Set a transition matrix generated by a left-right topology on a strict left-right HMM"""
+def test_left_right_transitions_linear():
+    """Set a transition matrix generated by a left-right topology on a linear HMM"""
     hmm = deepcopy(hmm_lr)
-    topology = _StrictLeftRightTopology(n_states=5, random_state=rng)
+    topology = _LinearTopology(n_states=5, random_state=rng)
     transitions = topology.random_transitions()
     hmm.transitions = transitions
     assert_equal(hmm.transitions, transitions)
@@ -587,38 +587,38 @@ def test_ergodic_transitions_ergodic():
     hmm.transitions = transitions
     assert_equal(hmm.transitions, transitions)
 
-def test_ergodic_transitions_strict_left_right():
-    """Set a transition matrix generated by an ergodic topology on a strict left-right HMM"""
+def test_ergodic_transitions_linear():
+    """Set a transition matrix generated by an ergodic topology on a linear HMM"""
     hmm = deepcopy(hmm_e)
-    topology = _StrictLeftRightTopology(n_states=5, random_state=rng)
+    topology = _LinearTopology(n_states=5, random_state=rng)
     transitions = topology.random_transitions()
     with pytest.warns(UserWarning) as w:
         hmm.transitions = transitions
     assert w[0].message.args[0] == 'Zero probabilities in ergodic transition matrix - these transition probabilities will not be learned'
     assert_equal(hmm.transitions, transitions)
 
-def test_strict_left_right_transitions_left_right():
-    """Set a transition matrix generated by a strict left-right topology on a left-right HMM"""
-    hmm = deepcopy(hmm_slr)
+def test_linear_transitions_left_right():
+    """Set a transition matrix generated by a linear topology on a left-right HMM"""
+    hmm = deepcopy(hmm_lin)
     topology = _LeftRightTopology(n_states=5, random_state=rng)
     transitions = topology.random_transitions()
     with pytest.raises(ValueError) as e:
         hmm.transitions = transitions
-    assert str(e.value) == 'Strict left-right transition matrix must only consist of a diagonal and upper diagonal'
+    assert str(e.value) == 'Linear transition matrix must only consist of a diagonal and upper diagonal'
 
-def test_strict_left_right_transitions_ergodic():
-    """Set a transition matrix generated by a strict left-right topology on an ergodic HMM"""
-    hmm = deepcopy(hmm_slr)
+def test_linear_transitions_ergodic():
+    """Set a transition matrix generated by a linear topology on an ergodic HMM"""
+    hmm = deepcopy(hmm_lin)
     topology = _ErgodicTopology(n_states=5, random_state=rng)
     transitions = topology.random_transitions()
     with pytest.raises(ValueError) as e:
         hmm.transitions = transitions
     assert str(e.value) == 'Left-right transition matrix must be upper-triangular'
 
-def test_strict_left_right_transitions_strict_left_right():
-    """Set a transition matrix generated by a strict left-right topology on a strict left-right HMM"""
-    hmm = deepcopy(hmm_slr)
-    topology = _StrictLeftRightTopology(n_states=5, random_state=rng)
+def test_linear_transitions_linear():
+    """Set a transition matrix generated by a linear topology on a linear HMM"""
+    hmm = deepcopy(hmm_lin)
+    topology = _LinearTopology(n_states=5, random_state=rng)
     transitions = topology.random_transitions()
     hmm.transitions = transitions
     assert_equal(hmm.transitions, transitions)

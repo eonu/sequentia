@@ -1,7 +1,7 @@
 import numpy as np, hmmlearn.hmm
 from .topologies.ergodic import _ErgodicTopology
 from .topologies.left_right import _LeftRightTopology
-from .topologies.strict_left_right import _StrictLeftRightTopology
+from .topologies.linear import _LinearTopology
 from ...internals import _Validator
 
 class GMMHMM:
@@ -22,7 +22,7 @@ class GMMHMM:
     covariance_type: {'spherical', 'diag', 'full', 'tied'}
         The covariance matrix type for emission distributions.
 
-    topology: {'ergodic', 'left-right', 'strict-left-right'}
+    topology: {'ergodic', 'left-right', 'linear'}
         The topology for the model.
 
     random_state: numpy.random.RandomState, int, optional
@@ -60,12 +60,12 @@ class GMMHMM:
         self._n_components = self._val.restricted_integer(
             n_components, lambda x: x > 0, desc='number of mixture components', expected='greater than zero')
         self._covariance_type = self._val.one_of(covariance_type, ['spherical', 'diag', 'full', 'tied'], desc='covariance matrix type')
-        self._val.one_of(topology, ['ergodic', 'left-right', 'strict-left-right'], desc='topology')
+        self._val.one_of(topology, ['ergodic', 'left-right', 'linear'], desc='topology')
         self._random_state = self._val.random_state(random_state)
         self._topology = {
             'ergodic': _ErgodicTopology,
             'left-right': _LeftRightTopology,
-            'strict-left-right': _StrictLeftRightTopology
+            'linear': _LinearTopology
         }[topology](self._n_states, self._random_state)
 
     def set_uniform_initial(self):
