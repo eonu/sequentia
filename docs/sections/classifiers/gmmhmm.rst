@@ -171,7 +171,7 @@ These steps are summarized in the diagram below.
 
 .. image:: /_static/classifier.svg
     :alt: HMM Classifier
-    :width: 600
+    :width: 100%
     :align: center
 
 Example
