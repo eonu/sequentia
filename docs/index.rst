@@ -7,11 +7,13 @@
     :alt: Sequentia
     :width: 275
     :target: https://github.com/eonu/sequentia
+    :align: center
 
 About
 =====
 
-Sequentia is a collection of machine learning algorithms for performing the classification of isolated sequences.
+Sequentia is a Python package that provides implementations of a selection of machine learning algorithms
+for performing the classification of isolated sequences.
 
 Each isolated sequence is generally modeled as a section of a longer multivariate time series
 that represents the entire sequence. Naturally, this fits the description of many types of problems such as:
@@ -38,7 +40,7 @@ Sequentia offers some appropriate classification algorithms for these kinds of t
    :maxdepth: 1
    :caption: Classifiers and Models
 
-   sections/classifiers/hmm.rst
+   sections/classifiers/gmmhmm.rst
    sections/classifiers/knn.rst
 
 .. toctree::

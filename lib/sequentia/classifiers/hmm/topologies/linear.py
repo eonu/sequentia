@@ -1,8 +1,8 @@
 import numpy as np
 from .topology import _Topology
 
-class _StrictLeftRightTopology(_Topology):
-    """Represents the topology for a strict left-right HMM.
+class _LinearTopology(_Topology):
+    """Represents the topology for a linear HMM.
 
     Parameters
     ----------
@@ -56,4 +56,4 @@ class _StrictLeftRightTopology(_Topology):
         if not np.allclose(transitions, np.triu(transitions)):
             raise ValueError('Left-right transition matrix must be upper-triangular')
         if not np.allclose(transitions, np.diag(np.diag(transitions)) + np.diag(np.diag(transitions, k=1), k=1)):
-            raise ValueError('Strict left-right transition matrix must only consist of a diagonal and upper diagonal')
+            raise ValueError('Linear transition matrix must only consist of a diagonal and upper diagonal')

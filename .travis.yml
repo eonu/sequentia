@@ -4,9 +4,9 @@ sudo: false
 # Specify Python and versions to test
 language: python
 python:
-  - 3.5
   - 3.6
   - 3.7
+  - 3.8
 
 # Installation scripts
 install:
