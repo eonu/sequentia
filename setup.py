@@ -30,7 +30,6 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
         'License :: OSI Approved :: MIT License',
         'Operating System :: Unix',
         'Operating System :: MacOS',
@@ -39,7 +38,7 @@ setup(
         'Topic :: Scientific/Engineering',
         'Natural Language :: English'
     ],
-    python_requires='>=3.6,<3.10',
+    python_requires='>=3.6,<3.9',
     install_requires = [
         'numpy>=1.17,<2',
         'hmmlearn==0.2.4',
