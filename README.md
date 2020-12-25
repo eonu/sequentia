@@ -48,10 +48,10 @@ Sequentia offers the use of multivariate observation sequences with varying dura
 
 ### Classification algorithms
 
-- [x] Hidden Markov Models (via [hmmlearn](https://github.com/hmmlearn/hmmlearn)<br/>Learning with the Baum-Welch algorithm^[[1]](#references)^
+- [x] Hidden Markov Models (via [hmmlearn](https://github.com/hmmlearn/hmmlearn))<br/>Learning with the Baum-Welch algorithm [[1]](#references)
   - [x] Gaussian Mixture Model emissions
   - [x] Linear, left-right and ergodic topologies
-- [x] Approximate Dynamic Time Warping k-Nearest Neighbors (implemented with [FastDTW](https://github.com/slaypni/fastdtw)^[[2]](#references))^
+- [x] Approximate Dynamic Time Warping k-Nearest Neighbors (implemented with [FastDTW](https://github.com/slaypni/fastdtw)) [[2]](#references))^
   - [x] Custom distance-weighted predictions
   - [x] Multi-processed predictions
 
