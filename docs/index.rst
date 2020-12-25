@@ -38,7 +38,7 @@ Sequentia offers some appropriate classification algorithms for these kinds of t
    :maxdepth: 1
    :caption: Classifiers and Models
 
-   sections/classifiers/hmm.rst
+   sections/classifiers/gmmhmm.rst
    sections/classifiers/knn.rst
 
 .. toctree::
