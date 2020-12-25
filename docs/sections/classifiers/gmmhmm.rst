@@ -165,11 +165,11 @@ To classify a new observation sequence :math:`O'`, this works by:
     :math:`\mathbb{P}(O'|\lambda_c)\mathbb{P}(\lambda_c)`.
 
 4. | Performing MAP classification by choosing the class represented by the HMM with the highest posterior – that is,
-    :math:`c^*=\mathop{\arg\max}_{c\in\{1,\ldots,C\}}{\mathbb{P}(O'|\lambda_c)\mathbb{P}(\lambda_c)}`.
+    :math:`c'=\mathop{\arg\max}_{c\in\{1,\ldots,C\}}{\mathbb{P}(O'|\lambda_c)\mathbb{P}(\lambda_c)}`.
 
 These steps are summarized in the diagram below.
 
-.. image:: /_static/classifier.png
+.. image:: /_static/classifier.svg
     :alt: HMM Classifier
     :width: 600
     :align: center

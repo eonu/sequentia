@@ -56,7 +56,7 @@ Sequentia offers the use of multivariate observation sequences with varying dura
   - [x] Multi-processed predictions
 
 <p align="center">
-  <img src="/docs/_static/classifier.png" width="60%"/><br/>
+  <img src="/docs/_static/classifier.svg" width="60%"/><br/>
   Example of a classification algorithm: a multi-class HMM isolated sequence classifier
 </p>
 
