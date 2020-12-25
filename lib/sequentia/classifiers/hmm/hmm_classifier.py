@@ -42,10 +42,10 @@ class HMMClassifier:
 
         prior: {'frequency', 'uniform'} or Iterable[float]
             How the prior for each model is calculated to perform MAP estimation by scoring with
-            the joint probability (or un-normalized posterior) :math:`\mathbb{P}(O, \lambda_c)=\mathbb{P}(O|\lambda_c)\mathbb{P}(\lambda_c)`.
+            the joint probability (or un-normalized posterior) :math:`\\mathbb{P}(O, \\lambda_c)=\\mathbb{P}(O|\\lambda_c)\\mathbb{P}(\\lambda_c)`.
 
-            - `'frequency'`: Calculate the prior :math:`\mathbb{P}(\lambda_c)` as the proportion of training examples in class :math:`c`.
-            - `'uniform'`: Set the priors uniformly such that :math:`\mathbb{P}(\lambda_c)=\\frac{1}{C}` for each class :math:`c\in\{1,\ldots,C\}`.
+            - `'frequency'`: Calculate the prior :math:`\\mathbb{P}(\\lambda_c)` as the proportion of training examples in class :math:`c`.
+            - `'uniform'`: Set the priors uniformly such that :math:`\\mathbb{P}(\\lambda_c)=\\frac{1}{C}` for each class :math:`c\\in\\{1,\\ldots,C\\}`.
 
             Alternatively, class priors can be specified in an iterable of floats, e.g. `[0.1, 0.3, 0.6]`.
 
@@ -62,8 +62,8 @@ class HMMClassifier:
             inverse-transformed into their original encoding.
 
         scores: numpy.ndarray[float]
-            An :math:`N\\times M` matrix of scores (log un-normalized posteriors), for each of the :math:`1,\ldots,M` HMMs,
-            for each of the :math:`1,\ldots,N` observation sequences. Only returned if ``return_scores`` is true.
+            An :math:`N\\times M` matrix of scores (log un-normalized posteriors), for each of the :math:`1,\\ldots,M` HMMs,
+            for each of the :math:`1,\\ldots,N` observation sequences. Only returned if ``return_scores`` is true.
         """
         try:
             self._models
@@ -118,10 +118,10 @@ class HMMClassifier:
 
         prior: {'frequency', 'uniform'} or Iterable[float]
             How the prior for each model is calculated to perform MAP estimation by scoring with
-            the joint probability (or un-normalized posterior) :math:`\mathbb{P}(O, \lambda_c)=\mathbb{P}(O|\lambda_c)\mathbb{P}(\lambda_c)`.
+            the joint probability (or un-normalized posterior) :math:`\\mathbb{P}(O, \\lambda_c)=\\mathbb{P}(O|\\lambda_c)\\mathbb{P}(\\lambda_c)`.
 
-            - `'frequency'`: Calculate the prior :math:`\mathbb{P}(\lambda_c)` as the proportion of training examples in class :math:`c`.
-            - `'uniform'`: Set the priors uniformly such that :math:`\mathbb{P}(\lambda_c)=\\frac{1}{C}` for each class :math:`c\in\{1,\ldots,C\}`.
+            - `'frequency'`: Calculate the prior :math:`\\mathbb{P}(\\lambda_c)` as the proportion of training examples in class :math:`c`.
+            - `'uniform'`: Set the priors uniformly such that :math:`\\mathbb{P}(\\lambda_c)=\\frac{1}{C}` for each class :math:`c\\in\\{1,\\ldots,C\\}`.
 
             Alternatively, class priors can be specified in an iterable of floats, e.g. `[0.1, 0.3, 0.6]`.
 
