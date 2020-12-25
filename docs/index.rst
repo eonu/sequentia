@@ -7,6 +7,7 @@
     :alt: Sequentia
     :width: 275
     :target: https://github.com/eonu/sequentia
+    :align: center
 
 About
 =====
