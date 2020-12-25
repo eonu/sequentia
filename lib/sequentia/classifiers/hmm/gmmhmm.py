@@ -5,7 +5,8 @@ from .topologies.strict_left_right import _StrictLeftRightTopology
 from ...internals import _Validator
 
 class GMMHMM:
-    """A hidden Markov model representing an isolated sequence class.
+    """A hidden Markov model (with Gaussian Mixture Model emissions)
+    representing a single isolated sequence class.
 
     Parameters
     ----------
@@ -19,7 +20,7 @@ class GMMHMM:
         The number of mixture components used in the emission distribution for each state.
 
     covariance_type: {'spherical', 'diag', 'full', 'tied'}
-        The covariance matrix type.
+        The covariance matrix type for emission distributions.
 
     topology: {'ergodic', 'left-right', 'strict-left-right'}
         The topology for the model.
@@ -35,6 +36,12 @@ class GMMHMM:
     n_states: int
         The number of states for the model.
 
+    n_components: int
+        The number of mixture components used in the emission distribution for each state.
+
+    covariance_type: str
+        The covariance matrix type for emission distributions.
+
     n_seqs: int
         The number of observation sequences use to train the model.
 
@@ -43,8 +50,6 @@ class GMMHMM:
 
     transitions: numpy.ndarray
         The transition matrix of the model.
-
-    TODO: Add all other fields
     """
     def __init__(self, label, n_states, n_components=1, covariance_type='full', topology='left-right', random_state=None):
         self._val = _Validator()
