@@ -7,7 +7,6 @@ from ...internals import _Validator
 class HMMClassifier:
     """A classifier that combines individual :class:`~GMMHMM` objects,
     which model isolated sequences from different classes."""
-
     def __init__(self):
         self._val = _Validator()
 
