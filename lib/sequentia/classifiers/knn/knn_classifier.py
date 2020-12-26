@@ -153,7 +153,7 @@ class KNNClassifier:
             else:
                 n_jobs = cpu_count() if n_jobs == -1 else n_jobs
                 X_chunks = [list(chunk) for chunk in np.array_split(X, n_jobs)]
-                labels = Parallel(n_jobs=n_jobs)(delayed(self._parallel_predict)(i+1, chunk, verbose) for i, chunk in enumerate(X_chunks))
+                labels = Parallel(n_jobs=n_jobs)(delayed(self._chunk_predict)(i+1, chunk, verbose) for i, chunk in enumerate(X_chunks))
                 return self._output(np.concatenate(labels), original_labels) # Flatten the resulting array
 
     def _dtw_1d(self, a, b): # Requires fit
@@ -197,8 +197,8 @@ class KNNClassifier:
         # Randomly pick from the set of labels with the maximum label score
         return self._random_state.choice(max_labels)
 
-    def _parallel_predict(self, process, chunk, verbose): # Requires fit
-        """TODO"""
+    def _chunk_predict(self, process, chunk, verbose): # Requires fit
+        """Makes predictions for a chunk of the observation sequences, for a given subprocess."""
         labels = np.zeros(len(chunk), dtype=int)
         for i, sequence in enumerate(tqdm.tqdm(chunk,
             desc='Classifying examples (process {})'.format(process),
@@ -209,7 +209,7 @@ class KNNClassifier:
         return labels
 
     def _output(self, out, original_labels):
-        """TODO"""
+        """Inverse-transforms the labels if necessary, and returns them."""
         if isinstance(out, np.ndarray):
             return self._encoder.inverse_transform(out) if original_labels else out
         else:

@@ -294,7 +294,6 @@ class _Validator:
         item: iterable
             The original input item if valid.
         """
-
         if isinstance(item, Iterable) and hasattr(item, '__len__'):
             return item
         else:

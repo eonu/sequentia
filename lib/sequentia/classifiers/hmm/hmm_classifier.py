@@ -5,8 +5,7 @@ from sklearn.preprocessing import LabelEncoder
 from ...internals import _Validator
 
 class HMMClassifier:
-    """A classifier that combines individual :class:`~GMMHMM` objects,
-    which model isolated sequences from different classes."""
+    """A classifier that combines individual :class:`~GMMHMM` objects, which each model isolated sequences from a different class."""
     def __init__(self):
         self._val = _Validator()
 
