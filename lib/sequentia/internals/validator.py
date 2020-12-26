@@ -235,29 +235,6 @@ class _Validator:
             raise TypeError("Expected {} to be a float".format(desc))
         return item
 
-    def list_of_strings(self, items, desc):
-        """Validates a list and checks that it consists entirely of strings.
-
-        Parameters
-        ----------
-        items: List[str]
-            The item to validate.
-
-        desc: str
-            A description of the item being validated.
-
-        Returns
-        -------
-        items: List[str]
-            The original input items if valid.
-        """
-        if isinstance(items, list):
-            if not all(isinstance(item, str) for item in items):
-                raise ValueError('Expected all {} to be strings'.format(desc))
-        else:
-            raise TypeError('Expected {} to be a list of strings'.format(desc))
-        return items
-
     def random_state(self, state):
         """Validates a random state object or seed.
 

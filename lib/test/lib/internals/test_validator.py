@@ -367,26 +367,6 @@ def test_restricted_integer_correct_type_does_not_meet_condition():
         val.restricted_float(-1.1, lambda x: x > 0, 'test', 'greater than zero')
     assert str(e.value) == 'Expected test to be greater than zero'
 
-# ============================ #
-# _Validator.list_of_strings() #
-# ============================ #
-
-def test_list_of_strings_wrong_type():
-    """Incorrect type"""
-    with pytest.raises(TypeError) as e:
-        val.list_of_strings(1, 'test')
-    assert str(e.value) == 'Expected test to be a list of strings'
-
-def test_list_of_strings_wrong_list_type():
-    """Correct type but wrong list element types"""
-    with pytest.raises(ValueError) as e:
-        val.list_of_strings([1, True, 'test'], 'test')
-    assert str(e.value) == 'Expected all test to be strings'
-
-def test_list_of_strings_correct_list_type():
-    """Correct list element types"""
-    assert val.list_of_strings(['a', 'b', 'c'], 'test') == ['a', 'b', 'c']
-
 # ========================= #
 # _Validator.random_state() #
 # ========================= #
