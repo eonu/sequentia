@@ -42,7 +42,7 @@ setup(
     install_requires = [
         'numpy>=1.17,<2',
         'hmmlearn==0.2.4',
-        'fastdtw>=0.3,<0.4',
+        'dtaidistance[numpy]>=2.2,<2.3',
         'scipy>=1.3,<2',
         'scikit-learn>=0.22,<1',
         'tqdm>=4.36,<5',

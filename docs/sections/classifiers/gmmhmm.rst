@@ -109,9 +109,9 @@ and the next state, i.e. no state-jumping is permitted.
 
 If we allow transitions to any state at any time, this HMM topology is known as **ergodic**.
 
-**Note**: Ergodicity is mathematically defined as having a transition matrix with no zero entries.
-Using the ergodic topology in Sequentia will still permit zero entries in the transition matrix,
-but will issue a warning stating that those probabilities will not be learned.
+.. note::
+    | Ergodicity is mathematically defined as having a transition matrix with no zero entries.
+    | Using the ergodic topology in Sequentia will still permit zero entries in the transition matrix, but will issue a warning stating that those probabilities will not be learned.
 
 Sequentia offers all three topologies, specified by a string parameter ``topology`` in the
 :class:`~GMMHMM` constructor that takes values `'ergodic'`, `'left-right'` or `'linear'`.
@@ -127,13 +127,21 @@ A score for how likely a HMM is to generate an observation sequence is given by 
 `Forward algorithm <https://en.wikipedia.org/wiki/Forward_algorithm>`_. It calculates the likelihood
 :math:`\mathbb{P}(O|\lambda_c)` of the HMM :math:`\lambda_c` generating the observation sequence :math:`O`.
 
-**Note**: The likelihood does not account for the fact that a particular observation class
-may occur more or less frequently than other observation classes. Once a group of :class:`~GMMHMM` objects
-(represented by a :class:`~HMMClassifier`) is created and configured, this can be accounted for by
-calculating the joint probability (or un-normalized posterior)
-:math:`\mathbb{P}(O, \lambda_c)=\mathbb{P}(O|\lambda_c)\mathbb{P}(\lambda_c)`
-and using this score to classify instead. The addition of the prior term :math:`\mathbb{P}(\lambda_c)`
-accounts for some classes occuring more frequently than others.
+.. note::
+    The likelihood does not account for the fact that a particular observation class
+    may occur more or less frequently than other observation classes. Once a group of :class:`~GMMHMM` objects
+    (represented by a :class:`~HMMClassifier`) is created and configured, this can be accounted for by
+    calculating the joint probability (or un-normalized posterior)
+    :math:`\mathbb{P}(O, \lambda_c)=\mathbb{P}(O|\lambda_c)\mathbb{P}(\lambda_c)`
+    and using this score to classify instead (i.e. the *Maximum A Posteriori* classification rule).
+    The addition of the prior term :math:`\mathbb{P}(\lambda_c)` accounts for some classes occuring more frequently than others.
+
+    Sequentia provides support for uniform priors (equivalent to just using the likelihood to classify),
+    class frequency priors, and also allows custom prior probabilities to be specified for each class.
+
+.. seealso::
+    See the :class:`~HMMClassifier` class to understand how the likelihood :math:`\mathbb{P}(O|\lambda_c)` or
+    joint probability :math:`\mathbb{P}(O, \lambda_c)` is used to make a prediction for :math:`O`.
 
 Example
 -------
