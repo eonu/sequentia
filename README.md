@@ -30,17 +30,27 @@
 
 ## Introduction
 
-Sequential data is one of the most commonly observed forms of data. These can range from time series (sequences of observations occurring through time) to non-temporal sequences such as DNA nucleotides. Time series such as audio signals and stock prices are often of particular interest as changing patterns over time naturally provide many interesting opportunities and challenges for machine learning.
+Sequential data is a commonly-observed, yet difficult-to-handle form of data. These can range from time series (sequences of observations occurring through time) to non-temporal sequences such as DNA nucleotides.
 
-This library specifically aims to tackle classification problems for isolated sequences by creating an interface to a number of classification algorithms.
+Time series data such as audio signals, stock prices and electro-cardiogram signals are often of particular interest to machine learning practitioners and researchers, as changing patterns over time naturally provides many interesting opportunities and challenges for machine learning prediction.
 
-Despite these types of sequences sounding very specific, you probably observe some of them on a regular basis!
+**Sequentia is a Python package that specifically aims to tackle classification problems for isolated sequences, by providing implementations of a number of classification algorithms**.
 
-**Some examples of classification problems for isolated sequences include classifying**:
+Examples of such classification problems include:
 
-- a word utterance by its speech audio signal,
-- a hand-written character according to its pen-tip trajectory,
-- a hand or head gesture in a video or motion-capture recording.
+- classifying a word utterance based on its speech audio signal (or some other representation such as MFCCs),
+- classifying a hand-written character according to its pen-tip trajectory,
+- classifying a hand or head gesture in a motion-capture recording,
+- classifying the sentiment of a phrase or sentence in natural language.
+
+Compared to the classification of fixed-size inputs (e.g. a vector, or images), sequence classification problems faces two major hurdles:
+
+1. the sequences are generally of different duration to each other,
+2. the observations within a given sequence (may) have temporal dependencies on previous observations which occured earlier within the same sequence, and these dependencies may be arbitrarily long.
+
+Sequentia aims to provide out-of-the-box machine learning algorithms suitable for these tasks, which require minimal configuration.
+
+In recent times, variants of the Recurrent Neural Network (particularly LSTMs and GRUs) have generally proven to be the most successful in modelling long-term dependencies in sequences. However, the design of RNN architectures is very opiniated and requires much configuration and engineering, and is therefore not included as part of the package.
 
 ## Features
 
@@ -48,7 +58,7 @@ The algorithms provided within Sequentia support the use of multivariate observa
 
 ### Classification algorithms
 
-- [x] Hidden Markov Models (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))<br/><em>Learning with the Baum-Welch algorithm [[1]](#references) and classifying using the MAP rule</em>
+- [x] Hidden Markov Models (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))<br/><em>Learning with the Baum-Welch algorithm [[1]](#references)</em>
   - [x] Gaussian Mixture Model emissions
   - [x] Linear, left-right and ergodic topologies
 - [x] Dynamic Time Warping k-Nearest Neighbors (via [`dtaidistance`](https://github.com/wannesm/dtaidistance))
