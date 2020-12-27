@@ -5,9 +5,7 @@ from sklearn.preprocessing import LabelEncoder
 from ...internals import _Validator
 
 class HMMClassifier:
-    """A classifier that combines individual :class:`~GMMHMM` objects,
-    which model isolated sequences from different classes."""
-
+    """A classifier that combines individual :class:`~GMMHMM` objects, which each model isolated sequences from a different class."""
     def __init__(self):
         self._val = _Validator()
 
@@ -41,13 +39,13 @@ class HMMClassifier:
             An individual observation sequence or a list of multiple observation sequences.
 
         prior: {'frequency', 'uniform'} or Iterable[float]
-            How the prior for each model is calculated to perform MAP estimation by scoring with
+            How the prior probability for each model is calculated to perform MAP estimation by scoring with
             the joint probability (or un-normalized posterior) :math:`\\mathbb{P}(O, \\lambda_c)=\\mathbb{P}(O|\\lambda_c)\\mathbb{P}(\\lambda_c)`.
 
-            - `'frequency'`: Calculate the prior :math:`\\mathbb{P}(\\lambda_c)` as the proportion of training examples in class :math:`c`.
-            - `'uniform'`: Set the priors uniformly such that :math:`\\mathbb{P}(\\lambda_c)=\\frac{1}{C}` for each class :math:`c\\in\\{1,\\ldots,C\\}`.
+            - `'frequency'`: Calculate the prior probability :math:`\\mathbb{P}(\\lambda_c)` as the proportion of training examples in class :math:`c`.
+            - `'uniform'`: Set the priors uniformly such that :math:`\\mathbb{P}(\\lambda_c)=\\frac{1}{C}` for each class :math:`c\\in\\{1,\\ldots,C\\}` (**equivalent to ignoring the prior**).
 
-            Alternatively, class priors can be specified in an iterable of floats, e.g. `[0.1, 0.3, 0.6]`.
+            Alternatively, class prior probabilities can be specified in an iterable of floats, e.g. `[0.1, 0.3, 0.6]`.
 
         return_scores: bool
             Whether to return the scores of each model on the observation sequence(s).
@@ -58,8 +56,9 @@ class HMMClassifier:
         Returns
         -------
         prediction(s): str/numeric or numpy.ndarray[str/numeric]
-            The predicted label(s) for the observation sequence(s). If ``original_labels`` is true, then the returned labels are
-            inverse-transformed into their original encoding.
+            The predicted label(s) for the observation sequence(s).
+
+            If ``original_labels`` is true, then the returned labels are inverse-transformed into their original encoding.
 
         scores: numpy.ndarray[float]
             An :math:`N\\times M` matrix of scores (log un-normalized posteriors), for each of the :math:`1,\\ldots,M` HMMs,
@@ -117,13 +116,13 @@ class HMMClassifier:
             An iterable of labels for the observation sequences.
 
         prior: {'frequency', 'uniform'} or Iterable[float]
-            How the prior for each model is calculated to perform MAP estimation by scoring with
+            How the prior probability for each model is calculated to perform MAP estimation by scoring with
             the joint probability (or un-normalized posterior) :math:`\\mathbb{P}(O, \\lambda_c)=\\mathbb{P}(O|\\lambda_c)\\mathbb{P}(\\lambda_c)`.
 
-            - `'frequency'`: Calculate the prior :math:`\\mathbb{P}(\\lambda_c)` as the proportion of training examples in class :math:`c`.
-            - `'uniform'`: Set the priors uniformly such that :math:`\\mathbb{P}(\\lambda_c)=\\frac{1}{C}` for each class :math:`c\\in\\{1,\\ldots,C\\}`.
+            - `'frequency'`: Calculate the prior probability :math:`\\mathbb{P}(\\lambda_c)` as the proportion of training examples in class :math:`c`.
+            - `'uniform'`: Set the priors uniformly such that :math:`\\mathbb{P}(\\lambda_c)=\\frac{1}{C}` for each class :math:`c\\in\\{1,\\ldots,C\\}` (**equivalent to ignoring the prior**).
 
-            Alternatively, class priors can be specified in an iterable of floats, e.g. `[0.1, 0.3, 0.6]`.
+            Alternatively, class prior probabilities can be specified in an iterable of floats, e.g. `[0.1, 0.3, 0.6]`.
 
         Returns
         -------
