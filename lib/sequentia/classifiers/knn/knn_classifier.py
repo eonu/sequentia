@@ -147,17 +147,10 @@ class KNNClassifier:
             distances = np.array([self._dtw(X, x) for x in tqdm.auto.tqdm(self._X, desc='Calculating distances', disable=not(verbose))])
             return self._output(self._find_nearest(distances), original_labels)
         else:
-            if n_jobs == 1:
-                labels = np.zeros(len(X), dtype=int)
-                for i, sequence in enumerate(tqdm.auto.tqdm(X, desc='Classifying examples', disable=not(verbose))):
-                    distances = np.array([self._dtw(sequence, x) for x in self._X])
-                    labels[i] = self._find_nearest(distances)
-                return self._output(labels, original_labels)
-            else:
-                n_jobs = cpu_count() if n_jobs == -1 else n_jobs
-                X_chunks = [list(chunk) for chunk in np.array_split(X, n_jobs)]
-                labels = Parallel(n_jobs=n_jobs)(delayed(self._chunk_predict)(i+1, chunk, verbose) for i, chunk in enumerate(X_chunks))
-                return self._output(np.concatenate(labels), original_labels) # Flatten the resulting array
+            n_jobs = cpu_count() if n_jobs == -1 else n_jobs
+            X_chunks = [list(chunk) for chunk in np.array_split(np.array(X, dtype=object), n_jobs)]
+            labels = Parallel(n_jobs=min(n_jobs, len(X)))(delayed(self._chunk_predict)(i+1, chunk, verbose) for i, chunk in enumerate(X_chunks))
+            return self._output(np.concatenate(labels), original_labels) # Flatten the resulting array
 
     def evaluate(self, X, y, verbose=True, n_jobs=1):
         """Evaluates the performance of the classifier on a batch of observation sequences and their labels.
@@ -309,7 +302,7 @@ class KNNClassifier:
     def _chunk_predict(self, process, chunk, verbose): # Requires fit
         """Makes predictions for a chunk of the observation sequences, for a given subprocess."""
         labels = np.zeros(len(chunk), dtype=int)
-        for i, sequence in enumerate(tqdm.tqdm(chunk,
+        for i, sequence in enumerate(tqdm.auto.tqdm(chunk,
             desc='Classifying examples (process {})'.format(process),
             disable=not(verbose), position=process-1)
         ):
