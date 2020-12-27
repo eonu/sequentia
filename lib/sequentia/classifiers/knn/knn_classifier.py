@@ -238,6 +238,14 @@ class KNNClassifier:
         with open(path, 'rb') as file:
             data = pickle.load(file)
 
+            # Check deserialized object dictionary and keys
+            keys = set(('k', 'classes', 'weighting', 'window', 'use_c', 'random_state', 'X', 'y', 'n_features'))
+            if not isinstance(data, dict):
+                raise TypeError('Expected deserialized object to be a dictionary - make sure the object was serialized with the save() function')
+            else:
+                if len(set(keys) - set(data.keys())) != 0:
+                    raise ValueError('Missing keys in deserialized object dictionary – make sure the object was serialized with the save() function')
+
             # Deserialize the weighting function
             weighting, name = marshal.loads(data['weighting'])
             weighting = types.FunctionType(weighting, globals(), name)
