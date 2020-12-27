@@ -127,7 +127,7 @@ class KNNClassifier:
                 are always displayed in the console, regardless of where you are running this function from
                 (e.g. a Jupyter notebook).
 
-        n_jobs: int
+        n_jobs: int > 0 or -1
             | The number of jobs to run in parallel.
             | Setting this to -1 will use all available CPU cores.
 
@@ -171,7 +171,7 @@ class KNNClassifier:
         verbose: bool
             Whether to display a progress bar for predictions or not.
 
-        n_jobs: int
+        n_jobs: int > 0 or -1
             | The number of jobs to run in parallel.
             | Setting this to -1 will use all available CPU cores.
 
