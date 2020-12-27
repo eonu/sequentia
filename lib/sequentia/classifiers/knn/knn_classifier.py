@@ -324,3 +324,27 @@ class KNNClassifier:
             return self._encoder.inverse_transform(out) if original_labels else out
         else:
             return self._encoder.inverse_transform([out]).item() if original_labels else out
+
+    @property
+    def k(self):
+        return self._k
+
+    @property
+    def weighting(self):
+        return self._weighting
+
+    @property
+    def window(self):
+        return self._window
+
+    @property
+    def use_c(self):
+        return self._use_c
+
+    @property
+    def encoder(self):
+        return self._encoder
+
+    @property
+    def classes(self):
+        return self._encoder.classes_
