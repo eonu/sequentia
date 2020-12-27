@@ -74,7 +74,7 @@ class KNNClassifier:
 
         self._val.iterable(classes, 'classes')
         self._val.string_or_numeric(classes[0], 'each class')
-        if all(isinstance(label, type(y[0])) for label in y[1:]):
+        if all(isinstance(label, type(classes[0])) for label in classes[1:]):
             self._encoder = LabelEncoder().fit(classes)
         else:
             raise TypeError('Expected all classes to be of the same type')
