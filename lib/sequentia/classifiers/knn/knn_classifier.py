@@ -45,7 +45,8 @@ class KNNClassifier:
 
     window: int > 0, optional
         The width of the Sakoe-Chiba band global constraint window.
-        A larger constraint will speed up the DTW alignment by restricting the maximum temporal deviation from the diagonal of the DTW matrix.
+        A larger constraint will speed up the DTW alignment by restricting the maximum temporal deviation from the diagonal of the DTW matrix,
+        but too much constraint may lead to poor alignment.
 
         If no argument is provided, then no global constraint will be applied while computing the DTW matrix.
 
@@ -128,7 +129,9 @@ class KNNClassifier:
         Returns
         -------
         prediction(s): str/numeric or numpy.ndarray[str/numeric]
-            The predicted label(s) for the observation sequence(s). If ``original_labels`` is true, then the returned labels are
+            The predicted label(s) for the observation sequence(s).
+
+            If ``original_labels`` is true, then the returned labels are
             inverse-transformed into their original encoding.
         """
         try:
@@ -155,65 +158,6 @@ class KNNClassifier:
                 X_chunks = [list(chunk) for chunk in np.array_split(X, n_jobs)]
                 labels = Parallel(n_jobs=n_jobs)(delayed(self._chunk_predict)(i+1, chunk, verbose) for i, chunk in enumerate(X_chunks))
                 return self._output(np.concatenate(labels), original_labels) # Flatten the resulting array
-
-    def _dtw_1d(self, a, b): # Requires fit
-        """Computes the DTW distance between two univariate sequences."""
-        return dtw.distance(a, b, use_c=self._use_c, window=self._window)
-
-    def _dtw(self, A, B): # Requires fit
-        """Computes the multivariate DTW distance as an average of the pairwise per-feature DTW distances."""
-        return np.mean([self._dtw_1d(A[:, i], B[:, i]) for i in range(self._n_features)])
-
-    def _argmax(self, a):
-        """Same as numpy.argmax but returns all occurrences of the maximum, and is O(n) instead of O(2n).
-        From: https://stackoverflow.com/a/58652335
-        """
-        all_, max_ = [0], a[0]
-        for i in range(1, len(a)):
-            if a[i] > max_:
-                all_, max_ = [i], a[i]
-            elif a[i] == max_:
-                all_.append(i)
-        return np.array(all_)
-
-    def _find_nearest(self, distances): # Requires fit
-        """Returns the mode label of the k nearest neighbors.
-        Vectorization from: https://stackoverflow.com/a/49239335
-        """
-        # Find the indices, labels and distances of the k-nearest neighbours
-        idx = np.argpartition(distances, self._k)[:self._k]
-        nearest_labels = self._y[idx]
-        nearest_distances = self._weighting(distances[idx])
-        # Combine labels and distances into one array and sort by label
-        labels_distances = np.vstack((nearest_labels, nearest_distances))
-        labels_distances = labels_distances[:, labels_distances[0, :].argsort()]
-        # Find indices where the label changes
-        i = np.nonzero(np.diff(labels_distances[0, :]))[0] + 1
-        i = np.insert(i, 0, 0)
-        # Add-reduce weighted distances within each label group (ordered by label)
-        label_scores = np.add.reduceat(labels_distances[1, :], i)
-        # Find the mode labels (set of labels with labels scores equal to the maximum)
-        max_labels = nearest_labels[self._argmax(label_scores)]
-        # Randomly pick from the set of labels with the maximum label score
-        return self._random_state.choice(max_labels)
-
-    def _chunk_predict(self, process, chunk, verbose): # Requires fit
-        """Makes predictions for a chunk of the observation sequences, for a given subprocess."""
-        labels = np.zeros(len(chunk), dtype=int)
-        for i, sequence in enumerate(tqdm.tqdm(chunk,
-            desc='Classifying examples (process {})'.format(process),
-            disable=not(verbose), position=process-1)
-        ):
-            distances = np.array([self._dtw(sequence, x) for x in self._X])
-            labels[i] = self._find_nearest(distances)
-        return labels
-
-    def _output(self, out, original_labels):
-        """Inverse-transforms the labels if necessary, and returns them."""
-        if isinstance(out, np.ndarray):
-            return self._encoder.inverse_transform(out) if original_labels else out
-        else:
-            return self._encoder.inverse_transform([out]).item() if original_labels else out
 
     def evaluate(self, X, y, verbose=True, n_jobs=1):
         """Evaluates the performance of the classifier on a batch of observation sequences and their labels.
@@ -320,3 +264,62 @@ class KNNClassifier:
     #         clf._y = [label.decode(encoding) for label in y]
 
     #     return clf
+
+    def _dtw_1d(self, a, b): # Requires fit
+        """Computes the DTW distance between two univariate sequences."""
+        return dtw.distance(a, b, use_c=self._use_c, window=self._window)
+
+    def _dtw(self, A, B): # Requires fit
+        """Computes the multivariate DTW distance as an average of the pairwise per-feature DTW distances."""
+        return np.mean([self._dtw_1d(A[:, i], B[:, i]) for i in range(self._n_features)])
+
+    def _argmax(self, a):
+        """Same as numpy.argmax but returns all occurrences of the maximum, and is O(n) instead of O(2n).
+        From: https://stackoverflow.com/a/58652335
+        """
+        all_, max_ = [0], a[0]
+        for i in range(1, len(a)):
+            if a[i] > max_:
+                all_, max_ = [i], a[i]
+            elif a[i] == max_:
+                all_.append(i)
+        return np.array(all_)
+
+    def _find_nearest(self, distances): # Requires fit
+        """Returns the mode label of the k nearest neighbors.
+        Vectorization from: https://stackoverflow.com/a/49239335
+        """
+        # Find the indices, labels and distances of the k-nearest neighbours
+        idx = np.argpartition(distances, self._k)[:self._k]
+        nearest_labels = self._y[idx]
+        nearest_distances = self._weighting(distances[idx])
+        # Combine labels and distances into one array and sort by label
+        labels_distances = np.vstack((nearest_labels, nearest_distances))
+        labels_distances = labels_distances[:, labels_distances[0, :].argsort()]
+        # Find indices where the label changes
+        i = np.nonzero(np.diff(labels_distances[0, :]))[0] + 1
+        i = np.insert(i, 0, 0)
+        # Add-reduce weighted distances within each label group (ordered by label)
+        label_scores = np.add.reduceat(labels_distances[1, :], i)
+        # Find the mode labels (set of labels with labels scores equal to the maximum)
+        max_labels = nearest_labels[self._argmax(label_scores)]
+        # Randomly pick from the set of labels with the maximum label score
+        return self._random_state.choice(max_labels)
+
+    def _chunk_predict(self, process, chunk, verbose): # Requires fit
+        """Makes predictions for a chunk of the observation sequences, for a given subprocess."""
+        labels = np.zeros(len(chunk), dtype=int)
+        for i, sequence in enumerate(tqdm.tqdm(chunk,
+            desc='Classifying examples (process {})'.format(process),
+            disable=not(verbose), position=process-1)
+        ):
+            distances = np.array([self._dtw(sequence, x) for x in self._X])
+            labels[i] = self._find_nearest(distances)
+        return labels
+
+    def _output(self, out, original_labels):
+        """Inverse-transforms the labels if necessary, and returns them."""
+        if isinstance(out, np.ndarray):
+            return self._encoder.inverse_transform(out) if original_labels else out
+        else:
+            return self._encoder.inverse_transform([out]).item() if original_labels else out

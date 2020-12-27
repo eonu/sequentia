@@ -3,31 +3,56 @@
 Dynamic Time Warping `k`-Nearest Neighbors Classifier (``KNNClassifier``)
 =========================================================================
 
-| Recall that the isolated sequences we are dealing with are represented as
-  multivariate time series of different durations.
-| Suppose that our sequences are all :math:`D`-dimensional. The main requirement of
-  `k-Nearest Neighbor <https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm>`_
-  (:math:`k`-NN) classifiers is that each example must have the same number of
-  dimensions – and hence, be in the same feature space. This is indeed the case with
-  our :math:`D`-dimensional sequences. However, we can't use :math:`k`-NN with simple
-  distance metrics such as Euclidean distance because we are comparing sequences
-  (which represent an ordered collection of points in :math:`D`-dimensional space)
-  rather than individual points in :math:`D`-dimensional space.
+The :math:`k`-nearest neighbors (:math:`k`-NN) classification algorithm is a very commonly used algorithm,
+and perhaps one of the most intuitive ones too.
 
-One distance metric that allows us to compare multivariate sequences of different length
-is `Dynamic Time Warping <https://en.wikipedia.org/wiki/Dynamic_time_warping>`_. Coupling this metric
-with :math:`k`-NN creates a powerful classifier that assigns the class of a new
-observation sequence by looking at the classes of observation sequences with similar patterns.
+Before we discuss :math:`k`-NN with dynamic time warping for sequence classification,
+let us recap :math:`k`-NN in the usual case of individual points :math:`\mathbf{x}\in\mathbb{R}^D`
+in :math:`D`-dimensional Euclidean space.
 
-However, :math:`k`-NN classifiers suffer from the fact that they are non-parametric,
-which means that when predicting the class for a new observation sequence,
-we must look back at every observation sequence that was used to fit the model.
-To speed up prediction times, we have chosen to use a constrained DTW algorithm that
-sacrifices accuracy by calculating an approximate distance, but saves **a lot** of time.
-This is the `FastDTW <https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf>`_
-implementation, which has a `radius` parameter for controlling the imposed constraint on the distance calculation.
+Recap of general `k`-NN
+-----------------------
 
-This approximate DTW :math:`k`-NN classifier is implemented by the :class:`~KNNClassifier` class.
+Suppose we have a training dataset :math:`\mathcal{D}_\text{train}=\big\{(\mathbf{x}^{(n)},c^{(n)})\big\}_{n=1}^N`,
+where :math:`N` is the number of training example-label pairs, :math:`\mathbf{x}^{(n)}\in\mathbb{R}^D` is a training example
+and :math:`c^{(n)}\in\{1,\ldots,C\}` is its corresponding label.
+
+When classifying a new test example :math:`\mathbf{x}^{(m)}\in\mathbb{R}^D`, a :math:`k`-NN classifier does the following:
+
+1. Computes the distance from :math:`\mathbf{x}^{(m)}` to every training example in :math:`\mathcal{D}_\text{train}`, using a distance measure such as Euclidean distance, :math:`d(\mathbf{x}^{(m)},\mathbf{x}^{(n)})=\Vert\mathbf{x}^{(m)}-\mathbf{x}^{(n)}\Vert`.
+2. Assigns :math:`c^{(m)}` as the most common label of the :math:`k` nearest training examples.
+
+The most immediate observation one can make is that for every prediction,
+you need to look through the entire training dataset. As you can imagine, the inability to summarize
+the model with simpler parameters (e.g. weights of a neural network, or transition/emission/initial probabilities for a HMM),
+limit the practical use of :math:`k`-NN classifiers – especially on large datasets.
+
+While this classifier is conceptually simple, it can very often outperform more sophisticated
+machine learning algorithms in various classification tasks, even when looking only at the nearest neighbor (:math:`k=1`).
+
+The algorithm works on the intuition that if :math:`\mathbf{x}^{(m)}` has similar features to :math:`\mathbf{x}^{(n)}`,
+then they should physically be close together (in :math:`D`-dimensional Euclidean space).
+
+Extending `k`-NN to sequences
+-----------------------------
+
+We can try to extend this intuition to work with sequences. In general, Sequentia supports multivariate
+observation sequences. These can be represented as an ordered sequence :math:`O=\mathbf{o}^{(1)},\ldots,\mathbf{o}^{(T)}`
+of observations :math:`\mathbf{o}^{(t)}\in\mathbb{R}^D`. Indeed, the durations of any two observation sequences
+:math:`O^{(n)}` and :math:`O^{(m)}` may differ.
+
+When trying to apply the :math:`k`-NN intuition to observation sequences, we can say that
+two sequences :math:`O^{(n)}` and :math:`O^{(m)}` which are similar to each other should have a small *'distance'*.
+
+But what sort of *'distance'* could this be? We need a measure that can compare any two sequences of different
+length, and is small when the sequences are similar, and large if they are different. One such distance measure
+that allows us to compare sequences of different length is `Dynamic Time Warping <https://en.wikipedia.org/wiki/Dynamic_time_warping>`_ (DTW).
+
+Given sequence-label pairs :math:`\mathcal{D}_\text{train}=\big\{(O^{(n)},c^{(n)})\big\}_{n=1}^N`,
+apart from the fact that we now compute DTW distances between sequences rather than Euclidean distances between points,
+the rest of the :math:`k`-NN algorithm remains unchanged, and indeed :math:`k`-NN and DTW coupled together creates a powerful sequence classifier.
+
+This :math:`k`-NN classifier with the DTW distance measure is implemented by the :class:`~KNNClassifier` class.
 
 Example
 -------
