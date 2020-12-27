@@ -44,20 +44,33 @@ Despite these types of sequences sounding very specific, you probably observe so
 
 ## Features
 
-Sequentia offers the use of multivariate observation sequences with varying durations using the following methods:
+The algorithms provided within Sequentia support the use of multivariate observation sequences with different durations.
 
 ### Classification algorithms
 
-- [x] Hidden Markov Models (via [hmmlearn](https://github.com/hmmlearn/hmmlearn))<br/>Learning with the Baum-Welch algorithm [[1]](#references)
+- [x] Hidden Markov Models (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))<br/>Learning with the Baum-Welch algorithm [[1]](#references)
   - [x] Gaussian Mixture Model emissions
   - [x] Linear, left-right and ergodic topologies
-- [x] Approximate Dynamic Time Warping k-Nearest Neighbors (implemented with [FastDTW](https://github.com/slaypni/fastdtw) [[2]](#references))
+- [x] Dynamic Time Warping k-Nearest Neighbors (via [`dtaidistance`](https://github.com/wannesm/dtaidistance))
   - [x] Custom distance-weighted predictions
   - [x] Multi-processed predictions
 
+<details>
+<summary>
+    <b>Note on approximate dynamic time warping with FastDTW</b>
+</summary>
+<p>
+
+> In earlier versions of the package (<0.8.0), an approximate dynamic time warping algorithm implementation ([`fastdtw`](https://github.com/slaypni/fastdtw)) was used in hopes of speeding up k-NN predictions, as the authors of the original FastDTW paper [[2]](#references)) claim that approximated DTW alignments can be computed in linear memory and time - compared to the O(N^2) runtime complexity of the usual exact DTW implementation.
+>
+> However, I was recently contacted by [Prof. Eamonn Keogh](https://www.cs.ucr.edu/~eamonn/) (at _University of California, Riverside_), whose recent work [[3]](#references) makes the surprising revelation that FastDTW is generally slower than the exact DTW algorithm that it approximates. Upon switching from the `fastdtw` package to [`dtaidistance`](https://github.com/wannesm/dtaidistance) (a very solid implementation of exact DTW with fast pure C compiled functions), DTW k-NN predictions times were indeed reduced drastically. I would like to thank Prof. Eamonn Keogh for directly reaching out to me regarding this finding!
+
+</p>
+</details>
+
 <p align="center">
   <img src="/docs/_static/classifier.svg" width="60%"/><br/>
-  Example of a classification algorithm: a multi-class HMM isolated sequence classifier
+  Example of a classification algorithm: <em>a multi-class HMM sequence classifier</em>
 </p>
 
 ### Preprocessing methods
@@ -87,13 +100,19 @@ For tutorials and examples on the usage of Sequentia, [look at the notebooks her
     <tr>
       <td>[1]</td>
       <td>
-        <a href=https://web.ece.ucsb.edu/Faculty/Rabiner/ece259/Reprints/tutorial%20on%20hmm%20and%20applications.pdf">Lawrence R. Rabiner. <b>"A Tutorial on Hidden Markov Models and Selected Applications in Speech Recognition"</b> Proceedings of the IEEE 77 (1989), no. 2, pp. 257-86.</a>
+        <a href=https://web.ece.ucsb.edu/Faculty/Rabiner/ece259/Reprints/tutorial%20on%20hmm%20and%20applications.pdf">Lawrence R. Rabiner. <b>"A Tutorial on Hidden Markov Models and Selected Applications in Speech Recognition"</b> <em>Proceedings of the IEEE 77 (1989)</em>, no. 2, pp. 257-86.</a>
       </td>
     </tr>
     <tr>
       <td>[2]</td>
       <td>
-        <a href="https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf">Stan Salvador, and Philip Chan. <b>"FastDTW: Toward accurate dynamic time warping in linear time and space."</b> Intelligent Data Analysis 11.5 (2007), 561-580.</a>
+        <a href="https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf">Stan Salvador & Philip Chan. <b>"FastDTW: Toward accurate dynamic time warping in linear time and space."</b> <em>Intelligent Data Analysis 11.5 (2007)</em>, 561-580.</a>
+      </td>
+    </tr>
+    <tr>
+      <td>[3]</td>
+      <td>
+        <a href="https://arxiv.org/ftp/arxiv/papers/2003/2003.11246.pdf">Renjie Wu & Eamonn J. Keogh. <b>"FastDTW is approximate and Generally Slower than the Algorithm it Approximates"</b> <em>IEEE Transactions on Knowledge and Data Engineering (2020)</em>, 1–1.</a>
       </td>
     </tr>
   </tbody>
