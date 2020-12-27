@@ -17,7 +17,7 @@ class KNNClassifier:
 
     Parameters
     ----------
-    k: int
+    k: int > 0
         Number of neighbors.
 
     classes: Iterable[str/numeric]
@@ -62,6 +62,26 @@ class KNNClassifier:
 
     random_state: numpy.random.RandomState, int, optional
         A random state object or seed for reproducible randomness.
+
+    Attributes
+    ----------
+    k: int > 0
+        The number of neighbors.
+
+    weighting: callable
+        The distance weighting function.
+
+    window: int > 0
+        The width of the Sakoe-Chiba band global constraint.
+
+    use_c: bool
+        Whether or not to use fast pure C compiled functions to perform the DTW computations.
+
+    encoder: sklearn.preprocessing.LabelEncoder
+        The label encoder fitted on the set of ``classes`` provided during instantiation.
+
+    classes: Iterable[str/numeric]
+        The complete set of possible classes/labels.
     """
     def __init__(self, k, classes, weighting='uniform', window=None, use_c=False, random_state=None):
         self._val = _Validator()
