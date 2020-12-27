@@ -32,9 +32,9 @@
 
 Sequential data is a commonly-observed, yet difficult-to-handle form of data. These can range from time series (sequences of observations occurring through time) to non-temporal sequences such as DNA nucleotides.
 
-Time series data such as audio signals, stock prices and electro-cardiogram signals are often of particular interest to machine learning practitioners and researchers, as changing patterns over time naturally provides many interesting opportunities and challenges for machine learning prediction.
+Time series data such as audio signals, stock prices and electro-cardiogram signals are often of particular interest to machine learning practitioners and researchers, as changing patterns over time naturally provide many interesting opportunities and challenges for machine learning prediction.
 
-**Sequentia is a Python package that specifically aims to tackle classification problems for isolated sequences, by providing implementations of a number of classification algorithms**.
+**Sequentia is a Python package that specifically aims to tackle classification problems for isolated sequences by providing implementations of a number of classification algorithms**.
 
 Examples of such classification problems include:
 
@@ -48,13 +48,13 @@ Compared to the classification of fixed-size inputs (e.g. a vector, or images), 
 1. the sequences are generally of different duration to each other,
 2. the observations within a given sequence (may) have temporal dependencies on previous observations which occured earlier within the same sequence, and these dependencies may be arbitrarily long.
 
-Sequentia aims to provide out-of-the-box machine learning algorithms suitable for these tasks, which require minimal configuration.
+Sequentia aims to provide interpretable out-of-the-box machine learning algorithms suitable for these tasks, which require minimal configuration.
 
 In recent times, variants of the Recurrent Neural Network (particularly LSTMs and GRUs) have generally proven to be the most successful in modelling long-term dependencies in sequences. However, the design of RNN architectures is very opiniated and requires much configuration and engineering, and is therefore not included as part of the package.
 
 ## Features
 
-The algorithms provided within Sequentia support the use of multivariate observation sequences with different durations.
+The following algorithms provided within Sequentia support the use of multivariate observation sequences with different durations.
 
 ### Classification algorithms
 
