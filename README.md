@@ -48,7 +48,7 @@ The algorithms provided within Sequentia support the use of multivariate observa
 
 ### Classification algorithms
 
-- [x] Hidden Markov Models (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))<br/>Learning with the Baum-Welch algorithm [[1]](#references)
+- [x] Hidden Markov Models (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))<br/><em>Learning with the Baum-Welch algorithm [[1]](#references) and classifying using the MAP rule</em>
   - [x] Gaussian Mixture Model emissions
   - [x] Linear, left-right and ergodic topologies
 - [x] Dynamic Time Warping k-Nearest Neighbors (via [`dtaidistance`](https://github.com/wannesm/dtaidistance))
