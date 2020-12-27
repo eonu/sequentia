@@ -122,6 +122,11 @@ class KNNClassifier:
         verbose: bool
             Whether to display a progress bar or not.
 
+            .. note::
+                If both ``verbose=True`` and ``n_jobs > 1``, then the progress bars for each process
+                are always displayed in the console, regardless of where you are running this function from
+                (e.g. a Jupyter notebook).
+
         n_jobs: int
             | The number of jobs to run in parallel.
             | Setting this to -1 will use all available CPU cores.
