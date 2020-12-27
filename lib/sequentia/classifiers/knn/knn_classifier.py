@@ -72,8 +72,8 @@ class KNNClassifier:
             window, lambda x: x > 0, desc='Sakoe-Chiba band width', expected='greater than zero')
         self._random_state = self._val.random_state(random_state)
 
-        self.iterable(classes, 'classes')
-        self.string_or_numeric(classes[0], 'each class')
+        self._val.iterable(classes, 'classes')
+        self._val.string_or_numeric(classes[0], 'each class')
         if all(isinstance(label, type(y[0])) for label in y[1:]):
             self._encoder = LabelEncoder().fit(classes)
         else:

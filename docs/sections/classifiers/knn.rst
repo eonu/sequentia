@@ -25,7 +25,7 @@ When classifying a new test example :math:`\mathbf{x}^{(m)}\in\mathbb{R}^D`, a :
 The most immediate observation one can make is that for every prediction,
 you need to look through the entire training dataset. As you can imagine, the inability to summarize
 the model with simpler parameters (e.g. weights of a neural network, or transition/emission/initial probabilities for a HMM),
-limit the practical use of :math:`k`-NN classifiers – especially on large datasets.
+limits the practical use of :math:`k`-NN classifiers – especially on large datasets.
 
 While this classifier is conceptually simple, it can very often outperform more sophisticated
 machine learning algorithms in various classification tasks, even when looking only at the nearest neighbor (:math:`k=1`).
@@ -42,7 +42,8 @@ of observations :math:`\mathbf{o}^{(t)}\in\mathbb{R}^D`. Indeed, the durations o
 :math:`O^{(n)}` and :math:`O^{(m)}` may differ.
 
 When trying to apply the :math:`k`-NN intuition to observation sequences, we can say that
-two sequences :math:`O^{(n)}` and :math:`O^{(m)}` which are similar to each other should have a small *'distance'*.
+two sequences :math:`O^{(n)}` and :math:`O^{(m)}` which are similar to each other should have a small *'distance'*,
+and if they are different, they should have a large *'distance'*.
 
 But what sort of *'distance'* could this be? We need a measure that can compare any two sequences of different
 length, and is small when the sequences are similar, and large if they are different. One such distance measure
