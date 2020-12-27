@@ -34,8 +34,8 @@ def test_fit_sets_attributes():
     """Check that fitting sets the hidden attributes"""
     clf = clfs['k=1']
     clf.fit(X, y)
-    assert clf._X == X
-    assert clf._y == y
+    assert_all_equal(clf._X, X)
+    assert_equal(clf._y, clf._encoder.transform(y))
     assert clf._n_features == 3
 
 # ======================= #
@@ -191,7 +191,8 @@ def test_save_unfitted():
             KNNClassifier(k=1, classes=classes).save('test.pkl')
         assert str(e.value) == 'The classifier needs to be fitted before it can be saved'
     finally:
-        os.remove('test.pkl')
+        if os.path.exists('test.pkl'):
+            os.remove('test.pkl')
 
 def test_save_fitted():
     """Save a fitted KNNClassifier object."""
