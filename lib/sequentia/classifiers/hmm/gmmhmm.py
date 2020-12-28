@@ -97,7 +97,7 @@ class GMMHMM:
 
         Parameters
         ----------
-        X : List[numpy.ndarray (float)]
+        X : list of numpy.ndarray (float)
             Collection of multivariate observation sequences, each of shape :math:`(T \\times D)` where
             :math:`T` may vary per observation sequence.
         """
