@@ -13,7 +13,7 @@ class _Validator:
 
         Parameters
         ----------
-        X : numpy.ndarray or List[numpy.ndarray]
+        X : numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
         allow_single : bool
@@ -21,7 +21,7 @@ class _Validator:
 
         Returns
         -------
-        X : numpy.ndarray or List[numpy.ndarray]
+        X : numpy.ndarray (float) or list of numpy.ndarray (float)
             The original input observation sequence(s) if valid.
         """
         X = copy(X)
@@ -51,7 +51,7 @@ class _Validator:
 
         Parameters
         ----------
-        X : List[numpy.ndarray]
+        X : list of numpy.ndarray (float)
             A list of multiple observation sequences.
 
         y : array-like of str/numeric
@@ -59,7 +59,7 @@ class _Validator:
 
         Returns
         -------
-        X : List[numpy.ndarray]
+        X : list of numpy.ndarray (float)
             The original input observation sequences if valid.
 
         y : array-like of str/numeric

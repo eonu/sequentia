@@ -121,7 +121,7 @@ class KNNClassifier:
 
         Parameters
         ----------
-        X : List[numpy.ndarray (float)]
+        X : list of numpy.ndarray (float)
             A list of multiple observation sequences.
 
         y : array-like of str/numeric
@@ -136,7 +136,7 @@ class KNNClassifier:
 
         Parameters
         ----------
-        X : numpy.ndarray (float) or List[numpy.ndarray (float)]
+        X : numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
         verbose : bool
@@ -182,7 +182,7 @@ class KNNClassifier:
 
         Parameters
         ----------
-        X : List[numpy.ndarray (float)]
+        X : list of numpy.ndarray (float)
             A list of multiple observation sequences.
 
         y : array-like of str/numeric

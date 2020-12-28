@@ -47,7 +47,7 @@ class HMMClassifier:
 
         Parameters
         ----------
-        X : numpy.ndarray (float) or List[numpy.ndarray (float)]
+        X : numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
         prior : {'frequency', 'uniform'} or array-like of float
@@ -73,8 +73,8 @@ class HMMClassifier:
             If ``original_labels`` is true, then the returned labels are inverse-transformed into their original encoding.
 
         scores : :class:`numpy:numpy.ndarray` (float)
-            An :math:`N\\times M` matrix of scores (log un-normalized posteriors), for each of the :math:`1,\\ldots,M` HMMs,
-            for each of the :math:`1,\\ldots,N` observation sequences. Only returned if ``return_scores`` is true.
+            An :math:`N\\times M` matrix of scores (log un-normalized posteriors), for each of the :math:`N` observation sequences,
+            for each of the :math:`M` HMMs. Only returned if ``return_scores`` is true.
         """
         try:
             self._models
@@ -121,7 +121,7 @@ class HMMClassifier:
 
         Parameters
         ----------
-        X : List[numpy.ndarray (float)]
+        X : list of numpy.ndarray (float)
             A list of multiple observation sequences.
 
         y : array-like of str/numeric
