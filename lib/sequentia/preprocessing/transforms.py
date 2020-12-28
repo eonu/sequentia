@@ -7,6 +7,7 @@ __all__ = ['Transform', 'Equalize', 'TrimZeros', 'MinMaxScale', 'Center', 'Stand
 
 class Transform:
     """Base class representing a single transformation."""
+
     def __init__(self):
         self._val = _Validator()
 
@@ -123,6 +124,7 @@ class Transform:
 
 class Equalize(Transform):
     """Equalize all observation sequence lengths by padding or trimming zeros."""
+
     def __init__(self):
         super().__init__()
         self.length = None
@@ -178,6 +180,7 @@ class MinMaxScale(Transform):
     independent : bool
         Whether to independently compute the minimum and maximum to scale each observation sequence.
     """
+
     def __init__(self, scale=(0., 1.), independent=True):
         super().__init__()
         if not isinstance(scale, tuple):
@@ -238,6 +241,7 @@ class Center(Transform):
     >>> # Center the data
     >>> X = Center()(X)
     """
+
     def __init__(self, independent=True):
         super().__init__()
         self.independent = self._val.boolean(independent, 'independent')
@@ -288,6 +292,7 @@ class Standardize(Transform):
     >>> # Standardize the data
     >>> X = Standardize()(X)
     """
+
     def __init__(self, independent=True):
         super().__init__()
         self.independent = self._val.boolean(independent, 'independent')
@@ -343,6 +348,7 @@ class Downsample(Transform):
     >>> # Downsample the data with downsample factor 5 and decimation
     >>> X = Downsample(factor=5, method='decimate')(X)
     """
+
     def __init__(self, factor, method='decimate'):
         super().__init__()
         self.factor = self._val.restricted_integer(factor, lambda x: x > 0, desc='downsample factor', expected='positive')
@@ -392,6 +398,7 @@ class Filter(Transform):
     >>> # Filter the data with window size 5 and median filtering
     >>> X = Filter(window_size=5, method='median')(X)
     """
+
     def __init__(self, window_size, method='median'):
         super().__init__()
         self.window_size = self._val.restricted_integer(window_size, lambda x: x > 0, desc='window size', expected='positive')
