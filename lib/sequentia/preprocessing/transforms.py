@@ -15,7 +15,7 @@ class Transform:
 
         Returns
         -------
-        description: str
+        description : str
             The description of the transformation.
         """
         raise NotImplementedError
@@ -25,15 +25,15 @@ class Transform:
 
         Parameters
         ----------
-        X: numpy.ndarray (float) or List[numpy.ndarray (float)]
+        X : numpy.ndarray (float) or List[numpy.ndarray (float)]
             An individual observation sequence or a list of multiple observation sequences.
 
-        verbose: bool
+        verbose : bool
             Whether or not to display a progress bar when applying transformations.
 
         Returns
         -------
-        transformed: :class:`numpy:numpy.ndarray` (float) or List[:class:`numpy:numpy.ndarray` (float)]
+        transformed : :class:`numpy:numpy.ndarray` (float) or List[:class:`numpy:numpy.ndarray` (float)]
             The transformed input observation sequence(s).
         """
         raise NotImplementedError
@@ -47,15 +47,15 @@ class Transform:
 
         Parameters
         ----------
-        transform: callable
+        transform : callable
             The transformation to apply.
 
-        X: numpy.ndarray (float) or List[numpy.ndarray (float)]
+        X : numpy.ndarray (float) or List[numpy.ndarray (float)]
             An individual observation sequence or a list of multiple observation sequences.
 
         Returns
         -------
-        transformed: numpy.ndarray (float) or List[numpy.ndarray (float)]
+        transformed : numpy.ndarray (float) or List[numpy.ndarray (float)]
             The transformed input observation sequence(s).
         """
         X = self._val.observation_sequences(X, allow_single=True)
@@ -83,7 +83,7 @@ class Transform:
 
         Parameters
         ----------
-        X: numpy.ndarray (float) or List[numpy.ndarray (float)]
+        X : numpy.ndarray (float) or List[numpy.ndarray (float)]
             An individual observation sequence or a list of multiple observation sequences.
         """
         self._val.observation_sequences(X, allow_single=True)
@@ -97,7 +97,7 @@ class Transform:
 
         Returns
         -------
-        fitted: bool
+        fitted : bool
             Whether or not the transformation is fitted.
         """
         return False
@@ -107,15 +107,15 @@ class Transform:
 
         Parameters
         ----------
-        X: numpy.ndarray (float) or List[numpy.ndarray (float)]
+        X : numpy.ndarray (float) or List[numpy.ndarray (float)]
             An individual observation sequence or a list of multiple observation sequences.
 
-        verbose: bool
+        verbose : bool
             Whether or not to display a progress bar when fitting and applying transformations.
 
         Returns
         -------
-        transformed: :class:`numpy:numpy.ndarray` (float) or List[:class:`numpy:numpy.ndarray` (float)]
+        transformed : :class:`numpy:numpy.ndarray` (float) or List[:class:`numpy:numpy.ndarray` (float)]
             The transformed input observation sequence(s).
         """
         self.fit(X)
@@ -172,10 +172,10 @@ class MinMaxScale(Transform):
 
     Parameters
     ----------
-    scale: tuple(int, int)
+    scale : tuple(int, int)
         The range of the transformed observation sequence features.
 
-    independent: bool
+    independent : bool
         Whether to independently compute the minimum and maximum to scale each observation sequence.
     """
     def __init__(self, scale=(0, 1), independent=True):
@@ -228,7 +228,7 @@ class Center(Transform):
 
     Parameters
     ----------
-    independent: bool
+    independent : bool
         Whether to independently compute the mean to scale each observation sequence.
 
     Examples
@@ -278,7 +278,7 @@ class Standardize(Transform):
 
     Parameters
     ----------
-    independent: bool
+    independent : bool
         Whether to independently compute the mean and standard deviation to scale each observation sequence.
 
     Examples
@@ -330,10 +330,10 @@ class Downsample(Transform):
 
     Parameters
     ----------
-    factor: int > 0
+    factor : int > 0
         Downsample factor.
 
-    method: {'decimate', 'mean'}
+    method : {'decimate', 'mean'}
         The downsampling method.
 
     Examples
@@ -379,10 +379,10 @@ class Filter(Transform):
 
     Parameters
     ----------
-    window_size: int > 0
+    window_size : int > 0
         The size of the filtering window.
 
-    method: {'median', 'mean'}
+    method : {'median', 'mean'}
         The filtering method.
 
     Examples

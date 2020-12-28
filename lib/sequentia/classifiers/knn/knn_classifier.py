@@ -17,13 +17,13 @@ class KNNClassifier:
 
     Parameters
     ----------
-    k: int > 0
+    k : int > 0
         Number of neighbors.
 
-    classes: array-liike of str/numeric
+    classes : array-liike of str/numeric
         The complete set of possible classes/labels.
 
-    weighting: 'uniform' or callable
+    weighting : 'uniform' or callable
         A callable that specifies how distance weighting should be performed.
         The callable should accept a :class:`numpy:numpy.ndarray` of DTW distances, apply an element-wise weighting transformation,
         then return an equally-sized :class:`numpy:numpy.ndarray` of weighted distances.
@@ -43,14 +43,14 @@ class KNNClassifier:
 
             Using the :class:`~MinMaxScale` or :class:`~Standardize` preprocessing transformations to scale your features helps to ensure that DTW distances remain small.
 
-    window: int > 0, optional
+    window : int > 0, optional
         The width of the Sakoe-Chiba band global constraint window.
         A larger constraint will speed up the DTW alignment by restricting the maximum temporal deviation from the diagonal of the DTW matrix,
         but too much constraint may lead to poor alignment.
 
         If no argument is provided, then no global constraint will be applied while computing the DTW matrix.
 
-    use_c: bool
+    use_c : bool
         Whether or not to use fast pure C compiled functions (from the `dtaidistance <https://github.com/wannesm/dtaidistance>`_ package) to perform the DTW computations.
 
         .. tip::
@@ -60,27 +60,27 @@ class KNNClassifier:
 
                 pip install -vvv --upgrade --no-cache-dir --force-reinstall dtaidistance
 
-    random_state: numpy.random.RandomState, int, optional
+    random_state : numpy.random.RandomState, int, optional
         A random state object or seed for reproducible randomness.
 
     Attributes
     ----------
-    k: int > 0
+    k : int > 0
         The number of neighbors.
 
-    weighting: callable
+    weighting : callable
         The distance weighting function.
 
-    window: int > 0
+    window : int > 0
         The width of the Sakoe-Chiba band global constraint.
 
-    use_c: bool
+    use_c : bool
         Whether or not to use fast pure C compiled functions to perform the DTW computations.
 
-    encoder: sklearn.preprocessing.LabelEncoder
+    encoder : sklearn.preprocessing.LabelEncoder
         The label encoder fitted on the set of ``classes`` provided during instantiation.
 
-    classes: array-like of str/numeric
+    classes : array-like of str/numeric
         The complete set of possible classes/labels.
     """
     def __init__(self, k, classes, weighting='uniform', window=None, use_c=False, random_state=None):
@@ -121,10 +121,10 @@ class KNNClassifier:
 
         Parameters
         ----------
-        X: List[numpy.ndarray (float)]
+        X : List[numpy.ndarray (float)]
             A list of multiple observation sequences.
 
-        y: array-like of str/numeric
+        y : array-like of str/numeric
             An iterable of labels for the observation sequences.
         """
         X, y = self._val.observation_sequences_and_labels(X, y)
@@ -136,10 +136,10 @@ class KNNClassifier:
 
         Parameters
         ----------
-        X: numpy.ndarray (float) or List[numpy.ndarray (float)]
+        X : numpy.ndarray (float) or List[numpy.ndarray (float)]
             An individual observation sequence or a list of multiple observation sequences.
 
-        verbose: bool
+        verbose : bool
             Whether to display a progress bar or not.
 
             .. note::
@@ -147,13 +147,13 @@ class KNNClassifier:
                 are always displayed in the console, regardless of where you are running this function from
                 (e.g. a Jupyter notebook).
 
-        n_jobs: int > 0 or -1
+        n_jobs : int > 0 or -1
             | The number of jobs to run in parallel.
             | Setting this to -1 will use all available CPU cores.
 
         Returns
         -------
-        prediction(s): str/numeric or :class:`numpy:numpy.ndarray` (str/numeric)
+        prediction(s) : str/numeric or :class:`numpy:numpy.ndarray` (str/numeric)
             The predicted label(s) for the observation sequence(s).
 
             If ``original_labels`` is true, then the returned labels are
@@ -182,25 +182,25 @@ class KNNClassifier:
 
         Parameters
         ----------
-        X: List[numpy.ndarray (float)]
+        X : List[numpy.ndarray (float)]
             A list of multiple observation sequences.
 
-        y: array-like of str/numeric
+        y : array-like of str/numeric
             An iterable of labels for the observation sequences.
 
-        verbose: bool
+        verbose : bool
             Whether to display a progress bar for predictions or not.
 
-        n_jobs: int > 0 or -1
+        n_jobs : int > 0 or -1
             | The number of jobs to run in parallel.
             | Setting this to -1 will use all available CPU cores.
 
         Returns
         -------
-        accuracy: float
+        accuracy : float
             The categorical accuracy of the classifier on the observation sequences.
 
-        confusion: :class:`numpy:numpy.ndarray` (int)
+        confusion : :class:`numpy:numpy.ndarray` (int)
             The confusion matrix representing the discrepancy between predicted and actual labels.
         """
         X, y = self._val.observation_sequences_and_labels(X, y)
@@ -218,7 +218,7 @@ class KNNClassifier:
 
         Parameters
         ----------
-        path: str
+        path : str
             File path (usually with `.pkl` extension) to store the serialized :class:`KNNClassifier` object.
         """
         try:
@@ -247,12 +247,12 @@ class KNNClassifier:
 
         Parameters
         ----------
-        path: str
+        path : str
             File path of the serialized data generated by the :meth:`save` method.
 
         Returns
         -------
-        deserialized: :class:`KNNClassifier`
+        deserialized : :class:`KNNClassifier`
             The deserialized DTW :math:`k`-NN classifier object.
         """
         with open(path, 'rb') as file:

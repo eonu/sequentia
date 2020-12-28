@@ -9,13 +9,13 @@ class HMMClassifier:
 
     Attributes
     ----------
-    models: list of GMMHMM
+    models : list of GMMHMM
         A collection of the :class:`~GMMHMM` objects to use for classification.
 
-    encoder: sklearn.preprocessing.LabelEncoder
+    encoder : sklearn.preprocessing.LabelEncoder
         The label encoder fitted on the set of ``classes`` provided during instantiation.
 
-    classes: array-like of str/numeric
+    classes : array-like of str/numeric
         The complete set of possible classes/labels.
     """
     def __init__(self):
@@ -26,7 +26,7 @@ class HMMClassifier:
 
         Parameters
         ----------
-        models: array-like of GMMHMM
+        models : array-like of GMMHMM
             A collection of :class:`~GMMHMM` objects to use for classification.
         """
 
@@ -47,10 +47,10 @@ class HMMClassifier:
 
         Parameters
         ----------
-        X: numpy.ndarray (float) or List[numpy.ndarray (float)]
+        X : numpy.ndarray (float) or List[numpy.ndarray (float)]
             An individual observation sequence or a list of multiple observation sequences.
 
-        prior: {'frequency', 'uniform'} or array-like of float
+        prior : {'frequency', 'uniform'} or array-like of float
             How the prior probability for each model is calculated to perform MAP estimation by scoring with
             the joint probability (or un-normalized posterior) :math:`\\mathbb{P}(O, \\lambda_c)=\\mathbb{P}(O|\\lambda_c)\\mathbb{P}(\\lambda_c)`.
 
@@ -59,20 +59,20 @@ class HMMClassifier:
 
             Alternatively, class prior probabilities can be specified in an iterable of floats, e.g. `[0.1, 0.3, 0.6]`.
 
-        return_scores: bool
+        return_scores : bool
             Whether to return the scores of each model on the observation sequence(s).
 
-        original_labels: bool
+        original_labels : bool
             Whether to inverse-transform the labels to their original encoding.
 
         Returns
         -------
-        prediction(s): str/numeric or :class:`numpy:numpy.ndarray` (str/numeric)
+        prediction(s) : str/numeric or :class:`numpy:numpy.ndarray` (str/numeric)
             The predicted label(s) for the observation sequence(s).
 
             If ``original_labels`` is true, then the returned labels are inverse-transformed into their original encoding.
 
-        scores: :class:`numpy:numpy.ndarray` (float)
+        scores : :class:`numpy:numpy.ndarray` (float)
             An :math:`N\\times M` matrix of scores (log un-normalized posteriors), for each of the :math:`1,\\ldots,M` HMMs,
             for each of the :math:`1,\\ldots,N` observation sequences. Only returned if ``return_scores`` is true.
         """
@@ -121,13 +121,13 @@ class HMMClassifier:
 
         Parameters
         ----------
-        X: List[numpy.ndarray (float)]
+        X : List[numpy.ndarray (float)]
             A list of multiple observation sequences.
 
-        y: array-like of str/numeric
+        y : array-like of str/numeric
             An iterable of labels for the observation sequences.
 
-        prior: {'frequency', 'uniform'} or array-like of float
+        prior : {'frequency', 'uniform'} or array-like of float
             How the prior probability for each model is calculated to perform MAP estimation by scoring with
             the joint probability (or un-normalized posterior) :math:`\\mathbb{P}(O, \\lambda_c)=\\mathbb{P}(O|\\lambda_c)\\mathbb{P}(\\lambda_c)`.
 
@@ -138,10 +138,10 @@ class HMMClassifier:
 
         Returns
         -------
-        accuracy: float
+        accuracy : float
             The categorical accuracy of the classifier on the observation sequences.
 
-        confusion: :class:`numpy:numpy.ndarray` (int)
+        confusion : :class:`numpy:numpy.ndarray` (int)
             The confusion matrix representing the discrepancy between predicted and actual labels.
         """
         X, y = self._val.observation_sequences_and_labels(X, y)

@@ -13,15 +13,15 @@ class _Validator:
 
         Parameters
         ----------
-        X: numpy.ndarray or List[numpy.ndarray]
+        X : numpy.ndarray or List[numpy.ndarray]
             An individual observation sequence or a list of multiple observation sequences.
 
-        allow_single: bool
+        allow_single : bool
             Whether to allow an individual observation sequence.
 
         Returns
         -------
-        X: numpy.ndarray or List[numpy.ndarray]
+        X : numpy.ndarray or List[numpy.ndarray]
             The original input observation sequence(s) if valid.
         """
         X = copy(X)
@@ -51,18 +51,18 @@ class _Validator:
 
         Parameters
         ----------
-        X: List[numpy.ndarray]
+        X : List[numpy.ndarray]
             A list of multiple observation sequences.
 
-        y: array-like of str/numeric
+        y : array-like of str/numeric
             A list of labels for the observation sequences.
 
         Returns
         -------
-        X: List[numpy.ndarray]
+        X : List[numpy.ndarray]
             The original input observation sequences if valid.
 
-        y: array-like of str/numeric
+        y : array-like of str/numeric
             The original input labels if valid.
         """
         self.observation_sequences(X, allow_single=False)
@@ -79,15 +79,15 @@ class _Validator:
 
         Parameters
         ----------
-        item: int
+        item : int
             The item to validate.
 
-        desc: str
+        desc : str
             A description of the item being validated.
 
         Returns
         -------
-        item: int
+        item : int
             The original input item if valid.
         """
         if not isinstance(item, int):
@@ -99,15 +99,15 @@ class _Validator:
 
         Parameters
         ----------
-        item: str
+        item : str
             The item to validate.
 
-        desc: str
+        desc : str
             A description of the item being validated.
 
         Returns
         -------
-        item: str
+        item : str
             The original input item if valid.
         """
         if not isinstance(item, str):
@@ -119,15 +119,15 @@ class _Validator:
 
         Parameters
         ----------
-        item: str or numeric
+        item : str or numeric
             The item to validate.
 
-        desc: str
+        desc : str
             A description of the item being validated.
 
         Returns
         -------
-        item: str or numeric
+        item : str or numeric
             The original input item if valid.
         """
         if not isinstance(item, (str, numbers.Number)):
@@ -139,15 +139,15 @@ class _Validator:
 
         Parameters
         ----------
-        item: bool
+        item : bool
             The item to validate.
 
-        desc: str
+        desc : str
             A description of the item being validated.
 
         Returns
         -------
-        item: bool
+        item : bool
             The original input item if valid.
         """
         if not isinstance(item, bool):
@@ -159,18 +159,18 @@ class _Validator:
 
         Parameters
         ----------
-        item: Any
+        item : Any
             The item to validate.
 
-        items: array-like of Any
+        items : array-like of Any
             The list of permitted values to check against.
 
-        desc: str
+        desc : str
             A description of the item being validated.
 
         Returns
         -------
-        item: Any
+        item : Any
             The original input item if valid.
         """
         if not item in items:
@@ -182,21 +182,21 @@ class _Validator:
 
         Parameters
         ----------
-        item: int
+        item : int
             The item to validate.
 
-        condition: lambda
+        condition : lambda
             A condition to check the item against.
 
-        desc: str
+        desc : str
             A description of the item being validated.
 
-        expected: str
+        expected : str
             A description of the condition, or expected value.
 
         Returns
         -------
-        item: int
+        item : int
             The original input item if valid.
         """
         if isinstance(item, int):
@@ -211,21 +211,21 @@ class _Validator:
 
         Parameters
         ----------
-        item: float
+        item : float
             The item to validate.
 
-        condition: lambda
+        condition : lambda
             A condition to check the item against.
 
-        desc: str
+        desc : str
             A description of the item being validated.
 
-        expected: str
+        expected : str
             A description of the condition, or expected value.
 
         Returns
         -------
-        item: float
+        item : float
             The original input item if valid.
         """
         if isinstance(item, float):
@@ -240,12 +240,12 @@ class _Validator:
 
         Parameters
         ----------
-        state: None, int, numpy.random.RandomState
+        state : None, int, numpy.random.RandomState
             A random state object or seed.
 
         Returns
         -------
-        state: numpy.random.RandomState
+        state : numpy.random.RandomState
             A random state object.
         """
         if state is None:
@@ -262,15 +262,15 @@ class _Validator:
 
         Parameters
         ----------
-        item: callable
+        item : callable
             The item to validate.
 
-        desc: str
+        desc : str
             A description of the item being validated.
 
         Returns
         -------
-        item: callable
+        item : callable
             The original input item if valid.
         """
         if callable(item):
@@ -283,15 +283,15 @@ class _Validator:
 
         Parameters
         ----------
-        item: iterable
+        item : iterable
             The item to validate.
 
-        desc: str
+        desc : str
             A description of the item being validated.
 
         Returns
         -------
-        item: iterable
+        item : iterable
             The original input item if valid.
         """
         if isinstance(item, Iterable) and hasattr(item, '__len__'):

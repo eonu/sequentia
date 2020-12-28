@@ -6,10 +6,10 @@ class _LinearTopology(_Topology):
 
     Parameters
     ----------
-    n_states: int
+    n_states : int
         Number of states in the HMM.
 
-    random_state: numpy.random.RandomState
+    random_state : numpy.random.RandomState
         A random state object for reproducible randomness.
     """
 
@@ -19,7 +19,7 @@ class _LinearTopology(_Topology):
 
         Returns
         -------
-        transitions: :class:`numpy:numpy.ndarray` (float)
+        transitions : :class:`numpy:numpy.ndarray` (float)
             The uniform transition matrix of shape `(n_states, n_states)`.
         """
         transitions = np.zeros((self._n_states, self._n_states))
@@ -35,7 +35,7 @@ class _LinearTopology(_Topology):
 
         Returns
         -------
-        transitions: :class:`numpy:numpy.ndarray` (float)
+        transitions : :class:`numpy:numpy.ndarray` (float)
             The random transition matrix of shape `(n_states, n_states)`.
         """
         transitions = np.zeros((self._n_states, self._n_states))
@@ -49,7 +49,7 @@ class _LinearTopology(_Topology):
 
         Parameters
         ----------
-        transitions: numpy.ndarray (float)
+        transitions : numpy.ndarray (float)
             The transition matrix to validate.
         """
         super().validate_transitions(transitions)

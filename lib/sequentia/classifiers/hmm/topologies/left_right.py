@@ -6,10 +6,10 @@ class _LeftRightTopology(_Topology):
 
     Parameters
     ----------
-    n_states: int
+    n_states : int
         Number of states in the HMM.
 
-    random_state: numpy.random.RandomState
+    random_state : numpy.random.RandomState
         A random state object for reproducible randomness.
     """
 
@@ -19,7 +19,7 @@ class _LeftRightTopology(_Topology):
 
         Returns
         -------
-        transitions: :class:`numpy:numpy.ndarray` (float)
+        transitions : :class:`numpy:numpy.ndarray` (float)
             The uniform transition matrix of shape `(n_states, n_states)`.
         """
         upper_ones = np.triu(np.ones((self._n_states, self._n_states)))
@@ -34,7 +34,7 @@ class _LeftRightTopology(_Topology):
 
         Returns
         -------
-        transitions: :class:`numpy:numpy.ndarray` (float)
+        transitions : :class:`numpy:numpy.ndarray` (float)
             The random transition matrix of shape `(n_states, n_states)`.
         """
         transitions = self._random_state.dirichlet(np.ones(self._n_states), size=self._n_states)
@@ -49,7 +49,7 @@ class _LeftRightTopology(_Topology):
 
         Parameters
         ----------
-        transitions: numpy.ndarray (float)
+        transitions : numpy.ndarray (float)
             The transition matrix to validate.
         """
         super().validate_transitions(transitions)
