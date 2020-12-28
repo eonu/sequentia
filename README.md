@@ -32,18 +32,18 @@
 
 Sequential data is a commonly-observed, yet difficult-to-handle form of data. These can range from time series (sequences of observations occurring through time) to non-temporal sequences such as DNA nucleotides.
 
-Time series data such as audio signals, stock prices and electro-cardiogram signals are often of particular interest to machine learning practitioners and researchers, as changing patterns over time naturally provide many interesting opportunities and challenges for machine learning prediction.
+Time series data such as audio signals, stock prices and electro-cardiogram signals are often of particular interest to machine learning practitioners and researchers, as changing patterns over time naturally provide many interesting opportunities and challenges for machine learning prediction and statistical inference.
 
 **Sequentia is a Python package that specifically aims to tackle classification problems for isolated sequences by providing implementations of a number of classification algorithms**.
 
 Examples of such classification problems include:
 
-- classifying a word utterance based on its speech audio signal (or some other representation such as MFCCs),
+- classifying a spoken word based on its audio signal (or some other representation such as MFCCs),
 - classifying a hand-written character according to its pen-tip trajectory,
 - classifying a hand or head gesture in a motion-capture recording,
 - classifying the sentiment of a phrase or sentence in natural language.
 
-Compared to the classification of fixed-size inputs (e.g. a vector, or images), sequence classification problems faces two major hurdles:
+Compared to the classification of fixed-size inputs (e.g. a vector, or images), sequence classification problems face two major hurdles:
 
 1. the sequences are generally of different duration to each other,
 2. the observations within a given sequence (may) have temporal dependencies on previous observations which occured earlier within the same sequence, and these dependencies may be arbitrarily long.
