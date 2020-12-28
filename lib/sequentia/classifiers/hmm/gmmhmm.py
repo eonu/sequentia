@@ -10,45 +10,45 @@ class GMMHMM:
 
     Parameters
     ----------
-    label: str or numeric
+    label : str or numeric
         A label for the model, corresponding to the class being represented.
 
-    n_states: int > 0
+    n_states : int > 0
         The number of states for the model.
 
-    n_components: int > 0
+    n_components : int > 0
         The number of mixture components used in the emission distribution for each state.
 
-    covariance_type: {'spherical', 'diag', 'full', 'tied'}
+    covariance_type : {'spherical', 'diag', 'full', 'tied'}
         The covariance matrix type for emission distributions.
 
-    topology: {'ergodic', 'left-right', 'linear'}
+    topology : {'ergodic', 'left-right', 'linear'}
         The topology for the model.
 
-    random_state: numpy.random.RandomState, int, optional
+    random_state : numpy.random.RandomState, int, optional
         A random state object or seed for reproducible randomness.
 
     Attributes
     ----------
-    label: str or numeric
+    label : str or numeric
         The label for the model.
 
-    n_states: int
+    n_states : int
         The number of states for the model.
 
-    n_components: int
+    n_components : int
         The number of mixture components used in the emission distribution for each state.
 
-    covariance_type: str
+    covariance_type : str
         The covariance matrix type for emission distributions.
 
-    n_seqs: int
+    n_seqs : int
         The number of observation sequences use to train the model.
 
-    initial: numpy.ndarray
+    initial : numpy.ndarray (float)
         The initial state distribution of the model.
 
-    transitions: numpy.ndarray
+    transitions : numpy.ndarray (float)
         The transition matrix of the model.
     """
     def __init__(self, label, n_states, n_components=1, covariance_type='full', topology='left-right', random_state=None):
@@ -97,7 +97,7 @@ class GMMHMM:
 
         Parameters
         ----------
-        X: List[numpy.ndarray]
+        X : List[numpy.ndarray (float)]
             Collection of multivariate observation sequences, each of shape :math:`(T \\times D)` where
             :math:`T` may vary per observation sequence.
         """
@@ -132,14 +132,14 @@ class GMMHMM:
 
         Parameters
         ----------
-        x: numpy.ndarray
+        x : numpy.ndarray (float)
             An individual sequence of observations of size :math:`(T \\times D)` where
             :math:`T` is the number of time frames (or observations) and
             :math:`D` is the number of features.
 
         Returns
         -------
-        log-likelihood: float
+        log-likelihood : float
             The log-likelihood of the model generating the observation sequence.
         """
         try:
