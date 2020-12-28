@@ -9,7 +9,7 @@ class HMMClassifier:
 
     Attributes
     ----------
-    models: array-like of GMMHMM
+    models: list of GMMHMM
         A collection of the :class:`~GMMHMM` objects to use for classification.
 
     encoder: sklearn.preprocessing.LabelEncoder
