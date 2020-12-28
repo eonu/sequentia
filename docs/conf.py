@@ -41,8 +41,11 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'numpydoc',
-    'm2r2'
+    'm2r2',
+    'sphinx.ext.intersphinx'
 ]
+
+intersphinx_mapping = {'numpy': ('http://docs.scipy.org/doc/numpy/', None)}
 
 autodoc_member_order = 'bysource'
 autosummary_generate = True

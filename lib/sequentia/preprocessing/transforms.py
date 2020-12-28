@@ -25,7 +25,7 @@ class Transform:
 
         Parameters
         ----------
-        X: numpy.ndarray or List[numpy.ndarray]
+        X: numpy.ndarray (float) or List[numpy.ndarray (float)]
             An individual observation sequence or a list of multiple observation sequences.
 
         verbose: bool
@@ -33,7 +33,7 @@ class Transform:
 
         Returns
         -------
-        transformed: numpy.ndarray or List[numpy.ndarray]
+        transformed: :class:`numpy:numpy.ndarray` (float) or List[:class:`numpy:numpy.ndarray` (float)]
             The transformed input observation sequence(s).
         """
         raise NotImplementedError
@@ -50,12 +50,12 @@ class Transform:
         transform: callable
             The transformation to apply.
 
-        X: numpy.ndarray or List[numpy.ndarray]
+        X: numpy.ndarray (float) or List[numpy.ndarray (float)]
             An individual observation sequence or a list of multiple observation sequences.
 
         Returns
         -------
-        transformed: numpy.ndarray or List[numpy.ndarray]
+        transformed: numpy.ndarray (float) or List[numpy.ndarray (float)]
             The transformed input observation sequence(s).
         """
         X = self._val.observation_sequences(X, allow_single=True)
@@ -83,7 +83,7 @@ class Transform:
 
         Parameters
         ----------
-        X: numpy.ndarray or List[numpy.ndarray]
+        X: numpy.ndarray (float) or List[numpy.ndarray (float)]
             An individual observation sequence or a list of multiple observation sequences.
         """
         self._val.observation_sequences(X, allow_single=True)
@@ -107,7 +107,7 @@ class Transform:
 
         Parameters
         ----------
-        X: numpy.ndarray or List[numpy.ndarray]
+        X: numpy.ndarray (float) or List[numpy.ndarray (float)]
             An individual observation sequence or a list of multiple observation sequences.
 
         verbose: bool
@@ -115,7 +115,7 @@ class Transform:
 
         Returns
         -------
-        transformed: numpy.ndarray or List[numpy.ndarray]
+        transformed: :class:`numpy:numpy.ndarray` (float) or List[:class:`numpy:numpy.ndarray` (float)]
             The transformed input observation sequence(s).
         """
         self.fit(X)
@@ -379,7 +379,7 @@ class Filter(Transform):
 
     Parameters
     ----------
-    window_size: int
+    window_size: int > 0
         The size of the filtering window.
 
     method: {'median', 'mean'}

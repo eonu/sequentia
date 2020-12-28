@@ -19,7 +19,7 @@ class _LinearTopology(_Topology):
 
         Returns
         -------
-        transitions: numpy.ndarray
+        transitions: :class:`numpy:numpy.ndarray` (float)
             The uniform transition matrix of shape `(n_states, n_states)`.
         """
         transitions = np.zeros((self._n_states, self._n_states))
@@ -33,9 +33,9 @@ class _LinearTopology(_Topology):
         to all other possible states from each state) by sampling probabilities
         from a Dirichlet distribution, according to the topology.
 
-        Parameters
-        ----------
-        transitions: numpy.ndarray
+        Returns
+        -------
+        transitions: :class:`numpy:numpy.ndarray` (float)
             The random transition matrix of shape `(n_states, n_states)`.
         """
         transitions = np.zeros((self._n_states, self._n_states))
@@ -49,7 +49,7 @@ class _LinearTopology(_Topology):
 
         Parameters
         ----------
-        transitions: numpy.ndarray
+        transitions: numpy.ndarray (float)
             The transition matrix to validate.
         """
         super().validate_transitions(transitions)

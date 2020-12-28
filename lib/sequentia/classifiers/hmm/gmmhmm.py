@@ -45,10 +45,10 @@ class GMMHMM:
     n_seqs: int
         The number of observation sequences use to train the model.
 
-    initial: numpy.ndarray
+    initial: numpy.ndarray (float)
         The initial state distribution of the model.
 
-    transitions: numpy.ndarray
+    transitions: numpy.ndarray (float)
         The transition matrix of the model.
     """
     def __init__(self, label, n_states, n_components=1, covariance_type='full', topology='left-right', random_state=None):
@@ -97,7 +97,7 @@ class GMMHMM:
 
         Parameters
         ----------
-        X: List[numpy.ndarray]
+        X: List[numpy.ndarray (float)]
             Collection of multivariate observation sequences, each of shape :math:`(T \\times D)` where
             :math:`T` may vary per observation sequence.
         """
@@ -132,7 +132,7 @@ class GMMHMM:
 
         Parameters
         ----------
-        x: numpy.ndarray
+        x: numpy.ndarray (float)
             An individual sequence of observations of size :math:`(T \\times D)` where
             :math:`T` is the number of time frames (or observations) and
             :math:`D` is the number of features.

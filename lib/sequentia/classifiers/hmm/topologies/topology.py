@@ -21,7 +21,7 @@ class _Topology:
 
         Returns
         -------
-        initial: numpy.ndarray
+        initial: :class:`numpy:numpy.ndarray` (float)
             The initial state distribution of shape `(n_states,)`.
         """
         return np.ones(self._n_states) / self._n_states
@@ -31,7 +31,7 @@ class _Topology:
 
         Returns
         -------
-        initial: numpy.ndarray
+        initial: :class:`numpy:numpy.ndarray` (float)
             The initial state distribution of shape `(n_states,)`.
         """
         return self._random_state.dirichlet(np.ones(self._n_states), size=1).flatten()
@@ -42,7 +42,7 @@ class _Topology:
 
         Returns
         -------
-        transitions: numpy.ndarray
+        transitions: :class:`numpy:numpy.ndarray` (float)
             The uniform transition matrix of shape `(n_states, n_states)`.
         """
         raise NotImplementedError
@@ -52,9 +52,9 @@ class _Topology:
         to all other possible states from each state) by sampling probabilities
         from a Dirichlet distribution - according to the topology.
 
-        Parameters
-        ----------
-        transitions: numpy.ndarray
+        Returns
+        -------
+        transitions: :class:`numpy:numpy.ndarray` (float)
             The random transition matrix of shape `(n_states, n_states)`.
         """
         raise NotImplementedError
@@ -64,7 +64,7 @@ class _Topology:
 
         Parameters
         ----------
-        initial: numpy.ndarray
+        initial: numpy.ndarray (float)
             The initial state distribution to validate.
         """
         if not isinstance(initial, np.ndarray):
@@ -79,7 +79,7 @@ class _Topology:
 
         Parameters
         ----------
-        transitions: numpy.ndarray
+        transitions: numpy.ndarray (float)
             The transition matrix to validate.
         """
         if not isinstance(transitions, np.ndarray):

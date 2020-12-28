@@ -25,8 +25,8 @@ class KNNClassifier:
 
     weighting: 'uniform' or callable
         A callable that specifies how distance weighting should be performed.
-        The callable should accept a ``numpy.ndarray`` of DTW distances, apply an element-wise weighting transformation,
-        then return an equally-sized ``numpy.ndarray`` of weighted distances.
+        The callable should accept a :class:`numpy:numpy.ndarray` of DTW distances, apply an element-wise weighting transformation,
+        then return an equally-sized :class:`numpy:numpy.ndarray` of weighted distances.
 
         If a `'uniform'` weighting is chosen, then the function ``lambda x: np.ones(x.size)`` is used, which weights all of the distances equally.
 
@@ -121,7 +121,7 @@ class KNNClassifier:
 
         Parameters
         ----------
-        X: List[numpy.ndarray]
+        X: List[numpy.ndarray (float)]
             A list of multiple observation sequences.
 
         y: Iterable[str/numeric]
@@ -136,7 +136,7 @@ class KNNClassifier:
 
         Parameters
         ----------
-        X: numpy.ndarray or List[numpy.ndarray]
+        X: numpy.ndarray (float) or List[numpy.ndarray (float)]
             An individual observation sequence or a list of multiple observation sequences.
 
         verbose: bool
@@ -153,7 +153,7 @@ class KNNClassifier:
 
         Returns
         -------
-        prediction(s): str/numeric or numpy.ndarray[str/numeric]
+        prediction(s): str/numeric or :class:`numpy:numpy.ndarray` (str/numeric)
             The predicted label(s) for the observation sequence(s).
 
             If ``original_labels`` is true, then the returned labels are
@@ -182,7 +182,7 @@ class KNNClassifier:
 
         Parameters
         ----------
-        X: List[numpy.ndarray]
+        X: List[numpy.ndarray (float)]
             A list of multiple observation sequences.
 
         y: Iterable[str/numeric]
@@ -200,7 +200,7 @@ class KNNClassifier:
         accuracy: float
             The categorical accuracy of the classifier on the observation sequences.
 
-        confusion: numpy.ndarray
+        confusion: :class:`numpy:numpy.ndarray` (int)
             The confusion matrix representing the discrepancy between predicted and actual labels.
         """
         X, y = self._val.observation_sequences_and_labels(X, y)
