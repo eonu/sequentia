@@ -80,7 +80,7 @@ class KNNClassifier:
     encoder : sklearn.preprocessing.LabelEncoder
         The label encoder fitted on the set of ``classes`` provided during instantiation.
 
-    classes : array-like of str/numeric
+    classes : numpy.ndarray (str/numeric)
         The complete set of possible classes/labels.
     """
     def __init__(self, k, classes, weighting='uniform', window=None, use_c=False, random_state=None):
