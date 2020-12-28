@@ -11,8 +11,8 @@ class Preprocess:
 
     Parameters
     ----------
-    steps : list of Transform
-        A list of preprocessing transformations.
+    steps : array-like of Transform
+        An ordered collection of preprocessing transformations.
 
     Examples
     --------
@@ -33,9 +33,10 @@ class Preprocess:
     """
 
     def __init__(self, steps):
-        if not (isinstance(steps, list) and all(isinstance(step, Transform) for step in steps)):
-            raise TypeError("Expected steps to be list of Transform objects")
         self._val = _Validator()
+        steps = list(self._val.iterable(steps, 'transformation steps'))
+        if not all(isinstance(transform, Transform) for transform in steps):
+            raise TypeError('Expected all transformation steps to be Transform objects')
         self.steps = steps
 
     def transform(self, X, verbose=False):
