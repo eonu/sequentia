@@ -18,6 +18,7 @@ class HMMClassifier:
     classes : numpy.ndarray (str/numeric)
         The complete set of possible classes/labels.
     """
+
     def __init__(self):
         self._val = _Validator()
 

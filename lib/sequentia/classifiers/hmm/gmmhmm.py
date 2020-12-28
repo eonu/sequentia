@@ -51,6 +51,7 @@ class GMMHMM:
     transitions : numpy.ndarray (float)
         The transition matrix of the model.
     """
+
     def __init__(self, label, n_states, n_components=1, covariance_type='full', topology='left-right', random_state=None):
         self._val = _Validator()
         self._label = self._val.string_or_numeric(label, 'model label')
