@@ -5,7 +5,19 @@ from sklearn.preprocessing import LabelEncoder
 from ...internals import _Validator
 
 class HMMClassifier:
-    """A classifier that combines individual :class:`~GMMHMM` objects, which each model isolated sequences from a different class."""
+    """A classifier that combines individual :class:`~GMMHMM` objects, which each model isolated sequences from a different class.
+
+    Attributes
+    ----------
+    models : list of GMMHMM
+        A collection of the :class:`~GMMHMM` objects to use for classification.
+
+    encoder : sklearn.preprocessing.LabelEncoder
+        The label encoder fitted on the set of ``classes`` provided during instantiation.
+
+    classes : numpy.ndarray (str/numeric)
+        The complete set of possible classes/labels.
+    """
     def __init__(self):
         self._val = _Validator()
 
@@ -14,7 +26,7 @@ class HMMClassifier:
 
         Parameters
         ----------
-        models: Iterable[GMMHMM]
+        models : array-like of GMMHMM
             A collection of :class:`~GMMHMM` objects to use for classification.
         """
 
@@ -35,10 +47,10 @@ class HMMClassifier:
 
         Parameters
         ----------
-        X: numpy.ndarray or List[numpy.ndarray]
+        X : numpy.ndarray (float) or List[numpy.ndarray (float)]
             An individual observation sequence or a list of multiple observation sequences.
 
-        prior: {'frequency', 'uniform'} or Iterable[float]
+        prior : {'frequency', 'uniform'} or array-like of float
             How the prior probability for each model is calculated to perform MAP estimation by scoring with
             the joint probability (or un-normalized posterior) :math:`\\mathbb{P}(O, \\lambda_c)=\\mathbb{P}(O|\\lambda_c)\\mathbb{P}(\\lambda_c)`.
 
@@ -47,20 +59,20 @@ class HMMClassifier:
 
             Alternatively, class prior probabilities can be specified in an iterable of floats, e.g. `[0.1, 0.3, 0.6]`.
 
-        return_scores: bool
+        return_scores : bool
             Whether to return the scores of each model on the observation sequence(s).
 
-        original_labels: bool
+        original_labels : bool
             Whether to inverse-transform the labels to their original encoding.
 
         Returns
         -------
-        prediction(s): str/numeric or numpy.ndarray[str/numeric]
+        prediction(s) : str/numeric or :class:`numpy:numpy.ndarray` (str/numeric)
             The predicted label(s) for the observation sequence(s).
 
             If ``original_labels`` is true, then the returned labels are inverse-transformed into their original encoding.
 
-        scores: numpy.ndarray[float]
+        scores : :class:`numpy:numpy.ndarray` (float)
             An :math:`N\\times M` matrix of scores (log un-normalized posteriors), for each of the :math:`1,\\ldots,M` HMMs,
             for each of the :math:`1,\\ldots,N` observation sequences. Only returned if ``return_scores`` is true.
         """
@@ -109,13 +121,13 @@ class HMMClassifier:
 
         Parameters
         ----------
-        X: List[numpy.ndarray]
+        X : List[numpy.ndarray (float)]
             A list of multiple observation sequences.
 
-        y: Iterable[str/numeric]
+        y : array-like of str/numeric
             An iterable of labels for the observation sequences.
 
-        prior: {'frequency', 'uniform'} or Iterable[float]
+        prior : {'frequency', 'uniform'} or array-like of float
             How the prior probability for each model is calculated to perform MAP estimation by scoring with
             the joint probability (or un-normalized posterior) :math:`\\mathbb{P}(O, \\lambda_c)=\\mathbb{P}(O|\\lambda_c)\\mathbb{P}(\\lambda_c)`.
 
@@ -126,16 +138,23 @@ class HMMClassifier:
 
         Returns
         -------
-        accuracy: float
+        accuracy : float
             The categorical accuracy of the classifier on the observation sequences.
 
-        confusion: numpy.ndarray
+        confusion : :class:`numpy:numpy.ndarray` (int)
             The confusion matrix representing the discrepancy between predicted and actual labels.
         """
         X, y = self._val.observation_sequences_and_labels(X, y)
         predictions = self.predict(X, prior=prior, return_scores=False, original_labels=False)
         cm = confusion_matrix(self._encoder.transform(y), predictions, labels=self._encoder.transform(self._encoder.classes_))
         return np.sum(np.diag(cm)) / np.sum(cm), cm
+
+    @property
+    def models(self):
+        try:
+            return self._models
+        except AttributeError as e:
+            raise AttributeError('No models available - the classifier must be fitted first') from e
 
     @property
     def encoder(self):
