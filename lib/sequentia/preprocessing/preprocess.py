@@ -11,7 +11,7 @@ class Preprocess:
 
     Parameters
     ----------
-    steps : List[Transform]
+    steps : list of Transform
         A list of preprocessing transformations.
 
     Examples
@@ -43,7 +43,7 @@ class Preprocess:
 
         Parameters
         ----------
-        X : numpy.ndarray (float) or List[numpy.ndarray (float)]
+        X : numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
         verbose : bool
@@ -51,7 +51,7 @@ class Preprocess:
 
         Returns
         -------
-        transformed : :class:`numpy:numpy.ndarray` (float) or List[:class:`numpy:numpy.ndarray` (float)]
+        transformed : :class:`numpy:numpy.ndarray` (float) or list of :class:`numpy:numpy.ndarray` (float)
             The input observation sequence(s) with preprocessing transformations applied in order.
         """
         X_t = copy(X)
@@ -75,7 +75,7 @@ class Preprocess:
 
         Parameters
         ----------
-        X : numpy.ndarray (float) or List[numpy.ndarray (float)]
+        X : numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
         verbose : bool
@@ -94,7 +94,7 @@ class Preprocess:
 
         Parameters
         ----------
-        X : numpy.ndarray (float) or List[numpy.ndarray (float)]
+        X : numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
         verbose : bool
@@ -107,7 +107,7 @@ class Preprocess:
 
         Parameters
         ----------
-        X : numpy.ndarray (float) or List[numpy.ndarray (float)]
+        X : numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
         verbose : bool
@@ -115,7 +115,7 @@ class Preprocess:
 
         Returns
         -------
-        transformed : :class:`numpy:numpy.ndarray` (float) or List[:class:`numpy:numpy.ndarray` (float)]
+        transformed : :class:`numpy:numpy.ndarray` (float) or list of :class:`numpy:numpy.ndarray` (float)
             The input observation sequence(s) with preprocessing transformations applied in order.
         """
         return self._fit(X, verbose)
