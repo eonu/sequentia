@@ -172,20 +172,20 @@ class MinMaxScale(Transform):
 
     Parameters
     ----------
-    scale : tuple(int, int)
+    scale : tuple(int/float, int/float)
         The range of the transformed observation sequence features.
 
     independent : bool
         Whether to independently compute the minimum and maximum to scale each observation sequence.
     """
-    def __init__(self, scale=(0, 1), independent=True):
+    def __init__(self, scale=(0., 1.), independent=True):
         super().__init__()
         if not isinstance(scale, tuple):
-            raise TypeError('TODO')
-        if not all(isinstance(val, int) for val in scale):
-            raise TypeError('TODO')
+            raise TypeError('Expected scaling range to be a tuple')
+        if not all(isinstance(val, (int, float)) for val in scale):
+            raise TypeError('Expected upper and lower bounds of scaling range to be floats')
         if not scale[0] < scale[1]:
-            raise ValueError('TODO')
+            raise ValueError('Expected lower bound of scaling range to be less than the upper bound')
         self.scale = scale
         self.independent = self._val.boolean(independent, 'independent')
         if not self.independent:
