@@ -83,6 +83,7 @@ class KNNClassifier:
     classes : numpy.ndarray (str/numeric)
         The complete set of possible classes/labels.
     """
+
     def __init__(self, k, classes, weighting='uniform', window=None, use_c=False, random_state=None):
         self._val = _Validator()
         self._k = self._val.restricted_integer(
