@@ -20,7 +20,7 @@ class KNNClassifier:
     k: int > 0
         Number of neighbors.
 
-    classes: Iterable[str/numeric]
+    classes: array-liike of str/numeric
         The complete set of possible classes/labels.
 
     weighting: 'uniform' or callable
@@ -80,7 +80,7 @@ class KNNClassifier:
     encoder: sklearn.preprocessing.LabelEncoder
         The label encoder fitted on the set of ``classes`` provided during instantiation.
 
-    classes: Iterable[str/numeric]
+    classes: array-like of str/numeric
         The complete set of possible classes/labels.
     """
     def __init__(self, k, classes, weighting='uniform', window=None, use_c=False, random_state=None):
@@ -124,7 +124,7 @@ class KNNClassifier:
         X: List[numpy.ndarray (float)]
             A list of multiple observation sequences.
 
-        y: Iterable[str/numeric]
+        y: array-like of str/numeric
             An iterable of labels for the observation sequences.
         """
         X, y = self._val.observation_sequences_and_labels(X, y)
@@ -185,7 +185,7 @@ class KNNClassifier:
         X: List[numpy.ndarray (float)]
             A list of multiple observation sequences.
 
-        y: Iterable[str/numeric]
+        y: array-like of str/numeric
             An iterable of labels for the observation sequences.
 
         verbose: bool

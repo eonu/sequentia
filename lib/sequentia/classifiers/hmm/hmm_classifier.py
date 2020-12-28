@@ -9,13 +9,13 @@ class HMMClassifier:
 
     Attributes
     ----------
-    models: Iterable[GMMHMM]
+    models: array-like of GMMHMM
         A collection of the :class:`~GMMHMM` objects to use for classification.
 
     encoder: sklearn.preprocessing.LabelEncoder
         The label encoder fitted on the set of ``classes`` provided during instantiation.
 
-    classes: Iterable[str/numeric]
+    classes: array-like of str/numeric
         The complete set of possible classes/labels.
     """
     def __init__(self):
@@ -26,7 +26,7 @@ class HMMClassifier:
 
         Parameters
         ----------
-        models: Iterable[GMMHMM]
+        models: array-like of GMMHMM
             A collection of :class:`~GMMHMM` objects to use for classification.
         """
 
@@ -50,7 +50,7 @@ class HMMClassifier:
         X: numpy.ndarray (float) or List[numpy.ndarray (float)]
             An individual observation sequence or a list of multiple observation sequences.
 
-        prior: {'frequency', 'uniform'} or Iterable[float]
+        prior: {'frequency', 'uniform'} or array-like of float
             How the prior probability for each model is calculated to perform MAP estimation by scoring with
             the joint probability (or un-normalized posterior) :math:`\\mathbb{P}(O, \\lambda_c)=\\mathbb{P}(O|\\lambda_c)\\mathbb{P}(\\lambda_c)`.
 
@@ -124,10 +124,10 @@ class HMMClassifier:
         X: List[numpy.ndarray (float)]
             A list of multiple observation sequences.
 
-        y: Iterable[str/numeric]
+        y: array-like of str/numeric
             An iterable of labels for the observation sequences.
 
-        prior: {'frequency', 'uniform'} or Iterable[float]
+        prior: {'frequency', 'uniform'} or array-like of float
             How the prior probability for each model is calculated to perform MAP estimation by scoring with
             the joint probability (or un-normalized posterior) :math:`\\mathbb{P}(O, \\lambda_c)=\\mathbb{P}(O|\\lambda_c)\\mathbb{P}(\\lambda_c)`.
 

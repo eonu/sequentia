@@ -54,7 +54,7 @@ class _Validator:
         X: List[numpy.ndarray]
             A list of multiple observation sequences.
 
-        y: Iterable[str/numeric]
+        y: array-like of str/numeric
             A list of labels for the observation sequences.
 
         Returns
@@ -62,7 +62,7 @@ class _Validator:
         X: List[numpy.ndarray]
             The original input observation sequences if valid.
 
-        y: Iterable[str/numeric]
+        y: array-like of str/numeric
             The original input labels if valid.
         """
         self.observation_sequences(X, allow_single=False)
@@ -162,7 +162,7 @@ class _Validator:
         item: Any
             The item to validate.
 
-        items: Iterable[Any]
+        items: array-like of Any
             The list of permitted values to check against.
 
         desc: str
