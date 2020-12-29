@@ -12,7 +12,7 @@
 
 - Switch to use duck-typing for iterables instead of requiring lists. ([#105](https://github.com/eonu/sequentia/pull/105))
 - Rename 'strict left-right' HMM topology to 'linear'. ([#105](https://github.com/eonu/sequentia/pull/105))
-- (_Internal_) Switch `m2r` to `m2r2`, as `m2r` is no longer maintained. ([#105](https://github.com/eonu/sequentia/pull/105))
+- Switch `m2r` to `m2r2`, as `m2r` is no longer maintained. ([#105](https://github.com/eonu/sequentia/pull/105))
 - Change `covariance` to `covariance_type`, to match `hmmlearn`. ([#105](https://github.com/eonu/sequentia/pull/105))
 - Use `numpy.random.RandomState(seed=None)` as default instead of `numpy.random.RandomState(seed=0)`. ([#105](https://github.com/eonu/sequentia/pull/105))
 - Switch `KNNClassifier` serialization from HDF5 to pickling. ([#106](https://github.com/eonu/sequentia/pull/106))
@@ -20,6 +20,7 @@
 - Change `MinMaxScale` bounds to floats. ([#112](https://github.com/eonu/sequentia/pull/112))
 - Add `__repr__` function to `GMMHMM`, `HMMClassifier` and `KNNClassifier`. ([#120](https://github.com/eonu/sequentia/pull/120))
 - Use feature-independent warping (DTWI). ([#121](https://github.com/eonu/sequentia/pull/121))
+- Ensure minimum Sakoe-Chiba band width is 1. ([#126](https://github.com/eonu/sequentia/pull/126))
 
 ## [0.7.2](https://github.com/eonu/sequentia/releases/tag/v0.7.2)
 
