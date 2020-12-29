@@ -24,7 +24,7 @@ subprocess.call('pip install numpydoc sphinx_rtd_theme m2r2', shell=True)
 # -- Project information -----------------------------------------------------
 
 project = 'sequentia'
-copyright = '2019-2021, Edwin Onuonga'
+copyright = '2019-2022, Edwin Onuonga'
 author = 'Edwin Onuonga'
 
 # The full version, including alpha/beta/rc tags
