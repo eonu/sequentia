@@ -247,7 +247,7 @@ def test_load_valid_no_weighting():
         assert isinstance(clf, KNNClassifier)
         assert clf._k == 3
         assert list(clf._encoder.classes_) == classes
-        assert clf._window is None
+        assert clf._window == 1.
         assert clf._use_c == False
         assert deepcopy(clf._random_state).normal() == deepcopy(rng).normal()
         assert_all_equal(clf._X, X)
@@ -269,7 +269,7 @@ def test_load_valid_weighting():
         assert isinstance(clf, KNNClassifier)
         assert clf._k == 3
         assert list(clf._encoder.classes_) == classes
-        assert clf._window is None
+        assert clf._window == 1.
         assert clf._use_c == False
         assert deepcopy(clf._random_state).normal() == deepcopy(rng).normal()
         assert_all_equal(clf._X, X)
