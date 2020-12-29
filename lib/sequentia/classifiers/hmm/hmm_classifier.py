@@ -200,3 +200,15 @@ class HMMClassifier:
     @property
     def classes(self):
         return self.encoder.classes_
+
+    def __repr__(self):
+        module = self.__class__.__module__
+        out = '{}{}('.format('' if module == '__main__' else '{}.'.format(module), self.__class__.__name__)
+        try:
+            self._models
+            out += 'models=[\n  '
+            out += ',\n  '.join(repr(model) for model in self._models)
+            out += '\n]'
+        except AttributeError:
+            pass
+        return out + ')'
