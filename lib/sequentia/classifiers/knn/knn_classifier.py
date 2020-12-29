@@ -43,12 +43,12 @@ class KNNClassifier:
 
             Using the :class:`~MinMaxScale` or :class:`~Standardize` preprocessing transformations to scale your features helps to ensure that DTW distances remain small.
 
-    window : int > 0, optional
-        The width of the Sakoe-Chiba band global constraint window.
+    window : 0 ≤ float ≤ 1
+        The width of the Sakoe-Chiba band global constraint as a fraction of the length of the longest of the two sequences.
         A larger constraint will speed up the DTW alignment by restricting the maximum temporal deviation from the diagonal of the DTW matrix,
         but too much constraint may lead to poor alignment.
 
-        If no argument is provided, then no global constraint will be applied while computing the DTW matrix.
+        The default value of 1 corresponds to full DTW computation with no global constraint applied.
 
     use_c : bool
         Whether or not to use fast pure C compiled functions (from the `dtaidistance <https://github.com/wannesm/dtaidistance>`_ package) to perform the DTW computations.
@@ -71,8 +71,8 @@ class KNNClassifier:
     weighting : callable
         The distance weighting function.
 
-    window : int > 0
-        The width of the Sakoe-Chiba band global constraint.
+    window : 0 ≤ float ≤ 1
+        The width of the Sakoe-Chiba band global constraint as a fraction of the length of the longest of the two sequences.
 
     use_c : bool
         Whether or not to use fast pure C compiled functions to perform the DTW computations.
@@ -84,13 +84,12 @@ class KNNClassifier:
         The complete set of possible classes/labels.
     """
 
-    def __init__(self, k, classes, weighting='uniform', window=None, use_c=False, random_state=None):
+    def __init__(self, k, classes, weighting='uniform', window=1., use_c=False, random_state=None):
         self._val = _Validator()
         self._k = self._val.restricted_integer(
             k, lambda x: x > 0, desc='number of neighbors', expected='greater than zero')
-
-        self._window = window if window is None else self._val.restricted_integer(
-            window, lambda x: x > 0, desc='Sakoe-Chiba band width', expected='greater than zero')
+        self._window = float(window) if window in (0, 1) else self._val.restricted_float(
+            window, lambda x: 0. <= x <= 1., desc='Sakoe-Chiba band width (fraction)', expected='between zero and one')
         self._random_state = self._val.random_state(random_state)
 
         self._val.iterable(classes, 'classes')
@@ -287,13 +286,14 @@ class KNNClassifier:
 
             return clf
 
-    def _dtw_1d(self, a, b): # Requires fit
+    def _dtw_1d(self, a, b, window): # Requires fit
         """Computes the DTW distance between two univariate sequences."""
-        return dtw.distance(a, b, use_c=self._use_c, window=self._window)
+        return dtw.distance(a, b, use_c=self._use_c, window=window)
 
     def _dtw(self, A, B): # Requires fit
         """Computes the multivariate DTW distance as an average of the pairwise per-feature DTW distances."""
-        return np.mean([self._dtw_1d(A[:, i], B[:, i]) for i in range(self._n_features)])
+        window = int(self._window * max(len(A), len(B)))
+        return np.mean([self._dtw_1d(A[:, i], B[:, i], window=window) for i in range(self._n_features)])
 
     def _argmax(self, a):
         """Same as numpy.argmax but returns all occurrences of the maximum, and is O(n) instead of O(2n).
