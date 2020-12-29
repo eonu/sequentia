@@ -1,3 +1,26 @@
+## [0.10.0](https://github.com/eonu/sequentia/releases/tag/v0.10.0)
+
+#### Major changes
+
+- Switch out [`pomegranate`](https://github.com/jmschrei/pomegranate) HMM backend to [`hmmlearn`](https://github.com/hmmlearn/hmmlearn). ([#105](https://github.com/eonu/sequentia/pull/105))
+- Remove separate HMM and GMM-HMM implementations – only keep a single GMM-HMM implementation (in the `GMMHMM` class) and treat multivariate Gaussian emission HMM as a special case of GMM-HMM. ([#105](https://github.com/eonu/sequentia/pull/105))
+- Support string and numeric labels by using label encodings (from [`sklearn.preprocessing.LabelEncoder`](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html)). ([#105](https://github.com/eonu/sequentia/pull/105))
+- Add support for Python v3.6, v3.7, v3.8, v3.9 and remove support for v3.5. ([#105](https://github.com/eonu/sequentia/pull/105))
+- Switch from approximate DTW algorithm ([`fastdtw`](https://github.com/slaypni/fastdtw)) to exact implementation ([`dtaidistance`](https://github.com/wannesm/dtaidistance)) for `KNNClassifier`. ([#106](https://github.com/eonu/sequentia/pull/106))
+
+#### Minor changes
+
+- Switch to use duck-typing for iterables instead of requiring lists. ([#105](https://github.com/eonu/sequentia/pull/105))
+- Rename 'strict left-right' HMM topology to 'linear'. ([#105](https://github.com/eonu/sequentia/pull/105))
+- (_Internal_) Switch `m2r` to `m2r2`, as `m2r` is no longer maintained. ([#105](https://github.com/eonu/sequentia/pull/105))
+- Change `covariance` to `covariance_type`, to match `hmmlearn`. ([#105](https://github.com/eonu/sequentia/pull/105))
+- Use `numpy.random.RandomState(seed=None)` as default instead of `numpy.random.RandomState(seed=0)`. ([#105](https://github.com/eonu/sequentia/pull/105))
+- Switch `KNNClassifier` serialization from HDF5 to pickling. ([#106](https://github.com/eonu/sequentia/pull/106))
+- Use [`intersphinx`](https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html) for external documentation links, e.g. to `numpy`. ([#108](https://github.com/eonu/sequentia/pull/108))
+- Change `MinMaxScale` bounds to floats. ([#112](https://github.com/eonu/sequentia/pull/112))
+- Add `__repr__` function to `GMMHMM`, `HMMClassifier` and `KNNClassifier`. ([#120](https://github.com/eonu/sequentia/pull/120))
+- Use feature-independent warping (DTWI). ([#121](https://github.com/eonu/sequentia/pull/121))
+
 ## [0.7.2](https://github.com/eonu/sequentia/releases/tag/v0.7.2)
 
 #### Major changes
