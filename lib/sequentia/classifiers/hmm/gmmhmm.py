@@ -178,6 +178,13 @@ class GMMHMM:
             raise AttributeError('The model has not been fitted and has not seen any observation sequences') from e
 
     @property
+    def model(self):
+        try:
+            return self._model
+        except AttributeError as e:
+            raise AttributeError('The model must be fitted first') from e
+
+    @property
     def initial(self):
         try:
             return self._initial
@@ -200,3 +207,23 @@ class GMMHMM:
     def transitions(self, probabilities):
         self._topology.validate_transitions(probabilities)
         self._transitions = probabilities
+
+    def __repr__(self):
+        module = self.__class__.__module__
+        out = '{}{}('.format('' if module == '__main__' else '{}.'.format(module), self.__class__.__name__)
+        attrs = [
+            ('label', repr(self._label)),
+            ('n_states', repr(self._n_states)),
+            ('n_components', repr(self._n_components)),
+            ('covariance_type', repr(self._covariance_type))
+        ]
+        try:
+            self._initial
+            attrs.append(('initial', 'array([...])'))
+            self._transitions
+            attrs.append(('transitions', 'array([...])'))
+            self._model
+            attrs.append(('n_seqs', repr(self._n_seqs)))
+        except AttributeError:
+            pass
+        return out + ', '.join('{}={}'.format(name, val) for name, val in attrs) + ')'
