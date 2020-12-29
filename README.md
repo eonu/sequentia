@@ -62,6 +62,7 @@ The following algorithms provided within Sequentia support the use of multivaria
   - [x] Gaussian Mixture Model emissions
   - [x] Linear, left-right and ergodic topologies
 - [x] Dynamic Time Warping k-Nearest Neighbors (via [`dtaidistance`](https://github.com/wannesm/dtaidistance))
+  - [x] Feature-independent warping (DTWI)
   - [x] Custom distance-weighted predictions
   - [x] Multi-processed predictions
 
