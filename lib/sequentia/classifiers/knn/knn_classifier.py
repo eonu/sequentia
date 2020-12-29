@@ -292,7 +292,7 @@ class KNNClassifier:
 
     def _dtw(self, A, B): # Requires fit
         """Computes the multivariate DTW distance as the sum of the pairwise per-feature DTW distances."""
-        window = int(self._window * max(len(A), len(B)))
+        window = max(1, int(self._window * max(len(A), len(B))))
         return np.sum([self._dtw_1d(A[:, i], B[:, i], window=window) for i in range(self._n_features)])
 
     def _argmax(self, a):
