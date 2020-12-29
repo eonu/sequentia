@@ -369,3 +369,33 @@ class KNNClassifier:
     @property
     def classes(self):
         return self._encoder.classes_
+
+    @property
+    def X(self):
+        try:
+            return self._X
+        except AttributeError:
+            raise RuntimeError('The classifier needs to be fitted first')
+
+    @property
+    def y(self):
+        try:
+            return self._y
+        except AttributeError:
+            raise RuntimeError('The classifier needs to be fitted first')
+
+    def __repr__(self):
+        module = self.__class__.__module__
+        out = '{}{}('.format('' if module == '__main__' else '{}.'.format(module), self.__class__.__name__)
+        attrs = [
+            ('k', repr(self._k)),
+            ('window', repr(self._window)),
+            ('use_c', repr(self._use_c)),
+            ('classes', repr(list(self._encoder.classes_)))
+        ]
+        try:
+            (self._X, self._y)
+            attrs.extend([('X', '[...]'), ('y', 'array([...])')])
+        except AttributeError:
+            pass
+        return out + ', '.join('{}={}'.format(name, val) for name, val in attrs) + ')'
