@@ -176,3 +176,52 @@ def test_serialization():
     finally:
         if os.path.exists(model_file):
             os.remove(model_file)
+
+# ==================== #
+# HMMClassifier.save() #
+# ==================== #
+
+def test_save_unfitted():
+    """Save an unfitted HMMClassifier object."""
+    try:
+        with pytest.raises(RuntimeError) as e:
+            HMMClassifier().save('test.pkl')
+        assert str(e.value) == 'The classifier needs to be fitted before it can be saved'
+    finally:
+        if os.path.exists('test.pkl'):
+            os.remove('test.pkl')
+
+def test_save_fitted():
+    """Save a fitted HMMClassifier object."""
+    try:
+        hmm_clf.save('test.pkl')
+        assert os.path.isfile('test.pkl')
+    finally:
+        os.remove('test.pkl')
+
+# ==================== #
+# HMMClassifier.load() #
+# ==================== #
+
+def test_load_invalid_format():
+    """Load a HMMClassifier from an illegally formatted file"""
+    try:
+        with open('test', 'w') as f:
+            f.write('illegal')
+        with pytest.raises(pickle.UnpicklingError) as e:
+            HMMClassifier.load('test')
+    finally:
+        os.remove('test')
+
+def test_load_valid():
+    """Load a serialized HMMClassifier"""
+    try:
+        hmm_clf.save('test.pkl')
+        clf = HMMClassifier.load('test.pkl')
+        # Check that all fields are still the same
+        assert isinstance(clf, HMMClassifier)
+        assert all(isinstance(model, GMMHMM) for model in clf._models)
+        assert [model.label for model in clf._models] == labels
+        assert list(clf._encoder.classes_) == labels
+    finally:
+        os.remove('test.pkl')
