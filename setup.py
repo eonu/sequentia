@@ -2,10 +2,13 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function
 from setuptools import setup, find_packages
-import os
 
 python_requires = '>=3.6,<3.10'
-setup_requires = ['numpy>=1.17,<2', 'scipy>=1.3,<2']
+setup_requires = [
+    'Cython>=0.28.5',
+    'numpy>=1.17,<2',
+    'scipy>=1.3,<2'
+]
 install_requires = [
     'numpy>=1.17,<2',
     'hmmlearn==0.2.4',
@@ -15,10 +18,6 @@ install_requires = [
     'tqdm>=4.36,<5',
     'joblib>=0.14,<1'
 ]
-
-if not os.environ.get('READTHEDOCS') == 'True':
-    setup_requires.append('Cython')
-    install_requires.append('Cython')
 
 VERSION = '0.10.0'
 
