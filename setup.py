@@ -2,23 +2,23 @@
 # -*- encoding: utf-8 -*-
 from __future__ import print_function
 from setuptools import setup, find_packages
+import os
 
-def fix_setuptools():
-    """Work around bugs in setuptools.
+python_requires = '>=3.6,<3.10'
+setup_requires = ['numpy>=1.17,<2', 'scipy>=1.3,<2']
+install_requires = [
+    'numpy>=1.17,<2',
+    'hmmlearn==0.2.4',
+    'dtaidistance[numpy]>=2.2,<2.3',
+    'scipy>=1.3,<2',
+    'scikit-learn>=0.22,<1',
+    'tqdm>=4.36,<5',
+    'joblib>=0.14,<1'
+]
 
-    Some versions of setuptools are broken and raise SandboxViolation for normal
-    operations in a virtualenv. We therefore disable the sandbox to avoid these
-    issues.
-    """
-    try:
-        from setuptools.sandbox import DirectorySandbox
-        def violation(operation, *args, **_):
-            print("SandboxViolation: %s" % (args,))
-        DirectorySandbox._violation = violation
-    except ImportError:
-        pass
-# Fix bugs in setuptools.
-fix_setuptools()
+if not os.environ.get('READTHEDOCS') == 'True':
+    setup_requires.append('Cython')
+    install_requires.append('Cython')
 
 VERSION = '0.10.0'
 
@@ -56,20 +56,7 @@ setup(
         'Topic :: Scientific/Engineering',
         'Natural Language :: English'
     ],
-    python_requires='>=3.6,<3.10',
-    setup_requires = [
-        'Cython',
-        'numpy>=1.17,<2',
-        'scipy>=1.3,<2'
-    ],
-    install_requires = [
-        'Cython',
-        'numpy>=1.17,<2',
-        'hmmlearn==0.2.4',
-        'dtaidistance[numpy]>=2.2,<2.3',
-        'scipy>=1.3,<2',
-        'scikit-learn>=0.22,<1',
-        'tqdm>=4.36,<5',
-        'joblib>=0.14,<1'
-    ]
+    python_requires = python_requires,
+    setup_requires = setup_requires,
+    install_requires = install_requires
 )
