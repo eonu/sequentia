@@ -63,6 +63,7 @@ setup(
         'scipy>=1.3,<2'
     ],
     install_requires = [
+        'Cython',
         'numpy>=1.17,<2',
         'hmmlearn==0.2.4',
         'dtaidistance[numpy]>=2.2,<2.3',
