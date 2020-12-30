@@ -3,7 +3,23 @@
 from __future__ import print_function
 from setuptools import setup, find_packages
 
-VERSION = '0.10.0a1'
+python_requires = '>=3.6,<3.10'
+setup_requires = [
+    'Cython>=0.28.5',
+    'numpy>=1.17,<2',
+    'scipy>=1.3,<2'
+]
+install_requires = [
+    'numpy>=1.17,<2',
+    'hmmlearn==0.2.4',
+    'dtaidistance[numpy]>=2.2,<2.3',
+    'scipy>=1.3,<2',
+    'scikit-learn>=0.22,<1',
+    'tqdm>=4.36,<5',
+    'joblib>=0.14,<1'
+]
+
+VERSION = '0.10.0'
 
 with open('README.md', 'r') as fh:
     long_description = fh.read()
@@ -39,14 +55,7 @@ setup(
         'Topic :: Scientific/Engineering',
         'Natural Language :: English'
     ],
-    python_requires='>=3.6,<3.10',
-    install_requires = [
-        'numpy>=1.17,<2',
-        'hmmlearn==0.2.4',
-        'dtaidistance[numpy]>=2.2,<2.3',
-        'scipy>=1.3,<2',
-        'scikit-learn>=0.22,<1',
-        'tqdm>=4.36,<5',
-        'joblib>=0.14,<1'
-    ]
+    python_requires = python_requires,
+    setup_requires = setup_requires,
+    install_requires = install_requires
 )
