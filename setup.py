@@ -3,6 +3,23 @@
 from __future__ import print_function
 from setuptools import setup, find_packages
 
+def fix_setuptools():
+    """Work around bugs in setuptools.
+
+    Some versions of setuptools are broken and raise SandboxViolation for normal
+    operations in a virtualenv. We therefore disable the sandbox to avoid these
+    issues.
+    """
+    try:
+        from setuptools.sandbox import DirectorySandbox
+        def violation(operation, *args, **_):
+            print("SandboxViolation: %s" % (args,))
+        DirectorySandbox._violation = violation
+    except ImportError:
+        pass
+# Fix bugs in setuptools.
+fix_setuptools()
+
 python_requires = '>=3.6,<3.10'
 setup_requires = [
     'Cython>=0.28.5',
