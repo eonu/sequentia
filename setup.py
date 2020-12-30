@@ -40,6 +40,10 @@ setup(
         'Natural Language :: English'
     ],
     python_requires='>=3.6,<3.10',
+    setup_requires = [
+        'Cython',
+        'numpy>=1.17,<2'
+    ],
     install_requires = [
         'numpy>=1.17,<2',
         'hmmlearn==0.2.4',
