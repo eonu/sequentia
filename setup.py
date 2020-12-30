@@ -22,7 +22,7 @@ fix_setuptools()
 
 python_requires = '>=3.6,<3.10'
 setup_requires = [
-    'Cython>=0.28.5',
+    'Cython>=0.28.5,<0.29',
     'numpy>=1.17,<2',
     'scipy>=1.3,<2'
 ]
