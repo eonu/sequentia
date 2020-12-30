@@ -1,69 +1,108 @@
-import numpy as np, pomegranate as pg, json
-from .hmm import HMM
+import numpy as np, hmmlearn.hmm
+from .topologies.ergodic import _ErgodicTopology
+from .topologies.left_right import _LeftRightTopology
+from .topologies.linear import _LinearTopology
+from ...internals import _Validator
 
-class GMMHMM(HMM):
-    """A hidden Markov model representing an isolated sequence class,
-    with mixtures of multivariate Gaussian components representing state emission distributions.
+class GMMHMM:
+    """A hidden Markov model (with Gaussian Mixture Model emissions)
+    representing a single isolated sequence class.
 
     Parameters
     ----------
-    label: str
+    label : str or numeric
         A label for the model, corresponding to the class being represented.
 
-    n_states: int
+    n_states : int > 0
         The number of states for the model.
 
-    n_components: int
+    n_components : int > 0
         The number of mixture components used in the emission distribution for each state.
 
-    covariance: {'diagonal', 'full'}
-        The covariance matrix type.
+    covariance_type : {'spherical', 'diag', 'full', 'tied'}
+        The covariance matrix type for emission distributions.
 
-    topology: {'ergodic', 'left-right', 'strict-left-right'}
+    topology : {'ergodic', 'left-right', 'linear'}
         The topology for the model.
 
-    random_state: numpy.random.RandomState, int, optional
+    random_state : numpy.random.RandomState, int, optional
         A random state object or seed for reproducible randomness.
 
     Attributes
     ----------
-    label: str
+    label : str or numeric
         The label for the model.
 
-    n_states: int
+    n_states : int
         The number of states for the model.
 
-    n_seqs: int
+    n_components : int
+        The number of mixture components used in the emission distribution for each state.
+
+    covariance_type : str
+        The covariance matrix type for emission distributions.
+
+    n_seqs : int
         The number of observation sequences use to train the model.
 
-    initial: numpy.ndarray
+    initial : numpy.ndarray (float)
         The initial state distribution of the model.
 
-    transitions: numpy.ndarray
+    transitions : numpy.ndarray (float)
         The transition matrix of the model.
     """
 
-    def __init__(self, label, n_states, n_components, covariance='diagonal', topology='left-right', random_state=None):
-        super().__init__(label, n_states, topology, random_state)
+    def __init__(self, label, n_states, n_components=1, covariance_type='full', topology='left-right', random_state=None):
+        self._val = _Validator()
+        self._label = self._val.string_or_numeric(label, 'model label')
+        self._label = label
+        self._n_states = self._val.restricted_integer(
+            n_states, lambda x: x > 0, desc='number of states', expected='greater than zero')
         self._n_components = self._val.restricted_integer(
-            n_components, lambda x: x > 1, desc='number of mixture components', expected='greater than one')
-        self._covariance = self._val.one_of(covariance, ['diagonal', 'full'], desc='covariance matrix type')
+            n_components, lambda x: x > 0, desc='number of mixture components', expected='greater than zero')
+        self._covariance_type = self._val.one_of(covariance_type, ['spherical', 'diag', 'full', 'tied'], desc='covariance matrix type')
+        self._val.one_of(topology, ['ergodic', 'left-right', 'linear'], desc='topology')
+        self._random_state = self._val.random_state(random_state)
+        self._topology = {
+            'ergodic': _ErgodicTopology,
+            'left-right': _LeftRightTopology,
+            'linear': _LinearTopology
+        }[topology](self._n_states, self._random_state)
 
-    def fit(self, X, n_jobs=1):
+    def set_uniform_initial(self):
+        """Sets a uniform initial state distribution :math:`\\boldsymbol{\\pi}=(\\pi_1,\\pi_2,\\ldots,\\pi_M)` where :math:`\\pi_i=1/M\\quad\\forall i`."""
+        self._initial = self._topology.uniform_initial()
+
+    def set_random_initial(self):
+        """Sets a random initial state distribution by sampling :math:`\\boldsymbol{\\pi}\\sim\\mathrm{Dir}(\\mathbf{1}_M)` where
+
+        - :math:`\\boldsymbol{\\pi}=(\\pi_1,\\pi_2,\\ldots,\\pi_M)` are the initial state probabilities for each state,
+        - :math:`\\mathbf{1}_M` is a vector of :math:`M` ones which are used as the concentration parameters for the Dirichlet distribution.
+        """
+        self._initial = self._topology.random_initial()
+
+    def set_uniform_transitions(self):
+        """Sets a uniform transition matrix according to the topology, so that given the HMM is in state :math:`i`,
+        all permissible transitions (i.e. such that :math:`p_{ij}\\neq0`) :math:`\\forall j` are equally probable."""
+        self._transitions = self._topology.uniform_transitions()
+
+    def set_random_transitions(self):
+        """Sets a random transition matrix according to the topology, so that given the HMM is in state :math:`i`,
+        all out-going transition probabilities :math:`\\mathbf{p}_i=(p_{i1},p_{i2},\\ldots,p_{iM})` from state :math:`i`
+        are generated by sampling :math:`\\mathbf{p}_i\\sim\\mathrm{Dir}(\\mathbf{1}_M)` and redistributed so that only the
+        transitions permitted by the topology are non-zero."""
+        self._transitions = self._topology.random_transitions()
+
+    def fit(self, X):
         """Fits the HMM to observation sequences assumed to be labeled as the class that the model represents.
 
         Parameters
         ----------
-        X: List[numpy.ndarray]
+        X : list of numpy.ndarray (float)
             Collection of multivariate observation sequences, each of shape :math:`(T \\times D)` where
             :math:`T` may vary per observation sequence.
-
-        n_jobs: int
-            | The number of jobs to run in parallel.
-            | Setting this to -1 will use all available CPU cores.
         """
         X = self._val.observation_sequences(X)
-        self._val.restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
 
         try:
             (self._initial, self._transitions)
@@ -73,125 +112,118 @@ class GMMHMM(HMM):
         self._n_seqs = len(X)
         self._n_features = X[0].shape[1]
 
-        # Create a mixture distribution of multivariate Gaussian emission components using combined samples for initial parameter estimation
-        concat = np.concatenate(X)
-        if self._covariance == 'diagonal':
-            # Use diagonal covariance matrices
-            dist = pg.GeneralMixtureModel(
-                [pg.MultivariateGaussianDistribution(concat.mean(axis=0), concat.std(axis=0) * np.eye(self._n_features)) for _ in range(self._n_components)],
-                self._random_state.dirichlet(np.ones(self._n_components)
-            )
+        # Initialize the GMMHMM with the specified initial state distribution and transition matrix
+        self._model = hmmlearn.hmm.GMMHMM(
+            n_components=self._n_states,
+            n_mix=self._n_components,
+            covariance_type=self._covariance_type,
+            random_state=self._random_state,
+            init_params='mcw', # only initialize means, covariances and mixture weights
         )
-        else:
-            # Use full covariance matrices
-            dist = pg.GeneralMixtureModel.from_samples(pg.MultivariateGaussianDistribution, self._n_components, concat)
-
-        # Create the HMM object
-        self._model = pg.HiddenMarkovModel.from_matrix(
-            name=self._label,
-            transition_probabilities=self._transitions,
-            distributions=[dist.copy() for _ in range(self._n_states)],
-            starts=self._initial
-        )
+        self._model.startprob_, self._model.transmat_ = self._initial, self._transitions
 
         # Perform the Baum-Welch algorithm to fit the model to the observations
-        self._model.fit(X, n_jobs=n_jobs)
+        self._model.fit(np.vstack(X), [len(x) for x in X])
 
         # Update the initial state distribution and transitions to reflect the updated parameters
-        inner_tx = self._model.dense_transition_matrix()[:, :self._n_states]
-        self._initial = inner_tx[self._n_states]
-        self._transitions = inner_tx[:self._n_states]
+        self._initial, self._transitions = self._model.startprob_, self._model.transmat_
+
+    def forward(self, x):
+        """Runs the forward algorithm to calculate the (log) likelihood of the model generating an observation sequence.
+
+        Parameters
+        ----------
+        x : numpy.ndarray (float)
+            An individual sequence of observations of size :math:`(T \\times D)` where
+            :math:`T` is the number of time frames (or observations) and
+            :math:`D` is the number of features.
+
+        Returns
+        -------
+        log-likelihood : float
+            The log-likelihood of the model generating the observation sequence.
+        """
+        try:
+            self._model
+        except AttributeError as e:
+            raise AttributeError('The model must be fitted before running the forward algorithm') from e
+
+        x = self._val.observation_sequences(x, allow_single=True)
+        if not x.shape[1] == self._n_features:
+            raise ValueError('Number of observation features must match the dimensionality of the original data used to fit the model')
+
+        return self._model.score(x, lengths=None)
+
+    @property
+    def label(self):
+        return self._label
+
+    @property
+    def n_states(self):
+        return self._n_states
 
     @property
     def n_components(self):
         return self._n_components
 
     @property
-    def covariance(self):
-        return self._covariance
+    def covariance_type(self):
+        return self._covariance_type
 
-    def as_dict(self):
-        """Serializes the :class:`GMMHMM` object into a `dict`, ready to be stored in JSON format.
-
-        Returns
-        -------
-        serialized: dict
-            JSON-ready serialization of the :class:`GMMHMM` object.
-        """
-
+    @property
+    def n_seqs(self):
         try:
-            self._model
+            return self._n_seqs
         except AttributeError as e:
-            raise AttributeError('The model needs to be fitted before it can be exported to a dict') from e
+            raise AttributeError('The model has not been fitted and has not seen any observation sequences') from e
 
-        model = self._model.to_json()
+    @property
+    def model(self):
+        try:
+            return self._model
+        except AttributeError as e:
+            raise AttributeError('The model must be fitted first') from e
 
-        if 'NaN' in model:
-            raise ValueError('Encountered NaN value(s) in HMM parameters')
-        else:
-            return {
-                'type': 'GMMHMM',
-                'label': self._label,
-                'n_states': self._n_states,
-                'n_components': self._n_components,
-                'covariance': self._covariance,
-                'topology': self._topologies[self._topology.__class__],
-                'model': {
-                    'initial': self._initial.tolist(),
-                    'transitions': self._transitions.tolist(),
-                    'n_seqs': self._n_seqs,
-                    'n_features': self._n_features,
-                    'hmm': json.loads(model)
-                }
-            }
+    @property
+    def initial(self):
+        try:
+            return self._initial
+        except AttributeError as e:
+            raise AttributeError('No initial state distribution has been defined') from e
 
-    @classmethod
-    def load(cls, data, random_state=None):
-        """Deserializes either a `dict` or JSON serialized :class:`GMMHMM` object.
+    @initial.setter
+    def initial(self, probabilities):
+        self._topology.validate_initial(probabilities)
+        self._initial = probabilities
 
-        Parameters
-        ----------
-        data: str or dict
-            - File path of the serialized JSON data generated by the :meth:`save` method.
-            - `dict` representation of the :class:`GMMHMM`, generated by the :meth:`as_dict` method.
+    @property
+    def transitions(self):
+        try:
+            return self._transitions
+        except AttributeError as e:
+            raise AttributeError('No transition matrix has been defined') from e
 
-        random_state: numpy.random.RandomState, int, optional
-            A random state object or seed for reproducible randomness.
+    @transitions.setter
+    def transitions(self, probabilities):
+        self._topology.validate_transitions(probabilities)
+        self._transitions = probabilities
 
-        Returns
-        -------
-        deserialized: :class:`GMMHMM`
-            The deserialized HMM object.
-
-        See Also
-        --------
-        save: Serializes a :class:`GMMHMM` into a JSON file.
-        as_dict: Generates a `dict` representation of the :class:`GMMHMM`.
-        """
-
-        # Load the serialized GMM-HMM data
-        if isinstance(data, dict):
+    def __repr__(self):
+        module = self.__class__.__module__
+        out = '{}{}('.format('' if module == '__main__' else '{}.'.format(module), self.__class__.__name__)
+        attrs = [
+            ('label', repr(self._label)),
+            ('n_states', repr(self._n_states)),
+            ('n_components', repr(self._n_components)),
+            ('covariance_type', repr(self._covariance_type))
+        ]
+        try:
+            self._initial
+            attrs.append(('initial', 'array([...])'))
+            self._transitions
+            attrs.append(('transitions', 'array([...])'))
+            self._model
+            attrs.append(('n_seqs', repr(self._n_seqs)))
+        except AttributeError:
             pass
-        elif isinstance(data, str):
-            with open(data, 'r') as f:
-                data = json.load(f)
-        else:
-            pass
-
-        # Check that JSON is in the "correct" format
-        if data['type'] == 'HMM':
-            raise ValueError('You must use the HMM class to deserialize a stored HMM model')
-        elif data['type'] == 'GMMHMM':
-            pass
-        else:
-            raise ValueError("Attempted to deserialize an invalid model - expected 'type' field to be 'GMMHMM'")
-
-        # Deserialize the data into a GMM-HMM object
-        gmmhmm = cls(data['label'], data['n_states'], data['n_components'], data['covariance'], data['topology'], random_state=random_state)
-        gmmhmm._initial = np.array(data['model']['initial'])
-        gmmhmm._transitions = np.array(data['model']['transitions'])
-        gmmhmm._n_seqs = data['model']['n_seqs']
-        gmmhmm._n_features = data['model']['n_features']
-        gmmhmm._model = pg.HiddenMarkovModel.from_json(json.dumps(data['model']['hmm']))
-
-        return gmmhmm
+        return out + ', '.join('{}={}'.format(name, val) for name, val in attrs) + ')'

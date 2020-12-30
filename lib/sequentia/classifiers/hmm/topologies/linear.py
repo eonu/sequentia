@@ -1,15 +1,15 @@
 import numpy as np
 from .topology import _Topology
 
-class _StrictLeftRightTopology(_Topology):
-    """Represents the topology for a strict left-right HMM.
+class _LinearTopology(_Topology):
+    """Represents the topology for a linear HMM.
 
     Parameters
     ----------
-    n_states: int
+    n_states : int
         Number of states in the HMM.
 
-    random_state: numpy.random.RandomState
+    random_state : numpy.random.RandomState
         A random state object for reproducible randomness.
     """
 
@@ -19,7 +19,7 @@ class _StrictLeftRightTopology(_Topology):
 
         Returns
         -------
-        transitions: numpy.ndarray
+        transitions : :class:`numpy:numpy.ndarray` (float)
             The uniform transition matrix of shape `(n_states, n_states)`.
         """
         transitions = np.zeros((self._n_states, self._n_states))
@@ -33,9 +33,9 @@ class _StrictLeftRightTopology(_Topology):
         to all other possible states from each state) by sampling probabilities
         from a Dirichlet distribution, according to the topology.
 
-        Parameters
-        ----------
-        transitions: numpy.ndarray
+        Returns
+        -------
+        transitions : :class:`numpy:numpy.ndarray` (float)
             The random transition matrix of shape `(n_states, n_states)`.
         """
         transitions = np.zeros((self._n_states, self._n_states))
@@ -49,11 +49,11 @@ class _StrictLeftRightTopology(_Topology):
 
         Parameters
         ----------
-        transitions: numpy.ndarray
+        transitions : numpy.ndarray (float)
             The transition matrix to validate.
         """
         super().validate_transitions(transitions)
         if not np.allclose(transitions, np.triu(transitions)):
             raise ValueError('Left-right transition matrix must be upper-triangular')
         if not np.allclose(transitions, np.diag(np.diag(transitions)) + np.diag(np.diag(transitions, k=1), k=1)):
-            raise ValueError('Strict left-right transition matrix must only consist of a diagonal and upper diagonal')
+            raise ValueError('Linear transition matrix must only consist of a diagonal and upper diagonal')

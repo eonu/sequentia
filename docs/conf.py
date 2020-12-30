@@ -19,12 +19,12 @@ except ImportError:
     sys.path.insert(0, os.path.abspath('../lib'))
     import sequentia
 
-subprocess.call('pip install numpydoc sphinx_rtd_theme m2r', shell=True)
+subprocess.call('pip install numpydoc sphinx_rtd_theme m2r2', shell=True)
 
 # -- Project information -----------------------------------------------------
 
 project = 'sequentia'
-copyright = '2019-2021, Edwin Onuonga'
+copyright = '2019-2022, Edwin Onuonga'
 author = 'Edwin Onuonga'
 
 # The full version, including alpha/beta/rc tags
@@ -41,8 +41,11 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'numpydoc',
-    'm2r'
+    'm2r2',
+    'sphinx.ext.intersphinx'
 ]
+
+intersphinx_mapping = {'numpy': ('http://docs.scipy.org/doc/numpy/', None)}
 
 autodoc_member_order = 'bysource'
 autosummary_generate = True

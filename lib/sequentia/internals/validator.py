@@ -1,5 +1,9 @@
-import numpy as np
+import sys, numbers, numpy as np
 from copy import copy
+if sys.version_info >= (3, 3):
+    from collections.abc import Iterable
+else:
+    from collections import Iterable
 
 class _Validator:
     """Performs internal validations on various input types."""
@@ -9,15 +13,15 @@ class _Validator:
 
         Parameters
         ----------
-        X: numpy.ndarray or List[numpy.ndarray]
+        X : numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
-        allow_single: bool
+        allow_single : bool
             Whether to allow an individual observation sequence.
 
         Returns
         -------
-        X: numpy.ndarray or List[numpy.ndarray]
+        X : numpy.ndarray (float) or list of numpy.ndarray (float)
             The original input observation sequence(s) if valid.
         """
         X = copy(X)
@@ -47,22 +51,25 @@ class _Validator:
 
         Parameters
         ----------
-        X: List[numpy.ndarray]
+        X : list of numpy.ndarray (float)
             A list of multiple observation sequences.
 
-        y: List[str]
+        y : array-like of str/numeric
             A list of labels for the observation sequences.
 
         Returns
         -------
-        X: List[numpy.ndarray]
+        X : list of numpy.ndarray (float)
             The original input observation sequences if valid.
 
-        y: List[str]
+        y : array-like of str/numeric
             The original input labels if valid.
         """
         self.observation_sequences(X, allow_single=False)
-        self.list_of_strings(y, desc='labels')
+        self.iterable(y, 'labels')
+        self.string_or_numeric(y[0], 'each label')
+        if not all(isinstance(label, type(y[0])) for label in y[1:]):
+            raise TypeError('Expected all labels to be of the same type')
         if not len(X) == len(y):
             raise ValueError('Expected the same number of observation sequences and labels')
         return X, y
@@ -72,15 +79,15 @@ class _Validator:
 
         Parameters
         ----------
-        item: int
+        item : int
             The item to validate.
 
-        desc: str
+        desc : str
             A description of the item being validated.
 
         Returns
         -------
-        item: int
+        item : int
             The original input item if valid.
         """
         if not isinstance(item, int):
@@ -92,19 +99,39 @@ class _Validator:
 
         Parameters
         ----------
-        item: str
+        item : str
             The item to validate.
 
-        desc: str
+        desc : str
             A description of the item being validated.
 
         Returns
         -------
-        item: str
+        item : str
             The original input item if valid.
         """
         if not isinstance(item, str):
             raise TypeError("Expected {} to be a string".format(desc))
+        return item
+
+    def string_or_numeric(self, item, desc):
+        """Validates a string or numeric type.
+
+        Parameters
+        ----------
+        item : str or numeric
+            The item to validate.
+
+        desc : str
+            A description of the item being validated.
+
+        Returns
+        -------
+        item : str or numeric
+            The original input item if valid.
+        """
+        if not isinstance(item, (str, numbers.Number)):
+            raise TypeError("Expected {} to be a string or numeric".format(desc))
         return item
 
     def boolean(self, item, desc):
@@ -112,15 +139,15 @@ class _Validator:
 
         Parameters
         ----------
-        item: bool
+        item : bool
             The item to validate.
 
-        desc: str
+        desc : str
             A description of the item being validated.
 
         Returns
         -------
-        item: bool
+        item : bool
             The original input item if valid.
         """
         if not isinstance(item, bool):
@@ -132,18 +159,18 @@ class _Validator:
 
         Parameters
         ----------
-        item: Any
+        item : Any
             The item to validate.
 
-        items: List[Any]
+        items : array-like of Any
             The list of permitted values to check against.
 
-        desc: str
+        desc : str
             A description of the item being validated.
 
         Returns
         -------
-        item: Any
+        item : Any
             The original input item if valid.
         """
         if not item in items:
@@ -155,21 +182,21 @@ class _Validator:
 
         Parameters
         ----------
-        item: int
+        item : int
             The item to validate.
 
-        condition: lambda
+        condition : lambda
             A condition to check the item against.
 
-        desc: str
+        desc : str
             A description of the item being validated.
 
-        expected: str
+        expected : str
             A description of the condition, or expected value.
 
         Returns
         -------
-        item: int
+        item : int
             The original input item if valid.
         """
         if isinstance(item, int):
@@ -184,21 +211,21 @@ class _Validator:
 
         Parameters
         ----------
-        item: float
+        item : float
             The item to validate.
 
-        condition: lambda
+        condition : lambda
             A condition to check the item against.
 
-        desc: str
+        desc : str
             A description of the item being validated.
 
-        expected: str
+        expected : str
             A description of the condition, or expected value.
 
         Returns
         -------
-        item: float
+        item : float
             The original input item if valid.
         """
         if isinstance(item, float):
@@ -208,44 +235,21 @@ class _Validator:
             raise TypeError("Expected {} to be a float".format(desc))
         return item
 
-    def list_of_strings(self, items, desc):
-        """Validates a list and checks that it consists entirely of strings.
-
-        Parameters
-        ----------
-        items: List[str]
-            The item to validate.
-
-        desc: str
-            A description of the item being validated.
-
-        Returns
-        -------
-        items: List[str]
-            The original input items if valid.
-        """
-        if isinstance(items, list):
-            if not all(isinstance(item, str) for item in items):
-                raise ValueError('Expected all {} to be strings'.format(desc))
-        else:
-            raise TypeError('Expected {} to be a list of strings'.format(desc))
-        return items
-
     def random_state(self, state):
         """Validates a random state object or seed.
 
         Parameters
         ----------
-        state: None, int, numpy.random.RandomState
+        state : None, int, numpy.random.RandomState
             A random state object or seed.
 
         Returns
         -------
-        state: numpy.random.RandomState
+        state : numpy.random.RandomState
             A random state object.
         """
         if state is None:
-            return np.random.RandomState(seed=0)
+            return np.random.RandomState(seed=None)
         elif isinstance(state, int):
             return np.random.RandomState(seed=state)
         elif isinstance(state, np.random.RandomState):
@@ -258,18 +262,39 @@ class _Validator:
 
         Parameters
         ----------
-        item: callable
+        item : callable
             The item to validate.
 
-        desc: str
+        desc : str
             A description of the item being validated.
 
         Returns
         -------
-        item: callable
+        item : callable
             The original input item if valid.
         """
         if callable(item):
             return item
         else:
             raise TypeError('Expected {} to be callable'.format(desc))
+
+    def iterable(self, item, desc):
+        """Validates an iterable.
+
+        Parameters
+        ----------
+        item : iterable
+            The item to validate.
+
+        desc : str
+            A description of the item being validated.
+
+        Returns
+        -------
+        item : iterable
+            The original input item if valid.
+        """
+        if isinstance(item, Iterable) and hasattr(item, '__len__'):
+            return item
+        else:
+            raise TypeError("Expected {} to be an iterable".format(desc))

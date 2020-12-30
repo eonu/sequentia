@@ -7,6 +7,7 @@ __all__ = ['Transform', 'Equalize', 'TrimZeros', 'MinMaxScale', 'Center', 'Stand
 
 class Transform:
     """Base class representing a single transformation."""
+
     def __init__(self):
         self._val = _Validator()
 
@@ -15,7 +16,7 @@ class Transform:
 
         Returns
         -------
-        description: str
+        description : str
             The description of the transformation.
         """
         raise NotImplementedError
@@ -25,15 +26,15 @@ class Transform:
 
         Parameters
         ----------
-        X: numpy.ndarray or List[numpy.ndarray]
+        X : numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
-        verbose: bool
+        verbose : bool
             Whether or not to display a progress bar when applying transformations.
 
         Returns
         -------
-        transformed: numpy.ndarray or List[numpy.ndarray]
+        transformed : :class:`numpy:numpy.ndarray` (float) or list of :class:`numpy:numpy.ndarray` (float)
             The transformed input observation sequence(s).
         """
         raise NotImplementedError
@@ -47,15 +48,15 @@ class Transform:
 
         Parameters
         ----------
-        transform: callable
+        transform : callable
             The transformation to apply.
 
-        X: numpy.ndarray or List[numpy.ndarray]
+        X : numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
         Returns
         -------
-        transformed: numpy.ndarray or List[numpy.ndarray]
+        transformed : numpy.ndarray (float) or list of numpy.ndarray (float)
             The transformed input observation sequence(s).
         """
         X = self._val.observation_sequences(X, allow_single=True)
@@ -83,7 +84,7 @@ class Transform:
 
         Parameters
         ----------
-        X: numpy.ndarray or List[numpy.ndarray]
+        X : numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
         """
         self._val.observation_sequences(X, allow_single=True)
@@ -97,7 +98,7 @@ class Transform:
 
         Returns
         -------
-        fitted: bool
+        fitted : bool
             Whether or not the transformation is fitted.
         """
         return False
@@ -107,15 +108,15 @@ class Transform:
 
         Parameters
         ----------
-        X: numpy.ndarray or List[numpy.ndarray]
+        X : numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
-        verbose: bool
+        verbose : bool
             Whether or not to display a progress bar when fitting and applying transformations.
 
         Returns
         -------
-        transformed: numpy.ndarray or List[numpy.ndarray]
+        transformed : :class:`numpy:numpy.ndarray` (float) or list of :class:`numpy:numpy.ndarray` (float)
             The transformed input observation sequence(s).
         """
         self.fit(X)
@@ -123,6 +124,7 @@ class Transform:
 
 class Equalize(Transform):
     """Equalize all observation sequence lengths by padding or trimming zeros."""
+
     def __init__(self):
         super().__init__()
         self.length = None
@@ -172,20 +174,21 @@ class MinMaxScale(Transform):
 
     Parameters
     ----------
-    scale: tuple(int, int)
+    scale : tuple(int/float, int/float)
         The range of the transformed observation sequence features.
 
-    independent: bool
+    independent : bool
         Whether to independently compute the minimum and maximum to scale each observation sequence.
     """
-    def __init__(self, scale=(0, 1), independent=True):
+
+    def __init__(self, scale=(0., 1.), independent=True):
         super().__init__()
         if not isinstance(scale, tuple):
-            raise TypeError('TODO')
-        if not all(isinstance(val, int) for val in scale):
-            raise TypeError('TODO')
+            raise TypeError('Expected scaling range to be a tuple')
+        if not all(isinstance(val, (int, float)) for val in scale):
+            raise TypeError('Expected upper and lower bounds of scaling range to be floats')
         if not scale[0] < scale[1]:
-            raise ValueError('TODO')
+            raise ValueError('Expected lower bound of scaling range to be less than the upper bound')
         self.scale = scale
         self.independent = self._val.boolean(independent, 'independent')
         if not self.independent:
@@ -228,7 +231,7 @@ class Center(Transform):
 
     Parameters
     ----------
-    independent: bool
+    independent : bool
         Whether to independently compute the mean to scale each observation sequence.
 
     Examples
@@ -238,6 +241,7 @@ class Center(Transform):
     >>> # Center the data
     >>> X = Center()(X)
     """
+
     def __init__(self, independent=True):
         super().__init__()
         self.independent = self._val.boolean(independent, 'independent')
@@ -278,7 +282,7 @@ class Standardize(Transform):
 
     Parameters
     ----------
-    independent: bool
+    independent : bool
         Whether to independently compute the mean and standard deviation to scale each observation sequence.
 
     Examples
@@ -288,6 +292,7 @@ class Standardize(Transform):
     >>> # Standardize the data
     >>> X = Standardize()(X)
     """
+
     def __init__(self, independent=True):
         super().__init__()
         self.independent = self._val.boolean(independent, 'independent')
@@ -330,10 +335,10 @@ class Downsample(Transform):
 
     Parameters
     ----------
-    factor: int > 0
+    factor : int > 0
         Downsample factor.
 
-    method: {'decimate', 'mean'}
+    method : {'decimate', 'mean'}
         The downsampling method.
 
     Examples
@@ -343,6 +348,7 @@ class Downsample(Transform):
     >>> # Downsample the data with downsample factor 5 and decimation
     >>> X = Downsample(factor=5, method='decimate')(X)
     """
+
     def __init__(self, factor, method='decimate'):
         super().__init__()
         self.factor = self._val.restricted_integer(factor, lambda x: x > 0, desc='downsample factor', expected='positive')
@@ -379,10 +385,10 @@ class Filter(Transform):
 
     Parameters
     ----------
-    window_size: int
+    window_size : int > 0
         The size of the filtering window.
 
-    method: {'median', 'mean'}
+    method : {'median', 'mean'}
         The filtering method.
 
     Examples
@@ -392,6 +398,7 @@ class Filter(Transform):
     >>> # Filter the data with window size 5 and median filtering
     >>> X = Filter(window_size=5, method='median')(X)
     """
+
     def __init__(self, window_size, method='median'):
         super().__init__()
         self.window_size = self._val.restricted_integer(window_size, lambda x: x > 0, desc='window size', expected='positive')

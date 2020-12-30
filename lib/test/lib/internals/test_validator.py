@@ -1,6 +1,6 @@
 import pytest, numpy as np
 from sequentia.internals import _Validator
-from ...support import assert_equal, assert_all_equal
+from ...support import assert_equal, assert_not_equal, assert_all_equal
 
 val = _Validator()
 
@@ -205,19 +205,25 @@ def test_multiple_observation_sequence_wrong_list_type_without_single():
 # _Validator.observation_sequences_and_labels() #
 # ============================================= #
 
-def test_observation_sequences_and_labels_same_length():
-    """Observation sequences and labels with the same length."""
+def test_observation_sequences_and_labels_different_label_types():
     X = [np.arange(8).reshape(-1, 1), np.arange(12).reshape(-1, 1)]
-    y = ['c1', 'c2']
-    assert val.observation_sequences_and_labels(X, y) == (X, y)
+    y = ['c1', 1]
+    with pytest.raises(TypeError) as e:
+        val.observation_sequences_and_labels(X, y)
+    assert str(e.value) == 'Expected all labels to be of the same type'
 
-def test_observation_sequences_and_labels_diff_length():
-    """Observation sequences and labels with different lengths."""
+def test_observation_sequences_and_labels_different_lengths():
     X = [np.arange(8).reshape(-1, 1), np.arange(12).reshape(-1, 1)]
     y = ['c1', 'c2', 'c1']
     with pytest.raises(ValueError) as e:
         val.observation_sequences_and_labels(X, y)
     assert str(e.value) == 'Expected the same number of observation sequences and labels'
+
+def test_observation_sequences_and_labels_same_length():
+    """Observation sequences and labels with the same length."""
+    X = [np.arange(8).reshape(-1, 1), np.arange(12).reshape(-1, 1)]
+    y = ['c1', 'c2']
+    assert val.observation_sequences_and_labels(X, y) == (X, y)
 
 # ==================== #
 # _Validator.integer() #
@@ -252,6 +258,24 @@ def test_string_with_wrong_type():
     with pytest.raises(TypeError) as e:
         val.string(1, desc='test')
     assert str(e.value) == 'Expected test to be a string'
+
+# ============================== #
+# _Validator.string_or_numeric() #
+# ============================== #
+
+def test_string_or_numeric_with_string_type():
+    """String type"""
+    assert val.string_or_numeric('test', desc='test') == 'test'
+
+def test_string_or_numeric_with_numeric_type():
+    """Numeric type"""
+    assert val.string_or_numeric(1, desc='test') == 1
+
+def test_string_or_numeric_with_wrong_type():
+    """Incorrect type"""
+    with pytest.raises(TypeError) as e:
+        val.string_or_numeric([], desc='test')
+    assert str(e.value) == 'Expected test to be a string or numeric'
 
 # ==================== #
 # _Validator.boolean() #
@@ -343,35 +367,15 @@ def test_restricted_integer_correct_type_does_not_meet_condition():
         val.restricted_float(-1.1, lambda x: x > 0, 'test', 'greater than zero')
     assert str(e.value) == 'Expected test to be greater than zero'
 
-# ============================ #
-# _Validator.list_of_strings() #
-# ============================ #
-
-def test_list_of_strings_wrong_type():
-    """Incorrect type"""
-    with pytest.raises(TypeError) as e:
-        val.list_of_strings(1, 'test')
-    assert str(e.value) == 'Expected test to be a list of strings'
-
-def test_list_of_strings_wrong_list_type():
-    """Correct type but wrong list element types"""
-    with pytest.raises(ValueError) as e:
-        val.list_of_strings([1, True, 'test'], 'test')
-    assert str(e.value) == 'Expected all test to be strings'
-
-def test_list_of_strings_correct_list_type():
-    """Correct list element types"""
-    assert val.list_of_strings(['a', 'b', 'c'], 'test') == ['a', 'b', 'c']
-
 # ========================= #
 # _Validator.random_state() #
 # ========================= #
 
 def test_random_state_none():
     """None random state"""
-    s1 = np.random.RandomState(seed=0)
+    s1 = np.random.RandomState(seed=None)
     s2 = val.random_state(None)
-    assert_equal(s1.random((5, 5)), s2.random((5, 5)))
+    assert_not_equal(s1.random((5, 5)), s2.random((5, 5)))
 
 def test_random_state_int():
     """Integer random state (seed)"""

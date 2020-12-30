@@ -30,35 +30,46 @@
 
 ## Introduction
 
-Sequential data is one of the most commonly observed forms of data. These can range from time series (sequences of observations occurring through time) to non-temporal sequences such as DNA nucleotides. Time series such as audio signals and stock prices are often of particular interest as changing patterns over time naturally provide many interesting opportunities and challenges for machine learning.
+Sequential data is a commonly-observed, yet difficult-to-handle form of data. These can range from time series (sequences of observations occurring through time) to non-temporal sequences such as DNA nucleotides.
 
-This library specifically aims to tackle classification problems for isolated sequences by creating an interface to a number of classification algorithms.
+Time series data such as audio signals, stock prices and electro-cardiogram signals are often of particular interest to machine learning practitioners and researchers, as changing patterns over time naturally provide many interesting opportunities and challenges for machine learning prediction and statistical inference.
 
-Despite these types of sequences sounding very specific, you probably observe some of them on a regular basis!
+**Sequentia is a Python package that specifically aims to tackle classification problems for isolated sequences by providing implementations of a number of classification algorithms**.
 
-**Some examples of classification problems for isolated sequences include classifying**:
+Examples of such classification problems include:
 
-- a word utterance by its speech audio signal,
-- a hand-written character according to its pen-tip trajectory,
-- a hand or head gesture in a video or motion-capture recording.
+- classifying a spoken word based on its audio signal (or some other representation such as MFCCs),
+- classifying a hand-written character according to its pen-tip trajectory,
+- classifying a hand or head gesture in a motion-capture recording,
+- classifying the sentiment of a phrase or sentence in natural language.
+
+Compared to the classification of fixed-size inputs (e.g. a vector, or images), sequence classification problems face two major hurdles:
+
+1. the sequences are generally of different duration to each other,
+2. the observations within a given sequence (may) have temporal dependencies on previous observations which occured earlier within the same sequence, and these dependencies may be arbitrarily long.
+
+Sequentia aims to provide interpretable out-of-the-box machine learning algorithms suitable for these tasks, which require minimal configuration.
+
+In recent times, variants of the Recurrent Neural Network (particularly LSTMs and GRUs) have generally proven to be the most successful in modelling long-term dependencies in sequences. However, the design of RNN architectures is very opiniated and requires much configuration and engineering, and is therefore not included as part of the package.
 
 ## Features
 
-Sequentia offers the use of multivariate observation sequences with varying durations using the following methods:
+The following algorithms provided within Sequentia support the use of multivariate observation sequences with different durations.
 
 ### Classification algorithms
 
-- [x] Hidden Markov Models (via [Pomegranate](https://github.com/jmschrei/pomegranate) [[1]](#references))<br/>Learning with the Baum-Welch algorithm <a href="#references">[2]</a>
-  - [x] Multivariate Gaussian emissions
-  - [x] Gaussian Mixture Model emissions (full and diagonal covariances)
-  - [x] Left-right and ergodic topologies
-- [x] Approximate Dynamic Time Warping k-Nearest Neighbors (implemented with [FastDTW](https://github.com/slaypni/fastdtw) [[3]](#references))
+- [x] Hidden Markov Models (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))<br/><em>Learning with the Baum-Welch algorithm [[1]](#references)</em>
+  - [x] Gaussian Mixture Model emissions
+  - [x] Linear, left-right and ergodic topologies
+- [x] Dynamic Time Warping k-Nearest Neighbors (via [`dtaidistance`](https://github.com/wannesm/dtaidistance))
+  - [x] Sakoe–Chiba band global warping constraint
+  - [x] Feature-independent warping (DTWI)
   - [x] Custom distance-weighted predictions
   - [x] Multi-processed predictions
 
 <p align="center">
-  <img src="https://i.ibb.co/jVD2S4b/classifier.png" width="60%"/><br/>
-  Example of a classification algorithm: a multi-class HMM isolated sequence classifier
+  <img src="/docs/_static/classifier.svg" width="60%"/><br/>
+  Example of a classification algorithm: <em>a multi-class HMM sequence classifier</em>
 </p>
 
 ### Preprocessing methods
@@ -81,6 +92,14 @@ Documentation for the package is available on [Read The Docs](https://sequentia.
 
 For tutorials and examples on the usage of Sequentia, [look at the notebooks here](https://nbviewer.jupyter.org/github/eonu/sequentia/tree/master/notebooks/).
 
+## Acknowledgments
+
+In earlier versions of the package (<0.10.0), an approximate dynamic time warping algorithm implementation ([`fastdtw`](https://github.com/slaypni/fastdtw)) was used in hopes of speeding up k-NN predictions, as the authors of the original FastDTW paper [[2]](#references) claim that approximated DTW alignments can be computed in linear memory and time - compared to the O(N^2) runtime complexity of the usual exact DTW implementation.
+
+However, I was recently contacted by [Prof. Eamonn Keogh](https://www.cs.ucr.edu/~eamonn/) (at _University of California, Riverside_), whose recent work [[3]](#references) makes the surprising revelation that FastDTW is generally slower than the exact DTW algorithm that it approximates. Upon switching from the `fastdtw` package to [`dtaidistance`](https://github.com/wannesm/dtaidistance) (a very solid implementation of exact DTW with fast pure C compiled functions), DTW k-NN prediction times were indeed reduced drastically.
+
+I would like to thank Prof. Eamonn Keogh for directly reaching out to me regarding this finding!
+
 ## References
 
 <table>
@@ -88,25 +107,25 @@ For tutorials and examples on the usage of Sequentia, [look at the notebooks her
     <tr>
       <td>[1]</td>
       <td>
-        <a href="http://jmlr.org/papers/volume18/17-636/17-636.pdf">Jacob Schreiber. <b>"pomegranate: Fast and Flexible Probabilistic Modeling in Python."</b> Journal of Machine Learning Research 18 (2018), (164):1-6.</a>
+        <a href=https://web.ece.ucsb.edu/Faculty/Rabiner/ece259/Reprints/tutorial%20on%20hmm%20and%20applications.pdf">Lawrence R. Rabiner. <b>"A Tutorial on Hidden Markov Models and Selected Applications in Speech Recognition"</b> <em>Proceedings of the IEEE 77 (1989)</em>, no. 2, pp. 257-86.</a>
       </td>
     </tr>
     <tr>
       <td>[2]</td>
       <td>
-        <a href=https://web.ece.ucsb.edu/Faculty/Rabiner/ece259/Reprints/tutorial%20on%20hmm%20and%20applications.pdf">Lawrence R. Rabiner. <b>"A Tutorial on Hidden Markov Models and Selected Applications in Speech Recognition"</b> Proceedings of the IEEE 77 (1989), no. 2, pp. 257-86.</a>
+        <a href="https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf">Stan Salvador & Philip Chan. <b>"FastDTW: Toward accurate dynamic time warping in linear time and space."</b> <em>Intelligent Data Analysis 11.5 (2007)</em>, 561-580.</a>
       </td>
     </tr>
     <tr>
       <td>[3]</td>
       <td>
-        <a href="https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf">Stan Salvador, and Philip Chan. <b>"FastDTW: Toward accurate dynamic time warping in linear time and space."</b> Intelligent Data Analysis 11.5 (2007), 561-580.</a>
+        <a href="https://arxiv.org/ftp/arxiv/papers/2003/2003.11246.pdf">Renjie Wu & Eamonn J. Keogh. <b>"FastDTW is approximate and Generally Slower than the Algorithm it Approximates"</b> <em>IEEE Transactions on Knowledge and Data Engineering (2020)</em>, 1–1.</a>
       </td>
     </tr>
   </tbody>
 </table>
 
-# Contributors
+## Contributors
 
 All contributions to this repository are greatly appreciated. Contribution guidelines can be found [here](/CONTRIBUTING.md).
 
@@ -130,6 +149,6 @@ All contributions to this repository are greatly appreciated. Contribution guide
 ---
 
 <p align="center">
-  <b>Sequentia</b> &copy; 2019-2021, Edwin Onuonga - Released under the <a href="https://opensource.org/licenses/MIT">MIT</a> License.<br/>
+  <b>Sequentia</b> &copy; 2019-2022, Edwin Onuonga - Released under the <a href="https://opensource.org/licenses/MIT">MIT</a> License.<br/>
   <em>Authored and maintained by Edwin Onuonga.</em>
 </p>

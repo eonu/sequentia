@@ -11,8 +11,8 @@ class Preprocess:
 
     Parameters
     ----------
-    steps: List[Transform]
-        A list of preprocessing transformations.
+    steps : array-like of Transform
+        An ordered collection of preprocessing transformations.
 
     Examples
     --------
@@ -33,9 +33,10 @@ class Preprocess:
     """
 
     def __init__(self, steps):
-        if not (isinstance(steps, list) and all(isinstance(step, Transform) for step in steps)):
-            raise TypeError("Expected steps to be list of Transform objects")
         self._val = _Validator()
+        steps = list(self._val.iterable(steps, 'transformation steps'))
+        if not all(isinstance(transform, Transform) for transform in steps):
+            raise TypeError('Expected all transformation steps to be Transform objects')
         self.steps = steps
 
     def transform(self, X, verbose=False):
@@ -43,15 +44,15 @@ class Preprocess:
 
         Parameters
         ----------
-        X: numpy.ndarray or List[numpy.ndarray]
+        X : numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
-        verbose: bool
+        verbose : bool
             Whether or not to display a progress bar when applying transformations.
 
         Returns
         -------
-        transformed: numpy.ndarray or List[numpy.ndarray]
+        transformed : :class:`numpy:numpy.ndarray` (float) or list of :class:`numpy:numpy.ndarray` (float)
             The input observation sequence(s) with preprocessing transformations applied in order.
         """
         X_t = copy(X)
@@ -66,7 +67,7 @@ class Preprocess:
 
         See Also
         --------
-        transform: Applies the transformation.
+        transform : Applies the transformation.
         """
         return self.transform(X, verbose)
 
@@ -75,10 +76,10 @@ class Preprocess:
 
         Parameters
         ----------
-        X: numpy.ndarray or List[numpy.ndarray]
+        X : numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
-        verbose: bool
+        verbose : bool
             Whether or not to display a progress bar when fitting transformations.
         """
         X = self._val.observation_sequences(X, allow_single=True)
@@ -94,10 +95,10 @@ class Preprocess:
 
         Parameters
         ----------
-        X: numpy.ndarray or List[numpy.ndarray]
+        X : numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
-        verbose: bool
+        verbose : bool
             Whether or not to display a progress bar when fitting transformations.
         """
         self._fit(X, verbose)
@@ -107,15 +108,15 @@ class Preprocess:
 
         Parameters
         ----------
-        X: numpy.ndarray or List[numpy.ndarray]
+        X : numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
-        verbose: bool
+        verbose : bool
             Whether or not to display a progress bar when fitting and applying transformations.
 
         Returns
         -------
-        transformed: numpy.ndarray or List[numpy.ndarray]
+        transformed : :class:`numpy:numpy.ndarray` (float) or list of :class:`numpy:numpy.ndarray` (float)
             The input observation sequence(s) with preprocessing transformations applied in order.
         """
         return self._fit(X, verbose)

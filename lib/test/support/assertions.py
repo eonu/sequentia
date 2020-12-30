@@ -2,10 +2,10 @@ import numpy as np
 from numpy.testing import assert_allclose, assert_almost_equal
 
 def assert_equal(a, b):
-    assert_allclose(a, b, rtol=1e-5)
+    assert_allclose(a, b, rtol=1e-3)
 
 def assert_not_equal(a, b):
-    assert not np.allclose(a, b, rtol=1e-5)
+    assert not np.allclose(a, b, rtol=1e-3)
 
 def assert_all_equal(A, B):
     for a, b in zip(A, B):
