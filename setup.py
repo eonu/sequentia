@@ -3,6 +3,7 @@
 from __future__ import print_function
 from setuptools import setup, find_packages
 
+<<<<<<< HEAD
 python_requires = '>=3.6,<3.10'
 setup_requires = [
     'Cython>=0.28.5',
@@ -20,6 +21,9 @@ install_requires = [
 ]
 
 VERSION = '0.10.0'
+=======
+VERSION = '0.10.0a1'
+>>>>>>> d50320d8bf303882536aaf333a4fc21836120cd8
 
 with open('README.md', 'r') as fh:
     long_description = fh.read()
