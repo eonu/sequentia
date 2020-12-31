@@ -12,10 +12,10 @@ import sys, os, subprocess
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 try:
-    # Sigment is installed
+    # Sequentia is installed
     import sequentia
 except ImportError:
-    # Sigment is run from its source checkout
+    # Sequentia is run from its source checkout
     sys.path.insert(0, os.path.abspath('../lib'))
     import sequentia
 
