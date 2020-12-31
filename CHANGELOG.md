@@ -1,3 +1,10 @@
+## [0.10.1](https://github.com/eonu/sequentia/releases/tag/v0.10.1)
+
+#### Minor changes
+
+- Remove references to `sigment`. ([#130](https://github.com/eonu/sequentia/pull/130))
+- Fix type specifiers in documentation (see [#129](https://github.com/eonu/sequentia/issues/129)). ([#131](https://github.com/eonu/sequentia/pull/131))
+
 ## [0.10.0](https://github.com/eonu/sequentia/releases/tag/v0.10.0)
 
 #### Major changes
