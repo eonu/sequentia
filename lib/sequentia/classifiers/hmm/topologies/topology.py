@@ -5,10 +5,10 @@ class _Topology:
 
     Parameters
     ----------
-    n_states : int
+    n_states: int
         Number of states in the HMM.
 
-    random_state : numpy.random.RandomState
+    random_state: numpy.random.RandomState
         A random state object for reproducible randomness.
     """
 
@@ -21,7 +21,7 @@ class _Topology:
 
         Returns
         -------
-        initial : :class:`numpy:numpy.ndarray` (float)
+        initial: :class:`numpy:numpy.ndarray` (float)
             The initial state distribution of shape `(n_states,)`.
         """
         return np.ones(self._n_states) / self._n_states
@@ -31,7 +31,7 @@ class _Topology:
 
         Returns
         -------
-        initial : :class:`numpy:numpy.ndarray` (float)
+        initial: :class:`numpy:numpy.ndarray` (float)
             The initial state distribution of shape `(n_states,)`.
         """
         return self._random_state.dirichlet(np.ones(self._n_states), size=1).flatten()
@@ -42,7 +42,7 @@ class _Topology:
 
         Returns
         -------
-        transitions : :class:`numpy:numpy.ndarray` (float)
+        transitions: :class:`numpy:numpy.ndarray` (float)
             The uniform transition matrix of shape `(n_states, n_states)`.
         """
         raise NotImplementedError
@@ -54,7 +54,7 @@ class _Topology:
 
         Returns
         -------
-        transitions : :class:`numpy:numpy.ndarray` (float)
+        transitions: :class:`numpy:numpy.ndarray` (float)
             The random transition matrix of shape `(n_states, n_states)`.
         """
         raise NotImplementedError
@@ -64,7 +64,7 @@ class _Topology:
 
         Parameters
         ----------
-        initial : numpy.ndarray (float)
+        initial: numpy.ndarray (float)
             The initial state distribution to validate.
         """
         if not isinstance(initial, np.ndarray):
@@ -79,7 +79,7 @@ class _Topology:
 
         Parameters
         ----------
-        transitions : numpy.ndarray (float)
+        transitions: numpy.ndarray (float)
             The transition matrix to validate.
         """
         if not isinstance(transitions, np.ndarray):
