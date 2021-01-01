@@ -147,6 +147,9 @@ class KNNClassifier:
                 are always displayed in the console, regardless of where you are running this function from
                 (e.g. a Jupyter notebook).
 
+        original_labels: bool
+            Whether to inverse-transform the labels to their original encoding.
+
         n_jobs: int > 0 or -1
             | The number of jobs to run in parallel.
             | Setting this to -1 will use all available CPU cores.
