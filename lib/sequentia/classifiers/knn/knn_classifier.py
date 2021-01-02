@@ -20,7 +20,7 @@ class KNNClassifier:
     k: int > 0
         Number of neighbors.
 
-    classes: array-liike of str/numeric
+    classes: array-like of str/numeric
         The complete set of possible classes/labels.
 
     weighting: 'uniform' or callable
