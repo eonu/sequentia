@@ -70,17 +70,16 @@ Note that even in the case that multiple Gaussian densities are not needed, the 
 can be adjusted so that irrelevant Gaussians are omitted and only a single Gaussian remains.
 However, the default setting of the :class:`~GMMHMM` class is a single Gaussian.
 
-Then a GMM-HMM is completely determined by the learnable parameters
-:math:`\lambda=(\boldsymbol{\pi}, A, B)` where :math:`B=(C,\Pi,\Psi)` and
+Then a GMM-HMM is completely determined by
+:math:`\lambda=(\boldsymbol{\pi}, A, B)`, where :math:`B` is a collection of
+:math:`M` emission distributions (one for each state :math:`m=1,\ldots,M`), which are each
+parameterized by a collection of
 
-- :math:`C=\big(c_1^{(m)}, \ldots, c_K^{(m)}\big)_{m=1}^M` is
-  a collection of the mixture weights,
-- :math:`\Pi=\big(\boldsymbol\mu_1^{(m)}, \ldots, \boldsymbol\mu_K^{(m)}\big)_{m=1}^M` is
-  a collection of the mean vectors,
-- :math:`\Psi=\big(\Sigma_1^{(m)}, \ldots, \Sigma_K^{(m)}\big)_{m=1}^M` is
-  a collection of the covariance matrices,
+- mixture weights :math:`c_1^{(m)}, \ldots, c_K^{(m)}`,
+- mean vectors :math:`\boldsymbol\mu_1^{(m)}, \ldots, \boldsymbol\mu_K^{(m)}`,
+- covariance matrices :math:`\Sigma_1^{(m)}, \ldots, \Sigma_K^{(m)}`,
 
-for every mixture component of each state of the HMM.
+for each of the :math:`1,\ldots,K` mixture components of each state.
 
 Usually if :math:`K` is large enough, a mixture of :math:`K` Gaussian densities can effectively
 model any probability density function. With large enough :math:`K`, we can also restrict the
@@ -89,8 +88,8 @@ and at the same time decrease the number of parameters that need to be updated d
 
 The covariance matrix type can be specified by a string parameter ``covariance_type`` in the
 :class:`~GMMHMM` constructor that takes values `'spherical'`, `'diag'`, `'full'` or `'tied'`.
-The various types are explained well in this `StackExchange answer <https://stats.stackexchange.com/a/326678>`_,
-and summarized in the below image (also courtesy of the same StackExchange answerer).
+The various types are explained well `here <https://stats.stackexchange.com/a/326678>`_,
+and summarized in the below image (also courtesy of the author of the response in the previous link).
 
 .. image:: /_static/covariance_types.png
     :alt: Covariance Types
