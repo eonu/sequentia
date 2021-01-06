@@ -1,4 +1,6 @@
-import numpy as np, pickle
+import tqdm, tqdm.auto, numpy as np, pickle
+from joblib import Parallel, delayed
+from multiprocessing import cpu_count
 from .gmmhmm import GMMHMM
 from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import LabelEncoder
@@ -43,7 +45,7 @@ class HMMClassifier:
         self._encoder = LabelEncoder()
         self._encoder.fit([model.label for model in models])
 
-    def predict(self, X, prior='frequency', return_scores=False, original_labels=True):
+    def predict(self, X, prior='frequency', verbose=True, return_scores=False, original_labels=True, n_jobs=1):
         """Predicts the label for an observation sequence (or multiple sequences) according to maximum likelihood or posterior scores.
 
         Parameters
@@ -60,11 +62,23 @@ class HMMClassifier:
 
             Alternatively, class prior probabilities can be specified in an iterable of floats, e.g. `[0.1, 0.3, 0.6]`.
 
+        verbose: bool
+            Whether to display a progress bar or not.
+
+            .. note::
+                If both ``verbose=True`` and ``n_jobs > 1``, then the progress bars for each process
+                are always displayed in the console, regardless of where you are running this function from
+                (e.g. a Jupyter notebook).
+
         return_scores: bool
             Whether to return the scores of each model on the observation sequence(s).
 
         original_labels: bool
             Whether to inverse-transform the labels to their original encoding.
+
+        n_jobs: int > 0 or -1
+            | The number of jobs to run in parallel.
+            | Setting this to -1 will use all available CPU cores.
 
         Returns
         -------
@@ -91,7 +105,10 @@ class HMMClassifier:
             assert np.isclose(sum(prior), 1.), 'Class priors must form a probability distribution by summing to one'
         else:
             self._val.one_of(prior, ['frequency', 'uniform'], desc='prior')
+        self._val.boolean(verbose, desc='verbose')
         self._val.boolean(return_scores, desc='return_scores')
+        self._val.boolean(original_labels, desc='original_labels')
+        self._val.restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
 
         # Create look-up for prior probabilities
         if prior == 'frequency':
@@ -105,10 +122,15 @@ class HMMClassifier:
         # Convert single observation sequence to a singleton list
         X = [X] if isinstance(X, np.ndarray) else X
 
+        # Lambda for calculating the log un-normalized posteriors as a sum of the log forward probabilities (likelihoods) and log priors
+        posteriors = lambda x: np.array([model.forward(x) + np.log(prior[model.label]) for model in self._models])
+
         # Calculate log un-normalized posteriors as a sum of the log forward probabilities (likelihoods) and log priors
         # Perform the MAP classification rule and return labels to original encoding if necessary
-        posteriors = lambda x: np.array([model.forward(x) + np.log(prior[model.label]) for model in self._models])
-        scores = np.array([posteriors(x) for x in X])
+        n_jobs = min(cpu_count() if n_jobs == -1 else n_jobs, len(X))
+        X_chunks = [list(chunk) for chunk in np.array_split(np.array(X, dtype=object), n_jobs)]
+        scores = Parallel(n_jobs=n_jobs)(delayed(self._chunk_predict)(i+1, posteriors, chunk, verbose) for i, chunk in enumerate(X_chunks))
+        scores = np.concatenate(scores)
         best_idxs = np.atleast_1d(scores.argmax(axis=1))
         labels = self._encoder.inverse_transform(best_idxs) if original_labels else best_idxs
 
@@ -117,7 +139,7 @@ class HMMClassifier:
         else:
             return (labels, scores) if return_scores else labels
 
-    def evaluate(self, X, y, prior='frequency'):
+    def evaluate(self, X, y, prior='frequency', verbose=True, n_jobs=1):
         """Evaluates the performance of the classifier on a batch of observation sequences and their labels.
 
         Parameters
@@ -137,6 +159,18 @@ class HMMClassifier:
 
             Alternatively, class prior probabilities can be specified in an iterable of floats, e.g. `[0.1, 0.3, 0.6]`.
 
+        verbose: bool
+            Whether to display a progress bar or not.
+
+            .. note::
+                If both ``verbose=True`` and ``n_jobs > 1``, then the progress bars for each process
+                are always displayed in the console, regardless of where you are running this function from
+                (e.g. a Jupyter notebook).
+
+        n_jobs: int > 0 or -1
+            | The number of jobs to run in parallel.
+            | Setting this to -1 will use all available CPU cores.
+
         Returns
         -------
         accuracy: float
@@ -146,7 +180,7 @@ class HMMClassifier:
             The confusion matrix representing the discrepancy between predicted and actual labels.
         """
         X, y = self._val.observation_sequences_and_labels(X, y)
-        predictions = self.predict(X, prior=prior, return_scores=False, original_labels=False)
+        predictions = self.predict(X, prior=prior, return_scores=False, original_labels=False, verbose=verbose, n_jobs=n_jobs)
         cm = confusion_matrix(self._encoder.transform(y), predictions, labels=self._encoder.transform(self._encoder.classes_))
         return np.sum(np.diag(cm)) / np.sum(cm), cm
 
@@ -182,6 +216,13 @@ class HMMClassifier:
         """
         with open(path, 'rb') as file:
             return pickle.load(file)
+
+    def _chunk_predict(self, process, posteriors, chunk, verbose): # Requires fit
+        """Makes predictions (scores) for a chunk of the observation sequences, for a given subprocess."""
+        return np.array([posteriors(x) for x in tqdm.auto.tqdm(
+            chunk, desc='Classifying examples (process {})'.format(process),
+            disable=not(verbose), position=process-1
+        )])
 
     @property
     def models(self):
