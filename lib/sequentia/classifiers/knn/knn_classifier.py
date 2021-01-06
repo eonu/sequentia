@@ -137,13 +137,16 @@ class KNNClassifier:
         self._X, self._y = X, self._encoder.transform(y)
         self._n_features = X[0].shape[1]
 
-    def predict(self, X, verbose=True, original_labels=True, n_jobs=1):
+    def predict(self, X, original_labels=True, verbose=True, n_jobs=1):
         """Predicts the label for an observation sequence (or multiple sequences).
 
         Parameters
         ----------
         X: numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
+
+        original_labels: bool
+            Whether to inverse-transform the labels to their original encoding.
 
         verbose: bool
             Whether to display a progress bar or not.
@@ -152,9 +155,6 @@ class KNNClassifier:
                 If both ``verbose=True`` and ``n_jobs > 1``, then the progress bars for each process
                 are always displayed in the console, regardless of where you are running this function from
                 (e.g. a Jupyter notebook).
-
-        original_labels: bool
-            Whether to inverse-transform the labels to their original encoding.
 
         n_jobs: int > 0 or -1
             | The number of jobs to run in parallel.
@@ -174,8 +174,8 @@ class KNNClassifier:
             raise RuntimeError('The classifier needs to be fitted before predictions are made')
 
         X = self._val.observation_sequences(X, allow_single=True)
-        self._val.boolean(verbose, desc='verbose')
         self._val.boolean(original_labels, desc='original_labels')
+        self._val.boolean(verbose, desc='verbose')
         self._val.restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
 
         if isinstance(X, np.ndarray):
@@ -215,7 +215,7 @@ class KNNClassifier:
         """
         X, y = self._val.observation_sequences_and_labels(X, y)
         self._val.boolean(verbose, desc='verbose')
-        predictions = self.predict(X, verbose=verbose, original_labels=False, n_jobs=n_jobs)
+        predictions = self.predict(X, original_labels=False, verbose=verbose, n_jobs=n_jobs)
         cm = confusion_matrix(self._encoder.transform(y), predictions, labels=self._encoder.transform(self._encoder.classes_))
         return np.sum(np.diag(cm)) / np.sum(cm), cm
 

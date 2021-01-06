@@ -45,7 +45,7 @@ class HMMClassifier:
         self._encoder = LabelEncoder()
         self._encoder.fit([model.label for model in models])
 
-    def predict(self, X, prior='frequency', verbose=True, return_scores=False, original_labels=True, n_jobs=1):
+    def predict(self, X, prior='frequency', return_scores=False, original_labels=True, verbose=True, n_jobs=1):
         """Predicts the label for an observation sequence (or multiple sequences) according to maximum likelihood or posterior scores.
 
         Parameters
@@ -62,6 +62,12 @@ class HMMClassifier:
 
             Alternatively, class prior probabilities can be specified in an iterable of floats, e.g. `[0.1, 0.3, 0.6]`.
 
+        return_scores: bool
+            Whether to return the scores of each model on the observation sequence(s).
+
+        original_labels: bool
+            Whether to inverse-transform the labels to their original encoding.
+
         verbose: bool
             Whether to display a progress bar or not.
 
@@ -69,12 +75,6 @@ class HMMClassifier:
                 If both ``verbose=True`` and ``n_jobs > 1``, then the progress bars for each process
                 are always displayed in the console, regardless of where you are running this function from
                 (e.g. a Jupyter notebook).
-
-        return_scores: bool
-            Whether to return the scores of each model on the observation sequence(s).
-
-        original_labels: bool
-            Whether to inverse-transform the labels to their original encoding.
 
         n_jobs: int > 0 or -1
             | The number of jobs to run in parallel.
@@ -105,9 +105,9 @@ class HMMClassifier:
             assert np.isclose(sum(prior), 1.), 'Class priors must form a probability distribution by summing to one'
         else:
             self._val.one_of(prior, ['frequency', 'uniform'], desc='prior')
-        self._val.boolean(verbose, desc='verbose')
         self._val.boolean(return_scores, desc='return_scores')
         self._val.boolean(original_labels, desc='original_labels')
+        self._val.boolean(verbose, desc='verbose')
         self._val.restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
 
         # Create look-up for prior probabilities
