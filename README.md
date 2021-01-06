@@ -58,12 +58,12 @@ The following algorithms provided within Sequentia support the use of multivaria
 
 ### Classification algorithms
 
-- [x] Hidden Markov Models (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))<br/><em>Learning with the Baum-Welch algorithm [[1]](#references)</em>
+- [x] Hidden Markov Models (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))<br/><em>Learning with the Baum-Welch algorithm</em> [[1]](#references)
   - [x] Gaussian Mixture Model emissions
   - [x] Linear, left-right and ergodic topologies
 - [x] Dynamic Time Warping k-Nearest Neighbors (via [`dtaidistance`](https://github.com/wannesm/dtaidistance))
   - [x] Sakoe–Chiba band global warping constraint
-  - [x] Feature-independent warping (DTWI)
+  - [x] Dependent and independent feature warping (DTWD & DTWI)
   - [x] Custom distance-weighted predictions
   - [x] Multi-processed predictions
 
