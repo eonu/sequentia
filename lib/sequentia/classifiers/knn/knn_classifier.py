@@ -1,7 +1,7 @@
 import warnings, tqdm, tqdm.auto, numpy as np, types, pickle, marshal
 from joblib import Parallel, delayed
 from multiprocessing import cpu_count
-from dtaidistance import dtw
+from dtaidistance import dtw, dtw_ndim
 from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import LabelEncoder
 from ...internals import _Validator
@@ -60,6 +60,9 @@ class KNNClassifier:
 
                 pip install -vvv --upgrade --no-cache-dir --force-reinstall dtaidistance
 
+    independent: bool
+        Whether or not to allow features to be warped independently from each other. See `here <https://www.cs.ucr.edu/~eamonn/Multi-Dimensional_DTW_Journal.pdf>`_ for a good overview of both approaches.
+
     random_state: numpy.random.RandomState, int, optional
         A random state object or seed for reproducible randomness.
 
@@ -84,7 +87,7 @@ class KNNClassifier:
         The complete set of possible classes/labels.
     """
 
-    def __init__(self, k, classes, weighting='uniform', window=1., use_c=False, random_state=None):
+    def __init__(self, k, classes, weighting='uniform', window=1., use_c=False, independent=False, random_state=None):
         self._val = _Validator()
         self._k = self._val.restricted_integer(
             k, lambda x: x > 0, desc='number of neighbors', expected='greater than zero')
@@ -115,6 +118,9 @@ class KNNClassifier:
         if self._use_c and (dtw_cc is None):
             warnings.warn('DTAIDistance C library not available – using Python implementation', ImportWarning)
             self._use_c = False
+
+        self._independent = self._val.boolean(independent, 'independent')
+        self._dtw = self._dtwi if independent else self._dtwd
 
     def fit(self, X, y):
         """Fits the classifier by adding labeled training observation sequences.
@@ -238,6 +244,7 @@ class KNNClassifier:
                 'weighting': marshal.dumps((self._weighting.__code__, self._weighting.__name__)),
                 'window': self._window,
                 'use_c': self._use_c,
+                'independent': self._independent,
                 'random_state': self._random_state,
                 'X': self._X,
                 'y': self._y,
@@ -262,7 +269,7 @@ class KNNClassifier:
             data = pickle.load(file)
 
             # Check deserialized object dictionary and keys
-            keys = set(('k', 'classes', 'weighting', 'window', 'use_c', 'random_state', 'X', 'y', 'n_features'))
+            keys = set(('k', 'classes', 'weighting', 'window', 'use_c', 'independent', 'random_state', 'X', 'y', 'n_features'))
             if not isinstance(data, dict):
                 raise TypeError('Expected deserialized object to be a dictionary - make sure the object was serialized with the save() function')
             else:
@@ -280,6 +287,7 @@ class KNNClassifier:
                 weighting=weighting,
                 window=data['window'],
                 use_c=data['use_c'],
+                independent=data['independent'],
                 random_state=data['random_state']
             )
 
@@ -293,10 +301,15 @@ class KNNClassifier:
         """Computes the DTW distance between two univariate sequences."""
         return dtw.distance(a, b, use_c=self._use_c, window=window)
 
-    def _dtw(self, A, B): # Requires fit
-        """Computes the multivariate DTW distance as the sum of the pairwise per-feature DTW distances."""
+    def _dtwi(self, A, B): # Requires fit
+        """Computes the multivariate DTW distance as the sum of the pairwise per-feature DTW distances, allowing each feature to be warped independently."""
         window = max(1, int(self._window * max(len(A), len(B))))
         return np.sum([self._dtw_1d(A[:, i], B[:, i], window=window) for i in range(self._n_features)])
+
+    def _dtwd(self, A, B): # Requires fit
+        """Computes the multivariate DTW distance so that the warping of the features depends on each other, by modifying the local distance measure."""
+        window = max(1, int(self._window * max(len(A), len(B))))
+        return dtw_ndim.distance(A, B, use_c=self._use_c, window=window)
 
     def _argmax(self, a):
         """Same as numpy.argmax but returns all occurrences of the maximum, and is O(n) instead of O(2n).
@@ -394,6 +407,7 @@ class KNNClassifier:
             ('k', repr(self._k)),
             ('window', repr(self._window)),
             ('use_c', repr(self._use_c)),
+            ('independent', repr(self._independent)),
             ('classes', repr(list(self._encoder.classes_)))
         ]
         try:
