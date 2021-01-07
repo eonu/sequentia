@@ -1,3 +1,17 @@
+## [0.10.2](https://github.com/eonu/sequentia/releases/tag/v0.10.2)
+
+#### Major changes
+
+- Add support for dependent feature warping (addresses [#124](https://github.com/eonu/sequentia/pull/124)). ([#135](https://github.com/eonu/sequentia/pull/135))
+- Add multi-processed predictions for `HMMClassifier` (addresses [#121](https://github.com/eonu/sequentia/pull/121)). ([#136](https://github.com/eonu/sequentia/pull/136))
+- Re-order `predict()` and `evaluate()` arguments. ([#138](https://github.com/eonu/sequentia/pull/138))
+
+#### Minor changes
+
+- Add `original_labels` documentation to `KNNClassifier`. ([#133](https://github.com/eonu/sequentia/pull/133))
+- Simplify `GMMHMM` documentation. ([#134](https://github.com/eonu/sequentia/pull/134))
+- Fix posterior comment in `classifier.svg`. ([#137](https://github.com/eonu/sequentia/pull/137))
+
 ## [0.10.1](https://github.com/eonu/sequentia/releases/tag/v0.10.1)
 
 #### Minor changes
