@@ -1,3 +1,14 @@
+## [0.10.3](https://github.com/eonu/sequentia/releases/tag/v0.10.3)
+
+#### Major changes
+
+- Fix `setup.py` encoding problem. ([#145](https://github.com/eonu/sequentia/pull/145))
+- Add `docs/robots.txt` and `sphinx-version-warning` package to prevent search engines from indexing old package versions (see #143). ([#147](https://github.com/eonu/sequentia/pull/147))
+
+#### Minor changes
+
+- Add @Prhmma as a contributor for #145. ([#146](https://github.com/eonu/sequentia/pull/146))
+
 ## [0.10.2](https://github.com/eonu/sequentia/releases/tag/v0.10.2)
 
 #### Major changes
