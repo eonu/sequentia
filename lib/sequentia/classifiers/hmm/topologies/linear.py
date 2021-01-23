@@ -23,9 +23,9 @@ class _LinearTopology(_Topology):
             The uniform transition matrix of shape `(n_states, n_states)`.
         """
         transitions = np.zeros((self._n_states, self._n_states))
-        for i, row in enumerate(transitions[:-1]):
-            row[i:(i+2)] = np.ones(2) / 2
-        transitions[self._n_states - 1][self._n_states - 1] = 1
+        for i, row in enumerate(transitions):
+            size = min(2, self._n_states - i)
+            row[i:(i + size)] = np.ones(size) / size
         return transitions
 
     def random_transitions(self) -> np.ndarray:
@@ -39,9 +39,9 @@ class _LinearTopology(_Topology):
             The random transition matrix of shape `(n_states, n_states)`.
         """
         transitions = np.zeros((self._n_states, self._n_states))
-        for i, row in enumerate(transitions[:-1]):
-            row[i:(i+2)] = self._random_state.dirichlet(np.ones(2))
-        transitions[self._n_states - 1][self._n_states - 1] = 1
+        for i, row in enumerate(transitions):
+            size = min(2, self._n_states - i)
+            row[i:(i + size)] = self._random_state.dirichlet(np.ones(size))
         return transitions
 
     def validate_transitions(self, transitions: np.ndarray) -> None:
