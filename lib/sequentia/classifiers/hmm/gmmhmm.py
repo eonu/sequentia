@@ -1,4 +1,4 @@
-import numpy as np, hmmlearn.hmm
+import re, numpy as np, hmmlearn.hmm
 from .topologies.ergodic import _ErgodicTopology
 from .topologies.left_right import _LeftRightTopology
 from .topologies.linear import _LinearTopology
@@ -42,8 +42,11 @@ class GMMHMM:
     covariance_type: str
         The covariance matrix type for emission distributions.
 
+    frozen: set (str)
+        The frozen parameters of the HMM or its GMM emission distributions (see :func:`freeze`).
+
     n_seqs: int
-        The number of observation sequences use to train the model.
+        The number of observation sequences used to train the model.
 
     initial: numpy.ndarray (float)
         The initial state distribution of the model.
@@ -68,6 +71,7 @@ class GMMHMM:
             'left-right': _LeftRightTopology,
             'linear': _LinearTopology
         }[topology](self._n_states, self._random_state)
+        self._frozen = set()
 
     def set_uniform_initial(self):
         """Sets a uniform initial state distribution :math:`\\boldsymbol{\\pi}=(\\pi_1,\\pi_2,\\ldots,\\pi_M)` where :math:`\\pi_i=1/M\\quad\\forall i`."""
@@ -119,6 +123,7 @@ class GMMHMM:
             covariance_type=self._covariance_type,
             random_state=self._random_state,
             init_params='mcw', # only initialize means, covariances and mixture weights
+            params=(set('stmcw') - self._frozen)
         )
         self._model.startprob_, self._model.transmat_ = self._initial, self._transitions
 
@@ -154,6 +159,64 @@ class GMMHMM:
 
         return self._model.score(x, lengths=None)
 
+    def freeze(self, params=None):
+        """Freezes the specified parameters of the HMM or its GMM emission distributions,
+        preventing them from being updated during the Baum–Welch algorithm.
+
+        Parameters
+        ----------
+        params: str, optional
+            | A string specifying which parameters to freeze.
+            | Can contain any combination of:
+
+            - `'s'` for initial state probabilities (HMM parameters),
+            - `'t'` for transition probabilities (HMM parameters),
+            - `'m'` for mean vectors (GMM emission distribution parameters),
+            - `'c'` for covariance matrices (GMM emission distribution parameters),
+            - '`w`' for mixing weights (GMM emission distribution parameters).
+
+            Defaults to all parameters, i.e. `'stmcw'`.
+
+        See Also
+        --------
+        unfreeze : Unfreezes parameters of the HMM or its GMM emission distributions.
+        """
+        self._frozen |= set(self._modify_params(params))
+
+    def unfreeze(self, params=None):
+        """Unfreezes the specified parameters of the HMM or its GMM emission distributions
+        which were frozen with :func:`freeze`, allowing them to be updated during the Baum–Welch algorithm.
+
+        Parameters
+        ----------
+        params: str, optional
+            | A string specifying which parameters to unfreeze.
+            | Can contain any combination of:
+
+            - `'s'` for initial state probabilities (HMM parameters),
+            - `'t'` for transition probabilities (HMM parameters),
+            - `'m'` for mean vectors (GMM emission distribution parameters),
+            - `'c'` for covariance matrices (GMM emission distribution parameters),
+            - '`w`' for mixing weights (GMM emission distribution parameters).
+
+            Defaults to all parameters, i.e. `'stmcw'`.
+
+        See Also
+        --------
+        freeze : Freezes parameters of the HMM or its GMM emission distributions.
+        """
+        self._frozen -= set(self._modify_params(params))
+
+    def _modify_params(self, params):
+        if isinstance(params, str):
+            if bool(re.compile(r'[^stmcw]').search(params)):
+                raise ValueError("Expected a string consisting of any combination of 's', 't', 'm', 'c', 'w'")
+        elif params is None:
+            params = 'stmcw'
+        else:
+            raise TypeError("Expected a string consisting of any combination of 's', 't', 'm', 'c', 'w'")
+        return params
+
     @property
     def label(self):
         return self._label
@@ -176,6 +239,10 @@ class GMMHMM:
             return self._n_seqs
         except AttributeError as e:
             raise AttributeError('The model has not been fitted and has not seen any observation sequences') from e
+
+    @property
+    def frozen(self):
+        return self._frozen
 
     @property
     def model(self):
