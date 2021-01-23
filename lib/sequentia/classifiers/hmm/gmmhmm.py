@@ -53,6 +53,15 @@ class GMMHMM:
 
     transitions: numpy.ndarray (float)
         The transition matrix of the model.
+
+    weights: numpy.ndarray (float)
+        The mixture weights of the GMM emission distributions.
+
+    means: numpy.ndarray (float)
+        The mean vectors of the GMM emission distributions.
+
+    covars: numpy.ndarray (float)
+        The covariance matrices of the GMM emission distributions.
     """
 
     def __init__(self, label, n_states, n_components=1, covariance_type='full', topology='left-right', random_state=None):
@@ -275,6 +284,27 @@ class GMMHMM:
         self._topology.validate_transitions(probabilities)
         self._transitions = probabilities
 
+    @property
+    def weights(self):
+        try:
+            return self._model.weights_
+        except AttributeError as e:
+            raise AttributeError('The model must be fitted first') from e
+
+    @property
+    def means(self):
+        try:
+            return self._model.means_
+        except AttributeError as e:
+            raise AttributeError('The model must be fitted first') from e
+
+    @property
+    def covars(self):
+        try:
+            return self._model.covars_
+        except AttributeError as e:
+            raise AttributeError('The model must be fitted first') from e
+
     def __repr__(self):
         module = self.__class__.__module__
         out = '{}{}('.format('' if module == '__main__' else '{}.'.format(module), self.__class__.__name__)
@@ -282,15 +312,22 @@ class GMMHMM:
             ('label', repr(self._label)),
             ('n_states', repr(self._n_states)),
             ('n_components', repr(self._n_components)),
-            ('covariance_type', repr(self._covariance_type))
+            ('covariance_type', repr(self._covariance_type)),
+            ('frozen', repr(self._frozen))
         ]
         try:
+            self._n_seqs
+            attrs.append(('n_seqs', repr(self._n_seqs)))
             self._initial
             attrs.append(('initial', 'array([...])'))
             self._transitions
             attrs.append(('transitions', 'array([...])'))
-            self._model
-            attrs.append(('n_seqs', repr(self._n_seqs)))
+            self.weights
+            attrs.append(('weights', 'array([...])'))
+            self.means
+            attrs.append(('means', 'array([...])'))
+            self.covars
+            attrs.append(('covars', 'array([...])'))
         except AttributeError:
             pass
         return out + ', '.join('{}={}'.format(name, val) for name, val in attrs) + ')'

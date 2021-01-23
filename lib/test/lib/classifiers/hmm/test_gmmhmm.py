@@ -584,6 +584,97 @@ def test_frozen():
     assert hmm.frozen == set('sw')
 
 # ========================= #
+# GMMHMM.weights (property) #
+# ========================= #
+
+def test_weights_without_fit():
+    """GMM weights without fitting the HMM"""
+    hmm = deepcopy(hmm_lr)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    with pytest.raises(AttributeError) as e:
+        hmm.weights
+    assert str(e.value) == 'The model must be fitted first'
+
+def test_weights_with_fit():
+    """GMM weights after fitting the HMM"""
+    hmm = deepcopy(hmm_lr)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    hmm.fit(X)
+    assert_equal(hmm.weights, np.array([
+        [1.],
+        [1.],
+        [1.],
+        [1.],
+        [1.]
+    ]))
+
+# ======================= #
+# GMMHMM.means (property) #
+# ======================= #
+
+def test_means_without_fit():
+    """GMM mean vectors without fitting the HMM"""
+    hmm = deepcopy(hmm_lr)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    with pytest.raises(AttributeError) as e:
+        hmm.means
+    assert str(e.value) == 'The model must be fitted first'
+
+def test_means_with_fit():
+    """GMM mean vectors after fitting the HMM"""
+    hmm = deepcopy(hmm_lr)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    hmm.fit(X)
+    assert_equal(hmm.means, np.array([
+        [[0.31874666, 0.66724147, 0.13182087]],
+        [[0.31856896, 0.66741038, 0.13179786]],
+        [[0.71632403, 0.28939952, 0.18320713]],
+        [[0.51787902, 0.57561888, 0.5995548 ]],
+        [[0.66975947, 0.26867588, 0.25477769]]
+    ]))
+
+# ======================== #
+# GMMHMM.covars (property) #
+# ======================== #
+
+def test_covars_without_fit():
+    """GMM covariance matrices without fitting the HMM"""
+    hmm = deepcopy(hmm_lr)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    with pytest.raises(AttributeError) as e:
+        hmm.covars
+    assert str(e.value) == 'The model must be fitted first'
+
+def test_covars_with_fit():
+    """GMM covariance matrices after fitting the HMM"""
+    hmm = deepcopy(hmm_lr)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    hmm.fit(X)
+    assert_equal(hmm.covars, np.array([
+        [[[ 0.08307002,  0.00160875,  0.0157381 ],
+          [ 0.00160875,  0.08735411, -0.01063379],
+          [ 0.0157381 , -0.01063379,  0.08286247]]],
+        [[[ 0.08307002,  0.00160875,  0.0157381 ],
+          [ 0.00160875,  0.08735411, -0.01063379],
+          [ 0.0157381 , -0.01063379,  0.08286247]]],
+        [[[ 0.08307002,  0.00160875,  0.0157381 ],
+          [ 0.00160875,  0.08735411, -0.01063379],
+          [ 0.0157381 , -0.01063379,  0.08286247]]],
+        [[[ 0.08307002,  0.00160875,  0.0157381 ],
+          [ 0.00160875,  0.08735411, -0.01063379],
+          [ 0.0157381 , -0.01063379,  0.08286247]]],
+        [[[ 0.08307002,  0.00160875,  0.0157381 ],
+          [ 0.00160875,  0.08735411, -0.01063379],
+          [ 0.0157381 , -0.01063379,  0.08286247]]]
+    ]))
+
+# ========================= #
 # GMMHMM.initial (property) #
 # ========================= #
 
