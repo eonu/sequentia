@@ -1,7 +1,7 @@
 import pytest, warnings, os, numpy as np, hmmlearn.hmm
 from copy import deepcopy
 from sequentia.classifiers import GMMHMM, _LeftRightTopology, _ErgodicTopology, _LinearTopology
-from ....support import assert_equal, assert_not_equal
+from ....support import assert_equal, assert_not_equal, assert_all_equal, assert_all_not_equal
 
 # Set seed for reproducible randomness
 seed = 0
@@ -393,6 +393,138 @@ def test_linear_forward():
     hmm.fit(X)
     assert isinstance(hmm.forward(x), float)
 
+# =============== #
+# GMMHMM.freeze() #
+# =============== #
+
+def test_freeze_no_params():
+    hmm = deepcopy(hmm_lin)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    hmm.freeze()
+    assert hmm.frozen == set('stmcw')
+    before = (hmm.initial, hmm.transitions)
+    hmm.fit(X)
+    assert_all_equal((hmm.initial, hmm.transitions), before)
+
+def test_freeze_invalid_params_type():
+    hmm = deepcopy(hmm_lin)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    with pytest.raises(TypeError) as e:
+        hmm.freeze(0)
+    assert str(e.value) == "Expected a string consisting of any combination of 's', 't', 'm', 'c', 'w'"
+
+def test_freeze_invalid_params_content():
+    hmm = deepcopy(hmm_lin)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    with pytest.raises(ValueError) as e:
+        hmm.freeze('stmcwz')
+    assert str(e.value) == "Expected a string consisting of any combination of 's', 't', 'm', 'c', 'w'"
+
+def test_freeze_valid_params():
+    hmm = deepcopy(hmm_lin)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    hmm.freeze('sw')
+    assert hmm.frozen == set('sw')
+    initial_before, transitions_before = hmm.initial, hmm.transitions
+    hmm.fit(X)
+    assert_equal(hmm.initial, initial_before)
+    assert_not_equal(hmm.transitions, transitions_before)
+
+def test_freeze_duplicate_params():
+    hmm = deepcopy(hmm_lin)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    hmm.freeze('swsswwssswww')
+    assert hmm.frozen == set('sw')
+    initial_before, transitions_before = hmm.initial, hmm.transitions
+    hmm.fit(X)
+    assert_equal(hmm.initial, initial_before)
+    assert_not_equal(hmm.transitions, transitions_before)
+
+def test_freeze_all_params():
+    hmm = deepcopy(hmm_lin)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    hmm.freeze('stmcw')
+    assert hmm.frozen == set('stmcw')
+    before = (hmm.initial, hmm.transitions)
+    hmm.fit(X)
+    assert_all_equal((hmm.initial, hmm.transitions), before)
+
+# ================= #
+# GMMHMM.unfreeze() #
+# ================= #
+
+def test_unfreeze_no_params():
+    hmm = deepcopy(hmm_lin)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    hmm.freeze()
+    assert hmm.frozen == set('stmcw')
+    hmm.unfreeze()
+    assert hmm.frozen == set()
+    before = (hmm.initial, hmm.transitions)
+    hmm.fit(X)
+    assert_all_not_equal((hmm.initial, hmm.transitions), before)
+
+def test_unfreeze_invalid_params_type():
+    hmm = deepcopy(hmm_lin)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    hmm.freeze()
+    with pytest.raises(TypeError) as e:
+        hmm.unfreeze(0)
+    assert str(e.value) == "Expected a string consisting of any combination of 's', 't', 'm', 'c', 'w'"
+
+def test_unfreeze_invalid_params_content():
+    hmm = deepcopy(hmm_lin)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    hmm.freeze()
+    with pytest.raises(ValueError) as e:
+        hmm.unfreeze('stmcwz')
+    assert str(e.value) == "Expected a string consisting of any combination of 's', 't', 'm', 'c', 'w'"
+
+def test_unfreeze_valid_params():
+    hmm = deepcopy(hmm_lin)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    hmm.freeze('st')
+    hmm.unfreeze('t')
+    assert hmm.frozen == set('s')
+    initial_before, transitions_before = hmm.initial, hmm.transitions
+    hmm.fit(X)
+    assert_equal(hmm.initial, initial_before)
+    assert_not_equal(hmm.transitions, transitions_before)
+
+def test_unfreeze_duplicate_params():
+    hmm = deepcopy(hmm_lin)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    hmm.freeze('st')
+    hmm.unfreeze('tttmwcmwct')
+    assert hmm.frozen == set('s')
+    initial_before, transitions_before = hmm.initial, hmm.transitions
+    hmm.fit(X)
+    assert_equal(hmm.initial, initial_before)
+    assert_not_equal(hmm.transitions, transitions_before)
+
+def test_unfreeze_all_params():
+    hmm = deepcopy(hmm_lin)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    hmm.freeze()
+    assert hmm.frozen == set('stmcw')
+    hmm.unfreeze()
+    assert hmm.frozen == set()
+    before = (hmm.initial, hmm.transitions)
+    hmm.fit(X)
+    assert_all_not_equal((hmm.initial, hmm.transitions), before)
+
 # ======================= #
 # GMMHMM.label (property) #
 # ======================= #
@@ -441,6 +573,15 @@ def test_n_seqs_with_fit():
     hmm.set_random_transitions()
     hmm.fit(X)
     assert hmm.n_seqs == 3
+
+# ======================== #
+# GMMHMM.frozen (property) #
+# ======================== #
+
+def test_frozen():
+    hmm = deepcopy(hmm_lr)
+    hmm.freeze('sw')
+    assert hmm.frozen == set('sw')
 
 # ========================= #
 # GMMHMM.initial (property) #
