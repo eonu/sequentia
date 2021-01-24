@@ -69,15 +69,15 @@ class GMMHMM:
 
     def __init__(self, label, n_states, n_components=1, covariance_type='full', topology='left-right', random_state=None):
         self._val = _Validator()
-        self._label = self._val.string_or_numeric(label, 'model label')
+        self._label = self._val.is_string_or_numeric(label, 'model label')
         self._label = label
-        self._n_states = self._val.restricted_integer(
+        self._n_states = self._val.is_restricted_integer(
             n_states, lambda x: x > 0, desc='number of states', expected='greater than zero')
-        self._n_components = self._val.restricted_integer(
+        self._n_components = self._val.is_restricted_integer(
             n_components, lambda x: x > 0, desc='number of mixture components', expected='greater than zero')
-        self._covariance_type = self._val.one_of(covariance_type, ['spherical', 'diag', 'full', 'tied'], desc='covariance matrix type')
-        self._val.one_of(topology, ['ergodic', 'left-right', 'linear'], desc='topology')
-        self._random_state = self._val.random_state(random_state)
+        self._covariance_type = self._val.is_one_of(covariance_type, ['spherical', 'diag', 'full', 'tied'], desc='covariance matrix type')
+        self._val.is_one_of(topology, ['ergodic', 'left-right', 'linear'], desc='topology')
+        self._random_state = self._val.is_random_state(random_state)
         self._topology = {
             'ergodic': _ErgodicTopology,
             'left-right': _LeftRightTopology,
@@ -119,7 +119,7 @@ class GMMHMM:
             :math:`T` may vary per observation sequence.
         """
         (self.initial_, self.transitions_)
-        X = self._val.observation_sequences(X)
+        X = self._val.is_observation_sequences(X)
 
         # Store the number of sequences and features used to fit the model
         self._n_seqs_, self._n_features_ = len(X), X[0].shape[1]
@@ -157,7 +157,7 @@ class GMMHMM:
             The log-likelihood of the model generating the observation sequence.
         """
         self.model
-        x = self._val.observation_sequences(x, allow_single=True)
+        x = self._val.is_observation_sequences(x, allow_single=True)
         if not x.shape[1] == self._n_features_:
             raise ValueError('Number of observation features must match the dimensionality of the original data used to fit the model')
         return self._model.score(x, lengths=None)
@@ -238,7 +238,7 @@ class GMMHMM:
 
     @property
     def n_seqs_(self):
-        return self._val.fitted(self,
+        return self._val.is_fitted(self,
             lambda self: self._n_seqs_,
             'The model has not been fitted and has not seen any observation sequences'
         )
@@ -249,14 +249,14 @@ class GMMHMM:
 
     @property
     def model(self):
-        return self._val.fitted(self,
+        return self._val.is_fitted(self,
             lambda self: self._model,
             'The model must be fitted first'
         )
 
     @property
     def initial_(self):
-        return self._val.fitted(self,
+        return self._val.is_fitted(self,
             lambda self: self._initial_,
             'No initial state distribution has been defined'
         )
@@ -268,7 +268,7 @@ class GMMHMM:
 
     @property
     def transitions_(self):
-        return self._val.fitted(self,
+        return self._val.is_fitted(self,
             lambda self: self._transitions_,
             'No transition matrix has been defined'
         )

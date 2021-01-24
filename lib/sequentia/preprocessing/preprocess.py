@@ -34,7 +34,7 @@ class Preprocess:
 
     def __init__(self, steps):
         self._val = _Validator()
-        steps = list(self._val.iterable(steps, 'transformation steps'))
+        steps = list(self._val.is_iterable(steps, 'transformation steps'))
         if not all(isinstance(transform, Transform) for transform in steps):
             raise TypeError('Expected all transformation steps to be Transform objects')
         self.steps = steps
@@ -82,7 +82,7 @@ class Preprocess:
         verbose: bool
             Whether or not to display a progress bar when fitting transformations.
         """
-        X = self._val.observation_sequences(X, allow_single=True)
+        X = self._val.is_observation_sequences(X, allow_single=True)
         X_t = copy(X)
         pbar = tqdm(self.steps, desc='Fitting transformations', disable=not(verbose and len(self.steps) > 1), leave=True, ncols='100%')
         for step in pbar:

@@ -95,14 +95,14 @@ class KNNClassifier:
 
     def __init__(self, k, classes, weighting='uniform', window=1., use_c=False, independent=False, random_state=None):
         self._val = _Validator()
-        self._k = self._val.restricted_integer(
+        self._k = self._val.is_restricted_integer(
             k, lambda x: x > 0, desc='number of neighbors', expected='greater than zero')
-        self._window = float(window) if window in (0, 1) else self._val.restricted_float(
+        self._window = float(window) if window in (0, 1) else self._val.is_restricted_float(
             window, lambda x: 0. <= x <= 1., desc='Sakoe-Chiba band width (fraction)', expected='between zero and one')
-        self._random_state = self._val.random_state(random_state)
+        self._random_state = self._val.is_random_state(random_state)
 
-        self._val.iterable(classes, 'classes')
-        self._val.string_or_numeric(classes[0], 'each class')
+        self._val.is_iterable(classes, 'classes')
+        self._val.is_string_or_numeric(classes[0], 'each class')
         if all(isinstance(label, type(classes[0])) for label in classes[1:]):
             self._encoder_ = LabelEncoder().fit(classes)
         else:
@@ -111,7 +111,7 @@ class KNNClassifier:
         if weighting == 'uniform':
             self._weighting = lambda x: np.ones(x.size)
         else:
-            self._val.func(weighting, 'distance weighting function')
+            self._val.is_func(weighting, 'distance weighting function')
             try:
                 if isinstance(weighting(np.ones(5)), np.ndarray):
                     self._weighting = weighting
@@ -120,12 +120,12 @@ class KNNClassifier:
             except:
                 raise TypeError('Expected weighting function to accept a numpy.ndarray and return an equally-sized numpy.ndarray')
 
-        self._use_c = self._val.boolean(use_c, desc='whether or not to use fast pure C compiled functions')
+        self._use_c = self._val.is_boolean(use_c, desc='whether or not to use fast pure C compiled functions')
         if self._use_c and (dtw_cc is None):
             warnings.warn('DTAIDistance C library not available – using Python implementation', ImportWarning)
             self._use_c = False
 
-        self._independent = self._val.boolean(independent, 'independent')
+        self._independent = self._val.is_boolean(independent, 'independent')
         self._dtw = self._dtwi if independent else self._dtwd
 
     def fit(self, X, y):
@@ -139,7 +139,7 @@ class KNNClassifier:
         y: array-like of str/numeric
             An iterable of labels for the observation sequences.
         """
-        X, y = self._val.observation_sequences_and_labels(X, y)
+        X, y = self._val.is_observation_sequences_and_labels(X, y)
         self._X_, self._y_ = X, self._encoder_.transform(y)
         self._n_features_ = X[0].shape[1]
 
@@ -175,10 +175,10 @@ class KNNClassifier:
             inverse-transformed into their original encoding.
         """
         (self.X_, self.y_)
-        X = self._val.observation_sequences(X, allow_single=True)
-        self._val.boolean(original_labels, desc='original_labels')
-        self._val.boolean(verbose, desc='verbose')
-        self._val.restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
+        X = self._val.is_observation_sequences(X, allow_single=True)
+        self._val.is_boolean(original_labels, desc='original_labels')
+        self._val.is_boolean(verbose, desc='verbose')
+        self._val.is_restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
 
         if isinstance(X, np.ndarray):
             distances = np.array([self._dtw(X, x) for x in tqdm.auto.tqdm(self._X_, desc='Calculating distances', disable=not(verbose))])
@@ -215,8 +215,8 @@ class KNNClassifier:
         confusion: :class:`numpy:numpy.ndarray` (int)
             The confusion matrix representing the discrepancy between predicted and actual labels.
         """
-        X, y = self._val.observation_sequences_and_labels(X, y)
-        self._val.boolean(verbose, desc='verbose')
+        X, y = self._val.is_observation_sequences_and_labels(X, y)
+        self._val.is_boolean(verbose, desc='verbose')
         predictions = self.predict(X, original_labels=False, verbose=verbose, n_jobs=n_jobs)
         cm = confusion_matrix(self._encoder_.transform(y), predictions, labels=self._encoder_.transform(self._encoder_.classes_))
         return np.sum(np.diag(cm)) / np.sum(cm), cm

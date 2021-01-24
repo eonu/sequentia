@@ -59,8 +59,8 @@ class Transform:
         transformed: numpy.ndarray (float) or list of numpy.ndarray (float)
             The transformed input observation sequence(s).
         """
-        X = self._val.observation_sequences(X, allow_single=True)
-        verbose = self._val.boolean(verbose, 'verbose')
+        X = self._val.is_observation_sequences(X, allow_single=True)
+        verbose = self._val.is_boolean(verbose, 'verbose')
 
         def apply_transform():
             if isinstance(X, np.ndarray):
@@ -87,7 +87,7 @@ class Transform:
         X: numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
         """
-        self._val.observation_sequences(X, allow_single=True)
+        self._val.is_observation_sequences(X, allow_single=True)
 
     def _unfit(self):
         """Unfit the transformation by resetting the parameters to their default settings."""
@@ -130,7 +130,7 @@ class Equalize(Transform):
         self.length = None
 
     def fit(self, X):
-        X = self._val.observation_sequences(X, allow_single=True)
+        X = self._val.is_observation_sequences(X, allow_single=True)
         self.length = max(len(x) for x in X) if isinstance(X, list) else len(X)
 
     def _unfit(self):
@@ -190,12 +190,12 @@ class MinMaxScale(Transform):
         if not scale[0] < scale[1]:
             raise ValueError('Expected lower bound of scaling range to be less than the upper bound')
         self.scale = scale
-        self.independent = self._val.boolean(independent, 'independent')
+        self.independent = self._val.is_boolean(independent, 'independent')
         if not self.independent:
             self.min, self.max = None, None
 
     def fit(self, X):
-        X = self._val.observation_sequences(X, allow_single=True)
+        X = self._val.is_observation_sequences(X, allow_single=True)
         if not self.independent:
             X_concat = np.vstack(X) if isinstance(X, list) else X
             self.min, self.max = X_concat.min(axis=0), X_concat.max(axis=0)
@@ -244,12 +244,12 @@ class Center(Transform):
 
     def __init__(self, independent=True):
         super().__init__()
-        self.independent = self._val.boolean(independent, 'independent')
+        self.independent = self._val.is_boolean(independent, 'independent')
         if not self.independent:
             self.mean = None
 
     def fit(self, X):
-        X = self._val.observation_sequences(X, allow_single=True)
+        X = self._val.is_observation_sequences(X, allow_single=True)
         if not self.independent:
             X_concat = np.vstack(X) if isinstance(X, list) else X
             self.mean = X_concat.mean(axis=0)
@@ -295,12 +295,12 @@ class Standardize(Transform):
 
     def __init__(self, independent=True):
         super().__init__()
-        self.independent = self._val.boolean(independent, 'independent')
+        self.independent = self._val.is_boolean(independent, 'independent')
         if not self.independent:
             self.mean, self.std = None, None
 
     def fit(self, X):
-        X = self._val.observation_sequences(X, allow_single=True)
+        X = self._val.is_observation_sequences(X, allow_single=True)
         if not self.independent:
             X_concat = np.vstack(X) if isinstance(X, list) else X
             self.mean, self.std = X_concat.mean(axis=0), X_concat.std(axis=0)
@@ -351,21 +351,21 @@ class Downsample(Transform):
 
     def __init__(self, factor, method='decimate'):
         super().__init__()
-        self.factor = self._val.restricted_integer(factor, lambda x: x > 0, desc='downsample factor', expected='positive')
-        self.method = self._val.one_of(method, ['decimate', 'mean'], desc='downsampling method')
+        self.factor = self._val.is_restricted_integer(factor, lambda x: x > 0, desc='downsample factor', expected='positive')
+        self.method = self._val.is_one_of(method, ['decimate', 'mean'], desc='downsampling method')
 
     def _describe(self):
         method = 'Decimation' if self.method == 'decimate' else 'Mean'
         return '{} downsampling with factor {}'.format(method, self.factor)
 
     def transform(self, X, verbose=False):
-        X = self._val.observation_sequences(X, allow_single=True)
+        X = self._val.is_observation_sequences(X, allow_single=True)
 
         if isinstance(X, np.ndarray):
-            self._val.restricted_integer(self.factor, lambda x: x <= len(X),
+            self._val.is_restricted_integer(self.factor, lambda x: x <= len(X),
                 desc='downsample factor', expected='no greater than the number of frames')
         else:
-            self._val.restricted_integer(self.factor, lambda x: x <= min(len(x) for x in X),
+            self._val.is_restricted_integer(self.factor, lambda x: x <= min(len(x) for x in X),
                 desc='downsample factor', expected='no greater than the number of frames in the shortest sequence')
 
         def downsample(x):
@@ -401,20 +401,20 @@ class Filter(Transform):
 
     def __init__(self, window_size, method='median'):
         super().__init__()
-        self.window_size = self._val.restricted_integer(window_size, lambda x: x > 0, desc='window size', expected='positive')
-        self.method = self._val.one_of(method, ['median', 'mean'], desc='filtering method')
+        self.window_size = self._val.is_restricted_integer(window_size, lambda x: x > 0, desc='window size', expected='positive')
+        self.method = self._val.is_one_of(method, ['median', 'mean'], desc='filtering method')
 
     def _describe(self):
         return '{} filtering with window-size {}'.format(self.method.capitalize(), self.window_size)
 
     def transform(self, X, verbose=False):
-        X = self._val.observation_sequences(X, allow_single=True)
+        X = self._val.is_observation_sequences(X, allow_single=True)
 
         if isinstance(X, np.ndarray):
-            self._val.restricted_integer(self.window_size, lambda x: x <= len(X),
+            self._val.is_restricted_integer(self.window_size, lambda x: x <= len(X),
                 desc='window size', expected='no greater than the number of frames')
         else:
-            self._val.restricted_integer(self.window_size, lambda x: x <= min(len(x) for x in X),
+            self._val.is_restricted_integer(self.window_size, lambda x: x <= min(len(x) for x in X),
                 desc='window size', expected='no greater than the number of frames in the shortest sequence')
 
         def filter_(x):
