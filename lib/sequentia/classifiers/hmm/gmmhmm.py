@@ -65,6 +65,9 @@ class GMMHMM:
 
     covars_ (property): numpy.ndarray (float)
         The covariance matrices of the GMM emission distributions.
+
+    monitor_ (property): hmmlearn.base.ConvergenceMonitor
+        The convergence monitor for the Baum–Welch algorithm.
     """
 
     def __init__(self, label, n_states, n_components=1, covariance_type='full', topology='left-right', random_state=None):
@@ -289,6 +292,10 @@ class GMMHMM:
     @property
     def covars_(self):
         return self.model.covars_
+
+    @property
+    def monitor_(self):
+        return self.model.monitor_
 
     def __repr__(self):
         name = '.'.join([self.__class__.__module__.split('.')[0], self.__class__.__name__])
