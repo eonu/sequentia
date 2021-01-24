@@ -1,4 +1,4 @@
-import pytest, warnings, os, numpy as np, hmmlearn.hmm
+import pytest, warnings, os, numpy as np, hmmlearn.base, hmmlearn.hmm
 from copy import deepcopy
 from sequentia.classifiers import GMMHMM, _LeftRightTopology, _ErgodicTopology, _LinearTopology
 from ....support import assert_equal, assert_not_equal, assert_all_equal, assert_all_not_equal
@@ -582,6 +582,27 @@ def test_frozen():
     hmm = deepcopy(hmm_lr)
     hmm.freeze('sw')
     assert hmm.frozen == set('sw')
+
+# ========================== #
+# GMMHMM.monitor_ (property) #
+# ========================== #
+
+def test_monitor_without_fit():
+    """Convergence monitor without fitting the HMM"""
+    hmm = deepcopy(hmm_lr)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    with pytest.raises(AttributeError) as e:
+        hmm.monitor_
+    assert str(e.value) == 'The model must be fitted first'
+
+def test_monitor_with_fit():
+    """Convergence monitor after fitting the HMM"""
+    hmm = deepcopy(hmm_lr)
+    hmm.set_random_initial()
+    hmm.set_random_transitions()
+    hmm.fit(X)
+    assert isinstance(hmm.monitor_, hmmlearn.base.ConvergenceMonitor)
 
 # ========================== #
 # GMMHMM.weights_ (property) #
