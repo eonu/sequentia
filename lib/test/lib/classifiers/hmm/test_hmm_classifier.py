@@ -160,9 +160,9 @@ def test_evaluate():
 def test_save_unfitted():
     """Save an unfitted HMMClassifier object."""
     try:
-        with pytest.raises(RuntimeError) as e:
+        with pytest.raises(AttributeError) as e:
             HMMClassifier().save('test.pkl')
-        assert str(e.value) == 'The classifier needs to be fitted before it can be saved'
+        assert str(e.value) == 'No models available - the classifier must be fitted first'
     finally:
         if os.path.exists('test.pkl'):
             os.remove('test.pkl')

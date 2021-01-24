@@ -162,7 +162,7 @@ def test_fit_without_initial_and_transition():
     hmm = deepcopy(hmm_lr)
     with pytest.raises(AttributeError) as e:
         hmm.fit(X)
-    assert str(e.value) == 'Must specify initial state distribution and transitions before the HMM can be fitted'
+    assert str(e.value) == 'No initial state distribution has been defined'
 
 def test_fit_without_transitions():
     """Fitting before setting the initial transition matrix"""
@@ -170,7 +170,7 @@ def test_fit_without_transitions():
     hmm.set_uniform_initial()
     with pytest.raises(AttributeError) as e:
         hmm.fit(X)
-    assert str(e.value) == 'Must specify initial state distribution and transitions before the HMM can be fitted'
+    assert str(e.value) == 'No transition matrix has been defined'
 
 def test_fit_without_initial():
     """Fitting before setting the initial state distribution"""
@@ -178,7 +178,7 @@ def test_fit_without_initial():
     hmm.set_uniform_transitions()
     with pytest.raises(AttributeError) as e:
         hmm.fit(X)
-    assert str(e.value) == 'Must specify initial state distribution and transitions before the HMM can be fitted'
+    assert str(e.value) == 'No initial state distribution has been defined'
 
 def test_fit_sets_internals():
     """Check that fitting sets internal attributes"""
@@ -367,7 +367,7 @@ def test_forward_without_fit():
     hmm.set_random_transitions()
     with pytest.raises(AttributeError) as e:
         hmm.forward(x)
-    assert str(e.value) == 'The model must be fitted before running the forward algorithm'
+    assert str(e.value) == 'The model must be fitted first'
 
 def test_left_right_forward():
     """Forward algorithm on a left-right HMM"""
