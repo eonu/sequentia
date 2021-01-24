@@ -35,9 +35,9 @@ def test_fit_sets_attributes():
     """Check that fitting sets the hidden attributes"""
     clf = clfs['k=1']
     clf.fit(X, y)
-    assert_all_equal(clf._X, X)
-    assert_equal(clf._y, clf._encoder.transform(y))
-    assert clf._n_features == 3
+    assert_all_equal(clf.X_, X)
+    assert_equal(clf.y_, clf.encoder_.transform(y))
+    assert clf._n_features_ == 3
 
 # ======================= #
 # KNNClassifier.predict() #
@@ -271,14 +271,14 @@ def test_load_valid_no_weighting():
         # Check that all fields are still the same
         assert isinstance(clf, KNNClassifier)
         assert clf._k == 3
-        assert list(clf._encoder.classes_) == classes
+        assert list(clf.encoder_.classes_) == classes
         assert clf._window == 1.
         assert clf._use_c == False
         assert clf._independent == False
         assert deepcopy(clf._random_state).normal() == deepcopy(rng).normal()
-        assert_all_equal(clf._X, X)
-        assert_equal(clf._y, clf._encoder.transform(y))
-        assert clf._n_features == 3
+        assert_all_equal(clf.X_, X)
+        assert_equal(clf.y_, clf.encoder_.transform(y))
+        assert clf._n_features_ == 3
         # Check that weighting functions are the same for x=0 to x=1000
         xs = np.arange(1000, step=0.1)
         weighting = lambda x: np.ones(x.size)
@@ -294,14 +294,14 @@ def test_load_valid_weighting():
         # Check that all fields are still the same
         assert isinstance(clf, KNNClassifier)
         assert clf._k == 3
-        assert list(clf._encoder.classes_) == classes
+        assert list(clf.encoder_.classes_) == classes
         assert clf._window == 1.
         assert clf._use_c == False
         assert clf._independent == False
         assert deepcopy(clf._random_state).normal() == deepcopy(rng).normal()
-        assert_all_equal(clf._X, X)
-        assert_equal(clf._y, clf._encoder.transform(y))
-        assert clf._n_features == 3
+        assert_all_equal(clf.X_, X)
+        assert_equal(clf.y_, clf.encoder_.transform(y))
+        assert clf._n_features_ == 3
         # Check that weighting functions are the same for x=0 to x=1000
         xs = np.arange(1000, step=0.1)
         weighting = lambda x: np.exp(-x)

@@ -68,23 +68,29 @@ class KNNClassifier:
 
     Attributes
     ----------
-    k: int > 0
+    k (property): int > 0
         The number of neighbors.
 
-    weighting: callable
+    weighting (property): callable
         The distance weighting function.
 
-    window: 0 ≤ float ≤ 1
+    window (property): 0 ≤ float ≤ 1
         The width of the Sakoe-Chiba band global constraint as a fraction of the length of the longest of the two sequences.
 
-    use_c: bool
+    use_c (property): bool
         Whether or not to use fast pure C compiled functions to perform the DTW computations.
 
-    encoder: sklearn.preprocessing.LabelEncoder
+    encoder_ (property): sklearn.preprocessing.LabelEncoder
         The label encoder fitted on the set of ``classes`` provided during instantiation.
 
-    classes: numpy.ndarray (str/numeric)
+    classes_ (property): numpy.ndarray (str/numeric)
         The complete set of possible classes/labels.
+
+    X_ (property): list of numpy.ndarray (float)
+        A list of multiple observation sequences used to fit the classifier.
+
+    y_ (property): numpy.ndarray (int)
+        The encoded labels for the observation sequences used to fit the classifier.
     """
 
     def __init__(self, k, classes, weighting='uniform', window=1., use_c=False, independent=False, random_state=None):
@@ -98,7 +104,7 @@ class KNNClassifier:
         self._val.iterable(classes, 'classes')
         self._val.string_or_numeric(classes[0], 'each class')
         if all(isinstance(label, type(classes[0])) for label in classes[1:]):
-            self._encoder = LabelEncoder().fit(classes)
+            self._encoder_ = LabelEncoder().fit(classes)
         else:
             raise TypeError('Expected all classes to be of the same type')
 
@@ -134,8 +140,8 @@ class KNNClassifier:
             An iterable of labels for the observation sequences.
         """
         X, y = self._val.observation_sequences_and_labels(X, y)
-        self._X, self._y = X, self._encoder.transform(y)
-        self._n_features = X[0].shape[1]
+        self._X_, self._y_ = X, self._encoder_.transform(y)
+        self._n_features_ = X[0].shape[1]
 
     def predict(self, X, original_labels=True, verbose=True, n_jobs=1):
         """Predicts the label for an observation sequence (or multiple sequences).
@@ -169,7 +175,7 @@ class KNNClassifier:
             inverse-transformed into their original encoding.
         """
         try:
-            (self._X, self._y)
+            (self._X_, self._y_)
         except AttributeError:
             raise RuntimeError('The classifier needs to be fitted before predictions are made')
 
@@ -179,7 +185,7 @@ class KNNClassifier:
         self._val.restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
 
         if isinstance(X, np.ndarray):
-            distances = np.array([self._dtw(X, x) for x in tqdm.auto.tqdm(self._X, desc='Calculating distances', disable=not(verbose))])
+            distances = np.array([self._dtw(X, x) for x in tqdm.auto.tqdm(self._X_, desc='Calculating distances', disable=not(verbose))])
             return self._output(self._find_nearest(distances), original_labels)
         else:
             n_jobs = min(cpu_count() if n_jobs == -1 else n_jobs, len(X))
@@ -216,7 +222,7 @@ class KNNClassifier:
         X, y = self._val.observation_sequences_and_labels(X, y)
         self._val.boolean(verbose, desc='verbose')
         predictions = self.predict(X, original_labels=False, verbose=verbose, n_jobs=n_jobs)
-        cm = confusion_matrix(self._encoder.transform(y), predictions, labels=self._encoder.transform(self._encoder.classes_))
+        cm = confusion_matrix(self._encoder_.transform(y), predictions, labels=self._encoder_.transform(self._encoder_.classes_))
         return np.sum(np.diag(cm)) / np.sum(cm), cm
 
     def save(self, path):
@@ -232,7 +238,7 @@ class KNNClassifier:
             File path (usually with `.pkl` extension) to store the serialized :class:`KNNClassifier` object.
         """
         try:
-            (self._X, self._y)
+            (self._X_, self._y_)
         except AttributeError:
             raise RuntimeError('The classifier needs to be fitted before it can be saved')
 
@@ -240,16 +246,16 @@ class KNNClassifier:
         with open(path, 'wb') as file:
             pickle.dump({
                 'k': self._k,
-                'classes': self._encoder.classes_,
+                'classes': self._encoder_.classes_,
                 # Serialize the weighting function into a byte-string
                 'weighting': marshal.dumps((self._weighting.__code__, self._weighting.__name__)),
                 'window': self._window,
                 'use_c': self._use_c,
                 'independent': self._independent,
                 'random_state': self._random_state,
-                'X': self._X,
-                'y': self._y,
-                'n_features': self._n_features
+                'X': self._X_,
+                'y': self._y_,
+                'n_features': self._n_features_
             }, file)
 
     @classmethod
@@ -293,8 +299,8 @@ class KNNClassifier:
             )
 
             # Load the data directly
-            clf._X, clf._y = data['X'], data['y']
-            clf._n_features = data['n_features']
+            clf._X_, clf._y_ = data['X'], data['y']
+            clf._n_features_ = data['n_features']
 
             return clf
 
@@ -305,7 +311,7 @@ class KNNClassifier:
     def _dtwi(self, A, B): # Requires fit
         """Computes the multivariate DTW distance as the sum of the pairwise per-feature DTW distances, allowing each feature to be warped independently."""
         window = max(1, int(self._window * max(len(A), len(B))))
-        return np.sum([self._dtw_1d(A[:, i], B[:, i], window=window) for i in range(self._n_features)])
+        return np.sum([self._dtw_1d(A[:, i], B[:, i], window=window) for i in range(self._n_features_)])
 
     def _dtwd(self, A, B): # Requires fit
         """Computes the multivariate DTW distance so that the warping of the features depends on each other, by modifying the local distance measure."""
@@ -330,7 +336,7 @@ class KNNClassifier:
         """
         # Find the indices, labels and distances of the k-nearest neighbours
         idx = np.argpartition(distances, self._k)[:self._k]
-        nearest_labels = self._y[idx]
+        nearest_labels = self._y_[idx]
         nearest_distances = self._weighting(distances[idx])
         # Combine labels and distances into one array and sort by label
         labels_distances = np.vstack((nearest_labels, nearest_distances))
@@ -352,16 +358,16 @@ class KNNClassifier:
             desc='Classifying examples (process {})'.format(process),
             disable=not(verbose), position=process-1)
         ):
-            distances = np.array([self._dtw(sequence, x) for x in self._X])
+            distances = np.array([self._dtw(sequence, x) for x in self._X_])
             labels[i] = self._find_nearest(distances)
         return labels
 
     def _output(self, out, original_labels):
         """Inverse-transforms the labels if necessary, and returns them."""
         if isinstance(out, np.ndarray):
-            return self._encoder.inverse_transform(out) if original_labels else out
+            return self._encoder_.inverse_transform(out) if original_labels else out
         else:
-            return self._encoder.inverse_transform([out]).item() if original_labels else out
+            return self._encoder_.inverse_transform([out]).item() if original_labels else out
 
     @property
     def k(self):
@@ -380,24 +386,24 @@ class KNNClassifier:
         return self._use_c
 
     @property
-    def encoder(self):
-        return self._encoder
+    def encoder_(self):
+        return self._encoder_
 
     @property
-    def classes(self):
-        return self._encoder.classes_
+    def classes_(self):
+        return self._encoder_.classes_
 
     @property
-    def X(self):
+    def X_(self):
         try:
-            return self._X
+            return self._X_
         except AttributeError:
             raise RuntimeError('The classifier needs to be fitted first')
 
     @property
-    def y(self):
+    def y_(self):
         try:
-            return self._y
+            return self._y_
         except AttributeError:
             raise RuntimeError('The classifier needs to be fitted first')
 
@@ -409,10 +415,10 @@ class KNNClassifier:
             ('window', repr(self._window)),
             ('use_c', repr(self._use_c)),
             ('independent', repr(self._independent)),
-            ('classes', repr(list(self._encoder.classes_)))
+            ('classes', repr(list(self._encoder_.classes_)))
         ]
         try:
-            (self._X, self._y)
+            (self._X_, self._y_)
             attrs.extend([('X', '[...]'), ('y', 'array([...])')])
         except AttributeError:
             pass
