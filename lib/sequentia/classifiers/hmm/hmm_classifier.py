@@ -33,7 +33,7 @@ class HMMClassifier:
             A collection of :class:`~GMMHMM` objects to use for classification.
         """
 
-        models = list(self._val.iterable(models, 'models'))
+        models = list(self._val.is_iterable(models, 'models'))
         if not all(isinstance(model, GMMHMM) for model in models):
             raise TypeError('Expected all models to be GMMHMM objects')
 
@@ -92,19 +92,19 @@ class HMMClassifier:
             for each of the :math:`M` HMMs. Only returned if ``return_scores`` is true.
         """
         self.models_
-        X = self._val.observation_sequences(X, allow_single=True)
+        X = self._val.is_observation_sequences(X, allow_single=True)
         if not isinstance(prior, str):
-            self._val.iterable(prior, 'prior')
+            self._val.is_iterable(prior, 'prior')
             assert len(prior) == len(self._models_), 'There must be a class prior for each HMM or class'
             assert all(isinstance(p, (int, float)) for p in prior), 'Class priors must be numerical'
             assert all(0. <= p <= 1. for p in prior), 'Class priors must each be between zero and one'
             assert np.isclose(sum(prior), 1.), 'Class priors must form a probability distribution by summing to one'
         else:
-            self._val.one_of(prior, ['frequency', 'uniform'], desc='prior')
-        self._val.boolean(return_scores, desc='return_scores')
-        self._val.boolean(original_labels, desc='original_labels')
-        self._val.boolean(verbose, desc='verbose')
-        self._val.restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
+            self._val.is_one_of(prior, ['frequency', 'uniform'], desc='prior')
+        self._val.is_boolean(return_scores, desc='return_scores')
+        self._val.is_boolean(original_labels, desc='original_labels')
+        self._val.is_boolean(verbose, desc='verbose')
+        self._val.is_restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
 
         # Create look-up for prior probabilities
         if prior == 'frequency':
@@ -175,7 +175,7 @@ class HMMClassifier:
         confusion: :class:`numpy:numpy.ndarray` (int)
             The confusion matrix representing the discrepancy between predicted and actual labels.
         """
-        X, y = self._val.observation_sequences_and_labels(X, y)
+        X, y = self._val.is_observation_sequences_and_labels(X, y)
         predictions = self.predict(X, prior=prior, return_scores=False, original_labels=False, verbose=verbose, n_jobs=n_jobs)
         cm = confusion_matrix(self._encoder_.transform(y), predictions, labels=self._encoder_.transform(self._encoder_.classes_))
         return np.sum(np.diag(cm)) / np.sum(cm), cm
@@ -218,7 +218,7 @@ class HMMClassifier:
 
     @property
     def models_(self):
-        return self._val.fitted(self,
+        return self._val.is_fitted(self,
             lambda self: self._models_,
             'No models available - the classifier must be fitted first'
         )
