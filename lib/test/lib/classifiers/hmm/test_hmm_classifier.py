@@ -37,7 +37,7 @@ def test_fit_list():
     """Fit the classifier using a list of HMMs"""
     clf = HMMClassifier()
     clf.fit(hmms)
-    assert clf._models == hmms
+    assert clf.models_ == hmms
 
 def test_fit_list_empty():
     """Fit the classifier using an empty list"""
@@ -145,7 +145,6 @@ def test_evaluate():
     """Evaluate performance on some observation sequences and labels"""
     acc, cm = hmm_clf.evaluate(X, Y, prior='frequency')
     assert acc == 1 / 3
-    print(repr(cm))
     assert_equal(cm, np.array([
         [1, 0, 0, 0, 0],
         [2, 0, 0, 0, 0],
@@ -197,9 +196,9 @@ def test_load_valid():
         clf = HMMClassifier.load('test.pkl')
         # Check that all fields are still the same
         assert isinstance(clf, HMMClassifier)
-        assert all(isinstance(model, GMMHMM) for model in clf._models)
-        assert [model.label for model in clf._models] == labels
-        assert list(clf._encoder.classes_) == labels
+        assert all(isinstance(model, GMMHMM) for model in clf.models_)
+        assert [model.label for model in clf.models_] == labels
+        assert list(clf.encoder_.classes_) == labels
         predictions = clf.predict(X, prior='frequency', return_scores=True, original_labels=True)
         assert isinstance(predictions, tuple)
         assert all(np.equal(predictions[0].astype(object), np.array(['c0', 'c0', 'c0'], dtype=object)))
