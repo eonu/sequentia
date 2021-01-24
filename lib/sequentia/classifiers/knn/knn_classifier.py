@@ -174,11 +174,7 @@ class KNNClassifier:
             If ``original_labels`` is true, then the returned labels are
             inverse-transformed into their original encoding.
         """
-        try:
-            (self._X_, self._y_)
-        except AttributeError:
-            raise RuntimeError('The classifier needs to be fitted before predictions are made')
-
+        (self.X_, self.y_)
         X = self._val.observation_sequences(X, allow_single=True)
         self._val.boolean(original_labels, desc='original_labels')
         self._val.boolean(verbose, desc='verbose')
@@ -237,12 +233,7 @@ class KNNClassifier:
         path: str
             File path (usually with `.pkl` extension) to store the serialized :class:`KNNClassifier` object.
         """
-        try:
-            (self._X_, self._y_)
-        except AttributeError:
-            raise RuntimeError('The classifier needs to be fitted before it can be saved')
-
-        # Pickle the necessary hyper-parameters, variables and data
+        (self.X_, self.y_)
         with open(path, 'wb') as file:
             pickle.dump({
                 'k': self._k,
@@ -408,8 +399,7 @@ class KNNClassifier:
             raise RuntimeError('The classifier needs to be fitted first')
 
     def __repr__(self):
-        module = self.__class__.__module__
-        out = '{}{}('.format('' if module == '__main__' else '{}.'.format(module), self.__class__.__name__)
+        name = '.'.join([self.__class__.__module__.split('.')[0], self.__class__.__name__])
         attrs = [
             ('k', repr(self._k)),
             ('window', repr(self._window)),
@@ -417,9 +407,4 @@ class KNNClassifier:
             ('independent', repr(self._independent)),
             ('classes', repr(list(self._encoder_.classes_)))
         ]
-        try:
-            (self._X_, self._y_)
-            attrs.extend([('X', '[...]'), ('y', 'array([...])')])
-        except AttributeError:
-            pass
-        return out + ', '.join('{}={}'.format(name, val) for name, val in attrs) + ')'
+        return '{}({})'.format(name, ', '.join('{}={}'.format(name, val) for name, val in attrs))

@@ -298,3 +298,9 @@ class _Validator:
             return item
         else:
             raise TypeError("Expected {} to be an iterable".format(desc))
+
+    def fitted(self, self_, check, message):
+        try:
+            return check(self_)
+        except AttributeError as e:
+            raise AttributeError(message)

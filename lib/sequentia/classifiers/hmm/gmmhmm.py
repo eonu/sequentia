@@ -118,15 +118,11 @@ class GMMHMM:
             Collection of multivariate observation sequences, each of shape :math:`(T \\times D)` where
             :math:`T` may vary per observation sequence.
         """
+        (self.initial_, self.transitions_)
         X = self._val.observation_sequences(X)
 
-        try:
-            (self._initial_, self._transitions_)
-        except AttributeError as e:
-            raise AttributeError('Must specify initial state distribution and transitions before the HMM can be fitted') from e
-
-        self._n_seqs_ = len(X)
-        self._n_features_ = X[0].shape[1]
+        # Store the number of sequences and features used to fit the model
+        self._n_seqs_, self._n_features_ = len(X), X[0].shape[1]
 
         # Initialize the GMMHMM with the specified initial state distribution and transition matrix
         self._model = hmmlearn.hmm.GMMHMM(
@@ -160,15 +156,10 @@ class GMMHMM:
         log-likelihood: float
             The log-likelihood of the model generating the observation sequence.
         """
-        try:
-            self._model
-        except AttributeError as e:
-            raise AttributeError('The model must be fitted before running the forward algorithm') from e
-
+        self.model
         x = self._val.observation_sequences(x, allow_single=True)
         if not x.shape[1] == self._n_features_:
             raise ValueError('Number of observation features must match the dimensionality of the original data used to fit the model')
-
         return self._model.score(x, lengths=None)
 
     def freeze(self, params=None):
@@ -247,10 +238,10 @@ class GMMHMM:
 
     @property
     def n_seqs_(self):
-        try:
-            return self._n_seqs_
-        except AttributeError as e:
-            raise AttributeError('The model has not been fitted and has not seen any observation sequences') from e
+        return self._val.fitted(self,
+            lambda self: self._n_seqs_,
+            'The model has not been fitted and has not seen any observation sequences'
+        )
 
     @property
     def frozen(self):
@@ -258,17 +249,17 @@ class GMMHMM:
 
     @property
     def model(self):
-        try:
-            return self._model
-        except AttributeError as e:
-            raise AttributeError('The model must be fitted first') from e
+        return self._val.fitted(self,
+            lambda self: self._model,
+            'The model must be fitted first'
+        )
 
     @property
     def initial_(self):
-        try:
-            return self._initial_
-        except AttributeError as e:
-            raise AttributeError('No initial state distribution has been defined') from e
+        return self._val.fitted(self,
+            lambda self: self._initial_,
+            'No initial state distribution has been defined'
+        )
 
     @initial_.setter
     def initial_(self, probabilities):
@@ -277,10 +268,10 @@ class GMMHMM:
 
     @property
     def transitions_(self):
-        try:
-            return self._transitions_
-        except AttributeError as e:
-            raise AttributeError('No transition matrix has been defined') from e
+        return self._val.fitted(self,
+            lambda self: self._transitions_,
+            'No transition matrix has been defined'
+        )
 
     @transitions_.setter
     def transitions_(self, probabilities):
@@ -289,28 +280,18 @@ class GMMHMM:
 
     @property
     def weights_(self):
-        try:
-            return self._model.weights_
-        except AttributeError as e:
-            raise AttributeError('The model must be fitted first') from e
+        return self.model.weights_
 
     @property
     def means_(self):
-        try:
-            return self._model.means_
-        except AttributeError as e:
-            raise AttributeError('The model must be fitted first') from e
+        return self.model.means_
 
     @property
     def covars_(self):
-        try:
-            return self._model.covars_
-        except AttributeError as e:
-            raise AttributeError('The model must be fitted first') from e
+        return self.model.covars_
 
     def __repr__(self):
-        module = self.__class__.__module__
-        out = '{}{}('.format('' if module == '__main__' else '{}.'.format(module), self.__class__.__name__)
+        name = '.'.join([self.__class__.__module__.split('.')[0], self.__class__.__name__])
         attrs = [
             ('label', repr(self._label)),
             ('n_states', repr(self._n_states)),
@@ -318,19 +299,4 @@ class GMMHMM:
             ('covariance_type', repr(self._covariance_type)),
             ('frozen', repr(self._frozen))
         ]
-        try:
-            self._n_seqs
-            attrs.append(('n_seqs_', repr(self._n_seqs)))
-            self._initial
-            attrs.append(('initial_', 'array([...])'))
-            self._transitions
-            attrs.append(('transitions_', 'array([...])'))
-            self.weights
-            attrs.append(('weights_', 'array([...])'))
-            self.means
-            attrs.append(('means_', 'array([...])'))
-            self.covars
-            attrs.append(('covars_', 'array([...])'))
-        except AttributeError:
-            pass
-        return out + ', '.join('{}={}'.format(name, val) for name, val in attrs) + ')'
+        return '{}({})'.format(name, ', '.join('{}={}'.format(name, val) for name, val in attrs))

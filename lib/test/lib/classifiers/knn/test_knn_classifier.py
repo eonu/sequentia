@@ -47,7 +47,7 @@ def test_predict_without_fit():
     """Predict without fitting the model"""
     with pytest.raises(RuntimeError) as e:
         KNNClassifier(k=1, classes=classes).predict(x, verbose=False)
-    assert str(e.value) == 'The classifier needs to be fitted before predictions are made'
+    assert str(e.value) == 'The classifier needs to be fitted first'
 
 def test_predict_single_k1_verbose(capsys):
     """Verbosely predict a single observation sequence (k=1)"""
@@ -214,7 +214,7 @@ def test_save_unfitted():
     try:
         with pytest.raises(RuntimeError) as e:
             KNNClassifier(k=1, classes=classes).save('test.pkl')
-        assert str(e.value) == 'The classifier needs to be fitted before it can be saved'
+        assert str(e.value) == 'The classifier needs to be fitted first'
     finally:
         if os.path.exists('test.pkl'):
             os.remove('test.pkl')

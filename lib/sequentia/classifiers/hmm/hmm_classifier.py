@@ -91,11 +91,7 @@ class HMMClassifier:
             An :math:`N\\times M` matrix of scores (log un-normalized posteriors), for each of the :math:`N` observation sequences,
             for each of the :math:`M` HMMs. Only returned if ``return_scores`` is true.
         """
-        try:
-            self._models_
-        except AttributeError as e:
-            raise AttributeError('The classifier needs to be fitted before predictions are made') from e
-
+        self.models_
         X = self._val.observation_sequences(X, allow_single=True)
         if not isinstance(prior, str):
             self._val.iterable(prior, 'prior')
@@ -192,11 +188,7 @@ class HMMClassifier:
         path: str
             File path (usually with `.pkl` extension) to store the serialized :class:`HMMClassifier` object.
         """
-        try:
-            self._models_
-        except AttributeError:
-            raise RuntimeError('The classifier needs to be fitted before it can be saved')
-
+        self.models_
         with open(path, 'wb') as file:
             pickle.dump(self, file)
 
@@ -226,30 +218,27 @@ class HMMClassifier:
 
     @property
     def models_(self):
-        try:
-            return self._models_
-        except AttributeError as e:
-            raise AttributeError('No models available - the classifier must be fitted first') from e
+        return self._val.fitted(self,
+            lambda self: self._models_,
+            'No models available - the classifier must be fitted first'
+        )
 
     @property
     def encoder_(self):
-        try:
-            return self._encoder_
-        except AttributeError as e:
-            raise AttributeError('No label encoder has been defined - the classifier must be fitted first') from e
+        return self._encoder_
 
     @property
     def classes_(self):
-        return self._encoder.classes_
+        return self._encoder_.classes_
 
     def __repr__(self):
-        module = self.__class__.__module__
-        out = '{}{}('.format('' if module == '__main__' else '{}.'.format(module), self.__class__.__name__)
+        name = '.'.join([self.__class__.__module__.split('.')[0], self.__class__.__name__])
+        out = '{}('.format(name)
         try:
             self._models_
-            out += 'models=[\n  '
-            out += ',\n  '.join(repr(model) for model in self._models_)
+            out += 'models=[\n    '
+            out += ',\n    '.join(repr(model) for model in self._models_)
             out += '\n]'
         except AttributeError:
             pass
-        return out + ')'
+        return '{})'.format(out)
