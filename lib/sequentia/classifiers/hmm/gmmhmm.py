@@ -1,4 +1,4 @@
-import numpy as np, hmmlearn.hmm
+import re, numpy as np, hmmlearn.hmm
 from .topologies.ergodic import _ErgodicTopology
 from .topologies.left_right import _LeftRightTopology
 from .topologies.linear import _LinearTopology
@@ -30,48 +30,67 @@ class GMMHMM:
 
     Attributes
     ----------
-    label: str or numeric
+    label (property): str or numeric
         The label for the model.
 
-    n_states: int
+    model (property): hmmlearn.hmm.GMMHMM
+        The underlying GMMHMM model from `hmmlearn <https://hmmlearn.readthedocs.io/en/latest/api.html#gmmhmm>`_.
+
+    n_states (property): int
         The number of states for the model.
 
-    n_components: int
+    n_components (property): int
         The number of mixture components used in the emission distribution for each state.
 
-    covariance_type: str
+    covariance_type (property): str
         The covariance matrix type for emission distributions.
 
-    n_seqs: int
-        The number of observation sequences use to train the model.
+    frozen (property): set (str)
+        The frozen parameters of the HMM or its GMM emission distributions (see :func:`freeze`).
 
-    initial: numpy.ndarray (float)
+    n_seqs_ (property): int
+        The number of observation sequences used to train the model.
+
+    initial_ (property/setter): numpy.ndarray (float)
         The initial state distribution of the model.
 
-    transitions: numpy.ndarray (float)
+    transitions_ (property/setter): numpy.ndarray (float)
         The transition matrix of the model.
+
+    weights_ (property): numpy.ndarray (float)
+        The mixture weights of the GMM emission distributions.
+
+    means_ (property): numpy.ndarray (float)
+        The mean vectors of the GMM emission distributions.
+
+    covars_ (property): numpy.ndarray (float)
+        The covariance matrices of the GMM emission distributions.
+
+    monitor_ (property): hmmlearn.base.ConvergenceMonitor
+        The convergence monitor for the Baum–Welch algorithm.
     """
 
     def __init__(self, label, n_states, n_components=1, covariance_type='full', topology='left-right', random_state=None):
         self._val = _Validator()
-        self._label = self._val.string_or_numeric(label, 'model label')
+        self._label = self._val.is_string_or_numeric(label, 'model label')
         self._label = label
-        self._n_states = self._val.restricted_integer(
+        self._n_states = self._val.is_restricted_integer(
             n_states, lambda x: x > 0, desc='number of states', expected='greater than zero')
-        self._n_components = self._val.restricted_integer(
+        self._n_components = self._val.is_restricted_integer(
             n_components, lambda x: x > 0, desc='number of mixture components', expected='greater than zero')
-        self._covariance_type = self._val.one_of(covariance_type, ['spherical', 'diag', 'full', 'tied'], desc='covariance matrix type')
-        self._val.one_of(topology, ['ergodic', 'left-right', 'linear'], desc='topology')
-        self._random_state = self._val.random_state(random_state)
+        self._covariance_type = self._val.is_one_of(covariance_type, ['spherical', 'diag', 'full', 'tied'], desc='covariance matrix type')
+        self._val.is_one_of(topology, ['ergodic', 'left-right', 'linear'], desc='topology')
+        self._random_state = self._val.is_random_state(random_state)
         self._topology = {
             'ergodic': _ErgodicTopology,
             'left-right': _LeftRightTopology,
             'linear': _LinearTopology
         }[topology](self._n_states, self._random_state)
+        self._frozen = set()
 
     def set_uniform_initial(self):
         """Sets a uniform initial state distribution :math:`\\boldsymbol{\\pi}=(\\pi_1,\\pi_2,\\ldots,\\pi_M)` where :math:`\\pi_i=1/M\\quad\\forall i`."""
-        self._initial = self._topology.uniform_initial()
+        self._initial_ = self._topology.uniform_initial()
 
     def set_random_initial(self):
         """Sets a random initial state distribution by sampling :math:`\\boldsymbol{\\pi}\\sim\\mathrm{Dir}(\\mathbf{1}_M)` where
@@ -79,19 +98,19 @@ class GMMHMM:
         - :math:`\\boldsymbol{\\pi}=(\\pi_1,\\pi_2,\\ldots,\\pi_M)` are the initial state probabilities for each state,
         - :math:`\\mathbf{1}_M` is a vector of :math:`M` ones which are used as the concentration parameters for the Dirichlet distribution.
         """
-        self._initial = self._topology.random_initial()
+        self._initial_ = self._topology.random_initial()
 
     def set_uniform_transitions(self):
         """Sets a uniform transition matrix according to the topology, so that given the HMM is in state :math:`i`,
         all permissible transitions (i.e. such that :math:`p_{ij}\\neq0`) :math:`\\forall j` are equally probable."""
-        self._transitions = self._topology.uniform_transitions()
+        self._transitions_ = self._topology.uniform_transitions()
 
     def set_random_transitions(self):
         """Sets a random transition matrix according to the topology, so that given the HMM is in state :math:`i`,
         all out-going transition probabilities :math:`\\mathbf{p}_i=(p_{i1},p_{i2},\\ldots,p_{iM})` from state :math:`i`
-        are generated by sampling :math:`\\mathbf{p}_i\\sim\\mathrm{Dir}(\\mathbf{1}_M)` and redistributed so that only the
-        transitions permitted by the topology are non-zero."""
-        self._transitions = self._topology.random_transitions()
+        are generated by sampling :math:`\\mathbf{p}_i\\sim\\mathrm{Dir}(\\mathbf{1})` with a vector of ones of appropriate
+        size used as concentration parameters, so that only transitions permitted by the topology are non-zero."""
+        self._transitions_ = self._topology.random_transitions()
 
     def fit(self, X):
         """Fits the HMM to observation sequences assumed to be labeled as the class that the model represents.
@@ -102,15 +121,11 @@ class GMMHMM:
             Collection of multivariate observation sequences, each of shape :math:`(T \\times D)` where
             :math:`T` may vary per observation sequence.
         """
-        X = self._val.observation_sequences(X)
+        (self.initial_, self.transitions_)
+        X = self._val.is_observation_sequences(X)
 
-        try:
-            (self._initial, self._transitions)
-        except AttributeError as e:
-            raise AttributeError('Must specify initial state distribution and transitions before the HMM can be fitted') from e
-
-        self._n_seqs = len(X)
-        self._n_features = X[0].shape[1]
+        # Store the number of sequences and features used to fit the model
+        self._n_seqs_, self._n_features_ = len(X), X[0].shape[1]
 
         # Initialize the GMMHMM with the specified initial state distribution and transition matrix
         self._model = hmmlearn.hmm.GMMHMM(
@@ -119,14 +134,15 @@ class GMMHMM:
             covariance_type=self._covariance_type,
             random_state=self._random_state,
             init_params='mcw', # only initialize means, covariances and mixture weights
+            params=(set('stmcw') - self._frozen)
         )
-        self._model.startprob_, self._model.transmat_ = self._initial, self._transitions
+        self._model.startprob_, self._model.transmat_ = self._initial_, self._transitions_
 
         # Perform the Baum-Welch algorithm to fit the model to the observations
         self._model.fit(np.vstack(X), [len(x) for x in X])
 
         # Update the initial state distribution and transitions to reflect the updated parameters
-        self._initial, self._transitions = self._model.startprob_, self._model.transmat_
+        self._initial_, self._transitions_ = self._model.startprob_, self._model.transmat_
 
     def forward(self, x):
         """Runs the forward algorithm to calculate the (log) likelihood of the model generating an observation sequence.
@@ -143,16 +159,69 @@ class GMMHMM:
         log-likelihood: float
             The log-likelihood of the model generating the observation sequence.
         """
-        try:
-            self._model
-        except AttributeError as e:
-            raise AttributeError('The model must be fitted before running the forward algorithm') from e
-
-        x = self._val.observation_sequences(x, allow_single=True)
-        if not x.shape[1] == self._n_features:
+        self.model
+        x = self._val.is_observation_sequences(x, allow_single=True)
+        if not x.shape[1] == self._n_features_:
             raise ValueError('Number of observation features must match the dimensionality of the original data used to fit the model')
-
         return self._model.score(x, lengths=None)
+
+    def freeze(self, params=None):
+        """Freezes the specified parameters of the HMM or its GMM emission distributions,
+        preventing them from being updated during the Baum–Welch algorithm.
+
+        Parameters
+        ----------
+        params: str, optional
+            | A string specifying which parameters to freeze.
+            | Can contain any combination of:
+
+            - `'s'` for initial state probabilities (HMM parameters),
+            - `'t'` for transition probabilities (HMM parameters),
+            - `'m'` for mean vectors (GMM emission distribution parameters),
+            - `'c'` for covariance matrices (GMM emission distribution parameters),
+            - '`w`' for mixing weights (GMM emission distribution parameters).
+
+            Defaults to all parameters, i.e. `'stmcw'`.
+
+        See Also
+        --------
+        unfreeze : Unfreezes parameters of the HMM or its GMM emission distributions.
+        """
+        self._frozen |= set(self._modify_params(params))
+
+    def unfreeze(self, params=None):
+        """Unfreezes the specified parameters of the HMM or its GMM emission distributions
+        which were frozen with :func:`freeze`, allowing them to be updated during the Baum–Welch algorithm.
+
+        Parameters
+        ----------
+        params: str, optional
+            | A string specifying which parameters to unfreeze.
+            | Can contain any combination of:
+
+            - `'s'` for initial state probabilities (HMM parameters),
+            - `'t'` for transition probabilities (HMM parameters),
+            - `'m'` for mean vectors (GMM emission distribution parameters),
+            - `'c'` for covariance matrices (GMM emission distribution parameters),
+            - '`w`' for mixing weights (GMM emission distribution parameters).
+
+            Defaults to all parameters, i.e. `'stmcw'`.
+
+        See Also
+        --------
+        freeze : Freezes parameters of the HMM or its GMM emission distributions.
+        """
+        self._frozen -= set(self._modify_params(params))
+
+    def _modify_params(self, params):
+        if isinstance(params, str):
+            if bool(re.compile(r'[^stmcw]').search(params)):
+                raise ValueError("Expected a string consisting of any combination of 's', 't', 'm', 'c', 'w'")
+        elif params is None:
+            params = 'stmcw'
+        else:
+            raise TypeError("Expected a string consisting of any combination of 's', 't', 'm', 'c', 'w'")
+        return params
 
     @property
     def label(self):
@@ -171,59 +240,70 @@ class GMMHMM:
         return self._covariance_type
 
     @property
-    def n_seqs(self):
-        try:
-            return self._n_seqs
-        except AttributeError as e:
-            raise AttributeError('The model has not been fitted and has not seen any observation sequences') from e
+    def n_seqs_(self):
+        return self._val.is_fitted(self,
+            lambda self: self._n_seqs_,
+            'The model has not been fitted and has not seen any observation sequences'
+        )
+
+    @property
+    def frozen(self):
+        return self._frozen
 
     @property
     def model(self):
-        try:
-            return self._model
-        except AttributeError as e:
-            raise AttributeError('The model must be fitted first') from e
+        return self._val.is_fitted(self,
+            lambda self: self._model,
+            'The model must be fitted first'
+        )
 
     @property
-    def initial(self):
-        try:
-            return self._initial
-        except AttributeError as e:
-            raise AttributeError('No initial state distribution has been defined') from e
+    def initial_(self):
+        return self._val.is_fitted(self,
+            lambda self: self._initial_,
+            'No initial state distribution has been defined'
+        )
 
-    @initial.setter
-    def initial(self, probabilities):
+    @initial_.setter
+    def initial_(self, probabilities):
         self._topology.validate_initial(probabilities)
-        self._initial = probabilities
+        self._initial_ = probabilities
 
     @property
-    def transitions(self):
-        try:
-            return self._transitions
-        except AttributeError as e:
-            raise AttributeError('No transition matrix has been defined') from e
+    def transitions_(self):
+        return self._val.is_fitted(self,
+            lambda self: self._transitions_,
+            'No transition matrix has been defined'
+        )
 
-    @transitions.setter
-    def transitions(self, probabilities):
+    @transitions_.setter
+    def transitions_(self, probabilities):
         self._topology.validate_transitions(probabilities)
-        self._transitions = probabilities
+        self._transitions_ = probabilities
+
+    @property
+    def weights_(self):
+        return self.model.weights_
+
+    @property
+    def means_(self):
+        return self.model.means_
+
+    @property
+    def covars_(self):
+        return self.model.covars_
+
+    @property
+    def monitor_(self):
+        return self.model.monitor_
 
     def __repr__(self):
-        module = self.__class__.__module__
-        out = '{}{}('.format('' if module == '__main__' else '{}.'.format(module), self.__class__.__name__)
+        name = '.'.join([self.__class__.__module__.split('.')[0], self.__class__.__name__])
         attrs = [
             ('label', repr(self._label)),
             ('n_states', repr(self._n_states)),
             ('n_components', repr(self._n_components)),
-            ('covariance_type', repr(self._covariance_type))
+            ('covariance_type', repr(self._covariance_type)),
+            ('frozen', repr(self._frozen))
         ]
-        try:
-            self._initial
-            attrs.append(('initial', 'array([...])'))
-            self._transitions
-            attrs.append(('transitions', 'array([...])'))
-            self._model
-            attrs.append(('n_seqs', repr(self._n_seqs)))
-        except AttributeError:
-            pass
-        return out + ', '.join('{}={}'.format(name, val) for name, val in attrs) + ')'
+        return '{}({})'.format(name, ', '.join('{}={}'.format(name, val) for name, val in attrs))

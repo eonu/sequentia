@@ -1,3 +1,21 @@
+## [0.11.0](https://github.com/eonu/sequentia/releases/tag/v0.11.0)
+
+#### Major changes
+
+- Add trailing underscore to variables containing trainable parameters (see #154). ([#158](https://github.com/eonu/sequentia/pull/158))
+- Add properties for GMM emission distribution parameters (see #153). ([#156](https://github.com/eonu/sequentia/pull/156))
+- Add selective `GMMHMM` parameter freezing/unfreezing (see #150). ([#155](https://github.com/eonu/sequentia/pull/155))
+- Fix random transition matrix initialization for `_LeftRightTopology` (see #149). ([#151](https://github.com/eonu/sequentia/pull/151))
+
+#### Minor changes
+
+- Add access to Baum-Welch algorithm convergence monitor (see #139). ([#162](https://github.com/eonu/sequentia/pull/162))
+- Prefix `_Validator` functions with `is_` (see #159). ([#161](https://github.com/eonu/sequentia/pull/161))
+- Add validation for checking fitted parameters (see #157). ([#160](https://github.com/eonu/sequentia/pull/160))
+- Clean up `__repr__` for `GMMHMM`, `HMMClassifier` and `KNNClassifier`. ([#160](https://github.com/eonu/sequentia/pull/160))
+- Add classifier documentation links to `README.md`. ([#152](https://github.com/eonu/sequentia/pull/152))
+- Simplify random transition matrix initialization for `_LinearTopology` and `_LeftRightTopology`. ([#151](https://github.com/eonu/sequentia/pull/151))
+
 ## [0.10.3](https://github.com/eonu/sequentia/releases/tag/v0.10.3)
 
 #### Major changes

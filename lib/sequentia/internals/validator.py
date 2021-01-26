@@ -8,7 +8,7 @@ else:
 class _Validator:
     """Performs internal validations on various input types."""
 
-    def observation_sequences(self, X, allow_single=False):
+    def is_observation_sequences(self, X, allow_single=False):
         """Validates observation sequence(s).
 
         Parameters
@@ -46,7 +46,7 @@ class _Validator:
                 raise TypeError('Expected a list of observation sequences, each of type numpy.ndarray')
         return X
 
-    def observation_sequences_and_labels(self, X, y):
+    def is_observation_sequences_and_labels(self, X, y):
         """Validates observation sequences and corresponding labels.
 
         Parameters
@@ -65,16 +65,16 @@ class _Validator:
         y: array-like of str/numeric
             The original input labels if valid.
         """
-        self.observation_sequences(X, allow_single=False)
-        self.iterable(y, 'labels')
-        self.string_or_numeric(y[0], 'each label')
+        self.is_observation_sequences(X, allow_single=False)
+        self.is_iterable(y, 'labels')
+        self.is_string_or_numeric(y[0], 'each label')
         if not all(isinstance(label, type(y[0])) for label in y[1:]):
             raise TypeError('Expected all labels to be of the same type')
         if not len(X) == len(y):
             raise ValueError('Expected the same number of observation sequences and labels')
         return X, y
 
-    def integer(self, item, desc):
+    def is_integer(self, item, desc):
         """Validates an integer.
 
         Parameters
@@ -94,7 +94,7 @@ class _Validator:
             raise TypeError("Expected {} to be an integer".format(desc))
         return item
 
-    def string(self, item, desc):
+    def is_string(self, item, desc):
         """Validates a string.
 
         Parameters
@@ -114,7 +114,7 @@ class _Validator:
             raise TypeError("Expected {} to be a string".format(desc))
         return item
 
-    def string_or_numeric(self, item, desc):
+    def is_string_or_numeric(self, item, desc):
         """Validates a string or numeric type.
 
         Parameters
@@ -134,7 +134,7 @@ class _Validator:
             raise TypeError("Expected {} to be a string or numeric".format(desc))
         return item
 
-    def boolean(self, item, desc):
+    def is_boolean(self, item, desc):
         """Validates a boolean.
 
         Parameters
@@ -154,7 +154,7 @@ class _Validator:
             raise TypeError("Expected {} to be a boolean".format(desc))
         return item
 
-    def one_of(self, item, items, desc):
+    def is_one_of(self, item, items, desc):
         """Validates that an item is one of some permitted values.
 
         Parameters
@@ -177,7 +177,7 @@ class _Validator:
             raise ValueError('Expected {} to be one of {}'.format(desc, items))
         return item
 
-    def restricted_integer(self, item, condition, desc, expected):
+    def is_restricted_integer(self, item, condition, desc, expected):
         """Validates an integer and checks that it satisfies some condition.
 
         Parameters
@@ -206,7 +206,7 @@ class _Validator:
             raise TypeError("Expected {} to be an integer".format(desc))
         return item
 
-    def restricted_float(self, item, condition, desc, expected):
+    def is_restricted_float(self, item, condition, desc, expected):
         """Validates a float and checks that it satisfies some condition.
 
         Parameters
@@ -235,7 +235,7 @@ class _Validator:
             raise TypeError("Expected {} to be a float".format(desc))
         return item
 
-    def random_state(self, state):
+    def is_random_state(self, state):
         """Validates a random state object or seed.
 
         Parameters
@@ -257,7 +257,7 @@ class _Validator:
         else:
             raise TypeError('Expected random state to be of type: None, int, or numpy.random.RandomState')
 
-    def func(self, item, desc):
+    def is_func(self, item, desc):
         """Validates a callable.
 
         Parameters
@@ -278,7 +278,7 @@ class _Validator:
         else:
             raise TypeError('Expected {} to be callable'.format(desc))
 
-    def iterable(self, item, desc):
+    def is_iterable(self, item, desc):
         """Validates an iterable.
 
         Parameters
@@ -298,3 +298,9 @@ class _Validator:
             return item
         else:
             raise TypeError("Expected {} to be an iterable".format(desc))
+
+    def is_fitted(self, self_, check, message):
+        try:
+            return check(self_)
+        except AttributeError as e:
+            raise AttributeError(message)

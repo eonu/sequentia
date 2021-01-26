@@ -37,12 +37,10 @@ class _LeftRightTopology(_Topology):
         transitions: :class:`numpy:numpy.ndarray` (float)
             The random transition matrix of shape `(n_states, n_states)`.
         """
-        transitions = self._random_state.dirichlet(np.ones(self._n_states), size=self._n_states)
-        lower_sums = np.sum(np.tril(transitions, k=-1), axis=1) # Amount to be redistributed per row
-        quantities = np.arange(self._n_states, 0, -1) # Number of elements per row to redistribute evenly to
-        upper_ones = np.triu(np.ones((self._n_states, self._n_states)))
-        redist = (lower_sums / quantities).reshape(-1, 1) * upper_ones
-        return np.triu(transitions) + redist
+        transitions = np.zeros((self._n_states, self._n_states))
+        for i, row in enumerate(transitions):
+            row[i:] = self._random_state.dirichlet(np.ones(self._n_states - i))
+        return transitions
 
     def validate_transitions(self, transitions: np.ndarray) -> None:
         """Validates a transition matrix according to the topology's restrictions.

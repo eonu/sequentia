@@ -142,10 +142,10 @@ def test_left_right_random_transitions_many():
     transitions = topology.random_transitions()
     assert_distribution(transitions)
     assert_equal(transitions, np.array([
-        [0.56841967, 0.01612013, 0.01994328, 0.0044685 , 0.39104841],
-        [0.        , 0.25134034, 0.43904868, 0.20609306, 0.10351793],
-        [0.        , 0.        , 0.27462001, 0.12291279, 0.60246721],
-        [0.        , 0.        , 0.        , 0.61951739, 0.38048261],
+        [0.23169814, 0.71716356, 0.02033845, 0.02516204, 0.00563782],
+        [0.        , 0.19474072, 0.16405008, 0.22228532, 0.41892388],
+        [0.        , 0.        , 0.42912755, 0.16545797, 0.40541448],
+        [0.        , 0.        , 0.        , 0.109713  , 0.890287  ],
         [0.        , 0.        , 0.        , 0.        , 1.        ]
     ]))
 
@@ -222,8 +222,8 @@ def test_ergodic_random_transitions_small():
     transitions = topology.random_transitions()
     assert_distribution(transitions)
     assert_equal(transitions, np.array([
-        [0.87353002, 0.12646998],
-        [0.88622334, 0.11377666]
+        [0.9474011 , 0.0525989 ],
+        [0.85567599, 0.14432401]
     ]))
 
 def test_ergodic_random_transitions_many():
@@ -232,11 +232,11 @@ def test_ergodic_random_transitions_many():
     transitions = topology.random_transitions()
     assert_distribution(transitions)
     assert_equal(transitions, np.array([
-        [0.46537016, 0.12619365, 0.07474032, 0.32619324, 0.00750262],
-        [0.38836848, 0.00103519, 0.24911885, 0.06922191, 0.29225557],
-        [0.5312161 , 0.04639154, 0.13922816, 0.14542372, 0.13774047],
-        [0.0361995 , 0.43772711, 0.08498809, 0.26867251, 0.17241279],
-        [0.06373359, 0.30347054, 0.09117514, 0.38445582, 0.1571649 ]
+        [0.58715548, 0.14491542, 0.20980762, 0.00623944, 0.05188205],
+        [0.0840705 , 0.23055049, 0.08297536, 0.25124688, 0.35115677],
+        [0.02117615, 0.37664662, 0.26705912, 0.09851123, 0.23660688],
+        [0.01938041, 0.16853843, 0.52046123, 0.07535256, 0.21626737],
+        [0.04996846, 0.44545843, 0.12079423, 0.07154241, 0.31223646]
     ]))
 
 # --------------------------------------- #
@@ -256,13 +256,13 @@ def test_ergodic_validate_transitions_valid():
     transitions = topology.random_transitions()
     topology.validate_transitions(transitions)
 
-# ======================== #
+# =============== #
 # _LinearTopology #
-# ======================== #
+# =============== #
 
-# ---------------------------------------------- #
+# ------------------------------------- #
 # _LinearTopology.uniform_transitions() #
-# ---------------------------------------------- #
+# ------------------------------------- #
 
 def test_linear_uniform_transitions_min():
     """Generate a uniform linear transition matrix with minimal states"""
@@ -289,16 +289,16 @@ def test_linear_uniform_transitions_many():
     transitions = topology.uniform_transitions()
     assert_distribution(transitions)
     assert_equal(transitions, np.array([
-        [0.5, 0.5 , 0.        , 0.        , 0.        ],
-        [0. , 0.5 , 0.5       , 0.        , 0.        ],
-        [0. , 0.  , 0.5       , 0.5       , 0.        ],
-        [0. , 0.  , 0.        , 0.5       , 0.5       ],
-        [0. , 0.  , 0.        , 0.        , 1.        ]
+        [0.5, 0.5, 0. , 0. , 0. ],
+        [0. , 0.5, 0.5, 0. , 0. ],
+        [0. , 0. , 0.5, 0.5, 0. ],
+        [0. , 0. , 0. , 0.5, 0.5],
+        [0. , 0. , 0. , 0. , 1. ]
     ]))
 
-# --------------------------------------------- #
+# ------------------------------------ #
 # _LinearTopology.random_transitions() #
-# --------------------------------------------- #
+# ------------------------------------ #
 
 def test_linear_random_transitions_min():
     """Generate a random linear transition matrix with minimal states"""
@@ -315,7 +315,7 @@ def test_linear_random_transitions_small():
     transitions = topology.random_transitions()
     assert_distribution(transitions)
     assert_equal(transitions, np.array([
-        [0.87426829, 0.12573171],
+        [0.65157396, 0.34842604],
         [0.        , 1.        ]
     ]))
 
@@ -325,16 +325,16 @@ def test_linear_random_transitions_many():
     transitions = topology.random_transitions()
     assert_distribution(transitions)
     assert_equal(transitions, np.array([
-        [0.9294571 , 0.0705429 , 0.        , 0.        , 0.        ],
-        [0.        , 0.92269318, 0.07730682, 0.        , 0.        ],
-        [0.        , 0.        , 0.86161736, 0.13838264, 0.        ],
-        [0.        , 0.        , 0.        , 0.13863688, 0.86136312],
+        [0.44455421, 0.55544579, 0.        , 0.        , 0.        ],
+        [0.        , 0.57553614, 0.42446386, 0.        , 0.        ],
+        [0.        , 0.        , 0.92014965, 0.07985035, 0.        ],
+        [0.        , 0.        , 0.        , 0.66790982, 0.33209018],
         [0.        , 0.        , 0.        , 0.        , 1.        ]
     ]))
 
-# ----------------------------------------------- #
+# -------------------------------------- #
 # _LinearTopology.validate_transitions() #
-# ----------------------------------------------- #
+# -------------------------------------- #
 
 def test_linear_validate_transitions_invalid():
     """Validate an invalid linear transition matrix"""

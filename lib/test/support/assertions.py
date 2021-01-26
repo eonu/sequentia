@@ -11,6 +11,10 @@ def assert_all_equal(A, B):
     for a, b in zip(A, B):
         assert_equal(a, b)
 
+def assert_all_not_equal(A, B):
+    for a, b in zip(A, B):
+        assert_not_equal(a, b)
+
 def assert_distribution(a):
     if a.ndim == 1:
         assert_almost_equal(a.sum(), 1., decimal=5)
