@@ -89,7 +89,7 @@ Below are some simple examples of how the package can be used for both univariat
 ### Univariate sequences
 
 ```python
-from sequentia import KNNClassifier
+import numpy as np, sequentia as seq
 # Generate training observation sequences and labels
 X, y = [
   np.array([1, 0, 5, 3, 7, 2, 2, 4, 9, 8, 7]),
@@ -97,7 +97,7 @@ X, y = [
   np.array([5, 8, 0, 3, 1, 0, 2, 7, 9])
 ], ['good', 'good', 'bad']
 # Create and fit the classifier
-clf = KNNClassifier(k=1, classes=('good', 'bad'))
+clf = seq.KNNClassifier(k=1, classes=('good', 'bad'))
 clf.fit(X, y)
 # Make a prediction for a new observation sequence
 x_new = np.array([0, 3, 2, 7, 9, 1, 1])
@@ -107,7 +107,7 @@ y_new = clf.predict(x_new)
 ### Multivariate sequences
 
 ```python
-from sequentia import KNNClassifier
+import numpy as np, sequentia as seq
 # Generate training observation sequences and labels
 X, y = [
   np.array([[1, 0, 5, 3, 7, 2, 2, 4, 9, 8, 7],
@@ -118,7 +118,7 @@ X, y = [
             [0, 2, 7, 1, 2, 9, 5, 8, 1]]).T
 ], ['good', 'good', 'bad']
 # Create and fit the classifier
-clf = KNNClassifier(k=1, classes=('good', 'bad'))
+clf = seq.KNNClassifier(k=1, classes=('good', 'bad'))
 clf.fit(X, y)
 # Make a prediction for a new observation sequence
 x_new = np.array([[0, 3, 2, 7, 9, 1, 1],
