@@ -45,7 +45,7 @@ Some examples of how Sequentia can be used in isolated sequence classification i
 
 ## Features
 
-Sequentia provides the following methods, supporting multivariate sequences with different durations.
+Sequentia provides the following algorithms, all supporting multivariate sequences with different durations.
 
 ### Classification algorithms
 
