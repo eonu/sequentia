@@ -30,9 +30,9 @@
 
 ## Introduction
 
-Sequential data is often observed in many different forms such as audio signals and stock prices over time, to even brain and heart signals. Such data is of particular interest in machine learning, as changing patterns over time naturally provide many interesting opportunities and challenges for prediction and statistical inference, and can often reveal useful insights about the processes that generated the data.
+Sequential data is often observed in many different forms such as audio signals and stock prices, to even brain and heart signals. Such data is of particular interest in machine learning, as changing patterns over time naturally provide many interesting opportunities and challenges for classification.
 
-**Sequentia is a Python package that provides implementations of classification algorithms for sequential data.**
+**Sequentia is a Python package that implements various classification algorithms for sequential data.**
 
 Some examples of how Sequentia can be used in isolated sequence classification include:
 
@@ -90,15 +90,18 @@ Below are some simple examples of how the package can be used for both univariat
 
 ```python
 import numpy as np, sequentia as seq
+
 # Generate training observation sequences and labels
 X, y = [
   np.array([1, 0, 5, 3, 7, 2, 2, 4, 9, 8, 7]),
   np.array([2, 1, 4, 6, 5, 8]),
   np.array([5, 8, 0, 3, 1, 0, 2, 7, 9])
 ], ['good', 'good', 'bad']
+
 # Create and fit the classifier
 clf = seq.KNNClassifier(k=1, classes=('good', 'bad'))
 clf.fit(X, y)
+
 # Make a prediction for a new observation sequence
 x_new = np.array([0, 3, 2, 7, 9, 1, 1])
 y_new = clf.predict(x_new)
@@ -108,6 +111,7 @@ y_new = clf.predict(x_new)
 
 ```python
 import numpy as np, sequentia as seq
+
 # Generate training observation sequences and labels
 X, y = [
   np.array([[1, 0, 5, 3, 7, 2, 2, 4, 9, 8, 7],
@@ -117,9 +121,11 @@ X, y = [
   np.array([[5, 8, 0, 3, 1, 0, 2, 7, 9],
             [0, 2, 7, 1, 2, 9, 5, 8, 1]]).T
 ], ['good', 'good', 'bad']
+
 # Create and fit the classifier
 clf = seq.KNNClassifier(k=1, classes=('good', 'bad'))
 clf.fit(X, y)
+
 # Make a prediction for a new observation sequence
 x_new = np.array([[0, 3, 2, 7, 9, 1, 1],
                   [2, 5, 7, 4, 2, 0, 8]]).T
