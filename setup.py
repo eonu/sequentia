@@ -19,7 +19,7 @@ install_requires = [
     'joblib>=0.14,<1'
 ]
 
-VERSION = '0.11.0'
+VERSION = '0.11.1'
 
 with open('README.md', 'r', encoding='utf8') as fh:
     long_description = fh.read()
