@@ -1,3 +1,14 @@
+## [0.11.1](https://github.com/eonu/sequentia/releases/tag/v0.11.1)
+
+#### Major changes
+
+- Fix validation for univariate sequences. ([#164](https://github.com/eonu/sequentia/pull/164))
+
+#### Minor changes
+
+- Clean up `README.md` and add examples. ([#165](https://github.com/eonu/sequentia/pull/165))
+- Clean up validation logical expressions. ([#164](https://github.com/eonu/sequentia/pull/164))
+
 ## [0.11.0](https://github.com/eonu/sequentia/releases/tag/v0.11.0)
 
 #### Major changes

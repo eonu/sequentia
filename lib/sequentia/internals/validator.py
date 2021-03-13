@@ -30,13 +30,13 @@ class _Validator:
                 for i, x in enumerate(X):
                     if not isinstance(x, np.ndarray):
                         raise TypeError('Each observation sequence must be a numpy.ndarray')
-                    if not x.ndim <= 2:
+                    if x.ndim > 2:
                         raise ValueError('Each observation sequence must be at most two-dimensional')
-                    x = X[i] = (x if x.ndim == 2 else np.atleast_2d(x).T).astype(float)
-                    if not x.shape[1] == X[0].shape[1]:
+                    X[i] = (x if x.ndim == 2 else np.atleast_2d(x).T).astype(float)
+                    if X[i].shape[1] != X[0].shape[1]:
                         raise ValueError('Each observation sequence must have the same dimensionality')
             elif isinstance(X, np.ndarray):
-                if not X.ndim <= 2:
+                if X.ndim > 2:
                     raise ValueError('Observation sequence must be at most two-dimensional')
                 X = (X if X.ndim == 2 else np.atleast_2d(X).T).astype(float)
         else:
@@ -65,12 +65,12 @@ class _Validator:
         y: array-like of str/numeric
             The original input labels if valid.
         """
-        self.is_observation_sequences(X, allow_single=False)
+        X = self.is_observation_sequences(X, allow_single=False)
         self.is_iterable(y, 'labels')
         self.is_string_or_numeric(y[0], 'each label')
         if not all(isinstance(label, type(y[0])) for label in y[1:]):
             raise TypeError('Expected all labels to be of the same type')
-        if not len(X) == len(y):
+        if len(X) != len(y):
             raise ValueError('Expected the same number of observation sequences and labels')
         return X, y
 

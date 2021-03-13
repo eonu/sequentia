@@ -223,7 +223,9 @@ def test_observation_sequences_and_labels_same_length():
     """Observation sequences and labels with the same length."""
     X = [np.arange(8).reshape(-1, 1), np.arange(12).reshape(-1, 1)]
     y = ['c1', 'c2']
-    assert val.is_observation_sequences_and_labels(X, y) == (X, y)
+    X_val, y_val = val.is_observation_sequences_and_labels(X, y)
+    assert_all_equal(X, X_val)
+    assert y_val == y
 
 # ==================== #
 # _Validator.integer() #
