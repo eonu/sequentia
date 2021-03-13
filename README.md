@@ -30,31 +30,22 @@
 
 ## Introduction
 
-Sequential data is a commonly-observed, yet difficult-to-handle form of data. These can range from time series (sequences of observations occurring through time) to non-temporal sequences such as DNA nucleotides.
+Sequential data is often observed in many different forms such as audio signals and stock prices over time, to even brain and heart signals. Such data is of particular interest in machine learning, as changing patterns over time naturally provide many interesting opportunities and challenges for prediction and statistical inference, and can often reveal useful insights about the processes that generated the data.
 
-Time series data such as audio signals, stock prices and electro-cardiogram signals are often of particular interest to machine learning practitioners and researchers, as changing patterns over time naturally provide many interesting opportunities and challenges for machine learning prediction and statistical inference.
+**Sequentia is a Python package that provides implementations of classification algorithms for sequential data.**
 
-**Sequentia is a Python package that specifically aims to tackle classification problems for isolated sequences by providing implementations of a number of classification algorithms**.
+Some examples of how Sequentia can be used in isolated sequence classification include:
 
-Examples of such classification problems include:
-
-- classifying a spoken word based on its audio signal (or some other representation such as MFCCs),
-- classifying a hand-written character according to its pen-tip trajectory,
-- classifying a hand or head gesture in a motion-capture recording,
-- classifying the sentiment of a phrase or sentence in natural language.
-
-Compared to the classification of fixed-size inputs (e.g. a vector, or images), sequence classification problems face two major hurdles:
-
-1. the sequences are generally of different duration to each other,
-2. the observations within a given sequence (may) have temporal dependencies on previous observations which occured earlier within the same sequence, and these dependencies may be arbitrarily long.
-
-Sequentia aims to provide interpretable out-of-the-box machine learning algorithms suitable for these tasks, which require minimal configuration.
-
-In recent times, variants of the Recurrent Neural Network (particularly LSTMs and GRUs) have generally proven to be the most successful in modelling long-term dependencies in sequences. However, the design of RNN architectures is very opiniated and requires much configuration and engineering, and is therefore not included as part of the package.
+- determining a spoken word based on its audio signal or some other representation such as MFCCs,
+- identifying potential heart conditions such as arrhythmia from ECG signals,
+- predicting motion intent for gesture control from electrical muscle activity,
+- classifying hand-written characters according to their pen-tip trajectories,
+- classifying hand or head gestures from rotation or movement signals,
+- classifying the sentiment of a phrase or sentence in natural language from word embeddings.
 
 ## Features
 
-The following algorithms provided within Sequentia support the use of multivariate observation sequences with different durations.
+Sequentia provides the following classification method implemtations, supporting multivariate sequences with different durations.
 
 ### Classification algorithms
 
@@ -91,7 +82,49 @@ Documentation for the package is available on [Read The Docs](https://sequentia.
 
 ## Tutorials and examples
 
-For tutorials and examples on the usage of Sequentia, [look at the notebooks here](https://nbviewer.jupyter.org/github/eonu/sequentia/tree/master/notebooks/).
+For detailed tutorials and examples on the usage of Sequentia, [see the notebooks here](https://nbviewer.jupyter.org/github/eonu/sequentia/tree/master/notebooks/).
+
+Below are some simple examples of how the package can be used for both univariate and multivariate sequences.
+
+### Univariate sequences
+
+```python
+from sequentia import KNNClassifier
+# Generate training observation sequences and labels
+X, y = [
+  np.array([1, 0, 5, 3, 7, 2, 2, 4, 9, 8, 7]),
+  np.array([2, 1, 4, 6, 5, 8]),
+  np.array([5, 8, 0, 3, 1, 0, 2, 7, 9])
+], ['good', 'good', 'bad']
+# Create and fit the classifier
+clf = KNNClassifier(k=1, classes=('good', 'bad'))
+clf.fit(X, y)
+# Make a prediction for a new observation sequence
+x_new = np.array([0, 3, 2, 7, 9, 1, 1])
+y_new = clf.predict(x_new)
+```
+
+### Multivariate sequences
+
+```python
+from sequentia import KNNClassifier
+# Generate training observation sequences and labels
+X, y = [
+  np.array([[1, 0, 5, 3, 7, 2, 2, 4, 9, 8, 7],
+            [3, 8, 4, 0, 7, 1, 1, 3, 4, 2, 9]]).T,
+  np.array([[2, 1, 4, 6, 5, 8],
+            [5, 3, 9, 0, 8, 2]]).T,
+  np.array([[5, 8, 0, 3, 1, 0, 2, 7, 9],
+            [0, 2, 7, 1, 2, 9, 5, 8, 1]]).T
+], ['good', 'good', 'bad']
+# Create and fit the classifier
+clf = KNNClassifier(k=1, classes=('good', 'bad'))
+clf.fit(X, y)
+# Make a prediction for a new observation sequence
+x_new = np.array([[0, 3, 2, 7, 9, 1, 1],
+                  [2, 5, 7, 4, 2, 0, 8]]).T
+y_new = clf.predict(x_new)
+```
 
 ## Acknowledgments
 
