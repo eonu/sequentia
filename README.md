@@ -84,7 +84,7 @@ Documentation for the package is available on [Read The Docs](https://sequentia.
 
 For detailed tutorials and examples on the usage of Sequentia, [see the notebooks here](https://nbviewer.jupyter.org/github/eonu/sequentia/tree/master/notebooks/).
 
-Below are some basic examples of univariate and multivariate sequences can be used in Sequentia.
+Below are some basic examples of how univariate and multivariate sequences can be used in Sequentia.
 
 ### Univariate sequences
 
