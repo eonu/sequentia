@@ -30,7 +30,7 @@
 
 ## Introduction
 
-Sequential data is often observed in many different forms such as audio signals and stock prices, to even brain and heart signals. Such data is of particular interest in machine learning, as changing patterns over time naturally provide many interesting opportunities and challenges for classification.
+Sequential data is often observed in many different forms such as audio signals, stock prices, and even brain & heart signals. Such data is of particular interest in machine learning, as changing patterns over time naturally provide many interesting opportunities and challenges for classification.
 
 **Sequentia is a Python package that implements various classification algorithms for sequential data.**
 
