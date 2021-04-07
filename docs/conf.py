@@ -46,7 +46,11 @@ extensions = [
     'versionwarning.extension'
 ]
 
-intersphinx_mapping = {'numpy': ('http://docs.scipy.org/doc/numpy/', None)}
+intersphinx_mapping = {
+    'numpy': ('http://docs.scipy.org/doc/numpy/', None),
+    'torch': ('https://pytorch.org/docs/stable/', None)
+
+}
 
 autodoc_member_order = 'bysource'
 autosummary_generate = True

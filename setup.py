@@ -18,6 +18,9 @@ install_requires = [
     'tqdm>=4.36,<5',
     'joblib>=0.14,<1'
 ]
+extra_requires = {
+    'torch': ['torch+cpu>=1.6']
+}
 
 VERSION = '0.11.1'
 

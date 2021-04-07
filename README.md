@@ -58,6 +58,10 @@ Sequentia provides the following algorithms, all supporting multivariate sequenc
   - [x] Dependent and independent feature warping (DTWD & DTWI)
   - [x] Custom distance-weighted predictions
   - [x] Multi-processed predictions
+- [x] [DeepGRU: Deep Gesture Recognition Utility](https://sequentia.readthedocs.io/en/latest/sections/classifiers/deepgru.html) [[2]](#references)
+  - [x] Deep recurrent neural network with multiple GRU layers
+  - [x] Faster training than LSTM-based networks
+  - [x] Attention module for learning sub-sequence importance
 
 <p align="center">
   <img src="/docs/_static/classifier.svg" width="60%"/><br/>
@@ -72,8 +76,22 @@ Sequentia provides the following algorithms, all supporting multivariate sequenc
 
 ## Installation
 
+You can install Sequentia using `pip`.
+
 ```console
 pip install sequentia
+```
+
+Note that anything under the `sequentia.rnn` module (including `DeepGRU` and `collate_fn`) requires a working installation of PyTorch,
+and Sequentia assumes that you have this installed.
+
+Since there are many different possible configurations when installing PyTorch (e.g. CPU or GPU, CUDA version),
+we leave this up to the user instead of specifying particular binaries to install alongside Sequentia.
+
+If you really wish to install PyTorch together with Sequentia, the following will install a CPU-only version of PyTorch.
+
+```console
+pip install sequentia[torch]
 ```
 
 ## Documentation
@@ -134,9 +152,9 @@ y_new = clf.predict(x_new)
 
 ## Acknowledgments
 
-In earlier versions of the package (<0.10.0), an approximate dynamic time warping algorithm implementation ([`fastdtw`](https://github.com/slaypni/fastdtw)) was used in hopes of speeding up k-NN predictions, as the authors of the original FastDTW paper [[2]](#references) claim that approximated DTW alignments can be computed in linear memory and time - compared to the O(N^2) runtime complexity of the usual exact DTW implementation.
+In earlier versions of the package (<0.10.0), an approximate dynamic time warping algorithm implementation ([`fastdtw`](https://github.com/slaypni/fastdtw)) was used in hopes of speeding up k-NN predictions, as the authors of the original FastDTW paper [[3]](#references) claim that approximated DTW alignments can be computed in linear memory and time - compared to the O(N^2) runtime complexity of the usual exact DTW implementation.
 
-However, I was recently contacted by [Prof. Eamonn Keogh](https://www.cs.ucr.edu/~eamonn/) (at _University of California, Riverside_), whose recent work [[3]](#references) makes the surprising revelation that FastDTW is generally slower than the exact DTW algorithm that it approximates. Upon switching from the `fastdtw` package to [`dtaidistance`](https://github.com/wannesm/dtaidistance) (a very solid implementation of exact DTW with fast pure C compiled functions), DTW k-NN prediction times were indeed reduced drastically.
+However, I was recently contacted by [Prof. Eamonn Keogh](https://www.cs.ucr.edu/~eamonn/) (at _University of California, Riverside_), whose recent work [[4]](#references) makes the surprising revelation that FastDTW is generally slower than the exact DTW algorithm that it approximates. Upon switching from the `fastdtw` package to [`dtaidistance`](https://github.com/wannesm/dtaidistance) (a very solid implementation of exact DTW with fast pure C compiled functions), DTW k-NN prediction times were indeed reduced drastically.
 
 I would like to thank Prof. Eamonn Keogh for directly reaching out to me regarding this finding!
 
@@ -147,17 +165,23 @@ I would like to thank Prof. Eamonn Keogh for directly reaching out to me regardi
     <tr>
       <td>[1]</td>
       <td>
-        <a href=https://web.ece.ucsb.edu/Faculty/Rabiner/ece259/Reprints/tutorial%20on%20hmm%20and%20applications.pdf">Lawrence R. Rabiner. <b>"A Tutorial on Hidden Markov Models and Selected Applications in Speech Recognition"</b> <em>Proceedings of the IEEE 77 (1989)</em>, no. 2, pp. 257-86.</a>
+        <a href=https://web.ece.ucsb.edu/Faculty/Rabiner/ece259/Reprints/tutorial%20on%20hmm%20and%20applications.pdf">Lawrence R. Rabiner. <b>"A Tutorial on Hidden Markov Models and Selected Applications in Speech Recognition"</b> <em>Proceedings of the IEEE 77 (1989)</em>, no. 2, 257-86.</a>
       </td>
     </tr>
     <tr>
       <td>[2]</td>
       <td>
-        <a href="https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf">Stan Salvador & Philip Chan. <b>"FastDTW: Toward accurate dynamic time warping in linear time and space."</b> <em>Intelligent Data Analysis 11.5 (2007)</em>, 561-580.</a>
+        <a href="https://arxiv.org/ftp/arxiv/papers/1810/1810.12514.pdf">Mehran Maghoumi & Joseph J. LaViola Jr. <b>"DeepGRU: Deep Gesture Recognition Utility"</b> <em>Advances in Visual Computing, 14th International Symposium on Visual Computing, ISVC 2019</em>, Proceedings, Part I, 16-31.</a>
       </td>
     </tr>
     <tr>
       <td>[3]</td>
+      <td>
+        <a href="https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf">Stan Salvador & Philip Chan. <b>"FastDTW: Toward accurate dynamic time warping in linear time and space."</b> <em>Intelligent Data Analysis 11.5 (2007)</em>, 561-580.</a>
+      </td>
+    </tr>
+    <tr>
+      <td>[4]</td>
       <td>
         <a href="https://arxiv.org/ftp/arxiv/papers/2003/2003.11246.pdf">Renjie Wu & Eamonn J. Keogh. <b>"FastDTW is approximate and Generally Slower than the Algorithm it Approximates"</b> <em>IEEE Transactions on Knowledge and Data Engineering (2020)</em>, 1–1.</a>
       </td>
