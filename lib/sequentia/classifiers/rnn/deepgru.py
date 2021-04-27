@@ -9,11 +9,11 @@ class DeepGRU(nn.Module):
 
     Parameters
     ----------
-    n_classes: int
-        The number of different sequence classes.
-
     n_features: int
         The number of features that each observation within a sequence has.
+
+    n_classes: int
+        The number of different sequence classes.
 
     dims: dict
         A dictionary consisting of dimension configuration for the GRUs and fully-connected layers.
