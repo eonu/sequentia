@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-from __future__ import print_function
+import platform
+from pkg_resources import packaging
 from setuptools import setup, find_packages
 
 python_requires = '>=3.6,<3.10'
+extras_require = {'torch': 'torch>=1.8+cpu'}
 setup_requires = [
     'Cython>=0.28.5',
     'numpy>=1.17,<2',
@@ -18,7 +20,9 @@ install_requires = [
     'tqdm>=4.36,<5',
     'joblib>=0.14,<1'
 ]
-extras_require = {'torch': ['torch+cpu>=1.6']}
+if packaging.version.parse(platform.python_version()) < packaging.version.parse('3.8'):
+    # Backports for importlib.metadata for Python versions < v3.8
+    install_requires.append('importlib_metadata')
 
 VERSION = '0.11.1'
 
