@@ -82,8 +82,7 @@ You can install Sequentia using `pip`.
 pip install sequentia
 ```
 
-Note that anything under the `sequentia.rnn` module (including `DeepGRU` and `collate_fn`) requires a working installation of PyTorch,
-and Sequentia assumes that you have this installed.
+Note that anything under the `sequentia.classifiers.rnn` module (including `DeepGRU` and `collate_fn`) requires a working installation of PyTorch, and Sequentia assumes that you have this installed.
 
 Since there are many different possible configurations when installing PyTorch (e.g. CPU or GPU, CUDA version),
 we leave this up to the user instead of specifying particular binaries to install alongside Sequentia.

@@ -31,7 +31,7 @@ class DeepGRU(nn.Module):
 
             .. code-block:: python
 
-                from sequentia.rnn import DeepGRU
+                from sequentia.classifiers.rnn import DeepGRU
                 device = 'cuda:0'
                 model = DeepGRU(n_features=3, n_classes=10, device=device).to(device)
 
@@ -110,7 +110,7 @@ class _AttentionModule(nn.Module):
         self.dims = dims
 
         # Attentional context vector weights
-        self.W_c = nn.Parameter(torch.empty((self.dims['in'], self.dims['in']), device=device))
+        self.W_c = nn.Linear(self.dims['in'], self.dims['in'], bias=False)
 
         # Auxilliary context
         self.attn_gru = nn.GRU(input_size=self.dims['in'], hidden_size=self.dims['in'])
@@ -118,12 +118,12 @@ class _AttentionModule(nn.Module):
     def forward(self, h, h_last):
         h, h_last = h.to(self.device), h_last.to(self.device)
 
-        h_last = h_last.transpose(1, 0)
+        h_last.transpose_(1, 0)
         # Shape: B x 1 x D_out
 
         # Calculate attentional context
-        h = h.transpose(1, 2)
-        c = F.softmax((h_last @ self.W_c) @ h, dim=0)
+        h.transpose_(1, 2)
+        c = F.softmax(self.W_c(h_last) @ h, dim=0)
         c = (c @ h.transpose(2, 1)).transpose(1, 0)
         # Shape: 1 x B x D_out
 
@@ -156,4 +156,4 @@ class _Classifier(nn.Module):
     def forward(self, o_attn):
         f1 = self.model['fc1'](o_attn)
         f2 = self.model['fc2'](F.relu(f1))
-        return F.log_softmax(f2)
+        return F.log_softmax(f2, dim=1)
