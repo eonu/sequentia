@@ -20,7 +20,7 @@ class Preprocess:
     >>> X = [np.random.random((20 * i, 3)) for i in range(1, 4)]
     >>> # Create the Preprocess object
     >>> pre = Preprocess([
-    >>>     TrimZeros(),
+    >>>     TrimConstants(),
     >>>     Center(),
     >>>     Standardize(),
     >>>     Filter(window_size=5, method='median'),

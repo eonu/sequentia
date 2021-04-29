@@ -49,8 +49,7 @@ Sequentia offers some appropriate classification algorithms for these kinds of t
    :caption: Preprocessing Methods
 
    sections/preprocessing/introduction.rst
-   sections/preprocessing/equalize.rst
-   sections/preprocessing/trim_zeros.rst
+   sections/preprocessing/trim_constants.rst
    sections/preprocessing/min_max_scale.rst
    sections/preprocessing/center.rst
    sections/preprocessing/standardize.rst

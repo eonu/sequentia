@@ -11,11 +11,8 @@ rng = np.random.RandomState(seed)
 X = rng.random((7, 2))
 Xs = [i * rng.random((3 * i, 2)) for i in range(1, 4)]
 
-# Length equalizing preprocessor
-equalize = Preprocess([Equalize()])
-
-# Zero-trimming preprocessor
-trim = Preprocess([TrimZeros()])
+# Constant-trimming preprocessor
+trim = Preprocess([TrimConstants()])
 
 # Min-max scaling preprocessor
 min_max_scale_kwargs = {'scale': (-5, 5), 'independent': False}
@@ -37,8 +34,7 @@ filt = Preprocess([Filter(**filt_kwargs)])
 
 # Combined preprocessor
 combined = Preprocess([
-    Equalize(),
-    TrimZeros(),
+    TrimConstants(),
     MinMaxScale(**min_max_scale_kwargs),
     Center(),
     Standardize(),
@@ -46,50 +42,27 @@ combined = Preprocess([
     Downsample(**down_kwargs)
 ])
 
-# ======== #
-# Equalize #
-# ======== #
+# ============= #
+# TrimConstants #
+# ============= #
 
-def test_equalize_single():
-    """Applying length equalizing to a single observation sequence"""
-    assert_equal(equalize(X), Equalize()(X))
+def test_trim_constants_single():
+    """Applying constant-trimming to a single observation sequence"""
+    assert_equal(trim(X), TrimConstants()(X))
 
-def test_equalize_multiple():
-    """Applying length equalizing to multiple observation sequences"""
-    assert_all_equal(equalize(Xs), Equalize()(Xs))
+def test_trim_constants_multiple():
+    """Applying constant-trimming to multiple observation sequences"""
+    assert_all_equal(trim(Xs), TrimConstants()(Xs))
 
-def test_equalize_summary(capsys):
-    """Summary of a length equalizing transformation"""
-    equalize.summary()
-    assert capsys.readouterr().out == (
-        '   Preprocessing summary:   \n'
-        '============================\n'
-        '1. Equalize\n'
-        '   Equalize sequence lengths\n'
-        '============================\n'
-    )
-
-# ========= #
-# TrimZeros #
-# ========= #
-
-def test_trim_zeros_single():
-    """Applying zero-trimming to a single observation sequence"""
-    assert_equal(trim(X), TrimZeros()(X))
-
-def test_trim_zeros_multiple():
-    """Applying zero-trimming to multiple observation sequences"""
-    assert_all_equal(trim(Xs), TrimZeros()(Xs))
-
-def test_trim_zeros_summary(capsys):
-    """Summary of a zero-trimming transformation"""
+def test_trim_constants_summary(capsys):
+    """Summary of a constant-trimming transformation"""
     trim.summary()
     assert capsys.readouterr().out == (
-        '   Preprocessing summary:  \n'
-        '===========================\n'
-        '1. TrimZeros\n   '
-        'Remove zero-observations\n'
-        '===========================\n'
+        '     Preprocessing summary:    \n'
+        '===============================\n'
+        '1. TrimConstants\n'
+        '   Remove constant observations\n'
+        '===============================\n'
     )
 
 # =========== #
@@ -212,8 +185,7 @@ def test_filter_summary(capsys):
 # ======================== #
 
 combined = Preprocess([
-    Equalize(),
-    TrimZeros(),
+    TrimConstants(),
     MinMaxScale(**min_max_scale_kwargs),
     Center(),
     Standardize(),
@@ -224,8 +196,7 @@ combined = Preprocess([
 def test_combined_single():
     """Applying combined transformations to a single observation sequence"""
     X_pre = X
-    X_pre = Equalize()(X_pre)
-    X_pre = TrimZeros()(X_pre)
+    X_pre = TrimConstants()(X_pre)
     X_pre = MinMaxScale(**min_max_scale_kwargs)(X_pre)
     X_pre = Center()(X_pre)
     X_pre = Standardize()(X_pre)
@@ -236,8 +207,7 @@ def test_combined_single():
 def test_combined_multiple():
     """Applying combined transformations to multiple observation sequences"""
     Xs_pre = Xs
-    Xs_pre = Equalize()(Xs_pre)
-    Xs_pre = TrimZeros()(Xs_pre)
+    Xs_pre = TrimConstants()(Xs_pre)
     Xs_pre = MinMaxScale(**min_max_scale_kwargs)(Xs_pre)
     Xs_pre = Center()(Xs_pre)
     Xs_pre = Standardize()(Xs_pre)
@@ -251,25 +221,22 @@ def test_combined_summary(capsys):
     assert capsys.readouterr().out == (
         '                   Preprocessing summary:                   \n'
         '============================================================\n'
-        '1. Equalize\n'
-        '   Equalize sequence lengths\n'
+        '1. TrimConstants\n'
+        '   Remove constant observations\n'
         '------------------------------------------------------------\n'
-        '2. TrimZeros\n'
-        '   Remove zero-observations\n'
-        '------------------------------------------------------------\n'
-        '3. MinMaxScale\n'
+        '2. MinMaxScale\n'
         '   Min-max scaling into range (-5, 5)\n'
         '------------------------------------------------------------\n'
-        '4. Center\n'
+        '3. Center\n'
         '   Centering around mean (zero mean) (independent)\n'
         '------------------------------------------------------------\n'
-        '5. Standardize\n'
+        '4. Standardize\n'
         '   Standard scaling (zero mean, unit variance) (independent)\n'
         '------------------------------------------------------------\n'
-        '6. Filter\n'
+        '5. Filter\n'
         '   Median filtering with window-size 3\n'
         '------------------------------------------------------------\n'
-        '7. Downsample\n'
+        '6. Downsample\n'
         '   Decimation downsampling with factor 3\n'
         '============================================================\n'
     )
