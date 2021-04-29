@@ -11,19 +11,16 @@
 <p align="center">
   <div align="center">
     <a href="https://pypi.org/project/sequentia">
-      <img src="https://img.shields.io/pypi/v/sequentia?style=flat-square" alt="PyPI"/>
+      <img src="https://img.shields.io/pypi/v/sequentia?logo=pypi&style=flat-square" alt="PyPI"/>
     </a>
     <a href="https://pypi.org/project/sequentia">
-      <img src="https://img.shields.io/pypi/pyversions/sequentia?style=flat-square" alt="PyPI - Python Version"/>
+      <img src="https://img.shields.io/pypi/pyversions/sequentia?logo=python&style=flat-square" alt="PyPI - Python Version"/>
+    </a>
+    <a href="https://sequentia.readthedocs.io/en/latest">
+      <img src="https://img.shields.io/readthedocs/sequentia.svg?logo=read-the-docs&style=flat-square" alt="Read The Docs - Documentation">
     </a>
     <a href="https://raw.githubusercontent.com/eonu/sequentia/master/LICENSE">
       <img src="https://img.shields.io/pypi/l/sequentia?style=flat-square" alt="PyPI - License"/>
-    </a>
-    <a href="https://sequentia.readthedocs.io/en/latest">
-      <img src="https://readthedocs.org/projects/sequentia/badge/?version=latest&style=flat-square" alt="Read The Docs - Documentation">
-    </a>
-    <a href="https://travis-ci.org/eonu/sequentia">
-      <img src="https://img.shields.io/travis/eonu/sequentia?logo=travis&style=flat-square" alt="Travis - Build">
     </a>
   </div>
 </p>
@@ -42,6 +39,12 @@ Some examples of how Sequentia can be used in isolated sequence classification i
 - classifying hand-written characters according to their pen-tip trajectories,
 - classifying hand or head gestures from rotation or movement signals,
 - classifying the sentiment of a phrase or sentence in natural language from word embeddings.
+
+## Build status
+
+| `master` | `dev` |
+| -------- | ------|
+| [![Travis Build (Master)](https://img.shields.io/travis/com/eonu/sequentia?logo=travis&style=flat-square)](https://travis-ci.com/github/eonu/sequentia) | [![Travis Build (Development)](https://img.shields.io/travis/com/eonu/sequentia/dev?logo=travis&style=flat-square)](https://travis-ci.com/github/eonu/sequentia) |
 
 ## Features
 
