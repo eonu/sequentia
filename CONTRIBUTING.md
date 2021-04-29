@@ -28,7 +28,7 @@ Prior to reporting an issue, please ensure:
 
 Branch names must be of the form `type/short-phrase-or-description`, where `type` is either a:
 
-- `patch`: Making a change (including removal) of an existing feature.
+- `patch`: Making a change to an existing feature.
 - `add`: Adding a new feature.
 - `rm`: Removing an existing feature.
 
