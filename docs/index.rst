@@ -40,8 +40,9 @@ Sequentia offers some appropriate classification algorithms for these kinds of t
    :maxdepth: 1
    :caption: Classifiers and Models
 
-   sections/classifiers/gmmhmm.rst
    sections/classifiers/knn.rst
+   sections/classifiers/gmmhmm.rst
+   sections/classifiers/deepgru.rst
 
 .. toctree::
    :maxdepth: 1
