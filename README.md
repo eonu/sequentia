@@ -68,7 +68,7 @@ Sequentia provides the following algorithms, all supporting multivariate sequenc
 
 <p align="center">
   <img src="/docs/_static/classifier.svg" width="60%"/><br/>
-  Example of a classification algorithm: <em>a multi-class HMM sequence classifier</em>
+  Example of a classification algorithm (HMM sequence classifier)
 </p>
 
 ### Preprocessing methods
