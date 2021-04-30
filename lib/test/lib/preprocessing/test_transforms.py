@@ -17,94 +17,13 @@ zeros = np.zeros((3, 2))
 X_padded = np.vstack((zeros, X_even, zeros))
 Xs_padded = [np.vstack((zeros, x, zeros)) for x in Xs]
 
-# ======== #
-# Equalize #
-# ======== #
+# ============= #
+# TrimConstants #
+# ============= #
 
-def test_equalize_single_odd():
-    """Equalize a single odd-length observation sequence"""
-    assert_equal(Equalize()(X_odd), np.array([
-        [0.56804456, 0.92559664],
-        [0.07103606, 0.0871293 ],
-        [0.0202184 , 0.83261985],
-        [0.77815675, 0.87001215],
-        [0.97861834, 0.79915856],
-        [0.46147936, 0.78052918],
-        [0.11827443, 0.63992102]
-    ]))
-
-def test_equalize_single_even():
-    """Equalize a single even-length observation sequence"""
-    assert_equal(Equalize()(X_even), np.array([
-        [0.5488135 , 0.71518937],
-        [0.60276338, 0.54488318],
-        [0.4236548 , 0.64589411],
-        [0.43758721, 0.891773  ],
-        [0.96366276, 0.38344152],
-        [0.79172504, 0.52889492]
-    ]))
-
-def test_equalize_multiple():
-    """Equalize multiple observation sequences"""
-    assert_all_equal(Equalize()(Xs), [
-        np.array([
-            [0.14335329, 0.94466892],
-            [0.52184832, 0.41466194],
-            [0.26455561, 0.77423369],
-            [0.        , 0.        ],
-            [0.        , 0.        ],
-            [0.        , 0.        ],
-            [0.        , 0.        ],
-            [0.        , 0.        ],
-            [0.        , 0.        ]
-        ]),
-        np.array([
-            [0.91230066, 1.1368679 ],
-            [0.0375796 , 1.23527099],
-            [1.22419145, 1.23386799],
-            [1.88749616, 1.3636406 ],
-            [0.7190158 , 0.87406391],
-            [1.39526239, 0.12045094],
-            [0.        , 0.        ],
-            [0.        , 0.        ],
-            [0.        , 0.        ]
-        ]),
-        np.array([
-            [2.00030015, 2.01191361],
-            [0.63114768, 0.38677889],
-            [0.94628505, 1.09113231],
-            [1.71059031, 1.31580454],
-            [2.96512151, 0.30613443],
-            [0.62663027, 0.48392855],
-            [1.95932498, 0.75987481],
-            [1.39893232, 0.73327678],
-            [0.47690875, 0.33112542]
-        ])
-    ])
-
-def test_equalize_multiple_with_longer():
-    """Fit an equalizing transformation and equalize a longer sequence"""
-    transform = Equalize()
-    transform.fit(Xs)
-    assert_equal(transform(rng.random((15, 2))), np.array([
-        [0.65632959, 0.13818295],
-        [0.19658236, 0.36872517],
-        [0.82099323, 0.09710128],
-        [0.83794491, 0.09609841],
-        [0.97645947, 0.4686512 ],
-        [0.97676109, 0.60484552],
-        [0.73926358, 0.03918779],
-        [0.28280696, 0.12019656],
-        [0.2961402 , 0.11872772]
-    ]))
-
-# ========= #
-# TrimZeros #
-# ========= #
-
-def test_trim_zeros_single():
+def test_trim_constants_single():
     """Trim a single zero-padded observation sequence"""
-    assert_equal(TrimZeros()(X_padded), np.array([
+    assert_equal(TrimConstants()(X_padded), np.array([
         [0.5488135 , 0.71518937],
         [0.60276338, 0.54488318],
         [0.4236548 , 0.64589411],
@@ -113,9 +32,9 @@ def test_trim_zeros_single():
         [0.79172504, 0.52889492]
     ]))
 
-def test_trim_zeros_multiple():
+def test_trim_constants_multiple():
     """Trim multiple zero-padded observation sequences"""
-    assert_all_equal(TrimZeros()(Xs_padded), [
+    assert_all_equal(TrimConstants()(Xs_padded), [
         np.array([
             [0.14335329, 0.94466892],
             [0.52184832, 0.41466194],

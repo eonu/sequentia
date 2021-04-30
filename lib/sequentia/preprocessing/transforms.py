@@ -3,7 +3,7 @@ from copy import copy
 from tqdm.auto import tqdm
 from ..internals import _Validator
 
-__all__ = ['Transform', 'Equalize', 'TrimZeros', 'MinMaxScale', 'Center', 'Standardize', 'Downsample', 'Filter']
+__all__ = ['Transform', 'TrimConstants', 'MinMaxScale', 'Center', 'Standardize', 'Downsample', 'Filter']
 
 class Transform:
     """Base class representing a single transformation."""
@@ -122,34 +122,8 @@ class Transform:
         self.fit(X)
         return self.transform(X, verbose)
 
-class Equalize(Transform):
-    """Equalize all observation sequence lengths by padding or trimming zeros."""
-
-    def __init__(self):
-        super().__init__()
-        self.length = None
-
-    def fit(self, X):
-        X = self._val.is_observation_sequences(X, allow_single=True)
-        self.length = max(len(x) for x in X) if isinstance(X, list) else len(X)
-
-    def _unfit(self):
-        self.length = None
-
-    def _is_fitted(self):
-        return self.length is not None
-
-    def _describe(self):
-        return 'Equalize sequence lengths'
-
-    def transform(self, X, verbose=False):
-        def equalize(x):
-            T, D = x.shape
-            return np.vstack((x, np.zeros((self.length - T, D)))) if T <= self.length else x[:self.length]
-        return self._apply(equalize, X, verbose)
-
-class TrimZeros(Transform):
-    """Trim zero-observations from the input observation sequence(s).
+class TrimConstants(Transform):
+    """Trim constant observations from the input observation sequence(s).
 
     Examples
     --------
@@ -157,17 +131,28 @@ class TrimZeros(Transform):
     >>> z = np.zeros((4, 3))
     >>> x = lambda i: np.vstack((z, np.random.random((10 * i, 3)), z))
     >>> X = [x(i) for i in range(1, 4)]
-    >>> # Zero-trim the data
-    >>> X = TrimZeros()(X)
+    >>> # Trim the data
+    >>> X = TrimConstants()(X)
+
+    Parameters
+    ----------
+    const: float
+        The constant value.
     """
+    def __init__(self, constant=0):
+        super().__init__()
+        try:
+            self.constant = float(constant)
+        except ValueError:
+            raise TypeError('Expected constant to be a float or convertible to a float')
 
     def _describe(self):
-        return 'Remove zero-observations'
+        return 'Remove constant observations'
 
     def transform(self, X, verbose=False):
-        def trim_zeros(x):
-            return x[~np.all(x == 0, axis=1)]
-        return self._apply(trim_zeros, X, verbose)
+        def trim_constants(x):
+            return x[~np.all(x == self.constant, axis=1)]
+        return self._apply(trim_constants, X, verbose)
 
 class MinMaxScale(Transform):
     """Scales the observation sequence features to each be within a provided range.

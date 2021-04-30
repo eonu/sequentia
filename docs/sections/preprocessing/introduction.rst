@@ -5,8 +5,7 @@ Introduction to Preprocessing
 
 Sequentia provides a number of useful preprocessing methods for sequential data.
 
-- :doc:`Length Equalizing <equalize>` (``Equalize``)
-- :doc:`Zero Trimming <trim_zeros>` (``TrimZeros``)
+- :doc:`Constant Trimming <trim_constants>` (``TrimConstants``)
 - :doc:`Min-max Scaling <min_max_scale>` (``MinMaxScale``)
 - :doc:`Centering <center>` (``Center``)
 - :doc:`Standardizing <standardize>` (``Standardize``)
