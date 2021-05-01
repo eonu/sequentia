@@ -27,7 +27,7 @@ setup(
     package_dir = {'': 'lib'},
     packages = find_packages(where='lib'),
     classifiers = [
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
