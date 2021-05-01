@@ -1,28 +1,8 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-import platform
-from pkg_resources import packaging
-from setuptools import setup, find_packages
 
-python_requires = '>=3.6,<3.10'
-extras_require = {'torch': 'torch>=1.8+cpu'}
-setup_requires = [
-    'Cython>=0.28.5',
-    'numpy>=1.17,<2',
-    'scipy>=1.3,<2'
-]
-install_requires = [
-    'numpy>=1.17,<2',
-    'hmmlearn==0.2.4',
-    'dtaidistance[numpy]>=2.2,<2.3',
-    'scipy>=1.3,<2',
-    'scikit-learn>=0.22,<1',
-    'tqdm>=4.36,<5',
-    'joblib>=0.14,<1'
-]
-if packaging.version.parse(platform.python_version()) < packaging.version.parse('3.8'):
-    # Backports for importlib.metadata for Python versions < v3.8
-    install_requires.append('importlib_metadata')
+from setuptools import setup, find_packages
+from requirements import *
 
 VERSION = '0.11.1'
 

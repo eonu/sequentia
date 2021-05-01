@@ -95,6 +95,40 @@ Since there are many different possible configurations when installing PyTorch (
 > pip install sequentia[torch]
 > ```
 
+<details>
+<summary>
+    <b>Click here for installation instructions for contributing to Sequentia or running the notebooks.</b>
+</summary>
+<p>
+
+If you intend to help contribute to Sequentia, you will need some additional dependencies for running tests, notebooks and generating documentation.
+
+Depending on what you intend to do, you can specify the following extras.
+
+- For running tests in the `/lib/test` directory:
+
+  ```console
+  pip install sequentia[test]
+  ```
+- For generating Sphinx documentation in the `/docs` directory:
+
+  ```console
+  pip install sequentia[docs]
+  ```
+- For running notebooks in the `/notebooks` directory:
+
+  ```console
+  pip install sequentia[notebooks]
+  ```
+- A full development suite which installs all of the above extras:
+
+  ```console
+  pip install sequentia[dev]
+  ```
+
+</p>
+</details>
+
 ## Documentation
 
 Documentation for the package is available on [Read The Docs](https://sequentia.readthedocs.io/en/latest).
