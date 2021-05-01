@@ -14,9 +14,12 @@ pkg_versions = {
     'joblib': '>=0.14,<1',
     # [torch]
     'torch': '>=1.8+cpu',
-    # [test]
-    'sphinx': '==3.5.4',
     # [docs]
+    'sphinx': '==3.5.4',
+    'numpydoc': '',
+    'sphinx_rtd_theme': '',
+    'm2r2': '',
+    # [test]
     'pytest': '==5.3.2',
     # [notebooks]
     'jupyter': '==1.0.0',
@@ -31,14 +34,14 @@ pkg_versions = {
 }
 
 extra_pkgs = {
-    'torch': ['dev', 'torch', 'test', 'notebooks'],
-    'sphinx': ['dev', 'docs'],
+    'torch': ['dev', 'torch', 'test', 'docs', 'notebooks'],
     'pytest': ['dev', 'test'],
-    **{pkg:['dev', 'notebooks'] for pkg in [
+    **{pkg:['dev', 'docs'] for pkg in ('sphinx', 'numpydoc', 'sphinx_rtd_theme', 'm2r2')},
+    **{pkg:['dev', 'notebooks'] for pkg in (
         'jupyter', 'requests', 'matplotlib', 'pandas',
         'seaborn', 'tqdm', 'torchaudio', 'torchvision',
         'torchfsdd', 'librosa'
-    ]},
+    )},
 }
 
 def load_requires(*pkgs):
