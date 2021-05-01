@@ -19,8 +19,6 @@ except ImportError:
     sys.path.insert(0, os.path.abspath('../lib'))
     import sequentia
 
-subprocess.call('pip install numpydoc sphinx_rtd_theme m2r2 sphinx-version-warning', shell=True)
-
 # -- Project information -----------------------------------------------------
 
 project = 'sequentia'
@@ -40,10 +38,9 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
-    'numpydoc',
-    'm2r2',
     'sphinx.ext.intersphinx',
-    'versionwarning.extension'
+    'numpydoc',
+    'm2r2'
 ]
 
 intersphinx_mapping = {
