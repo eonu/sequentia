@@ -61,7 +61,7 @@ coverage.xml
 # Documentation
 docs/_build
 
-# Jupyter Notebook
+# Jupyter
 .ipynb_checkpoints
 
 # pyenv
