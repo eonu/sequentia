@@ -26,15 +26,6 @@ class DeepGRU(nn.Module):
 
         If no device is specified, a check is made for any available CUDA device, otherwise the CPU is used.
 
-        .. note::
-            In addition to specifying the device in the constructor, it is also necessary to send the model itself to the device with ``.to()``.
-
-            .. code-block:: python
-
-                from sequentia.classifiers.rnn import DeepGRU
-                device = 'cuda:0'
-                model = DeepGRU(n_features=3, n_classes=10, device=device).to(device)
-
     Notes
     -----
     .. [#maghoumi] **Mehran Maghoumi & Joseph J. LaViola Jr.** `"DeepGRU: Deep Gesture Recognition Utility" <https://arxiv.org/abs/1810.12514>`_
@@ -46,6 +37,7 @@ class DeepGRU(nn.Module):
 
         if device is None:
             device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        self.to(device)
 
         self.model = nn.ModuleDict({
             'enc': _EncoderNetwork(dims={'in': n_features, **{k:v for k, v in dims.items() if k.startswith('gru')}}, device=device),
@@ -91,7 +83,7 @@ class _EncoderNetwork(nn.Module):
         x = x.to(self.device)
 
         # Pack the padded Tensor into a PackedSequence
-        x_packed = pack_padded_sequence(x, x_lengths, batch_first=True).to(self.device)
+        x_packed = pack_padded_sequence(x, x_lengths.cpu(), batch_first=True).to(self.device)
 
         # Pass the PackedSequence through the GRUs
         h_packed, _ = self.model['gru1'](x_packed)
