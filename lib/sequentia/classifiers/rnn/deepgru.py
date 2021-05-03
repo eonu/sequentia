@@ -73,6 +73,7 @@ class _EncoderNetwork(nn.Module):
         super().__init__()
         self.dims = dims
         self.device = device
+        self.to(device)
         self.model = nn.ModuleDict({
            'gru1': nn.GRU(self.dims['in'], self.dims['gru1'], num_layers=2, batch_first=True).to(device),
            'gru2': nn.GRU(self.dims['gru1'], self.dims['gru2'], num_layers=2, batch_first=True).to(device),
@@ -83,7 +84,7 @@ class _EncoderNetwork(nn.Module):
         x = x.to(self.device)
 
         # Pack the padded Tensor into a PackedSequence
-        x_packed = pack_padded_sequence(x, x_lengths.cpu(), batch_first=True).to(self.device)
+        x_packed = pack_padded_sequence(x, x_lengths.cpu(), batch_first=True)
 
         # Pass the PackedSequence through the GRUs
         h_packed, _ = self.model['gru1'](x_packed)
@@ -99,6 +100,7 @@ class _AttentionModule(nn.Module):
     def __init__(self, dims, device):
         super().__init__()
         self.device = device
+        self.to(device)
         self.dims = dims
 
         # Attentional context vector weights
@@ -108,8 +110,6 @@ class _AttentionModule(nn.Module):
         self.attn_gru = nn.GRU(input_size=self.dims['in'], hidden_size=self.dims['in']).to(device)
 
     def forward(self, h, h_last):
-        h, h_last = h.to(self.device), h_last.to(self.device)
-
         h_last.transpose_(1, 0)
         # Shape: B x 1 x D_out
 
@@ -131,6 +131,7 @@ class _Classifier(nn.Module):
     def __init__(self, dims, device):
         super().__init__()
         self.device = device
+        self.to(device)
         self.dims = dims
         self.model = nn.ModuleDict({
             'fc1': nn.Sequential(
