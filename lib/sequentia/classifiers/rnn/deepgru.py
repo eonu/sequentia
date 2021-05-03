@@ -74,9 +74,9 @@ class _EncoderNetwork(nn.Module):
         self.dims = dims
         self.device = device
         self.model = nn.ModuleDict({
-           'gru1': nn.GRU(self.dims['in'], self.dims['gru1'], num_layers=2, batch_first=True),
-           'gru2': nn.GRU(self.dims['gru1'], self.dims['gru2'], num_layers=2, batch_first=True),
-           'gru3': nn.GRU(self.dims['gru2'], self.dims['gru3'], num_layers=1, batch_first=True)
+           'gru1': nn.GRU(self.dims['in'], self.dims['gru1'], num_layers=2, batch_first=True).to(device),
+           'gru2': nn.GRU(self.dims['gru1'], self.dims['gru2'], num_layers=2, batch_first=True).to(device),
+           'gru3': nn.GRU(self.dims['gru2'], self.dims['gru3'], num_layers=1, batch_first=True).to(device)
         })
 
     def forward(self, x, x_lengths):
@@ -102,10 +102,10 @@ class _AttentionModule(nn.Module):
         self.dims = dims
 
         # Attentional context vector weights
-        self.W_c = nn.Linear(self.dims['in'], self.dims['in'], bias=False)
+        self.W_c = nn.Linear(self.dims['in'], self.dims['in'], bias=False).to(device)
 
         # Auxilliary context
-        self.attn_gru = nn.GRU(input_size=self.dims['in'], hidden_size=self.dims['in'])
+        self.attn_gru = nn.GRU(input_size=self.dims['in'], hidden_size=self.dims['in']).to(device)
 
     def forward(self, h, h_last):
         h, h_last = h.to(self.device), h_last.to(self.device)
@@ -137,12 +137,12 @@ class _Classifier(nn.Module):
                 nn.BatchNorm1d(self.dims['in']),
                 nn.Dropout(),
                 nn.Linear(self.dims['in'], self.dims['fc'])
-            ),
+            ).to(device),
             'fc2': nn.Sequential(
                 nn.BatchNorm1d(self.dims['fc']),
                 nn.Dropout(),
                 nn.Linear(self.dims['fc'], self.dims['out'])
-            )
+            ).to(device)
         })
 
     def forward(self, o_attn):
