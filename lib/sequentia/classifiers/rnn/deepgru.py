@@ -37,13 +37,16 @@ class DeepGRU(nn.Module):
 
         if device is None:
             device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.to(device)
 
+        # Specify sub-modules
         self.model = nn.ModuleDict({
             'enc': _EncoderNetwork(dims={'in': n_features, **{k:v for k, v in dims.items() if k.startswith('gru')}}, device=device),
             'attn': _AttentionModule(dims={'in': dims['gru3']}, device=device),
             'clf': _Classifier(dims={'in': dims['gru3']*2, 'fc': dims['fc'], 'out': n_classes}, device=device),
         })
+
+        # Send model to device
+        self.to(device)
 
     def forward(self, x, x_lengths):
         """Passes the batched input sequences through the encoder network, attention module and classifier to generate log-softmax scores.
@@ -73,12 +76,16 @@ class _EncoderNetwork(nn.Module):
         super().__init__()
         self.dims = dims
         self.device = device
-        self.to(device)
+
+        # Specify sub-modules
         self.model = nn.ModuleDict({
            'gru1': nn.GRU(self.dims['in'], self.dims['gru1'], num_layers=2, batch_first=True).to(device),
            'gru2': nn.GRU(self.dims['gru1'], self.dims['gru2'], num_layers=2, batch_first=True).to(device),
            'gru3': nn.GRU(self.dims['gru2'], self.dims['gru3'], num_layers=1, batch_first=True).to(device)
         })
+
+        # Send model to device
+        self.to(device)
 
     def forward(self, x, x_lengths):
         x = x.to(self.device)
@@ -100,14 +107,18 @@ class _AttentionModule(nn.Module):
     def __init__(self, dims, device):
         super().__init__()
         self.device = device
-        self.to(device)
         self.dims = dims
 
-        # Attentional context vector weights
-        self.W_c = nn.Linear(self.dims['in'], self.dims['in'], bias=False).to(device)
+        # Specify sub-modules
+        self.model = nn.ModuleDict({
+            # Attentional context vector weights
+            'attn_ctx': nn.Linear(self.dims['in'], self.dims['in'], bias=False).to(device),
+            # Auxilliary context
+            'aux_ctx': nn.GRU(input_size=self.dims['in'], hidden_size=self.dims['in']).to(device)
+        })
 
-        # Auxilliary context
-        self.attn_gru = nn.GRU(input_size=self.dims['in'], hidden_size=self.dims['in']).to(device)
+        # Send model to device
+        self.to(device)
 
     def forward(self, h, h_last):
         h_last.transpose_(1, 0)
@@ -115,12 +126,12 @@ class _AttentionModule(nn.Module):
 
         # Calculate attentional context
         h.transpose_(1, 2)
-        c = F.softmax(self.W_c(h_last) @ h, dim=0)
+        c = F.softmax(self.model['attn_ctx'](h_last) @ h, dim=0)
         c = (c @ h.transpose(2, 1)).transpose(1, 0)
         # Shape: 1 x B x D_out
 
         # Calculate auxilliary context
-        c_aux, _ = self.attn_gru(c, h_last.transpose(1, 0))
+        c_aux, _ = self.model['aux_ctx'](c, h_last.transpose(1, 0))
         # Shape: 1 x B x D_out
 
         # Combine attentional and auxilliary context
@@ -131,8 +142,9 @@ class _Classifier(nn.Module):
     def __init__(self, dims, device):
         super().__init__()
         self.device = device
-        self.to(device)
         self.dims = dims
+
+        # Specify sub-modules
         self.model = nn.ModuleDict({
             'fc1': nn.Sequential(
                 nn.BatchNorm1d(self.dims['in']),
@@ -145,6 +157,9 @@ class _Classifier(nn.Module):
                 nn.Linear(self.dims['fc'], self.dims['out'])
             ).to(device)
         })
+
+        # Send model to device
+        self.to(device)
 
     def forward(self, o_attn):
         f1 = self.model['fc1'](o_attn)
