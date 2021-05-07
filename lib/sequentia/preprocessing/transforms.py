@@ -135,7 +135,7 @@ class Custom(Transform):
         A lambda or function that specifies the transformation that should be applied to a **single** observation sequence.
 
     name: str
-        Name of the transformation in PascalCase.
+        Name of the transformation.
 
     desc: str
         Description of the transformation.
@@ -150,9 +150,9 @@ class Custom(Transform):
 
     def __init__(self, func, name=None, desc=None):
         super().__init__()
-        self._name = 'Custom' if name is None else self._val.is_string(name, 'name')
-        self._desc = 'Apply a custom transformation' if desc is None else self._val.is_string(desc, 'description')
         self.transform = self._val.is_func(func, 'transformation')
+        self._name = 'Custom' + ('' if name is None else ' ({})'.format(self._val.is_string(name, 'name')))
+        self._desc = 'Apply a custom transformation' if desc is None else self._val.is_string(desc, 'description')
 
     def __str__(self):
         return self._desc

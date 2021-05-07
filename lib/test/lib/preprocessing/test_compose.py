@@ -65,7 +65,7 @@ def test_custom_summary(capsys):
     assert capsys.readouterr().out == (
         '      Preprocessing summary:     \n'
         '=================================\n'
-        '1. AddZeros\n'
+        '1. Custom (AddZeros)\n'
         '   Add constant zero observations\n'
         '=================================\n'
     )
@@ -240,7 +240,7 @@ def test_combined_summary(capsys):
     assert capsys.readouterr().out == (
         '                   Preprocessing summary:                   \n'
         '============================================================\n'
-        '1. AddZeros\n'
+        '1. Custom (AddZeros)\n'
         '   Add constant zero observations\n'
         '------------------------------------------------------------\n'
         '2. TrimConstants\n'
