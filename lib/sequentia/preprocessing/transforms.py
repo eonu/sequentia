@@ -10,7 +10,7 @@ class Transform:
         self._val = _Validator()
         self._name = self.__class__.__name__
 
-    def __call__(self, X):
+    def __call__(self, X, validate=True):
         """Applies the transformation to the observation sequence(s).
 
         Parameters
@@ -18,23 +18,27 @@ class Transform:
         X: numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
+        validate: bool
+            Whether or not to validate the input sequences.
+
         Returns
         -------
         transformed: numpy.ndarray (float) or list of numpy.ndarray (float)
             The transformed input observation sequence(s).
         """
-        X = self._val.is_observation_sequences(X, allow_single=True)
+        if self._val.is_boolean(validate, 'validate'):
+            X = self._val.is_observation_sequences(X, allow_single=True)
 
         if self.is_fitted():
             return self._apply(X)
-        else:
-            try:
-                self.fit(X)
-                return self._apply(X)
-            except:
-                raise
-            finally:
-                self.unfit()
+
+        try:
+            self.fit(X, validate=validate)
+            return self._apply(X)
+        except:
+            raise
+        finally:
+            self.unfit()
 
     def transform(self, x):
         """Applies the transformation to a single observation sequence.
@@ -51,17 +55,20 @@ class Transform:
         """
         raise NotImplementedError
 
-    def fit(self, X):
+    def fit(self, X, validate=True):
         """Fit the transformation on the provided observation sequence(s) (without transforming them).
 
         Parameters
         ----------
         X: numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
-        """
-        pass
 
-    def fit_transform(self, X):
+        validate: bool
+            Whether or not to validate the input sequences.
+        """
+        self._val.is_boolean(validate, 'validate')
+
+    def fit_transform(self, X, validate=True):
         """Fit the transformation with the provided observation sequence(s) and transform them.
 
         Parameters
@@ -69,13 +76,16 @@ class Transform:
         X: numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
+        validate: bool
+            Whether or not to validate the input sequences.
+
         Returns
         -------
         transformed: :class:`numpy:numpy.ndarray` (float) or list of :class:`numpy:numpy.ndarray` (float)
             The transformed input observation sequence(s).
         """
-        self.fit(X)
-        return self.__call__(X)
+        self.fit(X, validate=validate)
+        return self.__call__(X, validate=validate)
 
     def is_fitted(self):
         """Check whether or not the transformation is fitted on some observation sequence(s).
@@ -135,7 +145,7 @@ class Custom(Transform):
     >>> # Create some sample data
     >>> X = [np.random.random((10 * i, 3)) for i in range(1, 4)]
     >>> # Apply a custom transformation
-    >>> X = Custom(lambda x: x**2, name='Square', 'Square observations element-wise')(X)
+    >>> X = Custom(lambda x: x**2, name='Square', desc='Square observations element-wise')(X)
     """
 
     def __init__(self, func, name=None, desc=None):
@@ -202,8 +212,9 @@ class MinMaxScale(Transform):
         self.independent = self._val.is_boolean(independent, 'independent')
         self._type = (_MinMaxScaleIndependent if independent else _MinMaxScaleAll)(scale)
 
-    def fit(self, X):
-        self._type.fit(X)
+    def fit(self, X, validate=True):
+        super().fit(X, validate=validate)
+        self._type.fit(X, validate=validate)
 
     def transform(self, x):
         return self._type.transform(x)
@@ -223,8 +234,9 @@ class _MinMaxScaleAll(Transform):
         self.scale = scale
         self.unfit()
 
-    def fit(self, X):
-        X = self._val.is_observation_sequences(X, allow_single=True)
+    def fit(self, X, validate):
+        if validate:
+            X = self._val.is_observation_sequences(X, allow_single=True)
         if isinstance(X, list):
             X = np.vstack(X)
         self.min, self.max = X.min(axis=0), X.max(axis=0)
@@ -245,6 +257,7 @@ class _MinMaxScaleAll(Transform):
 
 class _MinMaxScaleIndependent(Transform):
     def __init__(self, scale):
+        super().__init__()
         self.scale = scale
 
     def transform(self, x):
@@ -276,8 +289,9 @@ class Center(Transform):
         self.independent = self._val.is_boolean(independent, 'independent')
         self._type = (_CenterIndependent if independent else _CenterAll)()
 
-    def fit(self, X):
-        self._type.fit(X)
+    def fit(self, X, validate=True):
+        super().fit(X, validate=validate)
+        self._type.fit(X, validate=validate)
 
     def transform(self, x):
         return self._type.transform(x)
@@ -296,8 +310,9 @@ class _CenterAll(Transform):
         super().__init__()
         self.unfit()
 
-    def fit(self, X):
-        X = self._val.is_observation_sequences(X, allow_single=True)
+    def fit(self, X, validate):
+        if validate:
+            X = self._val.is_observation_sequences(X, allow_single=True)
         if isinstance(X, list):
             X = np.vstack(X)
         self.mean = X.mean(axis=0)
@@ -343,8 +358,9 @@ class Standardize(Transform):
         self.independent = self._val.is_boolean(independent, 'independent')
         self._type = (_StandardizeIndependent if independent else _StandardizeAll)()
 
-    def fit(self, X):
-        self._type.fit(X)
+    def fit(self, X, validate=True):
+        super().fit(X, validate=validate)
+        self._type.fit(X, validate=validate)
 
     def transform(self, x):
         return self._type.transform(x)
@@ -363,8 +379,9 @@ class _StandardizeAll(Transform):
         super().__init__()
         self.unfit()
 
-    def fit(self, X):
-        X = self._val.is_observation_sequences(X, allow_single=True)
+    def fit(self, X, validate):
+        if validate:
+            X = self._val.is_observation_sequences(X, allow_single=True)
         if isinstance(X, list):
             X = np.vstack(X)
         self.mean, self.std = X.mean(axis=0), X.std(axis=0)

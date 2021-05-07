@@ -1,12 +1,10 @@
 import numpy as np
-from copy import copy
-from tqdm.auto import tqdm
 from .transforms import Transform
 from ..internals import _Validator
 
-__all__ = ['Preprocess']
+__all__ = ['Compose']
 
-class Preprocess:
+class Compose:
     """A pipeline of preprocessing transformations.
 
     Parameters
@@ -18,8 +16,8 @@ class Preprocess:
     --------
     >>> # Create some sample data
     >>> X = [np.random.random((20 * i, 3)) for i in range(1, 4)]
-    >>> # Create the Preprocess object
-    >>> pre = Preprocess([
+    >>> # Create the Compose object
+    >>> pre = Compose([
     >>>     TrimConstants(),
     >>>     Center(),
     >>>     Standardize(),
@@ -39,7 +37,7 @@ class Preprocess:
             raise TypeError('Expected all transformation steps to be Transform objects')
         self.steps = steps
 
-    def transform(self, X, verbose=False):
+    def __call__(self, X):
         """Applies the preprocessing transformations to the provided input observation sequence(s).
 
         Parameters
@@ -47,31 +45,17 @@ class Preprocess:
         X: numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
-        verbose: bool
-            Whether or not to display a progress bar when applying transformations.
-
         Returns
         -------
         transformed: :class:`numpy:numpy.ndarray` (float) or list of :class:`numpy:numpy.ndarray` (float)
             The input observation sequence(s) with preprocessing transformations applied in order.
         """
-        X_t = copy(X)
-        pbar = tqdm(self.steps, desc='Applying transformations', disable=not(verbose and len(self.steps) > 1), leave=True, ncols='100%')
-        for step in pbar:
-            pbar.set_description("Applying transformations - {}".format(step._describe()))
-            X_t = step.transform(X_t, verbose=False)
-        return X_t
+        X = self._val.is_observation_sequences(X, allow_single=True)
+        for step in self.steps:
+            X = step(X, validate=False)
+        return X
 
-    def __call__(self, X, verbose=False):
-        """Alias of the :meth:`transform` method.
-
-        See Also
-        --------
-        transform: Applies the transformation.
-        """
-        return self.transform(X, verbose)
-
-    def _fit(self, X, verbose):
+    def _fit(self, X):
         """Fit the preprocessing transformations with the provided observation sequence(s).
 
         Parameters
@@ -79,31 +63,26 @@ class Preprocess:
         X: numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
-        verbose: bool
-            Whether or not to display a progress bar when fitting transformations.
+        Returns
+        -------
+        TODO
         """
         X = self._val.is_observation_sequences(X, allow_single=True)
-        X_t = copy(X)
-        pbar = tqdm(self.steps, desc='Fitting transformations', disable=not(verbose and len(self.steps) > 1), leave=True, ncols='100%')
-        for step in pbar:
-            pbar.set_description("Fitting transformations - {}".format(step._describe()))
-            X_t = step.fit_transform(X_t, verbose=False)
-        return X_t
+        for step in self.steps:
+            X = step.fit_transform(X, validate=False)
+        return X
 
-    def fit(self, X, verbose=False):
+    def fit(self, X):
         """Fit the preprocessing transformations with the provided observation sequence(s).
 
         Parameters
         ----------
         X: numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
-
-        verbose: bool
-            Whether or not to display a progress bar when fitting transformations.
         """
-        self._fit(X, verbose)
+        self._fit(X)
 
-    def fit_transform(self, X, verbose=False):
+    def fit_transform(self, X):
         """Fit the preprocessing transformations with the provided observation sequence(s) and transform them.
 
         Parameters
@@ -111,15 +90,12 @@ class Preprocess:
         X: numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
-        verbose: bool
-            Whether or not to display a progress bar when fitting and applying transformations.
-
         Returns
         -------
         transformed: :class:`numpy:numpy.ndarray` (float) or list of :class:`numpy:numpy.ndarray` (float)
             The input observation sequence(s) with preprocessing transformations applied in order.
         """
-        return self._fit(X, verbose)
+        return self._fit(X)
 
     def summary(self):
         """Displays an ordered summary of the preprocessing transformations."""
@@ -129,8 +105,7 @@ class Preprocess:
         steps = []
 
         for i, step in enumerate(self.steps, start=1):
-            class_name, description = step.__class__.__name__, step._describe()
-            steps.append(('{}. {}'.format(i, class_name), '   {}'.format(description)))
+            steps.append(('{}. {}'.format(i, step._name), '   {}'.format(step)))
 
         title = 'Preprocessing summary:'
         length = max(max(len(h), 0 if b is None else len(b)) for h, b in steps)

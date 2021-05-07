@@ -11,29 +11,34 @@ rng = np.random.RandomState(seed)
 X = rng.random((7, 2))
 Xs = [i * rng.random((3 * i, 2)) for i in range(1, 4)]
 
-# Constant-trimming preprocessor
-trim = Preprocess([TrimConstants()])
+# Custom transform
+custom_kwargs = {'func': lambda x: np.vstack((x, np.zeros((5, 2)))), 'name': 'AddZeros', 'desc': 'Add constant zero observations'}
+custom = Compose([Custom(**custom_kwargs)])
 
-# Min-max scaling preprocessor
+# Constant-trimming transform
+trim = Compose([TrimConstants()])
+
+# Min-max scaling transform
 min_max_scale_kwargs = {'scale': (-5, 5), 'independent': False}
-min_max_scale = Preprocess([MinMaxScale(**min_max_scale_kwargs)])
+min_max_scale = Compose([MinMaxScale(**min_max_scale_kwargs)])
 
-# Centering preprocessor
-cent = Preprocess([Center()])
+# Centering transform
+cent = Compose([Center()])
 
-# Standardizing preprocessor
-standard = Preprocess([Standardize()])
+# Standardizing transform
+standard = Compose([Standardize()])
 
-# Downsampling preprocessor
+# Downsampling transform
 down_kwargs = {'factor': 3, 'method': 'decimate'}
-down = Preprocess([Downsample(**down_kwargs)])
+down = Compose([Downsample(**down_kwargs)])
 
-# Filtering preprocessor
+# Filtering transform
 filt_kwargs = {'window_size': 3, 'method': 'median'}
-filt = Preprocess([Filter(**filt_kwargs)])
+filt = Compose([Filter(**filt_kwargs)])
 
-# Combined preprocessor
-combined = Preprocess([
+# Combined transform
+combined = Compose([
+    Custom(**custom_kwargs),
     TrimConstants(),
     MinMaxScale(**min_max_scale_kwargs),
     Center(),
@@ -41,6 +46,29 @@ combined = Preprocess([
     Filter(**filt_kwargs),
     Downsample(**down_kwargs)
 ])
+
+# ====== #
+# Custom #
+# ====== #
+
+def test_custom_single():
+    """Applying a custom transformation to a single observation sequence"""
+    assert_equal(custom(X), Custom(**custom_kwargs)(X))
+
+def test_custom_multiple():
+    """Applying a custom transformation to multiple observation sequences"""
+    assert_all_equal(custom(Xs), Custom(**custom_kwargs)(Xs))
+
+def test_custom_summary(capsys):
+    """Summary of a custom transformation"""
+    custom.summary()
+    assert capsys.readouterr().out == (
+        '      Preprocessing summary:     \n'
+        '=================================\n'
+        '1. AddZeros\n'
+        '   Add constant zero observations\n'
+        '=================================\n'
+    )
 
 # ============= #
 # TrimConstants #
@@ -58,11 +86,11 @@ def test_trim_constants_summary(capsys):
     """Summary of a constant-trimming transformation"""
     trim.summary()
     assert capsys.readouterr().out == (
-        '     Preprocessing summary:    \n'
-        '===============================\n'
+        '        Preprocessing summary:        \n'
+        '======================================\n'
         '1. TrimConstants\n'
-        '   Remove constant observations\n'
-        '===============================\n'
+        '   Remove constant observations (=0.0)\n'
+        '======================================\n'
     )
 
 # =========== #
@@ -81,11 +109,11 @@ def test_min_max_scale_summary(capsys):
     """Summary of a min-max scaling transformation"""
     min_max_scale.summary()
     assert capsys.readouterr().out == (
-        '        Preprocessing summary:       \n'
-        '=====================================\n'
+        '           Preprocessing summary:          \n'
+        '===========================================\n'
         '1. MinMaxScale\n'
-        '   Min-max scaling into range (-5, 5)\n'
-        '=====================================\n'
+        '   Min-max scaling into range (-5, 5) (all)\n'
+        '===========================================\n'
     )
 
 # ====== #
@@ -184,15 +212,6 @@ def test_filter_summary(capsys):
 # Combined transformations #
 # ======================== #
 
-combined = Preprocess([
-    TrimConstants(),
-    MinMaxScale(**min_max_scale_kwargs),
-    Center(),
-    Standardize(),
-    Filter(**filt_kwargs),
-    Downsample(**down_kwargs)
-])
-
 def test_combined_single():
     """Applying combined transformations to a single observation sequence"""
     X_pre = X
@@ -221,22 +240,25 @@ def test_combined_summary(capsys):
     assert capsys.readouterr().out == (
         '                   Preprocessing summary:                   \n'
         '============================================================\n'
-        '1. TrimConstants\n'
-        '   Remove constant observations\n'
+        '1. AddZeros\n'
+        '   Add constant zero observations\n'
         '------------------------------------------------------------\n'
-        '2. MinMaxScale\n'
-        '   Min-max scaling into range (-5, 5)\n'
+        '2. TrimConstants\n'
+        '   Remove constant observations (=0.0)\n'
         '------------------------------------------------------------\n'
-        '3. Center\n'
+        '3. MinMaxScale\n'
+        '   Min-max scaling into range (-5, 5) (all)\n'
+        '------------------------------------------------------------\n'
+        '4. Center\n'
         '   Centering around mean (zero mean) (independent)\n'
         '------------------------------------------------------------\n'
-        '4. Standardize\n'
+        '5. Standardize\n'
         '   Standard scaling (zero mean, unit variance) (independent)\n'
         '------------------------------------------------------------\n'
-        '5. Filter\n'
+        '6. Filter\n'
         '   Median filtering with window-size 3\n'
         '------------------------------------------------------------\n'
-        '6. Downsample\n'
+        '7. Downsample\n'
         '   Decimation downsampling with factor 3\n'
         '============================================================\n'
     )
@@ -244,5 +266,5 @@ def test_combined_summary(capsys):
 def test_empty_summary():
     """Summary without any transformations applied"""
     with pytest.raises(RuntimeError) as e:
-        Preprocess([]).summary()
+        Compose([]).summary()
     assert str(e.value) == 'At least one preprocessing transformation is required'
