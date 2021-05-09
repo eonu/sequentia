@@ -38,4 +38,4 @@ Additionally, the provided ``Compose`` class makes it possible to :doc:`apply mu
 Each of the transformations follow a similar interface, based on the abstract :class:`Transform` class:
 
 .. autoclass:: sequentia.preprocessing.Transform
-    :memberS: fit, is_fitted, unfit, fit_transform, transform, __call__
+    :members: fit, is_fitted, unfit, fit_transform, transform, __call__
