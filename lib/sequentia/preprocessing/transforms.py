@@ -1,99 +1,93 @@
 import numpy as np
-from copy import copy
-from tqdm.auto import tqdm
 from ..internals import _Validator
 
-__all__ = ['Transform', 'TrimConstants', 'MinMaxScale', 'Center', 'Standardize', 'Downsample', 'Filter']
+__all__ = ['Transform', 'Custom', 'TrimConstants', 'MinMaxScale', 'Center', 'Standardize', 'Downsample', 'Filter']
 
 class Transform:
     """Base class representing a single transformation."""
 
     def __init__(self):
         self._val = _Validator()
+        self._name = self.__class__.__name__
 
-    def _describe(self):
-        """Description of the transformation.
-
-        Returns
-        -------
-        description: str
-            The description of the transformation.
-        """
-        raise NotImplementedError
-
-    def transform(self, X, verbose=False):
-        """Applies the transformation.
+    def __call__(self, X, validate=True):
+        """Applies the transformation to the observation sequence(s).
 
         Parameters
         ----------
         X: numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
-        verbose: bool
-            Whether or not to display a progress bar when applying transformations.
+        validate: bool
+            Whether or not to validate the input sequences.
 
         Returns
         -------
         transformed: :class:`numpy:numpy.ndarray` (float) or list of :class:`numpy:numpy.ndarray` (float)
             The transformed input observation sequence(s).
         """
-        raise NotImplementedError
+        if self._val.is_boolean(validate, 'validate'):
+            X = self._val.is_observation_sequences(X, allow_single=True)
 
-    def __call__(self, X, verbose=False):
-        """Alias of the :meth:`transform` method."""
-        return self.transform(X, verbose)
+        if self.is_fitted():
+            return self._apply(X)
 
-    def _apply(self, transform, X, verbose):
-        """Applies the transformation to the observation sequence(s).
+        try:
+            self.fit(X, validate=validate)
+            return self._apply(X)
+        except:
+            raise
+        finally:
+            self.unfit()
+
+    def transform(self, x):
+        """Applies the transformation to a single observation sequence.
 
         Parameters
         ----------
-        transform: callable
-            The transformation to apply.
-
-        X: numpy.ndarray (float) or list of numpy.ndarray (float)
-            An individual observation sequence or a list of multiple observation sequences.
+        X: numpy.ndarray (float)
+            An individual observation sequence.
 
         Returns
         -------
-        transformed: numpy.ndarray (float) or list of numpy.ndarray (float)
-            The transformed input observation sequence(s).
+        transformed: :class:`numpy:numpy.ndarray` (float)
+            The transformed input observation sequence.
         """
-        X = self._val.is_observation_sequences(X, allow_single=True)
-        verbose = self._val.is_boolean(verbose, 'verbose')
+        raise NotImplementedError
 
-        def apply_transform():
-            if isinstance(X, np.ndarray):
-                return transform(copy(X))
-            else:
-                return [transform(x) for x in tqdm(copy(X), desc=self._describe(), disable=not(verbose))]
-
-        if self._is_fitted():
-            return apply_transform()
-        else:
-            try:
-                self.fit(X)
-                return apply_transform()
-            except:
-                raise
-            finally:
-                self._unfit()
-
-    def fit(self, X):
+    def fit(self, X, validate=True):
         """Fit the transformation on the provided observation sequence(s) (without transforming them).
 
         Parameters
         ----------
         X: numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
+
+        validate: bool
+            Whether or not to validate the input sequences.
         """
-        self._val.is_observation_sequences(X, allow_single=True)
+        self._val.is_boolean(validate, 'validate')
 
-    def _unfit(self):
-        """Unfit the transformation by resetting the parameters to their default settings."""
-        pass
+    def fit_transform(self, X, validate=True):
+        """Fit the transformation with the provided observation sequence(s) and transform them.
 
-    def _is_fitted(self):
+        Parameters
+        ----------
+        X: numpy.ndarray (float) or list of numpy.ndarray (float)
+            An individual observation sequence or a list of multiple observation sequences.
+
+        validate: bool
+            Whether or not to validate the input sequences.
+
+        Returns
+        -------
+        transformed: :class:`numpy:numpy.ndarray` (float) or list of :class:`numpy:numpy.ndarray` (float)
+            The transformed input observation sequence(s).
+        """
+        self.fit(X, validate=validate)
+        return self.__call__(X, validate=validate)
+
+    def is_fitted(self):
         """Check whether or not the transformation is fitted on some observation sequence(s).
 
         Returns
@@ -103,27 +97,73 @@ class Transform:
         """
         return False
 
-    def fit_transform(self, X, verbose=False):
-        """Fit the transformation with the provided observation sequence(s) and transform them.
+    def unfit(self):
+        """Unfit the transformation by resetting the parameters to their default settings."""
+        pass
+
+    def _apply(self, X):
+        """Applies the transformation to the observation sequence(s) (internal).
 
         Parameters
         ----------
         X: numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
 
-        verbose: bool
-            Whether or not to display a progress bar when fitting and applying transformations.
-
         Returns
         -------
         transformed: :class:`numpy:numpy.ndarray` (float) or list of :class:`numpy:numpy.ndarray` (float)
             The transformed input observation sequence(s).
         """
-        self.fit(X)
-        return self.transform(X, verbose)
+        return self.transform(X) if isinstance(X, np.ndarray) else [self.transform(x) for x in X]
+
+    def __str__(self):
+        """Description of the transformation.
+
+        Returns
+        -------
+        description: str
+            The description of the transformation.
+        """
+        raise NotImplementedError
+
+class Custom(Transform):
+    """Apply a custom transformation to the input observation sequence(s).
+
+    Parameters
+    ----------
+    func: callable
+        A lambda or function that specifies the transformation that should be applied to a **single** observation sequence.
+
+    name: str
+        Name of the transformation.
+
+    desc: str
+        Description of the transformation.
+
+    Examples
+    --------
+    >>> # Create some sample data
+    >>> X = [np.random.random((10 * i, 3)) for i in range(1, 4)]
+    >>> # Apply a custom transformation
+    >>> X = Custom(lambda x: x**2, name='Square', desc='Square observations element-wise')(X)
+    """
+
+    def __init__(self, func, name=None, desc=None):
+        super().__init__()
+        self.transform = self._val.is_func(func, 'transformation')
+        self._name = 'Custom' + ('' if name is None else ' ({})'.format(self._val.is_string(name, 'name')))
+        self._desc = 'Apply a custom transformation' if desc is None else self._val.is_string(desc, 'description')
+
+    def __str__(self):
+        return self._desc
 
 class TrimConstants(Transform):
     """Trim constant observations from the input observation sequence(s).
+
+    Parameters
+    ----------
+    const: float
+        The constant value.
 
     Examples
     --------
@@ -133,12 +173,8 @@ class TrimConstants(Transform):
     >>> X = [x(i) for i in range(1, 4)]
     >>> # Trim the data
     >>> X = TrimConstants()(X)
-
-    Parameters
-    ----------
-    const: float
-        The constant value.
     """
+
     def __init__(self, constant=0):
         super().__init__()
         try:
@@ -146,13 +182,11 @@ class TrimConstants(Transform):
         except ValueError:
             raise TypeError('Expected constant to be a float or convertible to a float')
 
-    def _describe(self):
-        return 'Remove constant observations'
+    def transform(self, x):
+        return x[~np.all(x == self.constant, axis=1)]
 
-    def transform(self, X, verbose=False):
-        def trim_constants(x):
-            return x[~np.all(x == self.constant, axis=1)]
-        return self._apply(trim_constants, X, verbose)
+    def __str__(self):
+        return 'Remove constant observations (={:.3})'.format(self.constant)
 
 class MinMaxScale(Transform):
     """Scales the observation sequence features to each be within a provided range.
@@ -176,40 +210,63 @@ class MinMaxScale(Transform):
             raise ValueError('Expected lower bound of scaling range to be less than the upper bound')
         self.scale = scale
         self.independent = self._val.is_boolean(independent, 'independent')
-        if not self.independent:
-            self.min, self.max = None, None
+        self._type = (_MinMaxScaleIndependent if independent else _MinMaxScaleAll)(scale)
 
-    def fit(self, X):
-        X = self._val.is_observation_sequences(X, allow_single=True)
-        if not self.independent:
-            X_concat = np.vstack(X) if isinstance(X, list) else X
-            self.min, self.max = X_concat.min(axis=0), X_concat.max(axis=0)
+    def fit(self, X, validate=True):
+        super().fit(X, validate=validate)
+        self._type.fit(X, validate=validate)
 
-    def _unfit(self):
-        if not self.independent:
-            self.min, self.max = None, None
+    def transform(self, x):
+        return self._type.transform(x)
 
-    def _is_fitted(self):
-        return False if self.independent else (self.min is not None) and (self.max is not None)
+    def is_fitted(self):
+        return self._type.is_fitted()
 
-    def _describe(self):
-        if not self.independent:
-            return 'Min-max scaling into range {}'.format(self.scale)
-        else:
-            return 'Min-max scaling into range {} (independent)'.format(self.scale)
+    def unfit(self):
+        self._type.unfit()
 
-    def transform(self, X, verbose=False):
-        if not self.independent:
-            def min_max_scale(x):
-                min_, max_ = self.scale
-                scale = (max_ - min_) / (self.max - self.min)
-                return scale * x + min_ - self.min * scale
-        else:
-            def min_max_scale(x):
-                min_, max_ = self.scale
-                scale = (max_ - min_) / (x.max(axis=0) - x.min(axis=0))
-                return scale * x + min_ - x.min(axis=0) * scale
-        return self._apply(min_max_scale, X, verbose)
+    def __str__(self):
+        return str(self._type)
+
+class _MinMaxScaleAll(Transform):
+    def __init__(self, scale):
+        super().__init__()
+        self.scale = scale
+        self.unfit()
+
+    def fit(self, X, validate):
+        if validate:
+            X = self._val.is_observation_sequences(X, allow_single=True)
+        if isinstance(X, list):
+            X = np.vstack(X)
+        self.min, self.max = X.min(axis=0), X.max(axis=0)
+
+    def transform(self, x):
+        min_, max_ = self.scale
+        scale = (max_ - min_) / (self.max - self.min)
+        return scale * x + min_ - self.min * scale
+
+    def is_fitted(self):
+        return (self.min is not None) and (self.max is not None)
+
+    def unfit(self):
+        self.min, self.max = None, None
+
+    def __str__(self):
+        return 'Min-max scaling into range {} (all)'.format(self.scale)
+
+class _MinMaxScaleIndependent(Transform):
+    def __init__(self, scale):
+        super().__init__()
+        self.scale = scale
+
+    def transform(self, x):
+        min_, max_ = self.scale
+        scale = (max_ - min_) / (x.max(axis=0) - x.min(axis=0))
+        return scale * x + min_ - x.min(axis=0) * scale
+
+    def __str__(self):
+        return 'Min-max scaling into range {} (independent)'.format(self.scale)
 
 class Center(Transform):
     """Centers the observation sequence features around their means. Results in zero-mean features.
@@ -230,36 +287,54 @@ class Center(Transform):
     def __init__(self, independent=True):
         super().__init__()
         self.independent = self._val.is_boolean(independent, 'independent')
-        if not self.independent:
-            self.mean = None
+        self._type = (_CenterIndependent if independent else _CenterAll)()
 
-    def fit(self, X):
-        X = self._val.is_observation_sequences(X, allow_single=True)
-        if not self.independent:
-            X_concat = np.vstack(X) if isinstance(X, list) else X
-            self.mean = X_concat.mean(axis=0)
+    def fit(self, X, validate=True):
+        super().fit(X, validate=validate)
+        self._type.fit(X, validate=validate)
 
-    def _unfit(self):
-        if not self.independent:
-            self.mean = None
+    def transform(self, x):
+        return self._type.transform(x)
 
-    def _is_fitted(self):
-        return False if self.independent else (self.mean is not None)
+    def is_fitted(self):
+        return self._type.is_fitted()
 
-    def _describe(self):
-        if not self.independent:
-            return 'Centering around mean (zero mean)'
-        else:
-            return 'Centering around mean (zero mean) (independent)'
+    def unfit(self):
+        self._type.unfit()
 
-    def transform(self, X, verbose=False):
-        if not self.independent:
-            def center(x):
-                return x - self.mean
-        else:
-            def center(x):
-                return x - x.mean(axis=0)
-        return self._apply(center, X, verbose)
+    def __str__(self):
+        return str(self._type)
+
+class _CenterAll(Transform):
+    def __init__(self):
+        super().__init__()
+        self.unfit()
+
+    def fit(self, X, validate):
+        if validate:
+            X = self._val.is_observation_sequences(X, allow_single=True)
+        if isinstance(X, list):
+            X = np.vstack(X)
+        self.mean = X.mean(axis=0)
+
+    def transform(self, x):
+        return x - self.mean
+
+    def is_fitted(self):
+        return self.mean is not None
+
+    def unfit(self):
+        self.mean = None
+
+    def __str__(self):
+        return 'Centering around mean (zero mean) (all)'
+
+class _CenterIndependent(Transform):
+    def transform(self, x):
+        return x - x.mean(axis=0)
+
+    def __str__(self):
+        return 'Centering around mean (zero mean) (independent)'
 
 class Standardize(Transform):
     """Centers the observation sequence features around their means, then scales them by their deviations.
@@ -281,36 +356,54 @@ class Standardize(Transform):
     def __init__(self, independent=True):
         super().__init__()
         self.independent = self._val.is_boolean(independent, 'independent')
-        if not self.independent:
-            self.mean, self.std = None, None
+        self._type = (_StandardizeIndependent if independent else _StandardizeAll)()
 
-    def fit(self, X):
-        X = self._val.is_observation_sequences(X, allow_single=True)
-        if not self.independent:
-            X_concat = np.vstack(X) if isinstance(X, list) else X
-            self.mean, self.std = X_concat.mean(axis=0), X_concat.std(axis=0)
+    def fit(self, X, validate=True):
+        super().fit(X, validate=validate)
+        self._type.fit(X, validate=validate)
 
-    def _unfit(self):
-        if not self.independent:
-            self.mean, self.std = None, None
+    def transform(self, x):
+        return self._type.transform(x)
 
-    def _is_fitted(self):
-        return False if self.independent else (self.mean is not None) and (self.std is not None)
+    def is_fitted(self):
+        return self._type.is_fitted()
 
-    def _describe(self):
-        if not self.independent:
-            return 'Standard scaling (zero mean, unit variance)'
-        else:
-            return 'Standard scaling (zero mean, unit variance) (independent)'
+    def unfit(self):
+        self._type.unfit()
 
-    def transform(self, X, verbose=False):
-        if not self.independent:
-            def standardize(x):
-                return (x - self.mean) / self.std
-        else:
-            def standardize(x):
-                return (x - x.mean(axis=0)) / x.std(axis=0)
-        return self._apply(standardize, X, verbose)
+    def __str__(self):
+        return str(self._type)
+
+class _StandardizeAll(Transform):
+    def __init__(self):
+        super().__init__()
+        self.unfit()
+
+    def fit(self, X, validate):
+        if validate:
+            X = self._val.is_observation_sequences(X, allow_single=True)
+        if isinstance(X, list):
+            X = np.vstack(X)
+        self.mean, self.std = X.mean(axis=0), X.std(axis=0)
+
+    def transform(self, x):
+        return (x - self.mean) / self.std
+
+    def is_fitted(self):
+        return (self.mean is not None) and (self.std is not None)
+
+    def unfit(self):
+        self.mean, self.std = None, None
+
+    def __str__(self):
+        return 'Standard scaling (zero mean, unit variance) (all)'
+
+class _StandardizeIndependent(Transform):
+    def transform(self, x):
+        return (x - x.mean(axis=0)) / x.std(axis=0)
+
+    def __str__(self):
+        return 'Standard scaling (zero mean, unit variance) (independent)'
 
 class Downsample(Transform):
     """Downsamples an observation sequence (or multiple sequences) by either:
@@ -338,32 +431,46 @@ class Downsample(Transform):
         super().__init__()
         self.factor = self._val.is_restricted_integer(factor, lambda x: x > 0, desc='downsample factor', expected='positive')
         self.method = self._val.is_one_of(method, ['decimate', 'mean'], desc='downsampling method')
+        self._type = (_DownsampleDecimate if method == 'decimate' else _DownsampleMean)(factor)
 
-    def _describe(self):
-        method = 'Decimation' if self.method == 'decimate' else 'Mean'
-        return '{} downsampling with factor {}'.format(method, self.factor)
+    def transform(self, x):
+        return self._type.transform(x)
 
-    def transform(self, X, verbose=False):
-        X = self._val.is_observation_sequences(X, allow_single=True)
-
+    def _apply(self, X):
         if isinstance(X, np.ndarray):
             self._val.is_restricted_integer(self.factor, lambda x: x <= len(X),
                 desc='downsample factor', expected='no greater than the number of frames')
         else:
             self._val.is_restricted_integer(self.factor, lambda x: x <= min(len(x) for x in X),
                 desc='downsample factor', expected='no greater than the number of frames in the shortest sequence')
+        return super()._apply(X)
 
-        def downsample(x):
-            N, D = x.shape
-            if self.method == 'decimate':
-                return np.delete(x, [i for i in range(N) if i % self.factor != 0], 0)
-            elif self.method == 'mean':
-                r = len(x) % self.factor
-                xn, xr = (x, None) if r == 0 else (x[:-r], x[-r:])
-                dxn = xn.T.reshape(-1, self.factor).mean(axis=1).reshape(D, -1).T
-                return dxn if xr is None else np.vstack((dxn, xr.mean(axis=0)))
+    def __str__(self):
+        return str(self._type)
 
-        return self._apply(downsample, X, verbose)
+class _DownsampleDecimate(Transform):
+    def __init__(self, factor):
+        self.factor = factor
+
+    def transform(self, x):
+        return np.delete(x, [i for i in range(len(x)) if i % self.factor != 0], 0)
+
+    def __str__(self):
+        return 'Decimation downsampling with factor {}'.format(self.factor)
+
+class _DownsampleMean(Transform):
+    def __init__(self, factor):
+        self.factor = factor
+
+    def transform(self, x):
+        N, D = x.shape
+        r = len(x) % self.factor
+        xn, xr = (x, None) if r == 0 else (x[:-r], x[-r:])
+        dxn = xn.T.reshape(-1, self.factor).mean(axis=1).reshape(D, -1).T
+        return dxn if xr is None else np.vstack((dxn, xr.mean(axis=0)))
+
+    def __str__(self):
+        return 'Mean downsampling with factor {}'.format(self.factor)
 
 class Filter(Transform):
     """Applies a median or mean filter to the input observation sequence(s).
@@ -388,28 +495,25 @@ class Filter(Transform):
         super().__init__()
         self.window_size = self._val.is_restricted_integer(window_size, lambda x: x > 0, desc='window size', expected='positive')
         self.method = self._val.is_one_of(method, ['median', 'mean'], desc='filtering method')
+        self._func = np.median if self.method == 'median' else np.mean
 
-    def _describe(self):
-        return '{} filtering with window-size {}'.format(self.method.capitalize(), self.window_size)
+    def transform(self, x):
+        filtered = []
+        right = self.window_size // 2
+        left = (self.window_size - 1) - right
+        for i in range(len(x)):
+            l, m, r = x[((i - left) * (left < i)):i], x[i], x[(i + 1):(i + 1 + right)]
+            filtered.append(self._func(np.vstack((l, m, r)), axis=0))
+        return np.array(filtered)
 
-    def transform(self, X, verbose=False):
-        X = self._val.is_observation_sequences(X, allow_single=True)
-
+    def _apply(self, X):
         if isinstance(X, np.ndarray):
             self._val.is_restricted_integer(self.window_size, lambda x: x <= len(X),
                 desc='window size', expected='no greater than the number of frames')
         else:
             self._val.is_restricted_integer(self.window_size, lambda x: x <= min(len(x) for x in X),
                 desc='window size', expected='no greater than the number of frames in the shortest sequence')
+        return super()._apply(X)
 
-        def filter_(x):
-            measure = np.median if self.method == 'median' else np.mean
-            filtered = []
-            right = self.window_size // 2
-            left = (self.window_size - 1) - right
-            for i in range(len(x)):
-                l, m, r = x[((i - left) * (left < i)):i], x[i], x[(i + 1):(i + 1 + right)]
-                filtered.append(measure(np.vstack((l, m, r)), axis=0))
-            return np.array(filtered)
-
-        return self._apply(filter_, X, verbose)
+    def __str__(self):
+        return '{} filtering with window-size {}'.format(self.method.capitalize(), self.window_size)

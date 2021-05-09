@@ -19,4 +19,4 @@ API reference
 -------------
 
 .. autoclass:: sequentia.preprocessing.TrimConstants
-   :members: fit, fit_transform, transform, __call__
+   :members: transform, __call__

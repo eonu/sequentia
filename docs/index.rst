@@ -49,13 +49,14 @@ Sequentia offers some appropriate classification algorithms for these kinds of t
    :caption: Preprocessing Methods
 
    sections/preprocessing/introduction.rst
+   sections/preprocessing/custom.rst
    sections/preprocessing/trim_constants.rst
    sections/preprocessing/min_max_scale.rst
    sections/preprocessing/center.rst
    sections/preprocessing/standardize.rst
    sections/preprocessing/downsample.rst
    sections/preprocessing/filter.rst
-   sections/preprocessing/preprocessing.rst
+   sections/preprocessing/compose.rst
 
 Documentation Search and Index
 ==============================

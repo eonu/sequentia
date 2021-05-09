@@ -1,2 +1,2 @@
-from .preprocess import Preprocess
+from .compose import Compose
 from .transforms import *
