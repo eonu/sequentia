@@ -65,7 +65,8 @@ class Compose:
 
         Returns
         -------
-        TODO
+        transformed: :class:`numpy:numpy.ndarray` (float) or list of :class:`numpy:numpy.ndarray` (float)
+            The input observation sequence(s) with preprocessing transformations applied in order.
         """
         X = self._val.is_observation_sequences(X, allow_single=True)
         for step in self.steps:

@@ -12,4 +12,4 @@ API reference
 -------------
 
 .. autoclass:: sequentia.preprocessing.Downsample
-    :members: fit, fit_transform, transform, __call__
+    :members: transform, __call__

@@ -5,6 +5,7 @@ Introduction to Preprocessing
 
 Sequentia provides a number of useful preprocessing methods for sequential data.
 
+- :doc:`Custom Transformations <custom>` (``Custom``)
 - :doc:`Constant Trimming <trim_constants>` (``TrimConstants``)
 - :doc:`Min-max Scaling <min_max_scale>` (``MinMaxScale``)
 - :doc:`Centering <center>` (``Center``)
@@ -12,7 +13,7 @@ Sequentia provides a number of useful preprocessing methods for sequential data.
 - :doc:`Downsampling <downsample>` (``Downsample``)
 - :doc:`Filtering <filter>` (``Filter``)
 
-Additionally, the provided ``Preprocess`` class makes it possible to :doc:`apply multiple transformations <preprocessing>`.
+Additionally, the provided ``Compose`` class makes it possible to :doc:`apply multiple transformations <compose>`.
 
 .. note::
 
@@ -24,7 +25,17 @@ Additionally, the provided ``Preprocess`` class makes it possible to :doc:`apply
     :class:`sequentia.classifiers.knn.KNNClassifier` and :class:`sequentia.classifiers.hmm.HMMClassifier`,
     and not :class:`sequentia.classifiers.rnn.DeepGRU`.
 
+    It is possible to attempt to use these transformations on :class:`torch:torch.Tensor` objects by
+    bypassing validation when applying the transformation,
+
+    .. code-block:: python
+
+        x = torch.rand(5, 3)
+        x = Center()(x, validate=False)
+
+    but this likely will not work due to differences in :class:`numpy:numpy.ndarray` and :class:`torch:torch.Tensor`.
+
 Each of the transformations follow a similar interface, based on the abstract :class:`Transform` class:
 
 .. autoclass:: sequentia.preprocessing.Transform
-    :members: fit, fit_transform, transform, __call__
+    :memberS: fit, is_fitted, unfit, fit_transform, transform, __call__

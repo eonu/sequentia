@@ -23,7 +23,7 @@ class Transform:
 
         Returns
         -------
-        transformed: numpy.ndarray (float) or list of numpy.ndarray (float)
+        transformed: :class:`numpy:numpy.ndarray` (float) or list of :class:`numpy:numpy.ndarray` (float)
             The transformed input observation sequence(s).
         """
         if self._val.is_boolean(validate, 'validate'):
@@ -111,7 +111,7 @@ class Transform:
 
         Returns
         -------
-        transformed: numpy.ndarray (float) or list of numpy.ndarray (float)
+        transformed: :class:`numpy:numpy.ndarray` (float) or list of :class:`numpy:numpy.ndarray` (float)
             The transformed input observation sequence(s).
         """
         return self.transform(X) if isinstance(X, np.ndarray) else [self.transform(x) for x in X]
