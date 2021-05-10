@@ -4,7 +4,7 @@
 from setuptools import setup, find_packages
 from requirements import *
 
-VERSION = '0.11.1'
+VERSION = '0.12.0'
 
 with open('README.md', 'r', encoding='utf8') as fh:
     long_description = fh.read()
