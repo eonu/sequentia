@@ -24,11 +24,38 @@ Prior to reporting an issue, please ensure:
 
 - **De-clutter commit history**: If you had to make multiple intermediate commits while developing, please squash them before making your pull request.
 
+### Installing dependencies
+
+If you intend to help contribute to Sequentia, you will need some additional dependencies for running tests, notebooks and generating documentation.
+
+Depending on what you intend to do, you can specify the following extras.
+
+- For running tests in the `/lib/test` directory:
+
+  ```console
+  pip install sequentia[test]
+  ```
+- For generating Sphinx documentation in the `/docs` directory:
+
+  ```console
+  pip install sequentia[docs]
+  ```
+- For running notebooks in the `/notebooks` directory:
+
+  ```console
+  pip install sequentia[notebooks]
+  ```
+- **Recommended**: A full development suite which installs all of the above extras:
+
+  ```console
+  pip install sequentia[dev]
+  ```
+
 ### Branch naming conventions
 
 Branch names must be of the form `type/short-phrase-or-description`, where `type` is either a:
 
-- `patch`: Making a change (including removal) of an existing feature.
+- `patch`: Making a change to an existing feature.
 - `add`: Adding a new feature.
 - `rm`: Removing an existing feature.
 

@@ -11,26 +11,23 @@
 <p align="center">
   <div align="center">
     <a href="https://pypi.org/project/sequentia">
-      <img src="https://img.shields.io/pypi/v/sequentia?style=flat-square" alt="PyPI"/>
+      <img src="https://img.shields.io/pypi/v/sequentia?logo=pypi&style=flat-square" alt="PyPI"/>
     </a>
     <a href="https://pypi.org/project/sequentia">
-      <img src="https://img.shields.io/pypi/pyversions/sequentia?style=flat-square" alt="PyPI - Python Version"/>
+      <img src="https://img.shields.io/pypi/pyversions/sequentia?logo=python&style=flat-square" alt="PyPI - Python Version"/>
+    </a>
+    <a href="https://sequentia.readthedocs.io/en/latest">
+      <img src="https://img.shields.io/readthedocs/sequentia.svg?logo=read-the-docs&style=flat-square" alt="Read The Docs - Documentation">
     </a>
     <a href="https://raw.githubusercontent.com/eonu/sequentia/master/LICENSE">
       <img src="https://img.shields.io/pypi/l/sequentia?style=flat-square" alt="PyPI - License"/>
-    </a>
-    <a href="https://sequentia.readthedocs.io/en/latest">
-      <img src="https://readthedocs.org/projects/sequentia/badge/?version=latest&style=flat-square" alt="Read The Docs - Documentation">
-    </a>
-    <a href="https://travis-ci.org/eonu/sequentia">
-      <img src="https://img.shields.io/travis/eonu/sequentia?logo=travis&style=flat-square" alt="Travis - Build">
     </a>
   </div>
 </p>
 
 ## Introduction
 
-Sequential data is often observed in many different forms such as audio signals and stock prices, to even brain and heart signals. Such data is of particular interest in machine learning, as changing patterns over time naturally provide many interesting opportunities and challenges for classification.
+Sequential data is often observed in many different forms such as audio signals, stock prices, and even brain & heart signals. Such data is of particular interest in machine learning, as changing patterns over time naturally provide many interesting opportunities and challenges for classification.
 
 **Sequentia is a Python package that implements various classification algorithms for sequential data.**
 
@@ -42,6 +39,12 @@ Some examples of how Sequentia can be used in isolated sequence classification i
 - classifying hand-written characters according to their pen-tip trajectories,
 - classifying hand or head gestures from rotation or movement signals,
 - classifying the sentiment of a phrase or sentence in natural language from word embeddings.
+
+## Build status
+
+| `master` | `dev` |
+| -------- | ------|
+| [![Travis Build (Master)](https://img.shields.io/travis/com/eonu/sequentia?logo=travis&style=flat-square)](https://travis-ci.com/github/eonu/sequentia) | [![Travis Build (Development)](https://img.shields.io/travis/com/eonu/sequentia/dev?logo=travis&style=flat-square)](https://travis-ci.com/github/eonu/sequentia) |
 
 ## Features
 
@@ -58,10 +61,14 @@ Sequentia provides the following algorithms, all supporting multivariate sequenc
   - [x] Dependent and independent feature warping (DTWD & DTWI)
   - [x] Custom distance-weighted predictions
   - [x] Multi-processed predictions
+- [x] [DeepGRU: Deep Gesture Recognition Utility](https://sequentia.readthedocs.io/en/latest/sections/classifiers/deepgru.html) [[2]](#references)
+  - [x] Deep recurrent neural network with multiple GRU layers
+  - [x] Faster training than LSTM-based networks
+  - [x] Attention module for learning sub-sequence importance
 
 <p align="center">
   <img src="/docs/_static/classifier.svg" width="60%"/><br/>
-  Example of a classification algorithm: <em>a multi-class HMM sequence classifier</em>
+  Example of a classification algorithm (HMM sequence classifier)
 </p>
 
 ### Preprocessing methods
@@ -72,9 +79,55 @@ Sequentia provides the following algorithms, all supporting multivariate sequenc
 
 ## Installation
 
+You can install Sequentia using `pip`.
+
 ```console
 pip install sequentia
 ```
+
+**Note**: All tools under the `sequentia.classifiers.rnn` module (i.e. `DeepGRU` and `collate_fn`) require a working installation of [`torch`](https://github.com/pytorch/pytorch) (>= 1.8.0), and Sequentia assumes that you already have this installed.
+
+Since there are many different possible configurations when installing PyTorch (e.g. CPU or GPU, CUDA version), we leave this up to the user instead of specifying particular binaries to install alongside TorchFSDD.
+
+> You can use the following if you _really_ wish to install a CPU-only version of `torch` together with Sequentia.
+>
+> ```console
+> pip install sequentia[torch]
+> ```
+
+<details>
+<summary>
+    <b>Click here for installation instructions for contributing to Sequentia or running the notebooks.</b>
+</summary>
+<p>
+
+If you intend to help contribute to Sequentia, you will need some additional dependencies for running tests, notebooks and generating documentation.
+
+Depending on what you intend to do, you can specify the following extras.
+
+- For running tests in the `/lib/test` directory:
+
+  ```console
+  pip install sequentia[test]
+  ```
+- For generating Sphinx documentation in the `/docs` directory:
+
+  ```console
+  pip install sequentia[docs]
+  ```
+- For running notebooks in the `/notebooks` directory:
+
+  ```console
+  pip install sequentia[notebooks]
+  ```
+- A full development suite which installs all of the above extras:
+
+  ```console
+  pip install sequentia[dev]
+  ```
+
+</p>
+</details>
 
 ## Documentation
 
@@ -84,7 +137,7 @@ Documentation for the package is available on [Read The Docs](https://sequentia.
 
 For detailed tutorials and examples on the usage of Sequentia, [see the notebooks here](https://nbviewer.jupyter.org/github/eonu/sequentia/tree/master/notebooks/).
 
-Below are some basic examples of univariate and multivariate sequences can be used in Sequentia.
+Below are some basic examples of how univariate and multivariate sequences can be used in Sequentia.
 
 ### Univariate sequences
 
@@ -134,9 +187,9 @@ y_new = clf.predict(x_new)
 
 ## Acknowledgments
 
-In earlier versions of the package (<0.10.0), an approximate dynamic time warping algorithm implementation ([`fastdtw`](https://github.com/slaypni/fastdtw)) was used in hopes of speeding up k-NN predictions, as the authors of the original FastDTW paper [[2]](#references) claim that approximated DTW alignments can be computed in linear memory and time - compared to the O(N^2) runtime complexity of the usual exact DTW implementation.
+In earlier versions of the package (<0.10.0), an approximate dynamic time warping algorithm implementation ([`fastdtw`](https://github.com/slaypni/fastdtw)) was used in hopes of speeding up k-NN predictions, as the authors of the original FastDTW paper [[3]](#references) claim that approximated DTW alignments can be computed in linear memory and time - compared to the O(N^2) runtime complexity of the usual exact DTW implementation.
 
-However, I was recently contacted by [Prof. Eamonn Keogh](https://www.cs.ucr.edu/~eamonn/) (at _University of California, Riverside_), whose recent work [[3]](#references) makes the surprising revelation that FastDTW is generally slower than the exact DTW algorithm that it approximates. Upon switching from the `fastdtw` package to [`dtaidistance`](https://github.com/wannesm/dtaidistance) (a very solid implementation of exact DTW with fast pure C compiled functions), DTW k-NN prediction times were indeed reduced drastically.
+However, I was recently contacted by [Prof. Eamonn Keogh](https://www.cs.ucr.edu/~eamonn/) (at _University of California, Riverside_), whose recent work [[4]](#references) makes the surprising revelation that FastDTW is generally slower than the exact DTW algorithm that it approximates. Upon switching from the `fastdtw` package to [`dtaidistance`](https://github.com/wannesm/dtaidistance) (a very solid implementation of exact DTW with fast pure C compiled functions), DTW k-NN prediction times were indeed reduced drastically.
 
 I would like to thank Prof. Eamonn Keogh for directly reaching out to me regarding this finding!
 
@@ -147,17 +200,23 @@ I would like to thank Prof. Eamonn Keogh for directly reaching out to me regardi
     <tr>
       <td>[1]</td>
       <td>
-        <a href=https://web.ece.ucsb.edu/Faculty/Rabiner/ece259/Reprints/tutorial%20on%20hmm%20and%20applications.pdf">Lawrence R. Rabiner. <b>"A Tutorial on Hidden Markov Models and Selected Applications in Speech Recognition"</b> <em>Proceedings of the IEEE 77 (1989)</em>, no. 2, pp. 257-86.</a>
+        <a href=https://web.ece.ucsb.edu/Faculty/Rabiner/ece259/Reprints/tutorial%20on%20hmm%20and%20applications.pdf">Lawrence R. Rabiner. <b>"A Tutorial on Hidden Markov Models and Selected Applications in Speech Recognition"</b> <em>Proceedings of the IEEE 77 (1989)</em>, no. 2, 257-86.</a>
       </td>
     </tr>
     <tr>
       <td>[2]</td>
       <td>
-        <a href="https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf">Stan Salvador & Philip Chan. <b>"FastDTW: Toward accurate dynamic time warping in linear time and space."</b> <em>Intelligent Data Analysis 11.5 (2007)</em>, 561-580.</a>
+        <a href="https://arxiv.org/ftp/arxiv/papers/1810/1810.12514.pdf">Mehran Maghoumi & Joseph J. LaViola Jr. <b>"DeepGRU: Deep Gesture Recognition Utility"</b> <em>Advances in Visual Computing, 14th International Symposium on Visual Computing, ISVC 2019</em>, Proceedings, Part I, 16-31.</a>
       </td>
     </tr>
     <tr>
       <td>[3]</td>
+      <td>
+        <a href="https://pdfs.semanticscholar.org/05a2/0cde15e172fc82f32774dd0cf4fe5827cad2.pdf">Stan Salvador & Philip Chan. <b>"FastDTW: Toward accurate dynamic time warping in linear time and space."</b> <em>Intelligent Data Analysis 11.5 (2007)</em>, 561-580.</a>
+      </td>
+    </tr>
+    <tr>
+      <td>[4]</td>
       <td>
         <a href="https://arxiv.org/ftp/arxiv/papers/2003/2003.11246.pdf">Renjie Wu & Eamonn J. Keogh. <b>"FastDTW is approximate and Generally Slower than the Algorithm it Approximates"</b> <em>IEEE Transactions on Knowledge and Data Engineering (2020)</em>, 1–1.</a>
       </td>

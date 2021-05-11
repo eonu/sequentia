@@ -1,25 +1,10 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-from __future__ import print_function
+
 from setuptools import setup, find_packages
+from requirements import *
 
-python_requires = '>=3.6,<3.10'
-setup_requires = [
-    'Cython>=0.28.5',
-    'numpy>=1.17,<2',
-    'scipy>=1.3,<2'
-]
-install_requires = [
-    'numpy>=1.17,<2',
-    'hmmlearn==0.2.4',
-    'dtaidistance[numpy]>=2.2,<2.3',
-    'scipy>=1.3,<2',
-    'scikit-learn>=0.22,<1',
-    'tqdm>=4.36,<5',
-    'joblib>=0.14,<1'
-]
-
-VERSION = '0.11.1'
+VERSION = '0.12.0'
 
 with open('README.md', 'r', encoding='utf8') as fh:
     long_description = fh.read()
@@ -42,7 +27,7 @@ setup(
     package_dir = {'': 'lib'},
     packages = find_packages(where='lib'),
     classifiers = [
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
@@ -57,5 +42,6 @@ setup(
     ],
     python_requires = python_requires,
     setup_requires = setup_requires,
-    install_requires = install_requires
+    install_requires = install_requires,
+    extras_require = extras_require
 )

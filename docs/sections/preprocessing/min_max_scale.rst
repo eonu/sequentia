@@ -7,4 +7,4 @@ API reference
 -------------
 
 .. autoclass:: sequentia.preprocessing.MinMaxScale
-   :members: fit, fit_transform, transform, __call__
+   :members: fit, is_fitted, unfit, fit_transform, transform, __call__
