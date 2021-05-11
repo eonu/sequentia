@@ -1,25 +1,53 @@
+## [0.12.0](https://github.com/eonu/sequentia/releases/tag/v0.12.0)
+
+#### Major changes
+- Rework preprocessing module (see [#177](https://github.com/eonu/sequentia/pull/177)). ([#179](https://github.com/eonu/sequentia/pull/179))
+  - Add `Custom` transformation.
+  - Rename `Preprocess` to `Compose`.
+  - Don't validate observation sequences after each transformation in `Compose`.
+  - Remove progress bars and `verbose` parameter.
+  - Stop unnecessarily copying each observation sequence before transformations.
+  - Change `transform()` function on `Transform` objects to accept a single observation sequence.
+  - Remove `_apply()` function on `Transform` objects.
+  - Make `_is_fitted()` public on `Transform` objects (change to `is_fitted()`).
+  - Use `__str__` instead of `_describe()` for transformation descriptions.
+- Remove need to send `DeepGRU` to device explicitly, so we can now do `DeepGRU(..., device=device)` instead of `DeepGRU(..., device=device).to(device)`. ([#178](https://github.com/eonu/sequentia/pull/178))
+- Add `dev`, `test`, `docs` and `notebooks` extras. ([#174](https://github.com/eonu/sequentia/pull/174))
+- Remove `Equalize` transform as it goes against the point of variable-length sequence classification. ([#172](https://github.com/eonu/sequentia/pull/172))
+- Change `TrimZeros` transform to `TrimConstants`, allowing any constant-valued observation to be trimmed. ([#172](https://github.com/eonu/sequentia/pull/172))
+- Add DeepGRU classifier implementation. ([#169](https://github.com/eonu/sequentia/pull/169))
+- Add `sequentia[torch]` extra for optional `torch` CPU installation. ([#169](https://github.com/eonu/sequentia/pull/169))
+
+#### Minor changes
+- Keep batch lengths on CPU ([pytorch/pytorch#43227](https://github.com/pytorch/pytorch/issues/43227)). ([#178](https://github.com/eonu/sequentia/pull/178))
+- Remove `docs/requirements.txt` and specify `docs` extra in `.readthedocs.yml`. ([#176](https://github.com/eonu/sequentia/pull/176))
+- Move Sphinx extensions from `docs/conf.py` to `requirements.py`. ([#176](https://github.com/eonu/sequentia/pull/176))
+- Bump development status classifier to beta. ([#175](https://github.com/eonu/sequentia/pull/175))
+- Move package dependency specifications to `requirements.py`. ([#174](https://github.com/eonu/sequentia/pull/174))
+- Add `docs/README.md`, `notebooks/README.md` and `lib/test/README.md`. ([#174](https://github.com/eonu/sequentia/pull/174))
+- Update HMM classifier diagram. ([#173](https://github.com/eonu/sequentia/pull/173))
+- Add build status to `README.md`. ([#171](https://github.com/eonu/sequentia/pull/171))
+- Fix patch description in `CONTRIBUTING.md`. ([#170](https://github.com/eonu/sequentia/pull/170))
+- Fix wording in `README.md`. ([#167](https://github.com/eonu/sequentia/pull/167), [#168](https://github.com/eonu/sequentia/pull/168))
+
 ## [0.11.1](https://github.com/eonu/sequentia/releases/tag/v0.11.1)
 
 #### Major changes
-
 - Fix validation for univariate sequences. ([#164](https://github.com/eonu/sequentia/pull/164))
 
 #### Minor changes
-
 - Clean up `README.md` and add examples. ([#165](https://github.com/eonu/sequentia/pull/165))
 - Clean up validation logical expressions. ([#164](https://github.com/eonu/sequentia/pull/164))
 
 ## [0.11.0](https://github.com/eonu/sequentia/releases/tag/v0.11.0)
 
 #### Major changes
-
 - Add trailing underscore to variables containing trainable parameters (see #154). ([#158](https://github.com/eonu/sequentia/pull/158))
 - Add properties for GMM emission distribution parameters (see #153). ([#156](https://github.com/eonu/sequentia/pull/156))
 - Add selective `GMMHMM` parameter freezing/unfreezing (see #150). ([#155](https://github.com/eonu/sequentia/pull/155))
 - Fix random transition matrix initialization for `_LeftRightTopology` (see #149). ([#151](https://github.com/eonu/sequentia/pull/151))
 
 #### Minor changes
-
 - Add access to Baum-Welch algorithm convergence monitor (see #139). ([#162](https://github.com/eonu/sequentia/pull/162))
 - Prefix `_Validator` functions with `is_` (see #159). ([#161](https://github.com/eonu/sequentia/pull/161))
 - Add validation for checking fitted parameters (see #157). ([#160](https://github.com/eonu/sequentia/pull/160))
@@ -30,24 +58,20 @@
 ## [0.10.3](https://github.com/eonu/sequentia/releases/tag/v0.10.3)
 
 #### Major changes
-
 - Fix `setup.py` encoding problem. ([#145](https://github.com/eonu/sequentia/pull/145))
 - Add `docs/robots.txt` and `sphinx-version-warning` package to prevent search engines from indexing old package versions (see #143). ([#147](https://github.com/eonu/sequentia/pull/147))
 
 #### Minor changes
-
 - Add @Prhmma as a contributor for #145. ([#146](https://github.com/eonu/sequentia/pull/146))
 
 ## [0.10.2](https://github.com/eonu/sequentia/releases/tag/v0.10.2)
 
 #### Major changes
-
 - Add support for dependent feature warping (addresses [#124](https://github.com/eonu/sequentia/pull/124)). ([#135](https://github.com/eonu/sequentia/pull/135))
 - Add multi-processed predictions for `HMMClassifier` (addresses [#121](https://github.com/eonu/sequentia/pull/121)). ([#136](https://github.com/eonu/sequentia/pull/136))
 - Re-order `predict()` and `evaluate()` arguments. ([#138](https://github.com/eonu/sequentia/pull/138))
 
 #### Minor changes
-
 - Add `original_labels` documentation to `KNNClassifier`. ([#133](https://github.com/eonu/sequentia/pull/133))
 - Simplify `GMMHMM` documentation. ([#134](https://github.com/eonu/sequentia/pull/134))
 - Fix posterior comment in `classifier.svg`. ([#137](https://github.com/eonu/sequentia/pull/137))
@@ -55,14 +79,12 @@
 ## [0.10.1](https://github.com/eonu/sequentia/releases/tag/v0.10.1)
 
 #### Minor changes
-
 - Remove references to `sigment`. ([#130](https://github.com/eonu/sequentia/pull/130))
 - Fix type specifiers in documentation (see [#129](https://github.com/eonu/sequentia/issues/129)). ([#131](https://github.com/eonu/sequentia/pull/131))
 
 ## [0.10.0](https://github.com/eonu/sequentia/releases/tag/v0.10.0)
 
 #### Major changes
-
 - Switch out [`pomegranate`](https://github.com/jmschrei/pomegranate) HMM backend to [`hmmlearn`](https://github.com/hmmlearn/hmmlearn). ([#105](https://github.com/eonu/sequentia/pull/105))
 - Remove separate HMM and GMM-HMM implementations – only keep a single GMM-HMM implementation (in the `GMMHMM` class) and treat multivariate Gaussian emission HMM as a special case of GMM-HMM. ([#105](https://github.com/eonu/sequentia/pull/105))
 - Support string and numeric labels by using label encodings (from [`sklearn.preprocessing.LabelEncoder`](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html)). ([#105](https://github.com/eonu/sequentia/pull/105))
@@ -70,7 +92,6 @@
 - Switch from approximate DTW algorithm ([`fastdtw`](https://github.com/slaypni/fastdtw)) to exact implementation ([`dtaidistance`](https://github.com/wannesm/dtaidistance)) for `KNNClassifier`. ([#106](https://github.com/eonu/sequentia/pull/106))
 
 #### Minor changes
-
 - Switch to use duck-typing for iterables instead of requiring lists. ([#105](https://github.com/eonu/sequentia/pull/105))
 - Rename 'strict left-right' HMM topology to 'linear'. ([#105](https://github.com/eonu/sequentia/pull/105))
 - Switch `m2r` to `m2r2`, as `m2r` is no longer maintained. ([#105](https://github.com/eonu/sequentia/pull/105))
@@ -86,13 +107,11 @@
 ## [0.7.2](https://github.com/eonu/sequentia/releases/tag/v0.7.2)
 
 #### Major changes
-
 - Stop referring to sequences as temporal, as non-temporal sequences can also be used. ([#103](https://github.com/eonu/sequentia/pull/103))
 
 ## [0.7.1](https://github.com/eonu/sequentia/releases/tag/v0.7.1)
 
 #### Major changes
-
 - Fix deserialization for `KNNClassifier`. ([#93](https://github.com/eonu/sequentia/pull/93))
   - Sort HDF5 keys before loading as `numpy.ndarray`s.
   - Pass `weighting` function into deserialization constructor.
@@ -100,7 +119,6 @@
 ## [0.7.0](https://github.com/eonu/sequentia/releases/tag/v0.7.0)
 
 #### Major changes
-
 - Fix `pomegranate` version to v0.12.0. ([#79](https://github.com/eonu/sequentia/pull/79))
 - Add serialization and deserialization support for all classifiers. ([#80](https://github.com/eonu/sequentia/pull/80))
   - `HMM`, `HMMClassifier`: Serialized in JSON format.
@@ -144,9 +162,9 @@
 - Add `trim_zeros` preprocessing method for removing zero-observations from an observation sequence. ([#67](https://github.com/eonu/sequentia/pull/67))
 
 #### Minor changes
-- (_Internal_) Add `Validator.random_state` for validating random state objects and seeds. ([#56](https://github.com/eonu/sequentia/pull/56))
-- (_Internal_) Internalize `Validator` and topology (`Topology`, `ErgodicTopology`, `LeftRightTopology`) classes. ([#57](https://github.com/eonu/sequentia/pull/57))
-- (_Internal_) Use proper documentation format for topology classes. ([#58](https://github.com/eonu/sequentia/pull/58))
+- Add `Validator.random_state` for validating random state objects and seeds. ([#56](https://github.com/eonu/sequentia/pull/56))
+- Internalize `Validator` and topology (`Topology`, `ErgodicTopology`, `LeftRightTopology`) classes. ([#57](https://github.com/eonu/sequentia/pull/57))
+- Use proper documentation format for topology classes. ([#58](https://github.com/eonu/sequentia/pull/58))
 
 ## [0.5.0](https://github.com/eonu/sequentia/releases/tag/v0.5.0)
 
@@ -159,7 +177,6 @@
   - Modify downsampling method to downsample residual observations.
 
 #### Minor changes
-
 - Add supported topologies (left-right and ergodic) to feature list. ([#53](https://github.com/eonu/sequentia/pull/53))
 - Add restrictions on preprocessing parameters: downsample factor and window size. ([#50](https://github.com/eonu/sequentia/pull/50))
 - Allow `Preprocess` class to be used to apply preprocessing transformations to a single observation sequence. ([#49](https://github.com/eonu/sequentia/pull/49))
@@ -182,17 +199,17 @@
 #### Major changes
 - Add multi-processing support for `DTWKNN` predictions. ([#29](https://github.com/eonu/sequentia/pull/29))
 - Rename the `fit_transform()` function in `Preprocess` to `transform()` since there is nothing being fitted. ([#35](https://github.com/eonu/sequentia/pull/35))
-- (_Internal_) Modify package classifiers in `setup.py` ([#31](https://github.com/eonu/sequentia/pull/31)):
+- Modify package classifiers in `setup.py` ([#31](https://github.com/eonu/sequentia/pull/31)):
   - Set development status classifier to `Pre-Alpha`.
   - Add Python version classifiers for v3.5+.
   - Specify UNIX and macOS operating system classifiers.
 
 #### Minor changes
-- (_Internal_) Finish tutorial and example notebooks. ([#35](https://github.com/eonu/sequentia/pull/35))
-- (_Internal_) Rename `examples` directory to `notebooks`. ([#32](https://github.com/eonu/sequentia/pull/32))
-- (_Internal_) Host notebooks statically on [nbviewer](https://github.com/jupyter/nbviewer). ([#32](https://github.com/eonu/sequentia/pull/32))
-- (_Internal_) Add reference to Pomegranate [paper](http://jmlr.org/papers/volume18/17-636/17-636.pdf) and [repository](https://github.com/jmschrei/pomegranate). ([#30](https://github.com/eonu/sequentia/pull/30))
-- (_Internal_) Add badges to `README.md`. ([#28](https://github.com/eonu/sequentia/pull/28))
+- Finish tutorial and example notebooks. ([#35](https://github.com/eonu/sequentia/pull/35))
+- Rename `examples` directory to `notebooks`. ([#32](https://github.com/eonu/sequentia/pull/32))
+- Host notebooks statically on [nbviewer](https://github.com/jupyter/nbviewer). ([#32](https://github.com/eonu/sequentia/pull/32))
+- Add reference to Pomegranate [paper](http://jmlr.org/papers/volume18/17-636/17-636.pdf) and [repository](https://github.com/jmschrei/pomegranate). ([#30](https://github.com/eonu/sequentia/pull/30))
+- Add badges to `README.md`. ([#28](https://github.com/eonu/sequentia/pull/28))
 
 ## [0.1.0](https://github.com/eonu/sequentia/releases/tag/v0.1.0)
 
