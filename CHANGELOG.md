@@ -1,3 +1,9 @@
+## [0.12.1](https://github.com/eonu/sequentia/releases/tag/v0.12.1)
+
+#### Major changes
+
+- Remove `requirements.py` due to import error. ([#182](https://github.com/eonu/sequentia/pull/182))
+
 ## [0.12.0](https://github.com/eonu/sequentia/releases/tag/v0.12.0)
 
 #### Major changes
