@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 import platform
 from pkg_resources import packaging
 
-VERSION = '0.12.0'
+VERSION = '0.12.1'
 
 with open('README.md', 'r', encoding='utf8') as fh:
     long_description = fh.read()
