@@ -1,4 +1,5 @@
-import warnings, tqdm, tqdm.auto, numpy as np, types, pickle, marshal
+import warnings, numpy as np, types, pickle, marshal
+from tqdm.auto import tqdm
 from joblib import Parallel, delayed
 from multiprocessing import cpu_count
 from dtaidistance import dtw, dtw_ndim
@@ -181,8 +182,14 @@ class KNNClassifier:
         self._val.is_restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
 
         if isinstance(X, np.ndarray):
-            distances = np.array([self._dtw(X, x) for x in tqdm.auto.tqdm(self._X_, desc='Calculating distances', disable=not(verbose))])
-            return self._output(self._find_nearest(distances), original_labels)
+            # Calculate DTW distances between X and all other sequences
+            distances = np.array([self._dtw(X, x) for x in tqdm(self._X_, desc='Calculating distances', disable=not(verbose))])
+            # Find the k-nearest neighbors by DTW distance
+            nearest_labels, nearest_scores = self._find_k_nearest(distances)
+            # Out of the k-nearest neighbors, find the label(s) which had the highest total weighting
+            max_labels = self._find_max_labels(nearest_labels, nearest_scores)
+            # Randomly pick from the set of labels with the maximum label score
+            return self._output(self._random_state.choice(max_labels), original_labels)
         else:
             n_jobs = min(cpu_count() if n_jobs == -1 else n_jobs, len(X))
             X_chunks = [list(chunk) for chunk in np.array_split(np.array(X, dtype=object), n_jobs)]
@@ -309,48 +316,55 @@ class KNNClassifier:
         window = max(1, int(self._window * max(len(A), len(B))))
         return dtw_ndim.distance(A, B, use_c=self._use_c, window=window)
 
-    def _argmax(self, a):
-        """Same as numpy.argmax but returns all occurrences of the maximum, and is O(n) instead of O(2n).
+    def _multi_argmax(self, arr):
+        """Same as numpy.argmax but returns all occurrences of the maximum and only requires a single pass.
         From: https://stackoverflow.com/a/58652335
         """
-        all_, max_ = [0], a[0]
-        for i in range(1, len(a)):
-            if a[i] > max_:
-                all_, max_ = [i], a[i]
-            elif a[i] == max_:
+        all_, max_ = [0], arr[0]
+        for i in range(1, len(arr)):
+            if arr[i] > max_:
+                all_, max_ = [i], arr[i]
+            elif arr[i] == max_:
                 all_.append(i)
         return np.array(all_)
 
-    def _find_nearest(self, distances): # Requires fit
+    def _find_k_nearest(self, distances): # Requires fit
+        """Finds the indices and weightings (or scores) of the k-nearest neighbors"""
+        idx = np.argpartition(distances, self._k)[:self._k]
+        nearest_labels = self._y_[idx]
+        nearest_scores = self._weighting(distances[idx])
+        return nearest_labels, nearest_scores
+
+    def _find_max_labels(self, nearest_labels, nearest_scores):
         """Returns the mode label of the k nearest neighbors.
         Vectorization from: https://stackoverflow.com/a/49239335
         """
-        # Find the indices, labels and distances of the k-nearest neighbours
-        idx = np.argpartition(distances, self._k)[:self._k]
-        nearest_labels = self._y_[idx]
-        nearest_distances = self._weighting(distances[idx])
-        # Combine labels and distances into one array and sort by label
-        labels_distances = np.vstack((nearest_labels, nearest_distances))
-        labels_distances = labels_distances[:, labels_distances[0, :].argsort()]
-        # Find indices where the label changes
-        i = np.nonzero(np.diff(labels_distances[0, :]))[0] + 1
-        i = np.insert(i, 0, 0)
-        # Add-reduce weighted distances within each label group (ordered by label)
-        label_scores = np.add.reduceat(labels_distances[1, :], i)
-        # Find the mode labels (set of labels with labels scores equal to the maximum)
-        max_labels = nearest_labels[self._argmax(label_scores)]
-        # Randomly pick from the set of labels with the maximum label score
-        return self._random_state.choice(max_labels)
+        # Sort the labels in ascending order (and sort distances in the same order)
+        sorted_labels_idx = nearest_labels.argsort()
+        sorted_labels = nearest_labels[sorted_labels_idx]
+        sorted_scores = nearest_scores[sorted_labels_idx]
+        # Identify the indices where the sorted labels change (so we can group by labels)
+        change_idx = np.concatenate(([0], np.nonzero(np.diff(sorted_labels))[0] + 1))
+        # Calculate the total score for each label
+        label_scores = np.add.reduceat(sorted_scores, change_idx)
+        # Find the change index of the maximum score(s)
+        max_score_idx = change_idx[self._multi_argmax(label_scores)]
+        # Map the change index back to the actual label(s)
+        return sorted_labels[max_score_idx]
 
     def _chunk_predict(self, process, chunk, verbose): # Requires fit
         """Makes predictions for a chunk of the observation sequences, for a given subprocess."""
         labels = np.zeros(len(chunk), dtype=int)
-        for i, sequence in enumerate(tqdm.auto.tqdm(chunk,
-            desc='Classifying examples (process {})'.format(process),
-            disable=not(verbose), position=process-1)
-        ):
-            distances = np.array([self._dtw(sequence, x) for x in self._X_])
-            labels[i] = self._find_nearest(distances)
+        pbar = tqdm(chunk, desc='Classifying examples (process {})'.format(process), disable=not(verbose), position=process-1)
+        for i, x1 in enumerate(pbar):
+            # Calculate DTW distances between x1 and all other sequences
+            distances = np.array([self._dtw(x1, x2) for x2 in self._X_])
+            # Find the k-nearest neighbors by DTW distance
+            nearest_labels, nearest_scores = self._find_k_nearest(distances)
+            # Out of the k-nearest neighbors, find the label(s) which had the highest total weighting
+            max_labels = self._find_max_labels(nearest_labels, nearest_scores)
+            # Randomly pick from the set of labels with the maximum label score
+            labels[i] = self._random_state.choice(max_labels)
         return labels
 
     def _output(self, out, original_labels):
