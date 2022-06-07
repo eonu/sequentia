@@ -178,15 +178,17 @@ class KNNClassifier:
         self._val.is_boolean(original_labels, desc='original_labels')
         self._val.is_boolean(verbose, desc='verbose')
         self._val.is_restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
+        n_jobs = min(cpu_count() if n_jobs == -1 else n_jobs, len(X))
 
         # Make prediction for a single sequence
         if isinstance(X, np.ndarray):
+            if n_jobs > 1:
+                warnings.warn('Single kNN predictions do not yet support multi-processing. Set n_jobs=1 to silence this warning.')
+
             labels = self._predict(X, verbose=verbose)
 
         # Make predictions for multiple sequences (in parallel)
         else:
-            n_jobs = min(cpu_count() if n_jobs == -1 else n_jobs, len(X))
-
             if n_jobs == 1:
                 # Use entire list as a chunk
                 labels = self._chunk_predict(X, verbose=verbose)

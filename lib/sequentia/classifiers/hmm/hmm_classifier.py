@@ -213,7 +213,7 @@ class HMMClassifier:
         """Makes predictions (scores) for a chunk of the observation sequences, for a given subprocess."""
         return np.array([posteriors(x) for x in tqdm.auto.tqdm(
             chunk, desc='Predicting (process {})'.format(process),
-            disable=not(verbose), position=process-1
+            disable=not(verbose), position=process-1, leave=False
         )])
 
     @property
