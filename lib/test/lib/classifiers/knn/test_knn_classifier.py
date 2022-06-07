@@ -236,61 +236,61 @@ def test_predict_single_k1_no_verbose(capsys):
 def test_predict_multiple_k1_verbose(capsys):
     """Verbosely predict multiple observation sequences (k=1)"""
     predictions = clfs['k=1'].predict(X, verbose=True)
-    assert 'Classifying examples' in capsys.readouterr().err
+    assert 'Predicting' in capsys.readouterr().err
     assert list(predictions) == ['c1', 'c1', 'c0', 'c1', 'c1', 'c0']
 
 def test_predict_multiple_k1_no_verbose(capsys):
     """Silently predict multiple observation sequences (k=1)"""
     predictions = clfs['k=1'].predict(X, verbose=False)
-    assert 'Classifying examples' not in capsys.readouterr().err
+    assert 'Predicting' not in capsys.readouterr().err
     assert list(predictions) == ['c1', 'c1', 'c0', 'c1', 'c1', 'c0']
 
 def test_predict_multiple_k2_verbose(capsys):
     """Verbosely predict multiple observation sequences (k=2)"""
     predictions = clfs['k=2'].predict(X, verbose=True)
-    assert 'Classifying examples' in capsys.readouterr().err
+    assert 'Predicting' in capsys.readouterr().err
     assert len(predictions) == 6
 
 def test_predict_multiple_k2_no_verbose(capsys):
     """Silently predict multiple observation sequences (k=2)"""
     predictions = clfs['k=2'].predict(X, verbose=False)
-    assert 'Classifying examples' not in capsys.readouterr().err
+    assert 'Predicting' not in capsys.readouterr().err
     assert len(predictions) == 6
 
 def test_predict_multiple_k3_verbose(capsys):
     """Verbosely predict multiple observation sequences (k=3)"""
     predictions = clfs['k=3'].predict(X, verbose=True)
-    assert 'Classifying examples' in capsys.readouterr().err
-    assert list(predictions) == ['c1', 'c1', 'c1', 'c1', 'c0', 'c1']
+    assert 'Predicting' in capsys.readouterr().err
+    assert list(predictions) == ['c1', 'c1', 'c1', 'c1', 'c1', 'c0']
 
 def test_predict_multiple_k3_no_verbose(capsys):
     """Silently predict multiple observation sequences (k=3)"""
     predictions = clfs['k=3'].predict(X, verbose=False)
-    assert 'Classifying examples' not in capsys.readouterr().err
-    assert list(predictions) == ['c1', 'c1', 'c1', 'c1', 'c0', 'c1']
+    assert 'Predicting' not in capsys.readouterr().err
+    assert list(predictions) == ['c1', 'c1', 'c1', 'c1', 'c1', 'c0']
 
 def test_predict_multiple_weighted_verbose(capsys):
     """Verbosely predict multiple observation sequences (weighted)"""
     predictions = clfs['weighted'].predict(X, verbose=True)
-    assert 'Classifying examples' in capsys.readouterr().err
-    assert list(predictions) == ['c1', 'c1', 'c0', 'c1', 'c0', 'c1']
+    assert 'Predicting' in capsys.readouterr().err
+    assert list(predictions) == ['c1', 'c1', 'c0', 'c1', 'c1', 'c0']
 
 def test_predict_multiple_weighted_no_verbose(capsys):
     """Silently predict multiple observation sequences (weighted)"""
     predictions = clfs['weighted'].predict(X, verbose=False)
-    assert 'Classifying examples' not in capsys.readouterr().err
-    assert list(predictions) == ['c1', 'c1', 'c0', 'c1', 'c0', 'c1']
+    assert 'Predicting' not in capsys.readouterr().err
+    assert list(predictions) == ['c1', 'c1', 'c0', 'c1', 'c1', 'c0']
 
 def test_predict_multiple_independent_verbose(capsys):
     """Verbosely predict multiple observation sequences with independent warping"""
     predictions = clfs['independent'].predict(X, verbose=True)
-    assert 'Classifying examples' in capsys.readouterr().err
+    assert 'Predicting' in capsys.readouterr().err
     assert list(predictions) == ['c1', 'c1', 'c0', 'c1', 'c1', 'c0']
 
 def test_predict_multiple_independent_no_verbose(capsys):
     """Silently predict multiple observation sequences with independent warping"""
     predictions = clfs['independent'].predict(X, verbose=False)
-    assert 'Classifying examples' not in capsys.readouterr().err
+    assert 'Predicting' not in capsys.readouterr().err
     assert list(predictions) == ['c1', 'c1', 'c0', 'c1', 'c1', 'c0']
 
 def test_predict_single():
@@ -306,12 +306,12 @@ def test_predict_single_original_labels():
 def test_predict_multiple():
     """Predict multiple observation sequences and don't return the original labels"""
     predictions = clfs['k=3'].predict(X, verbose=False, original_labels=False)
-    assert list(predictions) == [1, 1, 1, 1, 0, 1]
+    assert list(predictions) == [1, 1, 1, 1, 1, 0]
 
 def test_predict_multiple_original_labels():
     """Predict multiple observation sequences and return the original labels"""
     predictions = clfs['k=3'].predict(X, verbose=False, original_labels=True)
-    assert list(predictions) == ['c1', 'c1', 'c1', 'c1', 'c0', 'c1']
+    assert list(predictions) == ['c1', 'c1', 'c1', 'c1', 'c1', 'c0']
 
 # ======================== #
 # KNNClassifier.evaluate() #
@@ -320,10 +320,10 @@ def test_predict_multiple_original_labels():
 def test_evaluate():
     """Evaluate performance on some observation sequences and labels"""
     acc, cm = clfs['k=3'].evaluate(X, y)
-    assert acc == 0.5
+    assert acc == 5 / 6
     assert_equal(cm, np.array([
-        [0, 2, 0, 0, 0],
-        [1, 3, 0, 0, 0],
+        [1, 1, 0, 0, 0],
+        [0, 4, 0, 0, 0],
         [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0]
