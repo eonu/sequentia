@@ -233,11 +233,11 @@ All contributions to this repository are greatly appreciated. Contribution guide
 		<tr>
 			<th align="center">
         <a href="https://github.com/eonu">
-          <img src="https://avatars0.githubusercontent.com/u/24795571?s=460&v=4" alt="Edwin Onuonga" width="60px">
+          <img src="https://avatars0.githubusercontent.com/u/24795571?s=460&v=4" alt="eonu" width="60px">
           <br/><sub><b>Edwin Onuonga</b></sub>
         </a>
         <br/>
-        <a href="mailto:ed@eonu.net">✉️</a>
+        <a href="mailto:ed@eonu.net">✉️</a>&nbsp;
         <a href="https://eonu.net">🌍</a>
 			</th>
       <th align="center">
@@ -246,6 +246,12 @@ All contributions to this repository are greatly appreciated. Contribution guide
           <br/><sub><b>Prhmma</b></sub>
         </a>
 			</th>
+      <th align="center">
+        <a href="https://github.com/manisci">
+          <img src="https://avatars.githubusercontent.com/u/30268711?v=4" alt="manisci" width="60px">
+          <br/><sub><b>manisci</b></sub>
+        </a>
+      </th>
 			<!-- Add more <th></th> blocks for more contributors -->
 		</tr>
 	</thead>
