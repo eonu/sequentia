@@ -212,8 +212,8 @@ class HMMClassifier:
     def _chunk_predict(self, process, posteriors, chunk, verbose): # Requires fit
         """Makes predictions (scores) for a chunk of the observation sequences, for a given subprocess."""
         return np.array([posteriors(x) for x in tqdm.auto.tqdm(
-            chunk, desc='Classifying examples (process {})'.format(process),
-            disable=not(verbose), position=process-1
+            chunk, desc='Predicting (process {})'.format(process),
+            disable=not(verbose), position=process-1, leave=False
         )])
 
     @property
