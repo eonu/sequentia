@@ -27,6 +27,7 @@ pkg_versions = {
     'numpydoc': '',
     'sphinx_rtd_theme': '',
     'm2r2': '',
+    'Jinja2': '<3.1',
     # [test]
     'pytest': '==5.3.2',
     # [notebooks]
@@ -44,7 +45,7 @@ pkg_versions = {
 extra_pkgs = {
     'torch': ['dev', 'torch', 'test', 'docs', 'notebooks'],
     'pytest': ['dev', 'test'],
-    **{pkg:['dev', 'docs'] for pkg in ('sphinx', 'numpydoc', 'sphinx_rtd_theme', 'm2r2')},
+    **{pkg:['dev', 'docs'] for pkg in ('sphinx', 'numpydoc', 'sphinx_rtd_theme', 'm2r2', 'Jinja2')},
     **{pkg:['dev', 'notebooks'] for pkg in (
         'jupyter', 'requests', 'matplotlib', 'pandas',
         'seaborn', 'tqdm', 'torchaudio', 'torchvision',
