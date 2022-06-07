@@ -39,6 +39,130 @@ def test_fit_sets_attributes():
     assert_equal(clf.y_, clf.encoder_.transform(y))
     assert clf._n_features_ == 3
 
+# ============================= #
+# KNNClassifier._multi_argmax() #
+# ============================= #
+
+def test_multi_argmax_single():
+    """Check that the correct index is returned when there is a single maximum"""
+    clf = clfs['k=1']
+    idx = clf._multi_argmax([-2, 1, 5, -1, 3, 4, 2])
+    assert list(idx) == [2]
+
+def test_multi_argmax_multiple():
+    """Check that the correct indicies are returned when there are multiple maxima"""
+    clf = clfs['k=1']
+    idx = clf._multi_argmax([-2, 1, 5, -1, 3, 5, 4, 2])
+    assert list(idx) == [2, 5]
+
+# =============================== #
+# KNNClassifier._find_k_nearest() #
+# =============================== #
+
+def test_find_k_nearest_tie_within():
+    """Check that tied labels are fetched correctly when they are in the nearest k values."""
+    clf = deepcopy(clfs['k=3'])
+    clf._y_ = clf._encoder_.transform(classes)
+    labels, scores = clf._find_k_nearest(np.array([4, 2, 1, 1, 3]))
+    assert len(labels) == clf._k
+    assert all(label in (1, 2, 3) for label in labels)
+    assert all(score == 1 for score in scores)
+
+def test_find_k_nearest_tie_partially_within():
+    """Check that a correct subset of the labels are fetched when there are more equidistant values than k."""
+    clf = deepcopy(clfs['k=3'])
+    clf._y_ = clf._encoder_.transform(classes)
+    labels, scores = clf._find_k_nearest(np.array([0, 1, 1, 1, 3]))
+    assert len(labels) == clf._k
+    assert all(label in (0, 1, 2, 3) for label in labels)
+    assert all(score == 1 for score in scores)
+
+def test_find_k_nearest_weighting():
+    """Check that the correct scores are returned for the k nearest values when a custom weighting is used."""
+    clf = deepcopy(clfs['k=3'])
+    clf._weighting = lambda x: np.exp(-x)
+    clf._y_ = clf._encoder_.transform(classes)
+    labels, scores = clf._find_k_nearest(np.array([4, 2, 1, 5, 3]))
+    assert len(labels) == clf._k
+    assert all(label in (1, 2, 4) for label in labels)
+    assert all(score in (np.exp(-1), np.exp(-2), np.exp(-3)) for score in scores)
+
+# ================================ #
+# KNNClassifier._find_max_labels() #
+# ================================ #
+
+def test_find_max_labels_uniform_two_classes():
+    """Check that the correct single maximum value is returned when a uniform weighting is used with two distinct classes."""
+    clf = clfs['k=1']
+    max_labels = clf._find_max_labels(
+        nearest_labels=np.array([1, 0, 0, 0, 1]),
+        nearest_scores=np.array([1, 1, 1, 1, 1])
+    )
+    assert list(max_labels) == [0]
+
+def test_find_max_labels_uniform_two_classes_tie():
+    """Check that the correct maximum values are returned when a uniform weighting is used with two distinct tied classes."""
+    clf = clfs['k=1']
+    max_labels = clf._find_max_labels(
+        nearest_labels=np.array([1, 1, 0, 0]),
+        nearest_scores=np.array([1, 1, 1, 1])
+    )
+    assert list(max_labels) == [0, 1]
+
+def test_find_max_labels_uniform_many_classes():
+    """Check that the correct maximum values are returned when a uniform weighting is used with multiple distinct classes."""
+    clf = clfs['k=1']
+    max_labels = clf._find_max_labels(
+        nearest_labels=np.array([1, 0, 0, 0, 1, 2, 2, 3]),
+        nearest_scores=np.array([1, 1, 1, 1, 1, 1, 1, 1])
+    )
+    assert list(max_labels) == [0]
+
+def test_find_max_labels_uniform_many_classes_tie():
+    """Check that the correct maximum values are returned when a uniform weighting is used with multiple tied distinct classes."""
+    clf = clfs['k=1']
+    max_labels = clf._find_max_labels(
+        nearest_labels=np.array([1, 0, 0, 1, 2, 2, 3, 3]),
+        nearest_scores=np.array([1, 1, 1, 1, 1, 1, 1, 1])
+    )
+    assert list(max_labels) == [0, 1, 2, 3]
+
+def test_find_max_labels_weighted_two_classes():
+    """Check that the correct single maximum value is returned when a custom weighting is used with two distinct classes."""
+    clf = clfs['k=1']
+    max_labels = clf._find_max_labels(
+        nearest_labels=np.array([1, 0  , 0, 0, 1]),
+        nearest_scores=np.array([1, 0.5, 1, 1, 2])
+    )
+    assert list(max_labels) == [1]
+
+def test_find_max_labels_weighted_two_classes_tie():
+    """Check that the correct maximum values are returned when a custom weighting is used with two distinct tied classes."""
+    clf = clfs['k=1']
+    max_labels = clf._find_max_labels(
+        nearest_labels=np.array([1, 1  , 0  , 0]),
+        nearest_scores=np.array([2, 0.5, 1.5, 1])
+    )
+    assert list(max_labels) == [0, 1]
+
+def test_find_max_labels_weighted_many_classes():
+    """Check that the correct maximum values are returned when a custom weighting is used with multiple distinct classes."""
+    clf = clfs['k=1']
+    max_labels = clf._find_max_labels(
+        nearest_labels=np.array([1, 0  , 0  , 0, 1  , 2  , 2, 3]),
+        nearest_scores=np.array([2, 0.5, 1.5, 1, 2.5, 2.5, 1, 3])
+    )
+    assert list(max_labels) == [1]
+
+def test_find_max_labels_weighted_many_classes_tie():
+    """Check that the correct maximum values are returned when a custom weighting is used with multiple tied distinct classes."""
+    clf = clfs['k=1']
+    max_labels = clf._find_max_labels(
+        nearest_labels=np.array([1, 0, 0  , 1  , 2   , 2   , 3  , 3]),
+        nearest_scores=np.array([1, 2, 1.5, 2.5, 1.75, 1.75, 0.5, 3])
+    )
+    assert list(max_labels) == [0, 1, 2, 3]
+
 # ======================= #
 # KNNClassifier.predict() #
 # ======================= #

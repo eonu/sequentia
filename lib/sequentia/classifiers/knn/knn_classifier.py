@@ -1,4 +1,4 @@
-import warnings, numpy as np, types, pickle, marshal
+import warnings, types, pickle, marshal, numpy as np
 from tqdm.auto import tqdm
 from joblib import Parallel, delayed
 from multiprocessing import cpu_count
@@ -117,9 +117,9 @@ class KNNClassifier:
                 if isinstance(weighting(np.ones(5)), np.ndarray):
                     self._weighting = weighting
                 else:
-                    raise TypeError('Expected weighting function to accept a numpy.ndarray and return an equally-sized numpy.ndarray')
+                    raise TypeError('Expected weighting function to accept a numpy.ndarray and return an equally sized numpy.ndarray')
             except:
-                raise TypeError('Expected weighting function to accept a numpy.ndarray and return an equally-sized numpy.ndarray')
+                raise TypeError('Expected weighting function to accept a numpy.ndarray and return an equally sized numpy.ndarray')
 
         self._use_c = self._val.is_boolean(use_c, desc='whether or not to use fast pure C compiled functions')
         if self._use_c and (dtw_cc is None):
@@ -159,9 +159,7 @@ class KNNClassifier:
             Whether to display a progress bar or not.
 
             .. note::
-                If both ``verbose=True`` and ``n_jobs > 1``, then the progress bars for each process
-                are always displayed in the console, regardless of where you are running this function from
-                (e.g. a Jupyter notebook).
+                The progress bar cannot be displayed if both ``verbose=True`` and ``n_jobs > 1``.
 
         n_jobs: int > 0 or -1
             | The number of jobs to run in parallel.
@@ -181,20 +179,27 @@ class KNNClassifier:
         self._val.is_boolean(verbose, desc='verbose')
         self._val.is_restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
 
+        # Make prediction for a single sequence
         if isinstance(X, np.ndarray):
-            # Calculate DTW distances between X and all other sequences
-            distances = np.array([self._dtw(X, x) for x in tqdm(self._X_, desc='Calculating distances', disable=not(verbose))])
-            # Find the k-nearest neighbors by DTW distance
-            nearest_labels, nearest_scores = self._find_k_nearest(distances)
-            # Out of the k-nearest neighbors, find the label(s) which had the highest total weighting
-            max_labels = self._find_max_labels(nearest_labels, nearest_scores)
-            # Randomly pick from the set of labels with the maximum label score
-            return self._output(self._random_state.choice(max_labels), original_labels)
+            labels = self._predict(X, verbose=verbose)
+
+        # Make predictions for multiple sequences (in parallel)
         else:
             n_jobs = min(cpu_count() if n_jobs == -1 else n_jobs, len(X))
-            X_chunks = [list(chunk) for chunk in np.array_split(np.array(X, dtype=object), n_jobs)]
-            labels = Parallel(n_jobs=n_jobs)(delayed(self._chunk_predict)(i+1, chunk, verbose) for i, chunk in enumerate(X_chunks))
-            return self._output(np.concatenate(labels), original_labels) # Flatten the resulting array
+
+            if n_jobs == 1:
+                # Use entire list as a chunk
+                labels = self._chunk_predict(X, verbose=verbose)
+
+            else:
+                if verbose:
+                    warnings.warn('Progress bars cannot be displayed when using multiple processes. Set verbose=False to silence this warning.')
+
+                # Split X into n_jobs equally sized chunks and process in parallel
+                chunks = [list(chunk) for chunk in np.array_split(np.array(X, dtype=object), n_jobs)]
+                labels = np.concatenate(Parallel(n_jobs=n_jobs)(delayed(self._chunk_predict)(chunk) for chunk in chunks))
+
+        return self._output(labels, original_labels)
 
     def evaluate(self, X, y, verbose=True, n_jobs=1):
         """Evaluates the performance of the classifier on a batch of observation sequences and their labels.
@@ -245,7 +250,6 @@ class KNNClassifier:
             pickle.dump({
                 'k': self._k,
                 'classes': self._encoder_.classes_,
-                # Serialize the weighting function into a byte-string
                 'weighting': marshal.dumps((self._weighting.__code__, self._weighting.__name__)),
                 'window': self._window,
                 'use_c': self._use_c,
@@ -273,34 +277,34 @@ class KNNClassifier:
         with open(path, 'rb') as file:
             data = pickle.load(file)
 
-            # Check deserialized object dictionary and keys
-            keys = set(('k', 'classes', 'weighting', 'window', 'use_c', 'independent', 'random_state', 'X', 'y', 'n_features'))
-            if not isinstance(data, dict):
-                raise TypeError('Expected deserialized object to be a dictionary - make sure the object was serialized with the save() function')
-            else:
-                if len(set(keys) - set(data.keys())) != 0:
-                    raise ValueError('Missing keys in deserialized object dictionary – make sure the object was serialized with the save() function')
+        # Check deserialized object dictionary and keys
+        keys = set(('k', 'classes', 'weighting', 'window', 'use_c', 'independent', 'random_state', 'X', 'y', 'n_features'))
+        if not isinstance(data, dict):
+            raise TypeError('Expected deserialized object to be a dictionary - make sure the object was serialized with the save() function')
+        else:
+            if len(set(keys) - set(data.keys())) != 0:
+                raise ValueError('Missing keys in deserialized object dictionary – make sure the object was serialized with the save() function')
 
-            # Deserialize the weighting function
-            weighting, name = marshal.loads(data['weighting'])
-            weighting = types.FunctionType(weighting, globals(), name)
+        # Deserialize the weighting function
+        weighting, name = marshal.loads(data['weighting'])
+        weighting = types.FunctionType(weighting, globals(), name)
 
-            # Instantiate a new KNNClassifier with the same hyper-parameters
-            clf = cls(
-                k=data['k'],
-                classes=data['classes'],
-                weighting=weighting,
-                window=data['window'],
-                use_c=data['use_c'],
-                independent=data['independent'],
-                random_state=data['random_state']
-            )
+        # Instantiate a new KNNClassifier with the same hyper-parameters
+        clf = cls(
+            k=data['k'],
+            classes=data['classes'],
+            weighting=weighting,
+            window=data['window'],
+            use_c=data['use_c'],
+            independent=data['independent'],
+            random_state=data['random_state']
+        )
 
-            # Load the data directly
-            clf._X_, clf._y_ = data['X'], data['y']
-            clf._n_features_ = data['n_features']
+        # Load the data directly
+        clf._X_, clf._y_ = data['X'], data['y']
+        clf._n_features_ = data['n_features']
 
-            return clf
+        return clf
 
     def _dtw_1d(self, a, b, window): # Requires fit
         """Computes the DTW distance between two univariate sequences."""
@@ -329,20 +333,17 @@ class KNNClassifier:
         return np.array(all_)
 
     def _find_k_nearest(self, distances): # Requires fit
-        """Finds the indices and weightings (or scores) of the k-nearest neighbors"""
+        """Returns the labels and weightings (or scores) of the k-nearest neighbors"""
         idx = np.argpartition(distances, self._k)[:self._k]
-        nearest_labels = self._y_[idx]
-        nearest_scores = self._weighting(distances[idx])
-        return nearest_labels, nearest_scores
+        return self._y_[idx], self._weighting(distances[idx])
 
     def _find_max_labels(self, nearest_labels, nearest_scores):
-        """Returns the mode label of the k nearest neighbors.
+        """Returns the mode label(s) of the k nearest neighbors.
         Vectorization from: https://stackoverflow.com/a/49239335
         """
         # Sort the labels in ascending order (and sort distances in the same order)
         sorted_labels_idx = nearest_labels.argsort()
-        sorted_labels = nearest_labels[sorted_labels_idx]
-        sorted_scores = nearest_scores[sorted_labels_idx]
+        sorted_labels, sorted_scores = nearest_labels[sorted_labels_idx], nearest_scores[sorted_labels_idx]
         # Identify the indices where the sorted labels change (so we can group by labels)
         change_idx = np.concatenate(([0], np.nonzero(np.diff(sorted_labels))[0] + 1))
         # Calculate the total score for each label
@@ -352,20 +353,20 @@ class KNNClassifier:
         # Map the change index back to the actual label(s)
         return sorted_labels[max_score_idx]
 
-    def _chunk_predict(self, process, chunk, verbose): # Requires fit
-        """Makes predictions for a chunk of the observation sequences, for a given subprocess."""
-        labels = np.zeros(len(chunk), dtype=int)
-        pbar = tqdm(chunk, desc='Classifying examples (process {})'.format(process), disable=not(verbose), position=process-1)
-        for i, x1 in enumerate(pbar):
-            # Calculate DTW distances between x1 and all other sequences
-            distances = np.array([self._dtw(x1, x2) for x2 in self._X_])
-            # Find the k-nearest neighbors by DTW distance
-            nearest_labels, nearest_scores = self._find_k_nearest(distances)
-            # Out of the k-nearest neighbors, find the label(s) which had the highest total weighting
-            max_labels = self._find_max_labels(nearest_labels, nearest_scores)
-            # Randomly pick from the set of labels with the maximum label score
-            labels[i] = self._random_state.choice(max_labels)
-        return labels
+    def _chunk_predict(self, chunk, verbose=False): # Requires fit
+        """Makes predictions for multiple observation sequences."""
+        return np.array([self._predict(x) for x in tqdm(chunk, desc='Predicting', disable=not(verbose))])
+
+    def _predict(self, x1, verbose=False): # Requires fit
+        """Makes a prediction for a single observation sequence."""
+        # Calculate DTW distances between x1 and all other sequences
+        distances = np.array([self._dtw(x1, x2) for x2 in tqdm(self._X_, desc='Calculating distances', disable=not(verbose))])
+        # Find the k-nearest neighbors by DTW distance
+        nearest_labels, nearest_scores = self._find_k_nearest(distances)
+        # Out of the k-nearest neighbors, find the label(s) which had the highest total weighting
+        max_labels = self._find_max_labels(nearest_labels, nearest_scores)
+        # Randomly pick from the set of labels with the maximum label score
+        return self._random_state.choice(max_labels)
 
     def _output(self, out, original_labels):
         """Inverse-transforms the labels if necessary, and returns them."""
