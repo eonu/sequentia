@@ -24,20 +24,19 @@ class KNNClassifier:
     classes: array-like of str/numeric
         The complete set of possible classes/labels.
 
-    weighting: 'uniform' or callable
+    weighting: callable, optional
         A callable that specifies how distance weighting should be performed.
         The callable should accept a :class:`numpy:numpy.ndarray` of DTW distances, apply an element-wise weighting transformation,
         then return an equally-sized :class:`numpy:numpy.ndarray` of weighted distances.
 
-        If a `'uniform'` weighting is chosen, then the function ``lambda x: np.ones(x.size)`` is used, which weights all of the distances equally.
+        If no weighting is chosen then the function ``lambda x: np.ones_like(x)`` is used, which weights all of the distances equally.
 
-        If the callable is simple enough, it should be specified as a ``lambda``, but a function will also work.
         Examples of weighting functions are:
 
-        - :math:`e^{-\\alpha x}`, specified by ``lambda x: np.exp(-alpha * x)`` for some positive :math:`\\alpha`/``alpha``,
+        - :math:`e^{-\\alpha x}`, specified by ``lambda x: np.exp(-alpha * x)`` for some positive :math:`\\alpha`,
         - :math:`\\frac{1}{x}`, specified by ``lambda x: 1 / x``.
 
-        A good weighting function should *ideally* be defined at :math:`x=0` in the rare event that two observations are perfectly aligned and therefore have zero DTW distance.
+        A good weighting function should *ideally* be defined at :math:`x=0` in the event that two observations are perfectly aligned and therefore have zero DTW distance.
 
         .. tip::
             It may be desirable to restrict DTW distances to a small range if you intend to use a weighting function.
@@ -94,7 +93,7 @@ class KNNClassifier:
         The encoded labels for the observation sequences used to fit the classifier.
     """
 
-    def __init__(self, k, classes, weighting='uniform', window=1., use_c=False, independent=False, random_state=None):
+    def __init__(self, k, classes, weighting=None, window=1., use_c=False, independent=False, random_state=None):
         self._val = _Validator()
         self._k = self._val.is_restricted_integer(
             k, lambda x: x > 0, desc='number of neighbors', expected='greater than zero')
@@ -109,17 +108,7 @@ class KNNClassifier:
         else:
             raise TypeError('Expected all classes to be of the same type')
 
-        if weighting == 'uniform':
-            self._weighting = lambda x: np.ones(x.size)
-        else:
-            self._val.is_func(weighting, 'distance weighting function')
-            try:
-                if isinstance(weighting(np.ones(5)), np.ndarray):
-                    self._weighting = weighting
-                else:
-                    raise TypeError('Expected weighting function to accept a numpy.ndarray and return an equally sized numpy.ndarray')
-            except:
-                raise TypeError('Expected weighting function to accept a numpy.ndarray and return an equally sized numpy.ndarray')
+        self._weighting = self._val.is_func(weighting, 'distance weighting function') if weighting else lambda x: np.ones_like(x)
 
         self._use_c = self._val.is_boolean(use_c, desc='whether or not to use fast pure C compiled functions')
         if self._use_c and (dtw_cc is None):
