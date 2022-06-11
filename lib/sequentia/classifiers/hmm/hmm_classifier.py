@@ -124,9 +124,8 @@ class HMMClassifier:
         # Calculate log un-normalized posteriors as a sum of the log forward probabilities (likelihoods) and log priors
         # Perform the MAP classification rule and return labels to original encoding if necessary
         n_jobs = min(cpu_count() if n_jobs == -1 else n_jobs, len(X))
-        X_chunks = [list(chunk) for chunk in np.array_split(np.array(X, dtype=object), n_jobs)]
-        scores = Parallel(n_jobs=n_jobs)(delayed(self._chunk_predict)(i+1, posteriors, chunk, verbose) for i, chunk in enumerate(X_chunks))
-        scores = np.concatenate(scores)
+        chunks = [list(chunk) for chunk in np.array_split(np.array(X, dtype=object), n_jobs)]
+        scores = np.concatenate(Parallel(n_jobs=n_jobs)(delayed(self._chunk_predict)(i+1, posteriors, chunk, verbose) for i, chunk in enumerate(chunks)))
         best_idxs = np.atleast_1d(scores.argmax(axis=1))
         labels = self._encoder_.inverse_transform(best_idxs) if original_labels else best_idxs
 
