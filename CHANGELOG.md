@@ -1,14 +1,16 @@
 ## [0.12.1](https://github.com/eonu/sequentia/releases/tag/v0.12.1)
 
-> ⚠️: `KNNClassifier` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
+> - `KNNClassifier` has a major bug in all versions prior to and including v0.12.1 resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)).
+>
+> - `GMMHMM` and `HMMClassifier` have a major bug in all versions prior to and including v0.12.1 as a result of two bugs in the `GMMHMM` class in `hmmlearn` versions before v0.2.7 (see [#193](https://github.com/eonu/sequentia/issues/193)).
+>
+> ⚠️ **Please use version v0.13.0 or later.**
 
 #### Major changes
 
 - Remove `requirements.py` due to import error. ([#182](https://github.com/eonu/sequentia/pull/182))
 
 ## [0.12.0](https://github.com/eonu/sequentia/releases/tag/v0.12.0)
-
-> ⚠️: `KNNClassifier` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
 
 #### Major changes
 - Rework preprocessing module (see [#177](https://github.com/eonu/sequentia/pull/177)). ([#179](https://github.com/eonu/sequentia/pull/179))
@@ -42,8 +44,6 @@
 
 ## [0.11.1](https://github.com/eonu/sequentia/releases/tag/v0.11.1)
 
-> ⚠️: `KNNClassifier` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
-
 #### Major changes
 - Fix validation for univariate sequences. ([#164](https://github.com/eonu/sequentia/pull/164))
 
@@ -52,8 +52,6 @@
 - Clean up validation logical expressions. ([#164](https://github.com/eonu/sequentia/pull/164))
 
 ## [0.11.0](https://github.com/eonu/sequentia/releases/tag/v0.11.0)
-
-> ⚠️: `KNNClassifier` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
 
 #### Major changes
 - Add trailing underscore to variables containing trainable parameters (see #154). ([#158](https://github.com/eonu/sequentia/pull/158))
@@ -71,8 +69,6 @@
 
 ## [0.10.3](https://github.com/eonu/sequentia/releases/tag/v0.10.3)
 
-> ⚠️: `KNNClassifier` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
-
 #### Major changes
 - Fix `setup.py` encoding problem. ([#145](https://github.com/eonu/sequentia/pull/145))
 - Add `docs/robots.txt` and `sphinx-version-warning` package to prevent search engines from indexing old package versions (see #143). ([#147](https://github.com/eonu/sequentia/pull/147))
@@ -81,8 +77,6 @@
 - Add @Prhmma as a contributor for #145. ([#146](https://github.com/eonu/sequentia/pull/146))
 
 ## [0.10.2](https://github.com/eonu/sequentia/releases/tag/v0.10.2)
-
-> ⚠️: `KNNClassifier` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
 
 #### Major changes
 - Add support for dependent feature warping (addresses [#124](https://github.com/eonu/sequentia/pull/124)). ([#135](https://github.com/eonu/sequentia/pull/135))
@@ -96,15 +90,11 @@
 
 ## [0.10.1](https://github.com/eonu/sequentia/releases/tag/v0.10.1)
 
-> ⚠️: `KNNClassifier` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
-
 #### Minor changes
 - Remove references to `sigment`. ([#130](https://github.com/eonu/sequentia/pull/130))
 - Fix type specifiers in documentation (see [#129](https://github.com/eonu/sequentia/issues/129)). ([#131](https://github.com/eonu/sequentia/pull/131))
 
 ## [0.10.0](https://github.com/eonu/sequentia/releases/tag/v0.10.0)
-
-> ⚠️: `KNNClassifier` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
 
 #### Major changes
 - Switch out [`pomegranate`](https://github.com/jmschrei/pomegranate) HMM backend to [`hmmlearn`](https://github.com/hmmlearn/hmmlearn). ([#105](https://github.com/eonu/sequentia/pull/105))
@@ -128,14 +118,10 @@
 
 ## [0.7.2](https://github.com/eonu/sequentia/releases/tag/v0.7.2)
 
-> ⚠️: `KNNClassifier` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
-
 #### Major changes
 - Stop referring to sequences as temporal, as non-temporal sequences can also be used. ([#103](https://github.com/eonu/sequentia/pull/103))
 
 ## [0.7.1](https://github.com/eonu/sequentia/releases/tag/v0.7.1)
-
-> ⚠️: `KNNClassifier` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
 
 #### Major changes
 - Fix deserialization for `KNNClassifier`. ([#93](https://github.com/eonu/sequentia/pull/93))
@@ -143,8 +129,6 @@
   - Pass `weighting` function into deserialization constructor.
 
 ## [0.7.0](https://github.com/eonu/sequentia/releases/tag/v0.7.0)
-
-> ⚠️: `KNNClassifier` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
 
 #### Major changes
 - Fix `pomegranate` version to v0.12.0. ([#79](https://github.com/eonu/sequentia/pull/79))
@@ -165,8 +149,6 @@
 
 ## [v0.7.0a1](https://github.com/eonu/sequentia/releases/tag/v0.7.0a1)
 
-> ⚠️: `DTWKNN` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
-
 #### Major changes
 - Clean up package imports. ([#77](https://github.com/eonu/sequentia/pull/77))
 - Rework `preprocessing` module. ([#75](https://github.com/eonu/sequentia/pull/75))
@@ -176,8 +158,6 @@
 
 ## [0.6.1](https://github.com/eonu/sequentia/releases/tag/v0.6.1)
 
-> ⚠️: `DTWKNN` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
-
 #### Major changes
 - Remove strict requirement of Numpy arrays being two-dimensional by using `numpy.atleast_2d` to convert one-dimensional arrays into 2D. ([#70](https://github.com/eonu/sequentia/pull/70))
 
@@ -185,8 +165,6 @@
 - As the HMM classifier is not a true ensemble of HMMs (since each HMM doesn't really contribute to the classification), it is no longer referred to as an ensemble. ([#69](https://github.com/eonu/sequentia/pull/69))
 
 ## [0.6.0](https://github.com/eonu/sequentia/releases/tag/v0.6.0)
-
-> ⚠️: `DTWKNN` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
 
 #### Major changes
 - Add package tests and Travis CI support. ([#56](https://github.com/eonu/sequentia/pull/56))
@@ -201,8 +179,6 @@
 - Use proper documentation format for topology classes. ([#58](https://github.com/eonu/sequentia/pull/58))
 
 ## [0.5.0](https://github.com/eonu/sequentia/releases/tag/v0.5.0)
-
-> ⚠️: `DTWKNN` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
 
 #### Major changes
 - Add `Preprocess.summary()` to display an ordered summary of preprocessing transformations. ([#54](https://github.com/eonu/sequentia/pull/54))
@@ -219,8 +195,6 @@
 
 ## [0.4.0](https://github.com/eonu/sequentia/releases/tag/v0.4.0)
 
-> ⚠️: `DTWKNN` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
-
 #### Major changes
 - Re-add `euclidean` metric as `DTWKNN` default. ([#43](https://github.com/eonu/sequentia/pull/43))
 
@@ -229,14 +203,10 @@
 
 ## [0.3.0](https://github.com/eonu/sequentia/releases/tag/v0.3.0)
 
-> ⚠️: `DTWKNN` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
-
 #### Major changes
 - Add proper documentation, hosted on [Read The Docs](https://sequentia.readthedocs.io/en/latest). ([#40](https://github.com/eonu/sequentia/pull/40), [#41](https://github.com/eonu/sequentia/pull/41))
 
 ## [0.2.0](https://github.com/eonu/sequentia/releases/tag/v0.2.0)
-
-> ⚠️: `DTWKNN` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
 
 #### Major changes
 - Add multi-processing support for `DTWKNN` predictions. ([#29](https://github.com/eonu/sequentia/pull/29))
@@ -254,8 +224,6 @@
 - Add badges to `README.md`. ([#28](https://github.com/eonu/sequentia/pull/28))
 
 ## [0.1.0](https://github.com/eonu/sequentia/releases/tag/v0.1.0)
-
-> ⚠️: `DTWKNN` has a major bug in this version resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)) — **please use v0.13.0 or later**.
 
 #### Major changes
 Nothing, initial release!

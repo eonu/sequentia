@@ -15,7 +15,7 @@ pkg_versions = {
     'Cython': '>=0.28.5',
     'numpy': '>=1.17,<2',
     'scipy': '>=1.3,<2',
-    'hmmlearn': '==0.2.4',
+    'hmmlearn': '==0.2.7',
     'dtaidistance[numpy]': '>=2.2,<2.3',
     'scikit-learn': '>=0.22,<1',
     'tqdm': '>=4.36,<5',

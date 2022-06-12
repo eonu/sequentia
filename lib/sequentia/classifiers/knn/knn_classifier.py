@@ -298,16 +298,16 @@ class KNNClassifier:
 
         return clf
 
-    def _dtw_1d(self, a, b, window): # Requires fit
+    def _dtw_1d(self, a, b, window):
         """Computes the DTW distance between two univariate sequences."""
         return dtw.distance(a, b, use_c=self._use_c, window=window)
 
-    def _dtwi(self, A, B): # Requires fit
+    def _dtwi(self, A, B):
         """Computes the multivariate DTW distance as the sum of the pairwise per-feature DTW distances, allowing each feature to be warped independently."""
         window = max(1, int(self._window * max(len(A), len(B))))
         return np.sum([self._dtw_1d(A[:, i], B[:, i], window=window) for i in range(self._n_features_)])
 
-    def _dtwd(self, A, B): # Requires fit
+    def _dtwd(self, A, B):
         """Computes the multivariate DTW distance so that the warping of the features depends on each other, by modifying the local distance measure."""
         window = max(1, int(self._window * max(len(A), len(B))))
         return dtw_ndim.distance(A, B, use_c=self._use_c, window=window)
@@ -324,7 +324,7 @@ class KNNClassifier:
                 all_.append(i)
         return np.array(all_)
 
-    def _find_k_nearest(self, distances): # Requires fit
+    def _find_k_nearest(self, distances):
         """Returns the labels and weightings (or scores) of the k-nearest neighbors"""
         idx = np.argpartition(distances, self._k)[:self._k]
         return self._y_[idx], self._weighting(distances[idx])
@@ -345,7 +345,7 @@ class KNNClassifier:
         # Map the change index back to the actual label(s)
         return sorted_labels[max_score_idx]
 
-    def _predict(self, x1, verbose=False): # Requires fit
+    def _predict(self, x1, verbose=False):
         """Makes a prediction for a single observation sequence."""
         # Calculate DTW distances between x1 and all other sequences
         distances = np.array([self._dtw(x1, x2) for x2 in tqdm(self._X_, desc='Calculating distances', disable=not(verbose))])
@@ -356,7 +356,7 @@ class KNNClassifier:
         # Randomly pick from the set of labels with the maximum label score
         return self._random_state.choice(max_labels)
 
-    def _chunk_predict(self, chunk, verbose=False): # Requires fit
+    def _chunk_predict(self, chunk, verbose=False):
         """Makes predictions for multiple observation sequences."""
         return np.array([self._predict(x, verbose=False) for x in tqdm(chunk, desc='Predicting', disable=not(verbose))])
 
