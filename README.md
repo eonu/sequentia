@@ -27,18 +27,16 @@
 
 ## Introduction
 
-Sequential data is often observed in many different forms such as audio signals, stock prices, and even brain & heart signals. Such data is of particular interest in machine learning, as changing patterns over time naturally provide many interesting opportunities and challenges for classification.
-
-**Sequentia is a Python package that implements various classification algorithms for sequential data.**
+Sequentia is a package that provides various classification algorithms for sequential data, including classifiers based on hidden Markov models, dynamic time warping and recurrent neural networks.
 
 Some examples of how Sequentia can be used in sequence classification include:
 
-- determining a spoken word based on its audio signal or some other representation such as MFCCs,
-- identifying potential heart conditions such as arrhythmia from ECG signals,
-- predicting motion intent for gesture control from electrical muscle activity,
+- determining a spoken word based on its audio signal or alternative representations such as MFCCs,
+- identifying heart conditions such as arrhythmia from ECG signals,
+- predicting motion intent for gesture control from sEMG signals,
 - classifying hand-written characters according to their pen-tip trajectories,
 - classifying hand or head gestures from rotation or movement signals,
-- classifying the sentiment of a phrase or sentence in natural language from word embeddings.
+- classifying the sentiment of a phrase in natural language from word embeddings.
 
 ## Build status
 

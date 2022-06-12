@@ -12,18 +12,16 @@
 About
 =====
 
-Sequentia is a Python package that provides implementations of a selection of machine learning algorithms
-for performing sequence classification. Examples of such sequences include:
+Sequentia is a package that provides various classification algorithms for sequential data, including classifiers based on hidden Markov models, dynamic time warping and recurrent neural networks.
 
-- isolated word utterance frequencies in speech audio signals,
-- isolated hand-written character pen-tip trajectories,
-- isolated hand or head gestures positions in a video or motion-capture recording.
+Some examples of how Sequentia can be used in sequence classification include:
 
-Most modern machine learning algorithms won't work directly out of the box when applied to such
-sequential data – mostly due to the fact that the dependencies between observations at different
-time frames must be considered, and also because each sequence generally has a different duration.
-
-Sequentia offers some appropriate classification algorithms for these kinds of tasks.
+- determining a spoken word based on its audio signal or alternative representations such as MFCCs,
+- identifying heart conditions such as arrhythmia from ECG signals,
+- predicting motion intent for gesture control from sEMG signals,
+- classifying hand-written characters according to their pen-tip trajectories,
+- classifying hand or head gestures from rotation or movement signals,
+- classifying the sentiment of a phrase in natural language from word embeddings.
 
 .. toctree::
    :maxdepth: 1
