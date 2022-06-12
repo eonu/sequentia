@@ -24,7 +24,7 @@ pkg_versions = {
     'torch': '>=1.8+cpu',
     # [docs]
     'sphinx': '>=5,<6',
-    'numpydoc': '',
+    'numpydoc': '>=1.4,<1.5',
     'sphinx_rtd_theme': '>=1',
     'm2r2': '>=0.3,<0.4',
     'Jinja2': '<3.1',
