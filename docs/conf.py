@@ -22,7 +22,7 @@ except ImportError:
 # -- Project information -----------------------------------------------------
 
 project = 'sequentia'
-copyright = '2019-2022, Edwin Onuonga'
+copyright = '2019-2023, Edwin Onuonga'
 author = 'Edwin Onuonga'
 
 # The full version, including alpha/beta/rc tags
