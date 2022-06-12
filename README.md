@@ -87,7 +87,7 @@ pip install sequentia
 
 **Note**: All tools under the `sequentia.classifiers.rnn` module (i.e. `DeepGRU` and `collate_fn`) require a working installation of [`torch`](https://github.com/pytorch/pytorch) (>= 1.8.0), and Sequentia assumes that you already have this installed.
 
-Since there are many different possible configurations when installing PyTorch (e.g. CPU or GPU, CUDA version), we leave this up to the user instead of specifying particular binaries to install alongside TorchFSDD.
+Since there are many different possible configurations when installing PyTorch (e.g. CPU or GPU, CUDA version), we leave this up to the user instead of specifying particular versions to install alongside TorchFSDD.
 
 > You can use the following if you _really_ wish to install a CPU-only version of `torch` together with Sequentia.
 >
