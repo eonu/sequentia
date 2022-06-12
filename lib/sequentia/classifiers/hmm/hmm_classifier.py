@@ -220,11 +220,11 @@ class HMMClassifier:
         else:
             return {model.label:prior[self._encoder_.transform([model.label]).item()] for model in self._models_}
 
-    def _predict(self, x, priors, verbose=False): # Requires fit
+    def _predict(self, x, priors, verbose=False):
         """Calculates the (unnormalized) class posteriors as a sum of the log forward probabilities and log priors."""
-        return np.array([model.forward(x) + np.log(priors[model.label]) for model in tqdm(self._models_, desc='Posteriors', disable=not(verbose))])
+        return np.array([model.forward(x) + np.log(priors[model.label]) for model in tqdm(self._models_, desc='Calculating posteriors', disable=not(verbose))])
 
-    def _chunk_predict(self, chunk, priors, verbose=False): # Requires fit
+    def _chunk_predict(self, chunk, priors, verbose=False):
         """Makes predictions for multiple observation sequences."""
         return np.stack([self._predict(x, priors, verbose=False) for x in tqdm(chunk, desc='Predicting', disable=not(verbose))])
 
