@@ -1,6 +1,7 @@
 <p align="center">
   <h1 align="center">
-    <img src="https://i.ibb.co/42GkhfR/sequentia.png" width="275px" alt="Sequentia">
+    <img src="/docs/_static/logo.png" width="150px"><br/>
+    Sequentia
   </h1>
 </p>
 
@@ -27,7 +28,7 @@
 
 ## Introduction
 
-Sequentia is a package that provides various classification algorithms for sequential data, including classifiers based on hidden Markov models, dynamic time warping and recurrent neural networks.
+Sequentia is a Python package that provides various classification algorithms for sequential data, including classifiers based on hidden Markov models, dynamic time warping with k-nearest neighbors and recurrent neural networks.
 
 Some examples of how Sequentia can be used in sequence classification include:
 
@@ -35,7 +36,6 @@ Some examples of how Sequentia can be used in sequence classification include:
 - identifying heart conditions such as arrhythmia from ECG signals,
 - predicting motion intent for gesture control from sEMG signals,
 - classifying hand-written characters according to their pen-tip trajectories,
-- classifying hand or head gestures from rotation or movement signals,
 - classifying the sentiment of a phrase in natural language from word embeddings.
 
 ## Build status
@@ -50,7 +50,7 @@ Sequentia provides the following algorithms, all supporting multivariate sequenc
 
 ### Classification algorithms
 
-- [x] [Hidden Markov Models](https://sequentia.readthedocs.io/en/latest/sections/classifiers/gmmhmm.html) (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))<br/><em>Learning with the Baum-Welch algorithm</em> [[1]](#references)
+- [x] [Hidden Markov Models](https://sequentia.readthedocs.io/en/latest/sections/classifiers/gmmhmm.html) (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))<br/><em>Parameter estimation with the Baum-Welch algorithm and prediction with the forward algorithm</em> [[1]](#references)
   - [x] Gaussian Mixture Model emissions
   - [x] Linear, left-right and ergodic topologies
   - [x] Multi-processed predictions
@@ -65,7 +65,7 @@ Sequentia provides the following algorithms, all supporting multivariate sequenc
   - [x] Attention module for learning sub-sequence importance
 
 <p align="center">
-  <img src="/docs/_static/classifier.svg" width="60%"/><br/>
+  <img src="/docs/_static/classifier.png" width="60%"/><br/>
   Example of a classification algorithm (HMM sequence classifier)
 </p>
 

@@ -176,9 +176,9 @@ To classify a new observation sequence :math:`O'`, this works by:
 
 These steps are summarized in the diagram below.
 
-.. image:: /_static/classifier.svg
+.. image:: /_static/classifier.png
     :alt: HMM Classifier
-    :width: 100%
+    :width: 60%
     :align: center
 
 Example
