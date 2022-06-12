@@ -1,6 +1,6 @@
 <p align="center">
   <h1 align="center">
-    <img src="/docs/_static/logo.png" width="150px"><br/>
+    <img src="/docs/_static/logo.png" width="125px"><br/>
     Sequentia
   </h1>
 </p>
@@ -28,7 +28,7 @@
 
 ## Introduction
 
-Sequentia is a Python package that provides various classification algorithms for sequential data, including classifiers based on hidden Markov models, dynamic time warping with k-nearest neighbors and recurrent neural networks.
+Sequentia is a Python package that provides various classification algorithms for sequential data, including classifiers based on hidden Markov models, dynamic time warping and recurrent neural networks.
 
 Some examples of how Sequentia can be used in sequence classification include:
 
@@ -65,7 +65,7 @@ Sequentia provides the following algorithms, all supporting multivariate sequenc
   - [x] Attention module for learning sub-sequence importance
 
 <p align="center">
-  <img src="/docs/_static/classifier.png" width="60%"/><br/>
+  <img src="/docs/_static/classifier.png" width="80%"/><br/>
   Example of a classification algorithm (HMM sequence classifier)
 </p>
 
