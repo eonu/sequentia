@@ -1,6 +1,6 @@
 <p align="center">
   <h1 align="center">
-    <img src="/docs/_static/logo.png" width="125px"><br/>
+    <img src="/docs/_static/logo.png" width="125px" alt="Logo created by DALL·E Mini"><br/>
     Sequentia
   </h1>
 </p>
