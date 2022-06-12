@@ -63,7 +63,7 @@ class KNNClassifier:
     independent: bool
         Whether or not to allow features to be warped independently from each other. See `here <https://www.cs.ucr.edu/~eamonn/Multi-Dimensional_DTW_Journal.pdf>`_ for a good overview of both approaches.
 
-    random_state: numpy.random.RandomState, int, optional
+    random_state: :class:`numpy:numpy.random.RandomState`, int, optional
         A random state object or seed for reproducible randomness.
 
     Attributes
