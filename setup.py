@@ -23,10 +23,10 @@ pkg_versions = {
     # [torch]
     'torch': '>=1.8+cpu',
     # [docs]
-    'sphinx': '==3.5.4',
+    'sphinx': '>=5,<6',
     'numpydoc': '',
-    'sphinx_rtd_theme': '',
-    'm2r2': '',
+    'sphinx_rtd_theme': '>=1',
+    'm2r2': '>=0.3,<0.4',
     'Jinja2': '<3.1',
     # [test]
     'pytest': '==5.3.2',
