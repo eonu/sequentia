@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <em>A machine learning interface for sequence classification algorithms in Python.</em>
+  <sup><em>A machine learning interface for sequence classification algorithms in Python.</em></sup>
 </p>
 
 <p align="center">
@@ -26,7 +26,7 @@
   </div>
 </p>
 
-## Introduction
+## About
 
 Sequentia is a Python package that provides various classification algorithms for sequential data, including classifiers based on hidden Markov models, dynamic time warping and recurrent neural networks.
 
@@ -74,6 +74,7 @@ Sequentia provides the following algorithms, all supporting multivariate sequenc
 - [x] Centering, standardization and min-max scaling
 - [x] Decimation and mean downsampling
 - [x] Mean and median filtering
+- [ ] Dimensionality reduction (<em>soon!</em>)
 
 ## Installation
 
