@@ -89,7 +89,7 @@ pip install sequentia
 
 Since there are many different possible configurations when installing PyTorch (e.g. CPU or GPU, CUDA version), we leave this up to the user instead of specifying particular versions to install alongside TorchFSDD.
 
-> You can use the following if you _really_ wish to install a CPU-only version of `torch` together with Sequentia.
+> You can use the following if you wish to install a CPU-only version of `torch` together with Sequentia.
 >
 > ```console
 > pip install sequentia[torch]
