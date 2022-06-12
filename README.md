@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <sup><em>A machine learning interface for sequence classification algorithms in Python.</em></sup>
+  <em>A machine learning interface for sequence classification algorithms in Python.</em>
 </p>
 
 <p align="center">
@@ -26,6 +26,19 @@
   </div>
 </p>
 
+<p align="center">
+  <sup>
+    <a href="#about">About</a> ·
+    <a href="#build-status">Build Status</a> ·
+    <a href="#features">Features</a> ·
+    <a href="#documentation">Documentation</a> ·
+    <a href="#tutorials-and-examples">Tutorials and Examples</a> ·
+    <a href="#acknowledgments">Acknowledgments</a> ·
+    <a href="#references">References</a> ·
+    <a href="#contributors">Contributors</a>
+  </sup>
+</p>
+
 ## About
 
 Sequentia is a Python package that provides various classification algorithms for sequential data, including classifiers based on hidden Markov models, dynamic time warping and recurrent neural networks.
@@ -38,7 +51,7 @@ Some examples of how Sequentia can be used in sequence classification include:
 - classifying hand-written characters according to their pen-tip trajectories,
 - classifying the sentiment of a phrase in natural language from word embeddings.
 
-## Build status
+## Build Status
 
 | `master` | `dev` |
 | -------- | ------|
@@ -132,7 +145,7 @@ Depending on what you intend to do, you can specify the following extras.
 
 Documentation for the package is available on [Read The Docs](https://sequentia.readthedocs.io/en/latest).
 
-## Tutorials and examples
+## Tutorials and Examples
 
 For detailed tutorials and examples on the usage of Sequentia, [see the notebooks here](https://nbviewer.jupyter.org/github/eonu/sequentia/tree/master/notebooks/).
 
