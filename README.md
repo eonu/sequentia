@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <em>A machine learning interface for isolated sequence classification algorithms in Python.</em>
+  <em>A machine learning interface for sequence classification algorithms in Python.</em>
 </p>
 
 <p align="center">
@@ -31,7 +31,7 @@ Sequential data is often observed in many different forms such as audio signals,
 
 **Sequentia is a Python package that implements various classification algorithms for sequential data.**
 
-Some examples of how Sequentia can be used in isolated sequence classification include:
+Some examples of how Sequentia can be used in sequence classification include:
 
 - determining a spoken word based on its audio signal or some other representation such as MFCCs,
 - identifying potential heart conditions such as arrhythmia from ECG signals,

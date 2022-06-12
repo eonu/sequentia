@@ -13,10 +13,7 @@ About
 =====
 
 Sequentia is a Python package that provides implementations of a selection of machine learning algorithms
-for performing the classification of isolated sequences.
-
-Each isolated sequence is generally modeled as a section of a longer multivariate time series
-that represents the entire sequence. Naturally, this fits the description of many types of problems such as:
+for performing sequence classification. Examples of such sequences include:
 
 - isolated word utterance frequencies in speech audio signals,
 - isolated hand-written character pen-tip trajectories,
@@ -24,7 +21,7 @@ that represents the entire sequence. Naturally, this fits the description of man
 
 Most modern machine learning algorithms won't work directly out of the box when applied to such
 sequential data – mostly due to the fact that the dependencies between observations at different
-time frames must be considered, and also because each isolated sequence generally has a different duration.
+time frames must be considered, and also because each sequence generally has a different duration.
 
 Sequentia offers some appropriate classification algorithms for these kinds of tasks.
 

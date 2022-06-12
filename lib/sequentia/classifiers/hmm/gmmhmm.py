@@ -5,8 +5,7 @@ from .topologies.linear import _LinearTopology
 from ...internals import _Validator
 
 class GMMHMM:
-    """A hidden Markov model (with Gaussian Mixture Model emissions)
-    representing a single isolated sequence class.
+    """A hidden Markov model with multivariate Gaussian mixture emissions representing a single sequence class.
 
     Parameters
     ----------
