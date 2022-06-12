@@ -1,11 +1,12 @@
 <p align="center">
   <h1 align="center">
-    <img src="https://i.ibb.co/42GkhfR/sequentia.png" width="275px" alt="Sequentia">
+    <img src="/docs/_static/logo.png" width="125px"><br/>
+    Sequentia
   </h1>
 </p>
 
 <p align="center">
-  <em>A machine learning interface for isolated sequence classification algorithms in Python.</em>
+  <sup><em>A machine learning interface for sequence classification algorithms in Python.</em></sup>
 </p>
 
 <p align="center">
@@ -25,20 +26,17 @@
   </div>
 </p>
 
-## Introduction
+## About
 
-Sequential data is often observed in many different forms such as audio signals, stock prices, and even brain & heart signals. Such data is of particular interest in machine learning, as changing patterns over time naturally provide many interesting opportunities and challenges for classification.
+Sequentia is a Python package that provides various classification algorithms for sequential data, including classifiers based on hidden Markov models, dynamic time warping and recurrent neural networks.
 
-**Sequentia is a Python package that implements various classification algorithms for sequential data.**
+Some examples of how Sequentia can be used in sequence classification include:
 
-Some examples of how Sequentia can be used in isolated sequence classification include:
-
-- determining a spoken word based on its audio signal or some other representation such as MFCCs,
-- identifying potential heart conditions such as arrhythmia from ECG signals,
-- predicting motion intent for gesture control from electrical muscle activity,
+- determining a spoken word based on its audio signal or alternative representations such as MFCCs,
+- identifying heart conditions such as arrhythmia from ECG signals,
+- predicting motion intent for gesture control from sEMG signals,
 - classifying hand-written characters according to their pen-tip trajectories,
-- classifying hand or head gestures from rotation or movement signals,
-- classifying the sentiment of a phrase or sentence in natural language from word embeddings.
+- classifying the sentiment of a phrase in natural language from word embeddings.
 
 ## Build status
 
@@ -52,7 +50,7 @@ Sequentia provides the following algorithms, all supporting multivariate sequenc
 
 ### Classification algorithms
 
-- [x] [Hidden Markov Models](https://sequentia.readthedocs.io/en/latest/sections/classifiers/gmmhmm.html) (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))<br/><em>Learning with the Baum-Welch algorithm</em> [[1]](#references)
+- [x] [Hidden Markov Models](https://sequentia.readthedocs.io/en/latest/sections/classifiers/gmmhmm.html) (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))<br/><em>Parameter estimation with the Baum-Welch algorithm and prediction with the forward algorithm</em> [[1]](#references)
   - [x] Gaussian Mixture Model emissions
   - [x] Linear, left-right and ergodic topologies
   - [x] Multi-processed predictions
@@ -67,7 +65,7 @@ Sequentia provides the following algorithms, all supporting multivariate sequenc
   - [x] Attention module for learning sub-sequence importance
 
 <p align="center">
-  <img src="/docs/_static/classifier.svg" width="60%"/><br/>
+  <img src="/docs/_static/classifier.png" width="80%"/><br/>
   Example of a classification algorithm (HMM sequence classifier)
 </p>
 
@@ -76,6 +74,7 @@ Sequentia provides the following algorithms, all supporting multivariate sequenc
 - [x] Centering, standardization and min-max scaling
 - [x] Decimation and mean downsampling
 - [x] Mean and median filtering
+- [ ] Dimensionality reduction (<em>soon!</em>)
 
 ## Installation
 
@@ -87,9 +86,9 @@ pip install sequentia
 
 **Note**: All tools under the `sequentia.classifiers.rnn` module (i.e. `DeepGRU` and `collate_fn`) require a working installation of [`torch`](https://github.com/pytorch/pytorch) (>= 1.8.0), and Sequentia assumes that you already have this installed.
 
-Since there are many different possible configurations when installing PyTorch (e.g. CPU or GPU, CUDA version), we leave this up to the user instead of specifying particular binaries to install alongside TorchFSDD.
+Since there are many different possible configurations when installing PyTorch (e.g. CPU or GPU, CUDA version), we leave this up to the user instead of specifying particular versions to install alongside TorchFSDD.
 
-> You can use the following if you _really_ wish to install a CPU-only version of `torch` together with Sequentia.
+> You can use the following if you wish to install a CPU-only version of `torch` together with Sequentia.
 >
 > ```console
 > pip install sequentia[torch]

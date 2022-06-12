@@ -8,7 +8,7 @@ from sklearn.preprocessing import LabelEncoder
 from ...internals import _Validator
 
 class HMMClassifier:
-    """A classifier that combines individual :class:`~GMMHMM` objects, which each model isolated sequences from a different class.
+    """A classifier that combines individual :class:`~GMMHMM` objects, which each model sequences from a different class.
 
     Attributes
     ----------
