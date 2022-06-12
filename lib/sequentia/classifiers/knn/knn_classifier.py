@@ -167,12 +167,13 @@ class KNNClassifier:
         self._val.is_boolean(original_labels, desc='original_labels')
         self._val.is_boolean(verbose, desc='verbose')
         self._val.is_restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
+
         n_jobs = min(cpu_count() if n_jobs == -1 else n_jobs, len(X))
 
         # Make prediction for a single sequence
         if isinstance(X, np.ndarray):
             if n_jobs > 1:
-                warnings.warn('Single kNN predictions do not yet support multi-processing. Set n_jobs=1 to silence this warning.')
+                warnings.warn('Single predictions do not yet support multi-processing. Set n_jobs=1 to silence this warning.')
 
             labels = self._predict(X, verbose=verbose)
 
@@ -188,9 +189,9 @@ class KNNClassifier:
 
                 # Split X into n_jobs equally sized chunks and process in parallel
                 chunks = [list(chunk) for chunk in np.array_split(np.array(X, dtype=object), n_jobs)]
-                labels = np.concatenate(Parallel(n_jobs=n_jobs)(delayed(self._chunk_predict)(chunk) for chunk in chunks))
+                labels = np.vstack(Parallel(n_jobs=n_jobs)(delayed(self._chunk_predict)(chunk) for chunk in chunks))
 
-        return self._output(labels, original_labels)
+        return self._output(labels, original_labels=original_labels)
 
     def evaluate(self, X, y, verbose=True, n_jobs=1):
         """Evaluates the performance of the classifier on a batch of observation sequences and their labels.
@@ -344,10 +345,6 @@ class KNNClassifier:
         # Map the change index back to the actual label(s)
         return sorted_labels[max_score_idx]
 
-    def _chunk_predict(self, chunk, verbose=False): # Requires fit
-        """Makes predictions for multiple observation sequences."""
-        return np.array([self._predict(x) for x in tqdm(chunk, desc='Predicting', disable=not(verbose))])
-
     def _predict(self, x1, verbose=False): # Requires fit
         """Makes a prediction for a single observation sequence."""
         # Calculate DTW distances between x1 and all other sequences
@@ -359,12 +356,20 @@ class KNNClassifier:
         # Randomly pick from the set of labels with the maximum label score
         return self._random_state.choice(max_labels)
 
-    def _output(self, out, original_labels):
+    def _chunk_predict(self, chunk, verbose=False): # Requires fit
+        """Makes predictions for multiple observation sequences."""
+        return np.array([self._predict(x, verbose=False) for x in tqdm(chunk, desc='Predicting', disable=not(verbose))])
+
+    def _output(self, idx, original_labels):
         """Inverse-transforms the labels if necessary, and returns them."""
-        if isinstance(out, np.ndarray):
-            return self._encoder_.inverse_transform(out) if original_labels else out
+        if not original_labels:
+            labels = idx
         else:
-            return self._encoder_.inverse_transform([out]).item() if original_labels else out
+            if isinstance(idx, np.ndarray):
+                labels = self._encoder_.inverse_transform(idx)
+            else:
+                labels = self._encoder_.inverse_transform([idx]).item()
+        return labels
 
     @property
     def k(self):

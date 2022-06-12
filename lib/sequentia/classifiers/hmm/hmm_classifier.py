@@ -1,4 +1,5 @@
-import tqdm, tqdm.auto, numpy as np, pickle
+import warnings, numpy as np, pickle
+from tqdm.auto import tqdm
 from joblib import Parallel, delayed
 from multiprocessing import cpu_count
 from .gmmhmm import GMMHMM
@@ -88,7 +89,7 @@ class HMMClassifier:
             If ``original_labels`` is true, then the returned labels are inverse-transformed into their original encoding.
 
         scores: :class:`numpy:numpy.ndarray` (float)
-            An :math:`N\\times M` matrix of scores (log un-normalized posteriors), for each of the :math:`N` observation sequences,
+            An :math:`N\\times M` matrix of scores (unnormalized log posteriors), for each of the :math:`N` observation sequences,
             for each of the :math:`M` HMMs. Only returned if ``return_scores`` is true.
         """
         self.models_
@@ -106,34 +107,34 @@ class HMMClassifier:
         self._val.is_boolean(verbose, desc='verbose')
         self._val.is_restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
 
-        # Create look-up for prior probabilities
-        if prior == 'frequency':
-            total_seqs = sum(model.n_seqs_ for model in self._models_)
-            prior = {model.label:(model.n_seqs_ / total_seqs) for model in self._models_}
-        elif prior == 'uniform':
-            prior = {model.label:(1. / len(self._models_)) for model in self._models_}
-        else:
-            prior = {model.label:prior[self._encoder_.transform([model.label]).item()] for model in self._models_}
-
-        # Convert single observation sequence to a singleton list
-        X = [X] if isinstance(X, np.ndarray) else X
-
-        # Lambda for calculating the log un-normalized posteriors as a sum of the log forward probabilities (likelihoods) and log priors
-        posteriors = lambda x: np.array([model.forward(x) + np.log(prior[model.label]) for model in self._models_])
-
-        # Calculate log un-normalized posteriors as a sum of the log forward probabilities (likelihoods) and log priors
-        # Perform the MAP classification rule and return labels to original encoding if necessary
         n_jobs = min(cpu_count() if n_jobs == -1 else n_jobs, len(X))
-        X_chunks = [list(chunk) for chunk in np.array_split(np.array(X, dtype=object), n_jobs)]
-        scores = Parallel(n_jobs=n_jobs)(delayed(self._chunk_predict)(i+1, posteriors, chunk, verbose) for i, chunk in enumerate(X_chunks))
-        scores = np.concatenate(scores)
-        best_idxs = np.atleast_1d(scores.argmax(axis=1))
-        labels = self._encoder_.inverse_transform(best_idxs) if original_labels else best_idxs
+        priors = self._get_priors(prior)
 
-        if len(X) == 1:
-            return (labels.item(), scores.flatten()) if return_scores else labels.item()
+        # Make prediction for a single sequence
+        if isinstance(X, np.ndarray):
+            if n_jobs > 1:
+                warnings.warn('Single predictions do not yet support multi-processing. Set n_jobs=1 to silence this warning.')
+
+            scores = self._predict(X, priors=priors, verbose=verbose)
+            labels = scores.argmax()
+
+        # Make predictions for multiple sequences (in parallel)
         else:
-            return (labels, scores) if return_scores else labels
+            if n_jobs == 1:
+                # Use entire list as a chunk
+                scores = self._chunk_predict(X, priors=priors, verbose=verbose)
+
+            else:
+                if verbose:
+                    warnings.warn('Progress bars cannot be displayed when using multiple processes. Set verbose=False to silence this warning.')
+
+                # Split X into n_jobs equally sized chunks and process in parallel
+                chunks = [list(chunk) for chunk in np.array_split(np.array(X, dtype=object), n_jobs)]
+                scores = np.vstack(Parallel(n_jobs=n_jobs)(delayed(self._chunk_predict)(chunk, priors) for chunk in chunks))
+
+            labels = scores.argmax(axis=1)
+
+        return self._output(labels, scores, return_scores=return_scores, original_labels=original_labels)
 
     def evaluate(self, X, y, prior='frequency', verbose=True, n_jobs=1):
         """Evaluates the performance of the classifier on a batch of observation sequences and their labels.
@@ -209,12 +210,34 @@ class HMMClassifier:
         with open(path, 'rb') as file:
             return pickle.load(file)
 
-    def _chunk_predict(self, process, posteriors, chunk, verbose): # Requires fit
-        """Makes predictions (scores) for a chunk of the observation sequences, for a given subprocess."""
-        return np.array([posteriors(x) for x in tqdm.auto.tqdm(
-            chunk, desc='Predicting (process {})'.format(process),
-            disable=not(verbose), position=process-1, leave=False
-        )])
+    def _get_priors(self, prior):
+        """Fetch class prior probabilities."""
+        if prior == 'frequency':
+            total_seqs = sum(model.n_seqs_ for model in self._models_)
+            return {model.label:(model.n_seqs_ / total_seqs) for model in self._models_}
+        elif prior == 'uniform':
+            return {model.label:(1. / len(self._models_)) for model in self._models_}
+        else:
+            return {model.label:prior[self._encoder_.transform([model.label]).item()] for model in self._models_}
+
+    def _predict(self, x, priors, verbose=False): # Requires fit
+        """Calculates the (unnormalized) class posteriors as a sum of the log forward probabilities and log priors."""
+        return np.array([model.forward(x) + np.log(priors[model.label]) for model in tqdm(self._models_, desc='Posteriors', disable=not(verbose))])
+
+    def _chunk_predict(self, chunk, priors, verbose=False): # Requires fit
+        """Makes predictions for multiple observation sequences."""
+        return np.stack([self._predict(x, priors, verbose=False) for x in tqdm(chunk, desc='Predicting', disable=not(verbose))])
+
+    def _output(self, idx, scores, return_scores, original_labels):
+        """Inverse-transforms the labels if necessary, and returns them along with the scores."""
+        if not original_labels:
+            labels = idx
+        else:
+            if isinstance(idx, np.ndarray):
+                labels = self._encoder_.inverse_transform(idx)
+            else:
+                labels = self._encoder_.inverse_transform([idx]).item()
+        return (labels, scores) if return_scores else labels
 
     @property
     def models_(self):
