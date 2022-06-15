@@ -132,6 +132,7 @@ class KNNClassifier:
         X, y = self._val.is_observation_sequences_and_labels(X, y)
         self._X_, self._y_ = X, self._encoder_.transform(y)
         self._n_features_ = X[0].shape[1]
+        return self
 
     def predict(self, X, return_scores=False, original_labels=True, verbose=True, n_jobs=1):
         """Predicts the label for an observation sequence (or multiple sequences).

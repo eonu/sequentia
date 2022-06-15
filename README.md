@@ -164,8 +164,7 @@ X, y = [
 ], ['good', 'good', 'bad']
 
 # Create and fit the classifier
-clf = seq.KNNClassifier(k=1, classes=('good', 'bad'))
-clf.fit(X, y)
+clf = seq.KNNClassifier(k=1, classes=('good', 'bad')).fit(X, y)
 
 # Make a prediction for a new observation sequence
 x_new = np.array([0, 3, 2, 7, 9, 1, 1])
@@ -188,8 +187,7 @@ X, y = [
 ], ['good', 'good', 'bad']
 
 # Create and fit the classifier
-clf = seq.KNNClassifier(k=1, classes=('good', 'bad'))
-clf.fit(X, y)
+clf = seq.KNNClassifier(k=1, classes=('good', 'bad')).fit(X, y)
 
 # Make a prediction for a new observation sequence
 x_new = np.array([[0, 3, 2, 7, 9, 1, 1],

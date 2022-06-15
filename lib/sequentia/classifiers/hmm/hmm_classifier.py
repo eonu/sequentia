@@ -45,6 +45,7 @@ class HMMClassifier:
 
         self._encoder_ = LabelEncoder()
         self._encoder_.fit([model.label for model in models])
+        return self
 
     def predict(self, X, prior='frequency', return_scores=False, original_labels=True, verbose=True, n_jobs=1):
         """Predicts the label for an observation sequence (or multiple sequences) according to maximum likelihood or posterior scores.
