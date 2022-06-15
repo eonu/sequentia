@@ -18,7 +18,6 @@ X = [np.random.random((10 * i, 3)) for i in range(1, 4)]
 y = ['class0', 'class1', 'class1']
 
 # Create a classifier and calculate predictions and evaluations
-clf = HMMClassifier()
-clf.fit(hmms)
+clf = HMMClassifier().fit(hmms)
 predictions = clf.predict(X)
 accuracy, confusion = clf.evaluate(X, y)

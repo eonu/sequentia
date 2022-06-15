@@ -132,14 +132,18 @@ class KNNClassifier:
         X, y = self._val.is_observation_sequences_and_labels(X, y)
         self._X_, self._y_ = X, self._encoder_.transform(y)
         self._n_features_ = X[0].shape[1]
+        return self
 
-    def predict(self, X, original_labels=True, verbose=True, n_jobs=1):
+    def predict(self, X, return_scores=False, original_labels=True, verbose=True, n_jobs=1):
         """Predicts the label for an observation sequence (or multiple sequences).
 
         Parameters
         ----------
         X: numpy.ndarray (float) or list of numpy.ndarray (float)
             An individual observation sequence or a list of multiple observation sequences.
+
+        return_scores: bool
+            Whether to return the scores for each class on the observation sequence(s).
 
         original_labels: bool
             Whether to inverse-transform the labels to their original encoding.
@@ -175,13 +179,13 @@ class KNNClassifier:
             if n_jobs > 1:
                 warnings.warn('Single predictions do not yet support multi-processing. Set n_jobs=1 to silence this warning.')
 
-            labels = self._predict(X, verbose=verbose)
+            output = self._predict(X, verbose=verbose)
 
         # Make predictions for multiple sequences (in parallel)
         else:
             if n_jobs == 1:
                 # Use entire list as a chunk
-                labels = self._chunk_predict(X, verbose=verbose)
+                output = self._chunk_predict(X, verbose=verbose)
 
             else:
                 if verbose:
@@ -189,9 +193,9 @@ class KNNClassifier:
 
                 # Split X into n_jobs equally sized chunks and process in parallel
                 chunks = [list(chunk) for chunk in np.array_split(np.array(X, dtype=object), n_jobs)]
-                labels = np.vstack(Parallel(n_jobs=n_jobs)(delayed(self._chunk_predict)(chunk) for chunk in chunks))
+                output = np.vstack(Parallel(n_jobs=n_jobs)(delayed(self._chunk_predict)(chunk) for chunk in chunks))
 
-        return self._output(labels, original_labels=original_labels)
+        return self._output(output, return_scores=return_scores, original_labels=original_labels)
 
     def evaluate(self, X, y, verbose=True, n_jobs=1):
         """Evaluates the performance of the classifier on a batch of observation sequences and their labels.
@@ -221,7 +225,7 @@ class KNNClassifier:
         """
         X, y = self._val.is_observation_sequences_and_labels(X, y)
         self._val.is_boolean(verbose, desc='verbose')
-        predictions = self.predict(X, original_labels=False, verbose=verbose, n_jobs=n_jobs)
+        predictions = self.predict(X, return_scores=False, original_labels=False, verbose=verbose, n_jobs=n_jobs)
         cm = confusion_matrix(self._encoder_.transform(y), predictions, labels=self._encoder_.transform(self._encoder_.classes_))
         return np.sum(np.diag(cm)) / np.sum(cm), cm
 
@@ -342,8 +346,13 @@ class KNNClassifier:
         label_scores = np.add.reduceat(sorted_scores, change_idx)
         # Find the change index of the maximum score(s)
         max_score_idx = change_idx[self._multi_argmax(label_scores)]
-        # Map the change index back to the actual label(s)
-        return sorted_labels[max_score_idx]
+        # Map the change index of the maximum scores back to the actual label(s)
+        max_labels = sorted_labels[max_score_idx]
+        # Store class scores
+        scores = np.full(len(self.classes_), -np.inf)
+        scores[sorted_labels[change_idx]] = label_scores
+        # Map the change index of the maximum scores back to the actual label(s), and return scores
+        return max_labels, scores
 
     def _predict(self, x1, verbose=False):
         """Makes a prediction for a single observation sequence."""
@@ -352,24 +361,25 @@ class KNNClassifier:
         # Find the k-nearest neighbors by DTW distance
         nearest_labels, nearest_scores = self._find_k_nearest(distances)
         # Out of the k-nearest neighbors, find the label(s) which had the highest total weighting
-        max_labels = self._find_max_labels(nearest_labels, nearest_scores)
+        max_labels, scores = self._find_max_labels(nearest_labels, nearest_scores)
         # Randomly pick from the set of labels with the maximum label score
-        return self._random_state.choice(max_labels)
+        label = self._random_state.choice(max_labels, size=1)
+        # Combine the label with the scores
+        return np.concatenate((label, scores))
 
     def _chunk_predict(self, chunk, verbose=False):
         """Makes predictions for multiple observation sequences."""
         return np.array([self._predict(x, verbose=False) for x in tqdm(chunk, desc='Predicting', disable=not(verbose))])
 
-    def _output(self, idx, original_labels):
-        """Inverse-transforms the labels if necessary, and returns them."""
-        if not original_labels:
-            labels = idx
+    def _output(self, output, return_scores, original_labels):
+        """Splits the label from the scores, inverse-transforms the labels if necessary, and returns the result."""
+        if output.ndim == 1:
+            labels, scores = int(output[0]), output[1:]
+            labels = self._encoder_.inverse_transform([labels]).item() if original_labels else labels
         else:
-            if isinstance(idx, np.ndarray):
-                labels = self._encoder_.inverse_transform(idx)
-            else:
-                labels = self._encoder_.inverse_transform([idx]).item()
-        return labels
+            labels, scores = output[:, 0].astype(int), output[:, 1:]
+            labels = self._encoder_.inverse_transform(labels) if original_labels else labels
+        return (labels, scores) if return_scores else labels
 
     @property
     def k(self):

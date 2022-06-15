@@ -143,6 +143,8 @@ class GMMHMM:
         # Update the initial state distribution and transitions to reflect the updated parameters
         self._initial_, self._transitions_ = self._model.startprob_, self._model.transmat_
 
+        return self
+
     def forward(self, x):
         """Runs the forward algorithm to calculate the (log) likelihood of the model generating an observation sequence.
 
