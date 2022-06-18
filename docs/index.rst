@@ -53,6 +53,15 @@ Some examples of how Sequentia can be used in sequence classification include:
    sections/preprocessing/filter.rst
    sections/preprocessing/compose.rst
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Datasets
+
+   sections/datasets/introduction.rst
+   sections/datasets/load_digits.rst
+   sections/datasets/dataset.rst
+   sections/datasets/torch_dataset.rst
+
 Documentation Search and Index
 ==============================
 

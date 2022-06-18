@@ -1,7 +1,6 @@
 ## [0.12.1](https://github.com/eonu/sequentia/releases/tag/v0.12.1)
 
 > - `KNNClassifier` has a major bug in all versions prior to and including v0.12.1 resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)).
->
 > - `GMMHMM` and `HMMClassifier` have a major bug in all versions prior to and including v0.12.1 as a result of two bugs in the `GMMHMM` class in `hmmlearn` versions before v0.2.7 (see [#193](https://github.com/eonu/sequentia/issues/193)).
 >
 > ⚠️ **Please use version v0.13.0 or later.**

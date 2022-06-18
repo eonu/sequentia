@@ -36,9 +36,6 @@ pkg_versions = {
     'matplotlib': '==3.3.3',
     'pandas': '==1.1.5',
     'seaborn': '==0.11.1',
-    'torchaudio': '==0.8.0',
-    'torchvision': '==0.9.0',
-    'torchfsdd': '==0.1.2',
     'librosa': '==0.8.0'
 }
 
@@ -48,8 +45,7 @@ extra_pkgs = {
     **{pkg:['dev', 'docs'] for pkg in ('sphinx', 'numpydoc', 'sphinx_rtd_theme', 'm2r2', 'Jinja2')},
     **{pkg:['dev', 'notebooks'] for pkg in (
         'jupyter', 'requests', 'matplotlib', 'pandas',
-        'seaborn', 'tqdm', 'torchaudio', 'torchvision',
-        'torchfsdd', 'librosa'
+        'seaborn', 'tqdm', 'librosa'
     )},
 }
 

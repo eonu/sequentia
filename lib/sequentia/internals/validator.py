@@ -8,7 +8,7 @@ else:
 class _Validator:
     """Performs internal validations on various input types."""
 
-    def is_observation_sequences(self, X, allow_single=False):
+    def is_observation_sequences(self, X, allow_single=False, dtype=np.float32):
         """Validates observation sequence(s).
 
         Parameters
@@ -18,6 +18,9 @@ class _Validator:
 
         allow_single: bool
             Whether to allow an individual observation sequence.
+
+        dtype: numpy.dtype
+            Array type for each observation sequence.
 
         Returns
         -------
@@ -32,13 +35,13 @@ class _Validator:
                         raise TypeError('Each observation sequence must be a numpy.ndarray')
                     if x.ndim > 2:
                         raise ValueError('Each observation sequence must be at most two-dimensional')
-                    X[i] = (x if x.ndim == 2 else np.atleast_2d(x).T).astype(float)
+                    X[i] = (x if x.ndim == 2 else np.atleast_2d(x).T).astype(dtype)
                     if X[i].shape[1] != X[0].shape[1]:
                         raise ValueError('Each observation sequence must have the same dimensionality')
             elif isinstance(X, np.ndarray):
                 if X.ndim > 2:
                     raise ValueError('Observation sequence must be at most two-dimensional')
-                X = (X if X.ndim == 2 else np.atleast_2d(X).T).astype(float)
+                X = (X if X.ndim == 2 else np.atleast_2d(X).T).astype(dtype)
         else:
             if allow_single:
                 raise TypeError('Expected an individual observation sequence or a list of multiple observation sequences, each of type numpy.ndarray')
@@ -46,7 +49,7 @@ class _Validator:
                 raise TypeError('Expected a list of observation sequences, each of type numpy.ndarray')
         return X
 
-    def is_observation_sequences_and_labels(self, X, y):
+    def is_observation_sequences_and_labels(self, X, y, dtype=np.float32):
         """Validates observation sequences and corresponding labels.
 
         Parameters
@@ -57,6 +60,9 @@ class _Validator:
         y: array-like of str/numeric
             A list of labels for the observation sequences.
 
+        dtype: numpy.dtype
+            Array type for each observation sequence.
+
         Returns
         -------
         X: list of numpy.ndarray (float)
@@ -65,7 +71,7 @@ class _Validator:
         y: array-like of str/numeric
             The original input labels if valid.
         """
-        X = self.is_observation_sequences(X, allow_single=False)
+        X = self.is_observation_sequences(X, allow_single=False, dtype=dtype)
         self.is_iterable(y, 'labels')
         self.is_string_or_numeric(y[0], 'each label')
         if not all(isinstance(label, type(y[0])) for label in y[1:]):
