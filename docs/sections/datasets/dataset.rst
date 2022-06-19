@@ -3,7 +3,7 @@
 ``Dataset``
 ===========
 
-All toy datasets in the :py:mod:`sequentia.datasets` module return an object if this type.
+All toy datasets in the :py:mod:`sequentia.datasets` module return an object of this type.
 
 API reference
 -------------
