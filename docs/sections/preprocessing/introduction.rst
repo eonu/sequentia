@@ -21,19 +21,8 @@ Additionally, the provided ``Compose`` class makes it possible to :doc:`apply mu
     applicable to lists of :class:`numpy:numpy.ndarray` objects, and therefore cannot be applied
     as transformations for :class:`torch:torch.Tensor` objects.
 
-    Unfortunately this means that the preprocessing methods can only be used to preprocess data for
-    :class:`sequentia.classifiers.knn.KNNClassifier` and :class:`sequentia.classifiers.hmm.HMMClassifier`,
-    and not :class:`sequentia.classifiers.rnn.DeepGRU`.
-
-    It is possible to attempt to use these transformations on :class:`torch:torch.Tensor` objects by
-    bypassing validation when applying the transformation,
-
-    .. code-block:: python
-
-        x = torch.rand(5, 3)
-        x = Center()(x, validate=False)
-
-    but this likely will not work due to differences in :class:`numpy:numpy.ndarray` and :class:`torch:torch.Tensor`.
+    This means that if you wish to use :class:`sequentia.classifiers.rnn.DeepGRU`, you must first
+    apply the transformations on :class:`numpy:numpy.ndarray` objects then transform them into :class:`torch:torch.Tensor` objects.
 
 Each of the transformations follow a similar interface, based on the abstract :class:`Transform` class:
 

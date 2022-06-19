@@ -129,7 +129,7 @@ class KNNClassifier:
         y: array-like of str/numeric
             An iterable of labels for the observation sequences.
         """
-        X, y = self._val.is_observation_sequences_and_labels(X, y)
+        X, y = self._val.is_observation_sequences_and_labels(X, y, dtype=np.float64)
         self._X_, self._y_ = X, self._encoder_.transform(y)
         self._n_features_ = X[0].shape[1]
         return self
@@ -167,7 +167,7 @@ class KNNClassifier:
             inverse-transformed into their original encoding.
         """
         (self.X_, self.y_)
-        X = self._val.is_observation_sequences(X, allow_single=True)
+        X = self._val.is_observation_sequences(X, allow_single=True, dtype=np.float64)
         self._val.is_boolean(original_labels, desc='original_labels')
         self._val.is_boolean(verbose, desc='verbose')
         self._val.is_restricted_integer(n_jobs, lambda x: x == -1 or x > 0, 'number of jobs', '-1 or greater than zero')
@@ -223,7 +223,7 @@ class KNNClassifier:
         confusion: :class:`numpy:numpy.ndarray` (int)
             The confusion matrix representing the discrepancy between predicted and actual labels.
         """
-        X, y = self._val.is_observation_sequences_and_labels(X, y)
+        X, y = self._val.is_observation_sequences_and_labels(X, y, dtype=np.float64)
         self._val.is_boolean(verbose, desc='verbose')
         predictions = self.predict(X, return_scores=False, original_labels=False, verbose=verbose, n_jobs=n_jobs)
         cm = confusion_matrix(self._encoder_.transform(y), predictions, labels=self._encoder_.transform(self._encoder_.classes_))
