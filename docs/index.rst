@@ -19,9 +19,7 @@ Some examples of how Sequentia can be used in sequence classification include:
 - determining a spoken word based on its audio signal or alternative representations such as MFCCs,
 - identifying heart conditions such as arrhythmia from ECG signals,
 - predicting motion intent for gesture control from sEMG signals,
-- classifying hand-written characters according to their pen-tip trajectories,
-- classifying hand or head gestures from rotation or movement signals,
-- classifying the sentiment of a phrase in natural language from word embeddings.
+- classifying hand-written characters according to their pen-tip trajectories.
 
 .. toctree::
    :maxdepth: 1
