@@ -5,8 +5,6 @@ if packaging.version.parse(platform.python_version()) < packaging.version.parse(
 else:
     from importlib import metadata
 
-MIN_TORCH_VERSION = '1.8'
-
 def check_package(pkg, min_version, url, silent=False):
     """Checks whether a specified package has been installed,
     and whether the installed version meets a specified minimum.
@@ -48,7 +46,3 @@ def check_package(pkg, min_version, url, silent=False):
         raise ModuleNotFoundError(msg)
 
     return True
-
-def is_torch_installed(silent=False):
-    """Check that at least the minimum torch version is installed"""
-    return check_package('torch', MIN_TORCH_VERSION, url='https://pytorch.org/', silent=silent)

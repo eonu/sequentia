@@ -9,4 +9,4 @@ API reference
 -------------
 
 .. autoclass:: sequentia.datasets.Dataset
-    :members: data, iter_by_class, split, to_torch
+    :members: data, iter_by_class, split

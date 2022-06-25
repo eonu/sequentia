@@ -1,6 +1,5 @@
-import torch, numpy as np
+import numpy as np
 from sequentia.datasets import Dataset
-from sequentia.classifiers.rnn import collate_fn
 from ...support import assert_all_equal
 
 # Set seed for reproducible randomness
@@ -27,12 +26,3 @@ def test_dataset_split():
     assert len(train_set) == 80
     assert len(test_set) == 20
     assert sorted((*train_set.y, *test_set.y)) == sorted(y)
-
-def test_dataset_to_torch():
-    batch_size = 16
-    torch_set = dataset.to_torch(transform=(lambda x: -x))
-    loader = torch.utils.data.DataLoader(torch_set, collate_fn=collate_fn, batch_size=batch_size, shuffle=False, num_workers=0)
-    first_batch_sequences, first_batch_lengths, first_batch_labels = next(iter(loader))
-    assert torch.equal(first_batch_sequences, -torch.arange(batch_size)[:, None, None])
-    assert torch.equal(first_batch_lengths, torch.ones(batch_size, dtype=int))
-    assert torch.equal(first_batch_labels, torch.from_numpy(y[:batch_size]))

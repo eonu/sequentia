@@ -20,8 +20,6 @@ pkg_versions = {
     'scikit-learn': '>=0.22,<1',
     'tqdm': '>=4.36,<5',
     'joblib': '>=0.14,<1',
-    # [torch]
-    'torch': '>=1.8+cpu',
     # [docs]
     'sphinx': '>=5,<6',
     'numpydoc': '>=1.4,<1.5',
@@ -40,7 +38,6 @@ pkg_versions = {
 }
 
 extra_pkgs = {
-    'torch': ['dev', 'torch', 'test', 'docs', 'notebooks'],
     'pytest': ['dev', 'test'],
     **{pkg:['dev', 'docs'] for pkg in ('sphinx', 'numpydoc', 'sphinx_rtd_theme', 'm2r2', 'Jinja2')},
     **{pkg:['dev', 'notebooks'] for pkg in (
@@ -63,7 +60,7 @@ install_requires = load_requires('numpy', 'hmmlearn', 'dtaidistance[numpy]', 'sc
 if packaging.version.parse(platform.python_version()) < packaging.version.parse('3.8'):
     install_requires.append('importlib_metadata') # Backports for importlib.metadata in Python <3.8
 
-extras_require = {extra:reverse_extra(extra) for extra in ('torch', 'dev', 'test', 'notebooks', 'docs')}
+extras_require = {extra:reverse_extra(extra) for extra in ('dev', 'test', 'notebooks', 'docs')}
 
 setup(
     name = 'sequentia',
