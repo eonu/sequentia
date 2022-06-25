@@ -12,6 +12,7 @@ with open('README.md', 'r', encoding='utf8') as fh:
     long_description = fh.read()
 
 pkg_versions = {
+    # core dependencies
     'Cython': '>=0.28.5',
     'numpy': '>=1.17,<2',
     'scipy': '>=1.3,<2',
@@ -20,6 +21,7 @@ pkg_versions = {
     'scikit-learn': '>=0.22,<1',
     'tqdm': '>=4.36,<5',
     'joblib': '>=0.14,<1',
+    'tslearn': '>=0.5,<0.6',
     # [docs]
     'sphinx': '>=5,<6',
     'numpydoc': '>=1.4,<1.5',
