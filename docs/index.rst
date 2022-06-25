@@ -35,7 +35,6 @@ Some examples of how Sequentia can be used in sequence classification include:
 
    sections/classifiers/knn.rst
    sections/classifiers/gmmhmm.rst
-   sections/classifiers/deepgru.rst
 
 .. toctree::
    :maxdepth: 1
@@ -58,7 +57,6 @@ Some examples of how Sequentia can be used in sequence classification include:
    sections/datasets/introduction.rst
    sections/datasets/load_digits.rst
    sections/datasets/dataset.rst
-   sections/datasets/torch_dataset.rst
 
 Documentation Search and Index
 ==============================
