@@ -1,4 +1,4 @@
-import torch, numpy as np
+import numpy as np
 from sequentia.datasets import Dataset
 from ...support import assert_all_equal
 
