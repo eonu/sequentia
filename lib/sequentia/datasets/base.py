@@ -1,6 +1,5 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
-from ..internals.versions import is_torch_installed
 
 class Dataset:
     """Represents a generic dataset.
@@ -94,52 +93,3 @@ class Dataset:
             Dataset(X1, y1, self.classes, self.random_state),
             Dataset(X2, y2, self.classes, self.random_state)
         )
-
-    def to_torch(self, transform=None):
-        """Converts the dataset into a :class:`TorchDataset`.
-
-        .. warning::
-            This requires a working installation of ``torch``.
-
-        Parameters
-        ----------
-        transform: callable
-            Transformation to apply to each instance.
-
-        Returns
-        -------
-        torch_dataset: :class:`TorchDataset`
-            Torch-compatible dataset.
-        """
-        if is_torch_installed(silent=False):
-            return TorchDataset(self, transform)
-
-# Check that at least the minimum torch version is installed
-if is_torch_installed(silent=True):
-    import torch.utils
-
-    class TorchDataset(torch.utils.data.Dataset, Dataset):
-        """A Torch-compatible dataset subclass of :class:`torch:torch.utils.data.Dataset`.
-
-        .. warning::
-            This requires a working installation of ``torch``.
-
-        Parameters
-        ----------
-        transform: callable
-            Transformation to apply to each instance.
-        """
-        def __init__(self, dataset, transform):
-            self.X = dataset.X
-            self.y = dataset.y
-            self.classes = dataset.classes
-            self.transform = transform
-
-        def __getitem__(self, i):
-            X, y = torch.from_numpy(self.X[i]), self.y[i]
-
-            # Transform the data if a transformation is provided
-            if self.transform is not None:
-                X = self.transform(X)
-
-            return X, y
