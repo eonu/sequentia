@@ -117,7 +117,7 @@ Depending on what you intend to do, you can specify the following extras.
   ```console
   pip install sequentia[notebooks]
   ```
-- A full development suite which installs all of the above extras:
+- **A full development suite which installs all of the above extras:**
 
   ```console
   pip install sequentia[dev]
