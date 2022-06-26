@@ -1,4 +1,3 @@
-import numpy as np
 from sequentia.datasets import load_digits
 
 def test_load_digits_full():

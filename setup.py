@@ -12,14 +12,17 @@ with open('README.md', 'r', encoding='utf8') as fh:
     long_description = fh.read()
 
 pkg_versions = {
+    # setup dependencies (core)
     'Cython': '>=0.28.5',
     'numpy': '>=1.17,<2',
     'scipy': '>=1.3,<2',
+    # install dependencies (core)
     'hmmlearn': '==0.2.7',
     'dtaidistance[numpy]': '>=2.2,<2.3',
     'scikit-learn': '>=0.22,<1',
     'tqdm': '>=4.36,<5',
     'joblib': '>=0.14,<1',
+    'tslearn': '>=0.5,<0.6',
     # [docs]
     'sphinx': '>=5,<6',
     'numpydoc': '>=1.4,<1.5',
@@ -56,7 +59,7 @@ python_requires = '>=3.6,<3.10'
 
 setup_requires = load_requires('Cython', 'numpy', 'scipy')
 
-install_requires = load_requires('numpy', 'hmmlearn', 'dtaidistance[numpy]', 'scipy', 'scikit-learn', 'tqdm', 'joblib')
+install_requires = load_requires('numpy', 'hmmlearn', 'dtaidistance[numpy]', 'scipy', 'scikit-learn', 'tqdm', 'joblib', 'tslearn')
 if packaging.version.parse(platform.python_version()) < packaging.version.parse('3.8'):
     install_requires.append('importlib_metadata') # Backports for importlib.metadata in Python <3.8
 
