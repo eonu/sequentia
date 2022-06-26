@@ -1,6 +1,7 @@
 import numpy as np
 from pkg_resources import resource_filename
 from .base import Dataset
+from ..internals import _Validator
 
 def load_digits(numbers=range(10), random_state=None):
     """Load audio samples of spoken digits from the Free Spoken Digit Dataset.
@@ -23,6 +24,8 @@ def load_digits(numbers=range(10), random_state=None):
     dataset: :class:`sequentia.datasets.Dataset`
         A dataset object representing the loaded digits.
     """
+    random_state = _Validator().is_random_state(random_state)
+
     # Load the dataset from compressed numpy file
     data = np.load(resource_filename('sequentia', 'datasets/data/digits.npz'))
 

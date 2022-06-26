@@ -2,6 +2,7 @@ import numpy as np, scipy.spatial
 from tslearn.utils import to_time_series_dataset
 from tslearn.clustering import TimeSeriesKMeans
 from .base import Dataset
+from ..internals import _Validator
 
 def load_random_sequences(
     n_sequences, n_features, n_classes, length_range,
@@ -92,6 +93,8 @@ def load_random_sequences(
     dataset: :class:`sequentia.datasets.Dataset`
         A dataset object representing the loaded digits.
     """
+    random_state = _Validator().is_random_state(random_state)
+
     # Set default tslearn key-word arguments
     tslearn_kwargs['metric'] = tslearn_kwargs.get('metric', 'dtw')
     tslearn_kwargs['max_iter'] = tslearn_kwargs.get('max_iter', 5)
@@ -111,8 +114,11 @@ def load_random_sequences(
         k = lambda x1, x2: _K(x1, x2, variance=variance, lengthscale=lengthscale)
         X.append(_sample_prior(k, length, n_features, random_state).T)
 
-    # Cluster sequences to obtain labels
-    y = TimeSeriesKMeans(**tslearn_kwargs).fit_predict(to_time_series_dataset(X))
+    if n_sequences == 1:
+        y = random_state.choice(range(n_classes), size=1)
+    else:
+        # Cluster sequences to obtain labels
+        y = TimeSeriesKMeans(**tslearn_kwargs).fit_predict(to_time_series_dataset(X))
 
     return Dataset(X, y, range(n_classes), random_state)
 
