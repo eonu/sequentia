@@ -1,3 +1,9 @@
+## [0.13.1](https://github.com/eonu/sequentia/releases/tag/v0.13.1)
+
+#### Major changes
+
+- Add `digits.npz` as package data in `setup.py`. ([#221](https://github.com/eonu/sequentia/issues/221))
+
 ## [0.13.0](https://github.com/eonu/sequentia/releases/tag/v0.13.0)
 
 #### Major changes

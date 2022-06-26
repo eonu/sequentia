@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 import platform
 from pkg_resources import packaging
 
-VERSION = '0.13.0'
+VERSION = '0.13.1'
 
 with open('README.md', 'r', encoding='utf8') as fh:
     long_description = fh.read()
@@ -99,5 +99,6 @@ setup(
     python_requires = python_requires,
     setup_requires = setup_requires,
     install_requires = install_requires,
-    extras_require = extras_require
+    extras_require = extras_require,
+    package_data={'sequentia': ['datasets/data/digits.npz']}
 )
