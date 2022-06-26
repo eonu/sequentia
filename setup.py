@@ -99,5 +99,6 @@ setup(
     python_requires = python_requires,
     setup_requires = setup_requires,
     install_requires = install_requires,
-    extras_require = extras_require
+    extras_require = extras_require,
+    package_data={'sequentia': ['datasets/data/digits.npz']}
 )
