@@ -69,12 +69,12 @@ The `specifier` should be one of:
 
 - `pkg`: Changes to any core package configuration.
 - `lib`: Changes to any library code.
-- `ci`: Changes to `.travis.yml`.
+- `ci`: Changes to continuous integration configuration (e.g. CircleCI/TravisCI).
 - `tests`: Changes to any test code.
 - `git`: Changes to any Git-related code, such as `.gitignore`.
 - `docs`: Changes to any documentation such as the Read The Docs documentation, `README.md`, `CONTRIBUTING.md`, `LICENSE` or `CHANGELOG.md`.
 
-Continuous integration (Travis CI) builds must pass in order for your pull request to be merged.
+Continuous integration builds must pass in order for your pull request to be merged.
 
 ## License
 
