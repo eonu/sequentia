@@ -1,4 +1,4 @@
-## [0.13.0](https://github.com/eonu/sequentia/releases/tag/v0.13.0)
+## [0.13.1](https://github.com/eonu/sequentia/releases/tag/v0.13.1)
 
 #### Major changes
 
