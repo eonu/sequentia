@@ -56,6 +56,7 @@ Some examples of how Sequentia can be used in sequence classification include:
 
    sections/datasets/introduction.rst
    sections/datasets/load_digits.rst
+   sections/datasets/load_random_sequences.rst
    sections/datasets/dataset.rst
 
 Documentation Search and Index

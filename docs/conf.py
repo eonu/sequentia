@@ -44,7 +44,8 @@ extensions = [
 ]
 
 intersphinx_mapping = {
-    'numpy': ('http://docs.scipy.org/doc/numpy/', None)
+    'numpy': ('http://docs.scipy.org/doc/numpy/', None),
+    'tslearn': ('https://tslearn.readthedocs.io/en/stable/', None)
 }
 
 autodoc_member_order = 'bysource'
