@@ -3,30 +3,23 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. image:: https://i.ibb.co/42GkhfR/sequentia.png
+.. image:: /_static/logo.png
     :alt: Sequentia
-    :width: 275
+    :width: 125px
     :target: https://github.com/eonu/sequentia
     :align: center
 
 About
 =====
 
-Sequentia is a Python package that provides implementations of a selection of machine learning algorithms
-for performing the classification of isolated sequences.
+Sequentia is a Python package that provides various classification algorithms for sequential data, including classifiers based on hidden Markov models and dynamic time warping.
 
-Each isolated sequence is generally modeled as a section of a longer multivariate time series
-that represents the entire sequence. Naturally, this fits the description of many types of problems such as:
+Some examples of how Sequentia can be used in sequence classification include:
 
-- isolated word utterance frequencies in speech audio signals,
-- isolated hand-written character pen-tip trajectories,
-- isolated hand or head gestures positions in a video or motion-capture recording.
-
-Most modern machine learning algorithms won't work directly out of the box when applied to such
-sequential data – mostly due to the fact that the dependencies between observations at different
-time frames must be considered, and also because each isolated sequence generally has a different duration.
-
-Sequentia offers some appropriate classification algorithms for these kinds of tasks.
+- determining a spoken word based on its audio signal or alternative representations such as MFCCs,
+- identifying heart conditions such as arrhythmia from ECG signals,
+- predicting motion intent for gesture control from sEMG signals,
+- classifying hand-written characters according to their pen-tip trajectories.
 
 .. toctree::
    :maxdepth: 1
@@ -42,7 +35,6 @@ Sequentia offers some appropriate classification algorithms for these kinds of t
 
    sections/classifiers/knn.rst
    sections/classifiers/gmmhmm.rst
-   sections/classifiers/deepgru.rst
 
 .. toctree::
    :maxdepth: 1
@@ -57,6 +49,15 @@ Sequentia offers some appropriate classification algorithms for these kinds of t
    sections/preprocessing/downsample.rst
    sections/preprocessing/filter.rst
    sections/preprocessing/compose.rst
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Datasets
+
+   sections/datasets/introduction.rst
+   sections/datasets/load_digits.rst
+   sections/datasets/load_random_sequences.rst
+   sections/datasets/dataset.rst
 
 Documentation Search and Index
 ==============================

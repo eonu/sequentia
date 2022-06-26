@@ -22,7 +22,7 @@ except ImportError:
 # -- Project information -----------------------------------------------------
 
 project = 'sequentia'
-copyright = '2019-2022, Edwin Onuonga'
+copyright = '2019-2023, Edwin Onuonga'
 author = 'Edwin Onuonga'
 
 # The full version, including alpha/beta/rc tags
@@ -45,7 +45,7 @@ extensions = [
 
 intersphinx_mapping = {
     'numpy': ('http://docs.scipy.org/doc/numpy/', None),
-    'torch': ('https://pytorch.org/docs/stable/', None)
+    'tslearn': ('https://tslearn.readthedocs.io/en/stable/', None)
 }
 
 autodoc_member_order = 'bysource'

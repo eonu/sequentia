@@ -5,8 +5,7 @@ from .topologies.linear import _LinearTopology
 from ...internals import _Validator
 
 class GMMHMM:
-    """A hidden Markov model (with Gaussian Mixture Model emissions)
-    representing a single isolated sequence class.
+    """A hidden Markov model with multivariate Gaussian mixture emissions representing a single sequence class.
 
     Parameters
     ----------
@@ -143,6 +142,8 @@ class GMMHMM:
 
         # Update the initial state distribution and transitions to reflect the updated parameters
         self._initial_, self._transitions_ = self._model.startprob_, self._model.transmat_
+
+        return self
 
     def forward(self, x):
         """Runs the forward algorithm to calculate the (log) likelihood of the model generating an observation sequence.
