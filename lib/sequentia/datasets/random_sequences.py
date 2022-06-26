@@ -93,7 +93,12 @@ def load_random_sequences(
     dataset: :class:`sequentia.datasets.Dataset`
         A dataset object representing the loaded digits.
     """
-    random_state = _Validator().is_random_state(random_state)
+    val = _Validator()
+    random_state = val.is_random_state(random_state)
+    n_classes = val.is_restricted_integer(
+        n_classes, lambda x: x <= n_sequences,
+        desc='number of classes', expected='no more than n_sequences'
+    )
 
     # Set default tslearn key-word arguments
     tslearn_kwargs['metric'] = tslearn_kwargs.get('metric', 'dtw')
@@ -112,10 +117,12 @@ def load_random_sequences(
         variance = _sample_from_range(variance_range, float, random_state=random_state)
         lengthscale = _sample_from_range(lengthscale_range, float, random_state=random_state)
         k = lambda x1, x2: _K(x1, x2, variance=variance, lengthscale=lengthscale)
-        X.append(_sample_prior(k, length, n_features, random_state).T)
+        X.append(_sample_prior(k, length, n_features, random_state))
 
     if n_sequences == 1:
-        y = random_state.choice(range(n_classes), size=1)
+        y = np.array([0])
+    elif n_classes == 1:
+        y = np.zeros(n_sequences)
     else:
         # Cluster sequences to obtain labels
         y = TimeSeriesKMeans(**tslearn_kwargs).fit_predict(to_time_series_dataset(X))
@@ -124,7 +131,7 @@ def load_random_sequences(
 
 def _sample_prior(k, length, n_features, random_state):
     X = np.expand_dims(np.linspace(0, length, length), axis=1)
-    return random_state.multivariate_normal(np.zeros(length), k(X, X), size=n_features)
+    return random_state.multivariate_normal(np.zeros(length), k(X, X), size=n_features).T
 
 def _K(x1, x2, variance, lengthscale):
     return variance * np.exp(-scipy.spatial.distance.cdist(x1, x2, 'sqeuclidean') / 2*lengthscale**2)
