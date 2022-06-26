@@ -12,7 +12,7 @@
 About
 =====
 
-Sequentia is a package that provides various classification algorithms for sequential data, including classifiers based on hidden Markov models, dynamic time warping and recurrent neural networks.
+Sequentia is a Python package that provides various classification algorithms for sequential data, including classifiers based on hidden Markov models and dynamic time warping.
 
 Some examples of how Sequentia can be used in sequence classification include:
 
