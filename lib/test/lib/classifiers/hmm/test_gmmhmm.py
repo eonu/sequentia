@@ -377,7 +377,7 @@ def test_left_right_forward():
     hmm.set_random_initial()
     hmm.set_random_transitions()
     hmm.fit(X)
-    assert math.isclose(hmm.forward(x), -89.59052551245605)
+    assert math.isclose(hmm.forward(x), -89.59052551245605, rel_tol=1e-8)
 
 def test_ergodic_forward():
     """Forward algorithm on an ergodic HMM"""
@@ -385,7 +385,7 @@ def test_ergodic_forward():
     hmm.set_random_initial()
     hmm.set_random_transitions()
     hmm.fit(X)
-    assert math.isclose(hmm.forward(x), -97.67911812603418)
+    assert math.isclose(hmm.forward(x), -97.67911812603418, rel_tol=1e-8)
 
 def test_linear_forward():
     """Forward algorithm on a linear HMM"""
@@ -393,7 +393,7 @@ def test_linear_forward():
     hmm.set_random_initial()
     hmm.set_random_transitions()
     hmm.fit(X)
-    assert math.isclose(hmm.forward(x), -90.25666060143605)
+    assert math.isclose(hmm.forward(x), -90.25666060143605, rel_tol=1e-8)
 
 # =============== #
 # GMMHMM.freeze() #
