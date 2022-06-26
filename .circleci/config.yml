@@ -15,26 +15,26 @@ template: &template
   steps:
     - checkout
     - run:
-      name: Set up Miniconda
-      command: |
-        apt update
-        apt install -y wget
-        cd $HOME
-        wget "https://repo.anaconda.com/miniconda/Miniconda3-4.7.10-Linux-x86_64.sh" -O miniconda.sh
-        printf '%s' "8a324adcc9eaf1c09e22a992bb6234d91a94146840ee6b11c114ecadafc68121  miniconda.sh" | sha256sum -c
-        bash miniconda.sh -b -p $HOME/miniconda
+        name: Set up Miniconda
+        command: |
+          apt update
+          apt install -y wget
+          cd $HOME
+          wget "https://repo.anaconda.com/miniconda/Miniconda3-4.7.10-Linux-x86_64.sh" -O miniconda.sh
+          printf '%s' "8a324adcc9eaf1c09e22a992bb6234d91a94146840ee6b11c114ecadafc68121  miniconda.sh" | sha256sum -c
+          bash miniconda.sh -b -p $HOME/miniconda
     - run:
-      name: Set up environment
-      command: |
-        export PATH="$HOME/miniconda/bin:$PATH"
-        conda update -y conda
-        conda create -n sequentia python=$PYTHON_VERSION
-        conda activate sequentia
-        pip install ".[test]"
+        name: Set up environment
+        command: |
+          export PATH="$HOME/miniconda/bin:$PATH"
+          conda update -y conda
+          conda create -n sequentia python=$PYTHON_VERSION
+          conda activate sequentia
+          pip install ".[test]"
     - run:
-      name: Run tests
-      command: |
-        pytest lib/test --disable-pytest-warnings
+        name: Run tests
+        command: |
+          pytest lib/test --disable-pytest-warnings
 
 jobs:
   python_3.5:
