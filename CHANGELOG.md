@@ -2,6 +2,12 @@
 
 #### Major changes
 
+- Add `digits.npz` as package data in `setup.py`. ([#221](https://github.com/eonu/sequentia/issues/221))
+
+## [0.13.0](https://github.com/eonu/sequentia/releases/tag/v0.13.0)
+
+#### Major changes
+
 - Switch from TravisCI to CircleCI. ([#218](https://github.com/eonu/sequentia/issues/218))
 - Add `datasets.load_random_sequences` for generating an arbitrarily sized dataset of sequences. ([#216](https://github.com/eonu/sequentia/issues/216))
 - Remove `DeepGRU` and `classifier.rnn` module. ([#215](https://github.com/eonu/sequentia/issues/215))
