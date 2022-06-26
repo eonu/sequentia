@@ -35,7 +35,7 @@ def load_random_sequences(
     .. math::
         \\sigma^2 \\sim U(a_{\\sigma^2},b_{\\sigma^2}) \qquad l \\sim U(a_l,b_l)
 
-    Where :math:`(a_{\\sigma^2},b_{\\sigma^2})` and :math:`(a_l,b_l)` are given by ``variance_range`` and ``length_range``.
+    Where :math:`(a_{\\sigma^2},b_{\\sigma^2})` and :math:`(a_l,b_l)` are given by ``variance_range`` and ``lengthscale_range``.
 
     If ``n_features`` is more than one, then the same :math:`\\sigma^2` and :math:`l` values are shared along each feature of a single
     sequence, which means that features are often very highly correlated.
