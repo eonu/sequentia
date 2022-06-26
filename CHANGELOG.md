@@ -1,3 +1,28 @@
+## [0.13.0](https://github.com/eonu/sequentia/releases/tag/v0.13.0)
+
+#### Major changes
+
+- Switch from TravisCI to CircleCI. ([#218](https://github.com/eonu/sequentia/issues/218))
+- Add `datasets.load_random_sequences` for generating an arbitrarily sized dataset of sequences. ([#216](https://github.com/eonu/sequentia/issues/216))
+- Remove `DeepGRU` and `classifier.rnn` module. ([#215](https://github.com/eonu/sequentia/issues/215))
+- Add `sequentia.datasets` module. ([#214](https://github.com/eonu/sequentia/issues/214))
+- Added `return_scores` argument to `KNNClassifier.predict()` to return class scores. ([#213](https://github.com/eonu/sequentia/issues/213))
+- Return `self` in `fit()` functions. ([#213](https://github.com/eonu/sequentia/issues/213))
+- Update to `hmmlearn` v0.2.7. ([#201](https://github.com/eonu/sequentia/issues/201))
+- Update `HMMClassifier` structure to match `KNNClassifier`. ([#200](https://github.com/eonu/sequentia/issues/200))
+- Remove `'uniform'` `KNNClassifier` weighting option. ([#192](https://github.com/eonu/sequentia/issues/192))
+- Fix major `KNNClassifier` label scoring bug - thanks @manisci. ([#187](https://github.com/eonu/sequentia/issues/187))
+
+#### Minor changes
+
+- Update `CONTRIBUTING.md` CI instructions. ([#219](https://github.com/eonu/sequentia/issues/219))
+- Update HMM tests to use `datasets` module. ([#217](https://github.com/eonu/sequentia/issues/217))
+- Add `tslearn` as a core dependency. ([#216](https://github.com/eonu/sequentia/issues/216))
+- Remove `torchaudio`, `torchvision` and `torchfsdd` dependencies. ([#214](https://github.com/eonu/sequentia/issues/214))
+- Add playable audio to notebooks via `play_audio` helper. ([#214](https://github.com/eonu/sequentia/issues/214))
+- Update `README.md` and documentation. ([#202](https://github.com/eonu/sequentia/issues/202))
+- Add `Jinja2` dependency for RTD. ([#188](https://github.com/eonu/sequentia/issues/188))
+
 ## [0.12.1](https://github.com/eonu/sequentia/releases/tag/v0.12.1)
 
 > - `KNNClassifier` has a major bug in all versions prior to and including v0.12.1 resulting in inaccurate predictions (see [#186](https://github.com/eonu/sequentia/issues/186)).
