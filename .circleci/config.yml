@@ -29,11 +29,11 @@ template: &template
           export PATH="$HOME/miniconda/bin:$PATH"
           conda update -y conda
           conda create -n sequentia python=$PYTHON_VERSION
+    - run:
+        name: Install dependencies and run tests
+        command: |
           source activate sequentia
           pip install ".[test]"
-    - run:
-        name: Run tests
-        command: |
           pytest lib/test --disable-pytest-warnings
 
 jobs:
