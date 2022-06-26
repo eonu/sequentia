@@ -54,7 +54,7 @@ Some examples of how Sequentia can be used in sequence classification include:
 
 | `master` | `dev` |
 | -------- | ------|
-| [![Travis Build (Master)](https://img.shields.io/travis/com/eonu/sequentia?logo=travis&style=flat-square)](https://travis-ci.com/github/eonu/sequentia) | [![Travis Build (Development)](https://img.shields.io/travis/com/eonu/sequentia/dev?logo=travis&style=flat-square)](https://travis-ci.com/github/eonu/sequentia) |
+| [![CircleCI Build (Master)](https://img.shields.io/circleci/build/github/eonu/sequentia/master?logo=circleci&style=flat-square)](https://app.circleci.com/pipelines/github/eonu/sequentia?branch=master) | [![CircleCI Build (Development)](https://img.shields.io/circleci/build/github/eonu/sequentia/dev?logo=circleci&style=flat-square)](https://app.circleci.com/pipelines/github/eonu/sequentia?branch=master) |
 
 ## Features
 
