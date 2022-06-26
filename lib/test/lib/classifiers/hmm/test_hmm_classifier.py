@@ -1,31 +1,28 @@
 import os, pickle, pytest, warnings, os, numpy as np, hmmlearn.hmm
 from copy import deepcopy
 from sequentia.classifiers import GMMHMM, HMMClassifier, _ErgodicTopology
+from sequentia.datasets import load_random_sequences
 from ....support import assert_equal, assert_not_equal
 
-pytest.skip('Skip until datasets module is added and positive definite issues are fixed', allow_module_level=True)
+# pytest.skip('Skip until datasets module is added and positive definite issues are fixed', allow_module_level=True)
 
 # Set seed for reproducible randomness
-seed = 0
-np.random.seed(seed)
-rng = np.random.RandomState(seed)
+random_state = np.random.RandomState(0)
 
-# Set of possible labels
-labels = ['c{}'.format(i) for i in range(5)]
+# Create some sample data
+dataset = load_random_sequences(50, n_features=2, n_classes=5, length_range=(10, 30), random_state=random_state)
+dataset.classes = [f'c{i}' for i in range(5)]
+dataset.y = np.array([f'c{i}' for i in dataset.y])
+x, y = dataset[0]
 
-# Create and fit some sample HMMs
+# Create and fit some HMMs
 hmms = []
-for i, label in enumerate(labels):
-    hmm = GMMHMM(label=label, n_states=(i + 3), random_state=rng)
+for sequences, label in dataset.iter_by_class():
+    hmm = GMMHMM(label=label, n_states=5, random_state=random_state)
     hmm.set_random_initial()
     hmm.set_random_transitions()
-    hmm.fit([np.arange((i + j * 20) * 30).reshape(-1, 3) for j in range(2, 5)])
+    hmm.fit(sequences)
     hmms.append(hmm)
-
-# Create some sample test data and labels
-X = [np.arange((i + 2 * 20) * 30).reshape(-1, 3) for i in range(2, 5)]
-Y = ['c0', 'c1', 'c1']
-x, y = X[0], 'c1'
 
 # Fit a classifier
 hmm_clf = HMMClassifier()
@@ -62,81 +59,119 @@ def test_fit_list_invalid():
 def test_predict_single_frequency_prior():
     """Predict a single observation sequence with a frequency prior"""
     prediction = hmm_clf.predict(x, prior='frequency', return_scores=False, original_labels=False)
-    assert prediction == 0
+    assert prediction == 1
 
 def test_predict_single_uniform_prior():
     """Predict a single observation sequence with a uniform prior"""
     prediction = hmm_clf.predict(x, prior='uniform', return_scores=False, original_labels=False)
-    assert prediction == 0
+    assert prediction == 1
 
 def test_predict_single_custom_prior():
     """Predict a single observation sequence with a custom prior"""
     prediction = hmm_clf.predict(x, prior=([1e-50]*4+[1-4e-50]), return_scores=False, original_labels=False)
-    assert prediction == 4
+    assert prediction == 1
 
 def test_predict_single_return_scores():
     """Predict a single observation sequence and return the transformed label, with the un-normalized posterior scores"""
     prediction = hmm_clf.predict(x, prior='frequency', return_scores=True, original_labels=False)
     assert isinstance(prediction, tuple)
-    assert prediction[0] == 0
+    assert prediction[0] == 1
     assert_equal(prediction[1], np.array([
-        -1225.88304108, -1266.85875999, -1266.96016441, -1226.97939403, -1274.89102844
+        -131.46105165, -78.80931343, -99.35179093, -90.89464994, -483.92229446
     ]))
 
 def test_predict_single_original_labels():
     """Predict a single observation sequence and return the original label, without the un-normalized posterior scores"""
     prediction = hmm_clf.predict(x, prior='uniform', return_scores=False, original_labels=True)
-    assert prediction == 'c0'
+    assert prediction == 'c1'
 
 def test_predict_single_return_scores_original_labels():
     """Predict a single observation sequence and return the original label, with the un-normalized posterior scores"""
     prediction = hmm_clf.predict(x, prior='frequency', return_scores=True, original_labels=True)
     assert isinstance(prediction, tuple)
-    assert prediction[0] == 'c0'
+    assert prediction[0] == 'c1'
     assert_equal(prediction[1], np.array([
-        -1225.88304108, -1266.85875999, -1266.96016441, -1226.97939403, -1274.89102844
+        -131.46105165, -78.80931343, -99.35179093, -90.89464994, -483.92229446
     ]))
 
 def test_predict_multiple_frequency_prior():
     """Predict multiple observation sequences with a frequency prior"""
-    predictions = hmm_clf.predict(X, prior='frequency', return_scores=False, original_labels=False)
-    assert_equal(predictions, np.array([0, 0, 0]))
+    predictions = hmm_clf.predict(dataset.X, prior='frequency', return_scores=False, original_labels=False)
+    assert_equal(predictions, np.array([
+        1, 3, 1, 0, 1, 3, 1, 1, 3, 2, 1, 2, 3, 2, 4, 1, 3, 2, 0, 0, 1, 1,
+        3, 1, 1, 3, 1, 1, 1, 1, 4, 3, 0, 3, 1, 2, 3, 1, 2, 1, 1, 1, 3, 3,
+        2, 3, 1, 1, 4, 1
+    ]))
 
 def test_predict_multiple_uniform_prior():
     """Predict multiple observation sequences with a uniform prior"""
-    predictions = hmm_clf.predict(X, prior='uniform', return_scores=False, original_labels=False)
-    assert_equal(predictions, np.array([0, 0, 0]))
+    predictions = hmm_clf.predict(dataset.X, prior='uniform', return_scores=False, original_labels=False)
+    assert_equal(predictions, np.array([
+        1, 3, 1, 0, 1, 3, 1, 1, 3, 2, 1, 2, 3, 2, 4, 1, 3, 2, 0, 0, 1, 1,
+        3, 1, 1, 3, 1, 1, 1, 1, 4, 3, 0, 3, 1, 2, 3, 1, 2, 1, 1, 1, 3, 3,
+        2, 3, 1, 1, 4, 1
+    ]))
 
 def test_predict_multiple_custom_prior():
     """Predict multiple observation sequences with a custom prior"""
-    predictions = hmm_clf.predict(X, prior=([1-4e-50]+[1e-50]*4), return_scores=False, original_labels=False)
-    assert_equal(predictions, np.array([0, 0, 0]))
+    predictions = hmm_clf.predict(dataset.X, prior=([1-4e-50]+[1e-50]*4), return_scores=False, original_labels=False)
+    assert_equal(predictions, np.array([
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0
+    ]))
 
 def test_predict_multiple_return_scores():
     """Predict multiple observation sequences and return the transformed labels, with the un-normalized posterior scores"""
-    predictions = hmm_clf.predict(X, prior='frequency', return_scores=True, original_labels=False)
+    predictions = hmm_clf.predict(dataset.X, prior='frequency', return_scores=True, original_labels=False)
     assert isinstance(predictions, tuple)
-    assert_equal(predictions[0], np.array([0, 0, 0]))
-    assert_equal(predictions[1], np.array([
-        [-1225.88304108, -1266.85875999, -1266.96016441, -1226.97939403, -1274.89102844],
-        [-1254.2158035 , -1299.37586652, -1299.75108935, -1255.8359274 , -1308.71071239],
-        [-1282.57116414, -1330.90436081, -1331.63379359, -1284.79130597, -1342.45717804]
+    assert_equal(predictions[0], np.array([
+        1, 3, 1, 0, 1, 3, 1, 1, 3, 2, 1, 2, 3, 2, 4, 1, 3, 2, 0, 0, 1, 1,
+        3, 1, 1, 3, 1, 1, 1, 1, 4, 3, 0, 3, 1, 2, 3, 1, 2, 1, 1, 1, 3, 3,
+        2, 3, 1, 1, 4, 1
+    ]))
+    assert_equal(predictions[1][:5], np.array([
+        [-131.46105165,  -78.80931343,  -99.35179093,  -90.89464994, -483.92229446],
+        [ -91.58935678,  -66.6556658 ,  -91.46883547,  -65.69934269, -716.797869  ],
+        [ -97.5230626 ,  -74.50878143,  -99.1544397 ,  -76.48361176, -690.2988915 ],
+        [  14.24986519,  -44.85298283,  -41.50143234,  -40.50844881, -148.67734234],
+        [ -95.11368472,  -40.81069058,  -59.46841129,  -52.60034218, -430.36823963]
     ]))
 
 def test_predict_multiple_original_labels():
     """Predict multiple observation sequences and return the original labels, without the un-normalized posterior scores"""
-    predictions = hmm_clf.predict(X, prior='frequency', return_scores=False, original_labels=True)
-    assert all(np.equal(predictions.astype(object), np.array(['c0', 'c0', 'c0'], dtype=object)))
+    predictions = hmm_clf.predict(dataset.X, prior='frequency', return_scores=False, original_labels=True)
+    assert all(np.equal(
+        predictions.astype(object),
+        np.array([
+            'c1', 'c3', 'c1', 'c0', 'c1', 'c3', 'c1', 'c1', 'c3', 'c2', 'c1',
+            'c2', 'c3', 'c2', 'c4', 'c1', 'c3', 'c2', 'c0', 'c0', 'c1', 'c1',
+            'c3', 'c1', 'c1', 'c3', 'c1', 'c1', 'c1', 'c1', 'c4', 'c3', 'c0',
+            'c3', 'c1', 'c2', 'c3', 'c1', 'c2', 'c1', 'c1', 'c1', 'c3', 'c3',
+            'c2', 'c3', 'c1', 'c1', 'c4', 'c1'
+        ], dtype=object)
+    ))
 
 def test_predict_multiple_return_scores_original_labels():
     """Predict multiple observation sequences and return the original labels, with the un-normalized posterior scores"""
-    predictions = hmm_clf.predict(X, prior='frequency', return_scores=True, original_labels=True)
+    predictions = hmm_clf.predict(dataset.X, prior='frequency', return_scores=True, original_labels=True)
     assert isinstance(predictions, tuple)
-    assert all(np.equal(predictions[0].astype(object), np.array(['c0', 'c0', 'c0'], dtype=object)))
-    assert_equal(predictions[1], np.array([
-        [-1225.88304108, -1266.85875999, -1266.96016441, -1226.97939403, -1274.89102844],
-        [-1254.2158035 , -1299.37586652, -1299.75108935, -1255.8359274 , -1308.71071239],
-        [-1282.57116414, -1330.90436081, -1331.63379359, -1284.79130597, -1342.45717804]
+    assert all(np.equal(
+        predictions[0].astype(object),
+        np.array([
+            'c1', 'c3', 'c1', 'c0', 'c1', 'c3', 'c1', 'c1', 'c3', 'c2', 'c1',
+            'c2', 'c3', 'c2', 'c4', 'c1', 'c3', 'c2', 'c0', 'c0', 'c1', 'c1',
+            'c3', 'c1', 'c1', 'c3', 'c1', 'c1', 'c1', 'c1', 'c4', 'c3', 'c0',
+            'c3', 'c1', 'c2', 'c3', 'c1', 'c2', 'c1', 'c1', 'c1', 'c3', 'c3',
+            'c2', 'c3', 'c1', 'c1', 'c4', 'c1'
+        ], dtype=object)
+    ))
+    assert_equal(predictions[1][:5], np.array([
+        [-131.46105165,  -78.80931343,  -99.35179093,  -90.89464994, -483.92229446],
+        [ -91.58935678,  -66.6556658 ,  -91.46883547,  -65.69934269, -716.797869  ],
+        [ -97.5230626 ,  -74.50878143,  -99.1544397 ,  -76.48361176, -690.2988915 ],
+        [  14.24986519,  -44.85298283,  -41.50143234,  -40.50844881, -148.67734234],
+        [ -95.11368472,  -40.81069058,  -59.46841129,  -52.60034218, -430.36823963]
     ]))
 
 # ======================== #
@@ -145,14 +180,15 @@ def test_predict_multiple_return_scores_original_labels():
 
 def test_evaluate():
     """Evaluate performance on some observation sequences and labels"""
-    acc, cm = hmm_clf.evaluate(X, Y, prior='frequency')
-    assert acc == 1 / 3
+    acc, cm = hmm_clf.evaluate(dataset.X, dataset.y, prior='frequency')
+    assert acc == 0.92
+    print(repr(cm))
     assert_equal(cm, np.array([
-        [1, 0, 0, 0, 0],
-        [2, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0]
+        [ 4,  0,  0,  0,  0],
+        [ 0, 20,  0,  1,  0],
+        [ 0,  1,  7,  0,  0],
+        [ 0,  2,  0, 12,  0],
+        [ 0,  0,  0,  0,  3]
     ]))
 
 # ==================== #
@@ -199,15 +235,26 @@ def test_load_valid():
         # Check that all fields are still the same
         assert isinstance(clf, HMMClassifier)
         assert all(isinstance(model, GMMHMM) for model in clf.models_)
-        assert [model.label for model in clf.models_] == labels
-        assert list(clf.encoder_.classes_) == labels
-        predictions = clf.predict(X, prior='frequency', return_scores=True, original_labels=True)
+        assert [model.label for model in clf.models_] == dataset.classes
+        assert list(clf.encoder_.classes_) == dataset.classes
+        predictions = clf.predict(dataset.X, prior='frequency', return_scores=True, original_labels=True)
         assert isinstance(predictions, tuple)
-        assert all(np.equal(predictions[0].astype(object), np.array(['c0', 'c0', 'c0'], dtype=object)))
-        assert_equal(predictions[1], np.array([
-            [-1225.88304108, -1266.85875999, -1266.96016441, -1226.97939403, -1274.89102844],
-            [-1254.2158035 , -1299.37586652, -1299.75108935, -1255.8359274 , -1308.71071239],
-            [-1282.57116414, -1330.90436081, -1331.63379359, -1284.79130597, -1342.45717804]
+        assert all(np.equal(
+            predictions[0].astype(object),
+            np.array([
+                'c1', 'c3', 'c1', 'c0', 'c1', 'c3', 'c1', 'c1', 'c3', 'c2', 'c1',
+                'c2', 'c3', 'c2', 'c4', 'c1', 'c3', 'c2', 'c0', 'c0', 'c1', 'c1',
+                'c3', 'c1', 'c1', 'c3', 'c1', 'c1', 'c1', 'c1', 'c4', 'c3', 'c0',
+                'c3', 'c1', 'c2', 'c3', 'c1', 'c2', 'c1', 'c1', 'c1', 'c3', 'c3',
+                'c2', 'c3', 'c1', 'c1', 'c4', 'c1'
+            ], dtype=object)
+        ))
+        assert_equal(predictions[1][:5], np.array([
+            [-131.46105165,  -78.80931343,  -99.35179093,  -90.89464994, -483.92229446],
+            [ -91.58935678,  -66.6556658 ,  -91.46883547,  -65.69934269, -716.797869  ],
+            [ -97.5230626 ,  -74.50878143,  -99.1544397 ,  -76.48361176, -690.2988915 ],
+            [  14.24986519,  -44.85298283,  -41.50143234,  -40.50844881, -148.67734234],
+            [ -95.11368472,  -40.81069058,  -59.46841129,  -52.60034218, -430.36823963]
         ]))
     finally:
         os.remove('test.pkl')
