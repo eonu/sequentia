@@ -6,4 +6,4 @@ Random Sequences (``load_random_sequences``)
 API reference
 -------------
 
-.. automethod:: sequentia.datasets.load_random_sequences
+.. autofunction:: sequentia.datasets.load_random_sequences
