@@ -467,8 +467,10 @@ def test_load_missing_keys():
 def test_load_valid_no_weighting():
     """Load a serialized KNNClassifier with the default weighting function"""
     try:
+        predictions_before = clfs['k=3'].predict(test.X, return_scores=True, original_labels=True, verbose=False)
         clfs['k=3'].save('test.pkl')
         clf = KNNClassifier.load('test.pkl')
+        predictions_after = clf.predict(test.X, return_scores=True, original_labels=True, verbose=False)
         # Check that all fields are still the same
         assert isinstance(clf, KNNClassifier)
         assert clf._k == 3
@@ -484,14 +486,18 @@ def test_load_valid_no_weighting():
         xs = np.arange(1000, step=0.1)
         weighting = lambda x: np.ones(x.size)
         assert_equal(clf._weighting(xs), weighting(xs))
+        assert np.equal(predictions_before[0].astype(object), predictions_after[0].astype(object)).all()
+        assert_equal(predictions_before[1], predictions_after[1])
     finally:
         os.remove('test.pkl')
 
 def test_load_valid_weighting():
     """Load a serialized KNNClassifier with a custom weighting function"""
     try:
+        predictions_before = clfs['weighted'].predict(test.X, return_scores=True, original_labels=True, verbose=False)
         clfs['weighted'].save('test.pkl')
         clf = KNNClassifier.load('test.pkl')
+        predictions_after = clf.predict(test.X, return_scores=True, original_labels=True, verbose=False)
         # Check that all fields are still the same
         assert isinstance(clf, KNNClassifier)
         assert clf._k == 3
@@ -507,5 +513,7 @@ def test_load_valid_weighting():
         xs = np.arange(1000, step=0.1)
         weighting = lambda x: np.exp(-(x - 20))**0.2
         assert_equal(clf._weighting(xs), weighting(xs))
+        assert np.equal(predictions_before[0].astype(object), predictions_after[0].astype(object)).all()
+        assert_equal(predictions_before[1], predictions_after[1])
     finally:
         os.remove('test.pkl')

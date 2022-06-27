@@ -231,12 +231,12 @@ def test_load_valid():
         predictions_before = hmm_clf.predict(dataset.X, prior='frequency', return_scores=True, original_labels=True)
         hmm_clf.save('test.pkl')
         clf = HMMClassifier.load('test.pkl')
+        predictions_after = clf.predict(dataset.X, prior='frequency', return_scores=True, original_labels=True)
         # Check that all fields are still the same
         assert isinstance(clf, HMMClassifier)
         assert all(isinstance(model, GMMHMM) for model in clf.models_)
         assert [model.label for model in clf.models_] == dataset.classes
         assert list(clf.encoder_.classes_) == dataset.classes
-        predictions_after = clf.predict(dataset.X, prior='frequency', return_scores=True, original_labels=True)
         assert np.equal(predictions_before[0].astype(object), predictions_after[0].astype(object)).all()
         assert_equal(predictions_before[1], predictions_after[1])
     finally:
