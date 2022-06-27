@@ -4,8 +4,6 @@ from sequentia.classifiers import GMMHMM, HMMClassifier, _ErgodicTopology
 from sequentia.datasets import load_random_sequences
 from ....support import assert_equal, assert_not_equal
 
-# pytest.skip('Skip until datasets module is added and positive definite issues are fixed', allow_module_level=True)
-
 # Set seed for reproducible randomness
 random_state = np.random.RandomState(0)
 
@@ -230,31 +228,16 @@ def test_load_invalid_format():
 def test_load_valid():
     """Load a serialized HMMClassifier"""
     try:
+        predictions_before = hmm_clf.predict(dataset.X, prior='frequency', return_scores=True, original_labels=True)
         hmm_clf.save('test.pkl')
         clf = HMMClassifier.load('test.pkl')
+        predictions_after = clf.predict(dataset.X, prior='frequency', return_scores=True, original_labels=True)
         # Check that all fields are still the same
         assert isinstance(clf, HMMClassifier)
         assert all(isinstance(model, GMMHMM) for model in clf.models_)
         assert [model.label for model in clf.models_] == dataset.classes
         assert list(clf.encoder_.classes_) == dataset.classes
-        predictions = clf.predict(dataset.X, prior='frequency', return_scores=True, original_labels=True)
-        assert isinstance(predictions, tuple)
-        assert all(np.equal(
-            predictions[0].astype(object),
-            np.array([
-                'c1', 'c3', 'c1', 'c0', 'c1', 'c3', 'c1', 'c1', 'c3', 'c2', 'c1',
-                'c2', 'c3', 'c2', 'c4', 'c1', 'c3', 'c2', 'c0', 'c0', 'c1', 'c1',
-                'c3', 'c1', 'c1', 'c3', 'c1', 'c1', 'c1', 'c1', 'c4', 'c3', 'c0',
-                'c3', 'c1', 'c2', 'c3', 'c1', 'c2', 'c1', 'c1', 'c1', 'c3', 'c3',
-                'c2', 'c3', 'c1', 'c1', 'c4', 'c1'
-            ], dtype=object)
-        ))
-        assert_equal(predictions[1][:5], np.array([
-            [-131.46105165,  -78.80931343,  -99.35179093,  -90.89464994, -483.92229446],
-            [ -91.58935678,  -66.6556658 ,  -91.46883547,  -65.69934269, -716.797869  ],
-            [ -97.5230626 ,  -74.50878143,  -99.1544397 ,  -76.48361176, -690.2988915 ],
-            [  14.24986519,  -44.85298283,  -41.50143234,  -40.50844881, -148.67734234],
-            [ -95.11368472,  -40.81069058,  -59.46841129,  -52.60034218, -430.36823963]
-        ]))
+        assert np.equal(predictions_before[0].astype(object), predictions_after[0].astype(object)).all()
+        assert_equal(predictions_before[1], predictions_after[1])
     finally:
         os.remove('test.pkl')

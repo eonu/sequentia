@@ -1,31 +1,33 @@
+from random import random
 import pytest, warnings, os, numpy as np, pickle
 from copy import deepcopy
 from multiprocessing import cpu_count
 from sequentia.classifiers import KNNClassifier
+from sequentia.datasets import load_random_sequences
 from ....support import assert_equal, assert_all_equal, assert_not_equal
 
 # Set seed for reproducible randomness
-seed = 0
-np.random.seed(seed)
-rng = np.random.RandomState(seed)
-
-classes = ['c0', 'c1', 'c2', 'c3', 'c4']
+random_state = np.random.RandomState(0)
 
 # Create some sample data
-X = [rng.random((10 * i, 3)) for i in range(1, 7)]
-y = ['c1', 'c1', 'c0', 'c1', 'c1', 'c0']
-x = X[0]
+dataset = load_random_sequences(50, n_features=2, n_classes=5, length_range=(10, 30), random_state=random_state)
+dataset.classes = [f'c{i}' for i in range(5)]
+dataset.y = np.array([f'c{i}' for i in dataset.y])
+train, test = dataset.split(0.2)
+x, y = test[0]
+
+kwargs = {'classes': dataset.classes, 'random_state': random_state}
 
 clfs = {
-    'k=1': KNNClassifier(k=1, classes=classes, random_state=rng),
-    'k=2': KNNClassifier(k=2, classes=classes, random_state=rng),
-    'k=3': KNNClassifier(k=3, classes=classes, random_state=rng),
-    'weighted': KNNClassifier(k=3, classes=classes, weighting=(lambda x: np.exp(-x)), random_state=rng),
-    'independent': KNNClassifier(k=1, classes=classes, independent=True, random_state=rng)
+    'k=1': KNNClassifier(k=1, **kwargs),
+    'k=2': KNNClassifier(k=2, **kwargs),
+    'k=3': KNNClassifier(k=3, **kwargs),
+    'weighted': KNNClassifier(k=3, weighting=(lambda x: np.exp(-(x - 20))**0.2), **kwargs),
+    'independent': KNNClassifier(k=1, independent=True, **kwargs)
 }
 
 for _, clf in clfs.items():
-    clf.fit(X, y)
+    clf.fit(*train.data())
 
 # =================== #
 # KNNClassifier.fit() #
@@ -34,10 +36,9 @@ for _, clf in clfs.items():
 def test_fit_sets_attributes():
     """Check that fitting sets the hidden attributes"""
     clf = clfs['k=1']
-    clf.fit(X, y)
-    assert_all_equal(clf.X_, X)
-    assert_equal(clf.y_, clf.encoder_.transform(y))
-    assert clf._n_features_ == 3
+    assert_all_equal(clf.X_, train.X)
+    assert_equal(clf.y_, clf.encoder_.transform(train.y))
+    assert clf._n_features_ == 2
 
 # ============================= #
 # KNNClassifier._multi_argmax() #
@@ -62,7 +63,7 @@ def test_multi_argmax_multiple():
 def test_find_k_nearest_tie_within():
     """Check that tied labels are fetched correctly when they are in the nearest k values."""
     clf = deepcopy(clfs['k=3'])
-    clf._y_ = clf._encoder_.transform(classes)
+    clf._y_ = clf._encoder_.transform(train.classes)
     labels, scores = clf._find_k_nearest(np.array([4, 2, 1, 1, 3]))
     assert len(labels) == clf._k
     assert all(label in (1, 2, 3) for label in labels)
@@ -71,7 +72,7 @@ def test_find_k_nearest_tie_within():
 def test_find_k_nearest_tie_partially_within():
     """Check that a correct subset of the labels are fetched when there are more equidistant values than k."""
     clf = deepcopy(clfs['k=3'])
-    clf._y_ = clf._encoder_.transform(classes)
+    clf._y_ = clf._encoder_.transform(train.classes)
     labels, scores = clf._find_k_nearest(np.array([0, 1, 1, 1, 3]))
     assert len(labels) == clf._k
     assert all(label in (0, 1, 2, 3) for label in labels)
@@ -81,7 +82,7 @@ def test_find_k_nearest_weighting():
     """Check that the correct scores are returned for the k nearest values when a custom weighting is used."""
     clf = deepcopy(clfs['k=3'])
     clf._weighting = lambda x: np.exp(-x)
-    clf._y_ = clf._encoder_.transform(classes)
+    clf._y_ = clf._encoder_.transform(train.classes)
     labels, scores = clf._find_k_nearest(np.array([4, 2, 1, 5, 3]))
     assert len(labels) == clf._k
     assert all(label in (1, 2, 4) for label in labels)
@@ -178,7 +179,7 @@ def test_find_max_labels_weighted_many_classes_tie():
 def test_predict_without_fit():
     """Predict without fitting the model"""
     with pytest.raises(RuntimeError) as e:
-        KNNClassifier(k=1, classes=classes).predict(x, verbose=False)
+        KNNClassifier(k=1, classes=train.classes).predict(x, verbose=False)
     assert str(e.value) == 'The classifier needs to be fitted first'
 
 def test_predict_single_k1():
@@ -203,28 +204,28 @@ def test_predict_single_independent():
 
 def test_predict_multiple_k1():
     """Predict multiple observation sequences (k=1)"""
-    predictions = clfs['k=1'].predict(X, verbose=False)
-    assert list(predictions) == ['c1', 'c1', 'c0', 'c1', 'c1', 'c0']
+    predictions = clfs['k=1'].predict(test.X, verbose=False)
+    assert list(predictions) == ['c1', 'c2', 'c1', 'c1', 'c2', 'c1', 'c3', 'c0', 'c3', 'c1']
 
 def test_predict_multiple_k2():
     """Predict multiple observation sequences (k=2)"""
-    predictions = clfs['k=2'].predict(X, verbose=False)
-    assert list(predictions) == ['c1', 'c1', 'c1', 'c1', 'c1', 'c1']
+    predictions = clfs['k=2'].predict(test.X, verbose=False)
+    assert list(predictions) == ['c1', 'c2', 'c1', 'c1', 'c2', 'c1', 'c3', 'c4', 'c1', 'c1']
 
 def test_predict_multiple_k3():
     """Predict multiple observation sequences (k=3)"""
-    predictions = clfs['k=3'].predict(X, verbose=False)
-    assert list(predictions) == ['c1', 'c1', 'c1', 'c1', 'c1', 'c0']
+    predictions = clfs['k=3'].predict(test.X, verbose=False)
+    assert list(predictions) == ['c1', 'c2', 'c1', 'c1', 'c2', 'c1', 'c3', 'c0', 'c3', 'c1']
 
 def test_predict_multiple_weighted():
     """Predict multiple observation sequences (weighted)"""
-    predictions = clfs['weighted'].predict(X, verbose=False)
-    assert list(predictions) == ['c1', 'c1', 'c0', 'c1', 'c1', 'c0']
+    predictions = clfs['weighted'].predict(test.X, verbose=False)
+    assert list(predictions) == ['c1', 'c2', 'c1', 'c1', 'c2', 'c1', 'c3', 'c0', 'c3', 'c1']
 
 def test_predict_multiple_independent():
     """Predict multiple observation sequences with independent warping"""
-    predictions = clfs['independent'].predict(X, verbose=False)
-    assert list(predictions) == ['c1', 'c1', 'c0', 'c1', 'c1', 'c0']
+    predictions = clfs['independent'].predict(test.X, verbose=False)
+    assert list(predictions) == ['c1', 'c2', 'c1', 'c1', 'c2', 'c1', 'c3', 'c0', 'c1', 'c2']
 
 def test_predict_single_encoded_label():
     """Predict a single observation sequence and return the encoded labels"""
@@ -236,13 +237,13 @@ def test_predict_single_original_label():
 
 def test_predict_multiple_encoded_labels():
     """Predict multiple observation sequences and return the encoded labels"""
-    predictions = clfs['k=3'].predict(X, original_labels=False, verbose=False)
-    assert list(predictions) == [1, 1, 1, 1, 1, 0]
+    predictions = clfs['k=3'].predict(test.X, original_labels=False, verbose=False)
+    assert list(predictions) == [1, 2, 1, 1, 2, 1, 3, 0, 3, 1]
 
 def test_predict_multiple_original_labels():
     """Predict multiple observation sequences and return the original labels"""
-    predictions = clfs['k=3'].predict(X, original_labels=True, verbose=False)
-    assert list(predictions) == ['c1', 'c1', 'c1', 'c1', 'c1', 'c0']
+    predictions = clfs['k=3'].predict(test.X, original_labels=True, verbose=False)
+    assert list(predictions) == ['c1', 'c2', 'c1', 'c1', 'c2', 'c1', 'c3', 'c0', 'c3', 'c1']
 
 def test_predict_single_k1_with_scores():
     """Predict a single observation sequence (k=1) with scores"""
@@ -260,13 +261,13 @@ def test_predict_single_k3_with_scores():
     """Predict a single observation sequence (k=3) with scores"""
     label, scores = clfs['k=3'].predict(x, return_scores=True, verbose=False)
     assert label == 'c1'
-    assert_equal(scores, np.array([1., 2., -np.inf, -np.inf, -np.inf]))
+    assert_equal(scores, np.array([-np.inf, 2., -np.inf, 1., -np.inf]))
 
 def test_predict_single_weighted_with_scores():
     """Predict a single observation sequence (weighted) with scores"""
     label, scores = clfs['weighted'].predict(x, return_scores=True, verbose=False)
     assert label == 'c1'
-    assert_equal(scores, np.array([0.0719717, 1.08412051, -np.inf, -np.inf, -np.inf]))
+    assert_equal(scores, np.array([-np.inf, 23.065092, -np.inf, 10.68241, -np.inf]))
 
 def test_predict_single_independent_with_scores():
     """Predict a single observation sequence with independent warping with scores"""
@@ -276,105 +277,117 @@ def test_predict_single_independent_with_scores():
 
 def test_predict_multiple_k1_with_scores():
     """Predict multiple observation sequences (k=1) with scores"""
-    labels, scores = clfs['k=1'].predict(X, return_scores=True, verbose=False)
-    assert list(labels) == ['c1', 'c1', 'c0', 'c1', 'c1', 'c0']
+    labels, scores = clfs['k=1'].predict(test.X, return_scores=True, verbose=False)
+    assert list(labels) == ['c1', 'c2', 'c1', 'c1', 'c2', 'c1', 'c3', 'c0', 'c3', 'c1']
     assert_equal(scores, np.array([
         [-np.inf,      1., -np.inf, -np.inf, -np.inf],
+        [-np.inf, -np.inf,      1., -np.inf, -np.inf],
         [-np.inf,      1., -np.inf, -np.inf, -np.inf],
+        [-np.inf,      1., -np.inf, -np.inf, -np.inf],
+        [-np.inf, -np.inf,      1., -np.inf, -np.inf],
+        [-np.inf,      1., -np.inf, -np.inf, -np.inf],
+        [-np.inf, -np.inf, -np.inf,      1., -np.inf],
         [     1., -np.inf, -np.inf, -np.inf, -np.inf],
-        [-np.inf,      1., -np.inf, -np.inf, -np.inf],
-        [-np.inf,      1., -np.inf, -np.inf, -np.inf],
-        [     1., -np.inf, -np.inf, -np.inf, -np.inf]
+        [-np.inf, -np.inf, -np.inf,      1., -np.inf],
+        [-np.inf,      1., -np.inf, -np.inf, -np.inf]
     ]))
 
 def test_predict_multiple_k2_with_scores():
     """Predict multiple observation sequences (k=2) with scores"""
-    labels, scores = clfs['k=2'].predict(X, return_scores=True, verbose=False)
-    assert list(labels) == ['c1', 'c1', 'c1', 'c1', 'c0', 'c0']
+    labels, scores = clfs['k=2'].predict(test.X, return_scores=True, verbose=False)
+    assert list(labels) == ['c1', 'c2', 'c1', 'c1', 'c4', 'c1', 'c3', 'c0', 'c3', 'c1']
     assert_equal(scores, np.array([
-        [-np.inf, 2., -np.inf, -np.inf, -np.inf],
-        [-np.inf, 2., -np.inf, -np.inf, -np.inf],
-        [     1., 1., -np.inf, -np.inf, -np.inf],
-        [-np.inf, 2., -np.inf, -np.inf, -np.inf],
-        [     1., 1., -np.inf, -np.inf, -np.inf],
-        [     1., 1., -np.inf, -np.inf, -np.inf]
+        [-np.inf,      2., -np.inf, -np.inf, -np.inf],
+        [-np.inf, -np.inf,      2., -np.inf, -np.inf],
+        [-np.inf,      1., -np.inf,      1., -np.inf],
+        [-np.inf,      2., -np.inf, -np.inf, -np.inf],
+        [-np.inf, -np.inf,      1., -np.inf,      1.],
+        [-np.inf,      2., -np.inf, -np.inf, -np.inf],
+        [-np.inf, -np.inf, -np.inf,      2., -np.inf],
+        [     1., -np.inf, -np.inf, -np.inf,      1.],
+        [-np.inf,      1., -np.inf,      1., -np.inf],
+        [-np.inf,      2., -np.inf, -np.inf, -np.inf]
     ]))
 
 def test_predict_multiple_k3_with_scores():
     """Predict multiple observation sequences (k=3) with scores"""
-    labels, scores = clfs['k=3'].predict(X, return_scores=True, verbose=False)
-    assert list(labels) == ['c1', 'c1', 'c1', 'c1', 'c1', 'c0']
+    labels, scores = clfs['k=3'].predict(test.X, return_scores=True, verbose=False)
+    assert list(labels) == ['c1', 'c2', 'c1', 'c1', 'c2', 'c1', 'c3', 'c0', 'c3', 'c1']
     assert_equal(scores, np.array([
-        [     1., 2., -np.inf, -np.inf, -np.inf],
-        [     1., 2., -np.inf, -np.inf, -np.inf],
-        [     1., 2., -np.inf, -np.inf, -np.inf],
-        [-np.inf, 3., -np.inf, -np.inf, -np.inf],
-        [     1., 2., -np.inf, -np.inf, -np.inf],
-        [     2., 1., -np.inf, -np.inf, -np.inf]
+        [-np.inf,      2., -np.inf,      1., -np.inf],
+        [     1., -np.inf,      2., -np.inf, -np.inf],
+        [-np.inf,      2., -np.inf,      1., -np.inf],
+        [-np.inf,      2., -np.inf,      1., -np.inf],
+        [-np.inf, -np.inf,      2., -np.inf,      1.],
+        [-np.inf,      3., -np.inf, -np.inf, -np.inf],
+        [     1., -np.inf, -np.inf,      2., -np.inf],
+        [     2., -np.inf, -np.inf, -np.inf,      1.],
+        [-np.inf,      1., -np.inf,      2., -np.inf],
+        [-np.inf,      3., -np.inf, -np.inf, -np.inf]
     ]))
 
 def test_predict_multiple_weighted_with_scores():
     """Predict multiple observation sequences (weighted) with scores"""
-    labels, scores = clfs['weighted'].predict(X, return_scores=True, verbose=False)
-    assert list(labels) == ['c1', 'c1', 'c0', 'c1', 'c1', 'c0']
+    labels, scores = clfs['weighted'].predict(test.X, return_scores=True, verbose=False)
+    assert list(labels) == ['c1', 'c2', 'c1', 'c1', 'c2', 'c1', 'c3', 'c0', 'c3', 'c1']
     assert_equal(scores, np.array([
-        [0.0719717 , 1.08412051, -np.inf, -np.inf, -np.inf],
-        [0.04549809, 1.08412051, -np.inf, -np.inf, -np.inf],
-        [        1., 0.1174698 , -np.inf, -np.inf, -np.inf],
-        [   -np.inf, 1.07904269, -np.inf, -np.inf, -np.inf],
-        [0.02438639, 1.02240087, -np.inf, -np.inf, -np.inf],
-        [1.01869848, 0.01882683, -np.inf, -np.inf, -np.inf]
+        [    -np.inf, 23.06509197,     -np.inf, 10.68241031,     -np.inf],
+        [ 8.64039512,     -np.inf, 29.30704595,     -np.inf,     -np.inf],
+        [    -np.inf, 15.83907646,     -np.inf,  8.02798765,     -np.inf],
+        [    -np.inf, 19.61893745,     -np.inf,  7.65139488,     -np.inf],
+        [    -np.inf,     -np.inf, 23.08417788,     -np.inf, 10.82825163],
+        [    -np.inf, 37.33842287,     -np.inf,     -np.inf,     -np.inf],
+        [12.2998102 ,     -np.inf,     -np.inf, 30.91953577,     -np.inf],
+        [29.04888426,     -np.inf,     -np.inf,     -np.inf, 10.26641414],
+        [    -np.inf, 16.52626987,     -np.inf, 28.96740014,     -np.inf],
+        [    -np.inf, 33.03653745,     -np.inf,     -np.inf,     -np.inf]
     ]))
 
 def test_predict_multiple_independent_with_scores():
     """Predict multiple observation sequences with independent warping with scores"""
-    labels, scores = clfs['independent'].predict(X, return_scores=True, verbose=False)
-    assert list(labels) == ['c1', 'c1', 'c0', 'c1', 'c1', 'c0']
+    labels, scores = clfs['independent'].predict(test.X, return_scores=True, verbose=False)
+    assert list(labels) == ['c1', 'c2', 'c1', 'c1', 'c2', 'c1', 'c3', 'c0', 'c1', 'c2']
     assert_equal(scores, np.array([
         [-np.inf,      1., -np.inf, -np.inf, -np.inf],
+        [-np.inf, -np.inf,      1., -np.inf, -np.inf],
         [-np.inf,      1., -np.inf, -np.inf, -np.inf],
+        [-np.inf,      1., -np.inf, -np.inf, -np.inf],
+        [-np.inf, -np.inf,      1., -np.inf, -np.inf],
+        [-np.inf,      1., -np.inf, -np.inf, -np.inf],
+        [-np.inf, -np.inf, -np.inf,      1., -np.inf],
         [     1., -np.inf, -np.inf, -np.inf, -np.inf],
         [-np.inf,      1., -np.inf, -np.inf, -np.inf],
-        [-np.inf,      1., -np.inf, -np.inf, -np.inf],
-        [     1., -np.inf, -np.inf, -np.inf, -np.inf]
+        [-np.inf, -np.inf,      1., -np.inf, -np.inf]
     ]))
 
 def test_predict_single_encoded_label_with_scores():
     """Predict a single observation sequence and return the encoded labels with scores"""
     label, scores = clfs['k=3'].predict(x, return_scores=True, original_labels=False, verbose=False)
     assert label == 1
-    assert_equal(scores, np.array([1., 2., -np.inf, -np.inf, -np.inf]))
+    assert_equal(scores, np.array([-np.inf, 2., -np.inf, 1., -np.inf]))
 
 def test_predict_single_original_label_with_scores():
     """Predict a single observation sequence and return the original labels with scores"""
     label, scores = clfs['k=3'].predict(x, return_scores=True, original_labels=True, verbose=False)
+    print((label), repr(scores))
     assert label == 'c1'
-    assert_equal(scores, np.array([1., 2., -np.inf, -np.inf, -np.inf]))
+    assert_equal(scores, np.array([-np.inf, 2., -np.inf, 1., -np.inf]))
 
 def test_predict_multiple_encoded_labels_with_scores():
     """Predict multiple observation sequences and return the encoded labels"""
-    labels, scores = clfs['k=3'].predict(X, return_scores=True, original_labels=False, verbose=False)
-    assert list(labels) == [1, 1, 1, 1, 1, 0]
+    labels, scores = clfs['k=3'].predict(test.X, return_scores=True, original_labels=False, verbose=False)
+    assert list(labels) == [1, 2, 1, 1, 2, 1, 3, 0, 3, 1]
     assert_equal(scores, np.array([
-        [     1., 2., -np.inf, -np.inf, -np.inf],
-        [     1., 2., -np.inf, -np.inf, -np.inf],
-        [     1., 2., -np.inf, -np.inf, -np.inf],
-        [-np.inf, 3., -np.inf, -np.inf, -np.inf],
-        [     1., 2., -np.inf, -np.inf, -np.inf],
-        [     2., 1., -np.inf, -np.inf, -np.inf]
-    ]))
-
-def test_predict_multiple_original_labels_with_scores():
-    """Predict multiple observation sequences and return the original labels with scores"""
-    labels, scores = clfs['k=3'].predict(X, return_scores=True, original_labels=True, verbose=False)
-    assert list(labels) == ['c1', 'c1', 'c1', 'c1', 'c1', 'c0']
-    assert_equal(scores, np.array([
-        [     1., 2., -np.inf, -np.inf, -np.inf],
-        [     1., 2., -np.inf, -np.inf, -np.inf],
-        [     1., 2., -np.inf, -np.inf, -np.inf],
-        [-np.inf, 3., -np.inf, -np.inf, -np.inf],
-        [     1., 2., -np.inf, -np.inf, -np.inf],
-        [     2., 1., -np.inf, -np.inf, -np.inf]
+        [-np.inf,      2., -np.inf,      1., -np.inf],
+        [     1., -np.inf,      2., -np.inf, -np.inf],
+        [-np.inf,      2., -np.inf,      1., -np.inf],
+        [-np.inf,      2., -np.inf,      1., -np.inf],
+        [-np.inf, -np.inf,      2., -np.inf,      1.],
+        [-np.inf,      3., -np.inf, -np.inf, -np.inf],
+        [     1., -np.inf, -np.inf,      2., -np.inf],
+        [     2., -np.inf, -np.inf, -np.inf,      1.],
+        [-np.inf,      1., -np.inf,      2., -np.inf],
+        [-np.inf,      3., -np.inf, -np.inf, -np.inf]
     ]))
 
 # ======================== #
@@ -383,14 +396,14 @@ def test_predict_multiple_original_labels_with_scores():
 
 def test_evaluate():
     """Evaluate performance on some observation sequences and labels"""
-    acc, cm = clfs['k=3'].evaluate(X, y)
-    assert acc == 5 / 6
+    acc, cm = clfs['k=3'].evaluate(*dataset.data())
+    assert acc == 0.82
     assert_equal(cm, np.array([
-        [1, 1, 0, 0, 0],
-        [0, 4, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0]
+        [ 3,  1,  0,  0,  0],
+        [ 0, 20,  0,  1,  0],
+        [ 0,  1,  7,  0,  0],
+        [ 1,  3,  0, 10,  0],
+        [ 1,  0,  1,  0,  1]
     ]))
 
 # ==================== #
@@ -401,7 +414,7 @@ def test_save_unfitted():
     """Save an unfitted KNNClassifier object."""
     try:
         with pytest.raises(RuntimeError) as e:
-            KNNClassifier(k=1, classes=classes).save('test.pkl')
+            KNNClassifier(k=1, classes=dataset.classes).save('test.pkl')
         assert str(e.value) == 'The classifier needs to be fitted first'
     finally:
         if os.path.exists('test.pkl'):
@@ -454,45 +467,53 @@ def test_load_missing_keys():
 def test_load_valid_no_weighting():
     """Load a serialized KNNClassifier with the default weighting function"""
     try:
+        predictions_before = clfs['k=3'].predict(test.X, return_scores=True, original_labels=True, verbose=False)
         clfs['k=3'].save('test.pkl')
         clf = KNNClassifier.load('test.pkl')
+        predictions_after = clf.predict(test.X, return_scores=True, original_labels=True, verbose=False)
         # Check that all fields are still the same
         assert isinstance(clf, KNNClassifier)
         assert clf._k == 3
-        assert list(clf.encoder_.classes_) == classes
+        assert list(clf.encoder_.classes_) == dataset.classes
         assert clf._window == 1.
         assert clf._use_c == False
         assert clf._independent == False
-        assert deepcopy(clf._random_state).normal() == deepcopy(rng).normal()
-        assert_all_equal(clf.X_, X)
-        assert_equal(clf.y_, clf.encoder_.transform(y))
-        assert clf._n_features_ == 3
+        assert deepcopy(clf._random_state).normal() == deepcopy(random_state).normal()
+        assert_all_equal(clf.X_, train.X)
+        assert_equal(clf.y_, clf.encoder_.transform(train.y))
+        assert clf._n_features_ == 2
         # Check that weighting functions are the same for x=0 to x=1000
         xs = np.arange(1000, step=0.1)
         weighting = lambda x: np.ones(x.size)
         assert_equal(clf._weighting(xs), weighting(xs))
+        assert np.equal(predictions_before[0].astype(object), predictions_after[0].astype(object)).all()
+        assert_equal(predictions_before[1], predictions_after[1])
     finally:
         os.remove('test.pkl')
 
 def test_load_valid_weighting():
     """Load a serialized KNNClassifier with a custom weighting function"""
     try:
+        predictions_before = clfs['weighted'].predict(test.X, return_scores=True, original_labels=True, verbose=False)
         clfs['weighted'].save('test.pkl')
         clf = KNNClassifier.load('test.pkl')
+        predictions_after = clf.predict(test.X, return_scores=True, original_labels=True, verbose=False)
         # Check that all fields are still the same
         assert isinstance(clf, KNNClassifier)
         assert clf._k == 3
-        assert list(clf.encoder_.classes_) == classes
+        assert list(clf.encoder_.classes_) == train.classes
         assert clf._window == 1.
         assert clf._use_c == False
         assert clf._independent == False
-        assert deepcopy(clf._random_state).normal() == deepcopy(rng).normal()
-        assert_all_equal(clf.X_, X)
-        assert_equal(clf.y_, clf.encoder_.transform(y))
-        assert clf._n_features_ == 3
+        assert deepcopy(clf._random_state).normal() == deepcopy(random_state).normal()
+        assert_all_equal(clf.X_, train.X)
+        assert_equal(clf.y_, clf.encoder_.transform(train.y))
+        assert clf._n_features_ == 2
         # Check that weighting functions are the same for x=0 to x=1000
         xs = np.arange(1000, step=0.1)
-        weighting = lambda x: np.exp(-x)
+        weighting = lambda x: np.exp(-(x - 20))**0.2
         assert_equal(clf._weighting(xs), weighting(xs))
+        assert np.equal(predictions_before[0].astype(object), predictions_after[0].astype(object)).all()
+        assert_equal(predictions_before[1], predictions_after[1])
     finally:
         os.remove('test.pkl')
