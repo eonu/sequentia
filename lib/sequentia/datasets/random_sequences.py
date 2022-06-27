@@ -9,7 +9,7 @@ def load_random_sequences(
     variance_range=(2, 5), lengthscale_range=(0.2, 0.5),
     random_state=None, tslearn_kwargs={}
 ):
-    """Generates random sequences by sampling from a Gaussian process prior and clustering sequences to obtained labels.
+    """Generates random sequences by sampling from a Gaussian process prior and clustering sequences to obtain labels.
 
     **Generating sequences**
 
