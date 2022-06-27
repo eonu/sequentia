@@ -1,0 +1,2 @@
+class KNN:
+    pass

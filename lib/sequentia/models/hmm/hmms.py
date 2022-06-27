@@ -1,0 +1,2 @@
+class GaussianMixtureHMM(HMM):
+    pass
