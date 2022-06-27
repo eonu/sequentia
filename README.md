@@ -1,6 +1,6 @@
 <p align="center">
   <h1 align="center">
-    <img src="/docs/_static/logo.png" width="125px" alt="Logo created by DALL·E Mini"><br/>
+    <img src="https://raw.githubusercontent.com/eonu/sequentia/master/docs/_static/logo.png" width="125px"><br/>
     Sequentia
   </h1>
 </p>
@@ -73,7 +73,7 @@ Sequentia provides the following algorithms, all supporting multivariate sequenc
   - [x] Multi-processed predictions
 
 <p align="center">
-  <img src="/docs/_static/classifier.png" width="80%"/><br/>
+  <img src="https://raw.githubusercontent.com/eonu/sequentia/master/docs/_static/classifier.png" width="80%"/><br/>
   Example of a classification algorithm (HMM sequence classifier)
 </p>
 
@@ -92,39 +92,7 @@ You can install Sequentia using `pip`.
 pip install sequentia
 ```
 
-<details>
-<summary>
-    <b>Click here for installation instructions for contributing to Sequentia or running the notebooks.</b>
-</summary>
-<p>
-
-If you intend to help contribute to Sequentia, you will need some additional dependencies for running tests, notebooks and generating documentation.
-
-Depending on what you intend to do, you can specify the following extras.
-
-- For running tests in the `/lib/test` directory:
-
-  ```console
-  pip install sequentia[test]
-  ```
-- For generating Sphinx documentation in the `/docs` directory:
-
-  ```console
-  pip install sequentia[docs]
-  ```
-- For running notebooks in the `/notebooks` directory:
-
-  ```console
-  pip install sequentia[notebooks]
-  ```
-- **A full development suite which installs all of the above extras:**
-
-  ```console
-  pip install sequentia[dev]
-  ```
-
-</p>
-</details>
+Please see the [contribution guidelines](/CONTRIBUTING.md) to see installation instructions for contributing to Sequentia or running notebooks.
 
 ## Documentation
 

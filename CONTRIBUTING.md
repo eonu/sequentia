@@ -12,7 +12,7 @@ Prior to reporting an issue, please ensure:
 
 ## Making changes to Sequentia
 
-- **Add specs**: Your pull request won't be accepted if it doesn't have any specs.
+- **Add tests**: Your pull request won't be accepted if it doesn't have any tests.
 
 - **Document any change in behaviour**: Make sure the README and all other relevant documentation is kept up-to-date.
 
@@ -22,7 +22,12 @@ Prior to reporting an issue, please ensure:
 
 - **Meaningful commit messages**: Make sure each individual commit in your pull request has a meaningful message.
 
-- **De-clutter commit history**: If you had to make multiple intermediate commits while developing, please squash them before making your pull request.
+- **De-clutter commit history**: If you had to make multiple intermediate commits while developing, please squash them before making your pull request. 
+  Or add a note on the PR specifying to squash and merge your changes when ready to be merged.
+
+### Making pull requests
+
+Please make new branches based on the current `dev` branch, and merge your PR back into `dev` (making sure you have fetched the latest changes).
 
 ### Installing dependencies
 
@@ -45,36 +50,15 @@ Depending on what you intend to do, you can specify the following extras.
   ```console
   pip install sequentia[notebooks]
   ```
-- **Recommended**: A full development suite which installs all of the above extras:
+- **Recommended**: For a full development suite which installs all of the above extras:
 
   ```console
   pip install sequentia[dev]
   ```
 
-### Branch naming conventions
+If installing a Sequentia from a local directory, you can use `pip install -e .` from within that directory, or `pip install -e .[xxx]` to install with extras.
 
-Branch names must be of the form `type/short-phrase-or-description`, where `type` is either a:
-
-- `patch`: Making a change to an existing feature.
-- `add`: Adding a new feature.
-- `rm`: Removing an existing feature.
-
-Branches should typically feature only one main change. If making multiple unrelated changes, please create separate branches and open separate pull requests.
-
-### Making pull requests
-
-Pull request titles must be of the form `[type:specifier] Pull request title`, where `type` is the same as the branch type (read above).
-
-The `specifier` should be one of:
-
-- `pkg`: Changes to any core package configuration.
-- `lib`: Changes to any library code.
-- `ci`: Changes to continuous integration configuration (e.g. CircleCI/TravisCI).
-- `tests`: Changes to any test code.
-- `git`: Changes to any Git-related code, such as `.gitignore`.
-- `docs`: Changes to any documentation such as the Read The Docs documentation, `README.md`, `CONTRIBUTING.md`, `LICENSE` or `CHANGELOG.md`.
-
-Continuous integration builds must pass in order for your pull request to be merged.
+Note that on some shells you may have to use quote marks, e.g. `pip install -e ".[xxx]"`.
 
 ## License
 
