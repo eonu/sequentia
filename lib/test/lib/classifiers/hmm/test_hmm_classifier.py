@@ -4,8 +4,6 @@ from sequentia.classifiers import GMMHMM, HMMClassifier, _ErgodicTopology
 from sequentia.datasets import load_random_sequences
 from ....support import assert_equal, assert_not_equal
 
-# pytest.skip('Skip until datasets module is added and positive definite issues are fixed', allow_module_level=True)
-
 # Set seed for reproducible randomness
 random_state = np.random.RandomState(0)
 
