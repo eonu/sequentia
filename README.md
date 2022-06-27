@@ -1,6 +1,6 @@
 <p align="center">
   <h1 align="center">
-    <img src="/docs/_static/logo.png" width="125px" alt="Logo created by DALL·E Mini"><br/>
+    <img src="https://raw.githubusercontent.com/eonu/sequentia/master/docs/_static/logo.png" width="125px"><br/>
     Sequentia
   </h1>
 </p>
@@ -73,7 +73,7 @@ Sequentia provides the following algorithms, all supporting multivariate sequenc
   - [x] Multi-processed predictions
 
 <p align="center">
-  <img src="/docs/_static/classifier.png" width="80%"/><br/>
+  <img src="https://raw.githubusercontent.com/eonu/sequentia/master/docs/_static/classifier.png" width="80%"/><br/>
   Example of a classification algorithm (HMM sequence classifier)
 </p>
 
