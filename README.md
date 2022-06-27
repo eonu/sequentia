@@ -92,39 +92,7 @@ You can install Sequentia using `pip`.
 pip install sequentia
 ```
 
-<details>
-<summary>
-    <b>Click here for installation instructions for contributing to Sequentia or running the notebooks.</b>
-</summary>
-<p>
-
-If you intend to help contribute to Sequentia, you will need some additional dependencies for running tests, notebooks and generating documentation.
-
-Depending on what you intend to do, you can specify the following extras.
-
-- For running tests in the `/lib/test` directory:
-
-  ```console
-  pip install sequentia[test]
-  ```
-- For generating Sphinx documentation in the `/docs` directory:
-
-  ```console
-  pip install sequentia[docs]
-  ```
-- For running notebooks in the `/notebooks` directory:
-
-  ```console
-  pip install sequentia[notebooks]
-  ```
-- **A full development suite which installs all of the above extras:**
-
-  ```console
-  pip install sequentia[dev]
-  ```
-
-</p>
-</details>
+Please see the [contribution guidelines](/CONTRIBUTING.md) to see installation instructions for contributing to Sequentia or running notebooks.
 
 ## Documentation
 
