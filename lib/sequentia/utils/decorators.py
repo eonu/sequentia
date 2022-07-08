@@ -1,0 +1,45 @@
+import inspect, functools
+
+from sklearn.utils.validation import check_is_fitted
+
+def validate_params(using):
+    def decorator(function):
+        @functools.wraps(function)
+        def wrapper(self, *args, **kwargs):
+            spec = inspect.getfullargspec(function)
+            if spec.varkw == 'kwargs' or len(spec.kwonlyargs) > 0:
+                using.parse_obj(kwargs)
+            return function(self, *args, **kwargs)
+        return wrapper
+    return decorator
+
+def requires_fit(function):
+    @functools.wraps(function)
+    def wrapper(self, *args, **kwargs):
+        check_is_fitted(self)
+        return function(self, *args, **kwargs)
+    return wrapper
+
+def override_params(params, temporary=True):
+    def decorator(function):
+        @functools.wraps(function)
+        def wrapper(self, *args, **kwargs):
+            original_params = {}
+
+            for param in params:
+                if not hasattr(self, param):
+                    raise AttributeError(f"'{type(self).__name__}' object has no attribute '{param}'")
+
+                if param in kwargs:
+                    original_params[param] = getattr(self, param)
+                    setattr(self, param, kwargs[param])
+
+            try:
+                return function(self, *args, **kwargs)
+            finally:
+                if temporary:
+                    for param, value in original_params.items():
+                        setattr(self, param, value)
+
+        return wrapper
+    return decorator

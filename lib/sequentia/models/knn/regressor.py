@@ -1,5 +1,5 @@
-from .base import KNN
+from .base import KNNMixin
 from ..base import Regressor
 
-class KNNRegressor(KNN, Regressor):
+class KNNRegressor(KNNMixin, Regressor):
     pass
