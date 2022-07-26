@@ -1,126 +1,278 @@
+import types
+import joblib
+import marshal
+import warnings
 from enum import Enum, unique
-from typing import Optional, Union, Callable, Literal
+from typing import Optional, Union, Callable, Literal, Tuple, List, Any
+from joblib import Parallel, delayed
 
 import numpy as np
-from pydantic import NegativeInt ,PositiveInt, confloat
+from pydantic import NegativeInt, PositiveInt, confloat, validator
+from dtaidistance import dtw, dtw_ndim
+from sklearn.utils import check_random_state
 
-from ...utils import validate_params, requires_fit, override_params, Validator
+dtw_cc = None
+try:
+    from dtaidistance import dtw_cc
+except ImportError:
+    pass
+
+from ...utils.decorators import validate_params, requires_fit, override_params, check_plotting_dependencies
+from ...utils.validation import (
+    Array,
+    Validator,
+    SingleMultivariateFloatSequenceValidator,
+    BaseMultivariateFloatSequenceValidator,
+    SingleUnivariateFloatSequenceValidator,
+    SingleMultivariateFloatSequenceValidator
+)
+from ...utils.sequences import iter_X, get_X_idxs
+from ...utils.multiprocessing import effective_n_jobs
+
+@unique
+class KNNWeightingType(Enum):
+    UNIFORM = 'uniform'
+
+class KNNValidator(Validator):
+    k: PositiveInt = 1,
+    weighting: Union[Literal[KNNWeightingType.UNIFORM], Callable] = KNNWeightingType.UNIFORM,
+    window: confloat(ge=0, le=1) = 1,
+    independent: bool = False,
+    classes: Optional[Array[int]] = None,
+    use_c: bool = False,
+    n_jobs: Union[NegativeInt, PositiveInt] = 1,
+    random_state: Optional[Any] = None
+
+    @validator('use_c')
+    def check_use_c(cls, value):
+        use_c = value
+        if use_c and dtw_cc is None:
+            warnings.warn('DTAIDistance C library not available - using Python implementation', ImportWarning)
+            use_c = False
+        return use_c
+
+    @validator('random_state')
+    def check_random_state(cls, value):
+        return check_random_state(value)
 
 # TODO: Make uninstantiatable
 
-@unique
-class _Weighting(Enum):
-    UNIFORM = 'uniform'
-
-class KNNType:
-    Weighting = _Weighting
-
-class KNNConfig(Validator):
-    k: PositiveInt = 1,
-    weighting: Union[Literal[KNNType.Weighting.UNIFORM], Callable] = KNNType.Weighting.UNIFORM,
-    window: confloat(ge=0, le=1) = 1,
-    independent: bool = False,
-    use_c: bool = False,
-    n_jobs: Union[NegativeInt, PositiveInt] = 1,
-    random_state: Optional[Union[int, np.random.RandomState]] = None
-
-    class Config:
-        arbitrary_types_allowed = True
-
 class KNNMixin:
-    # Expects:
-    # - X, y
-    # all constructor params
-
     @requires_fit
-    @validate_params(using=KNNConfig)
-    @override_params(['k', 'weighting', 'window', 'independent'])
-    def query_neighbors(self, X, lengths=None, sorted=True, **kwargs): # kwargs defaults to init params
+    @override_params(['k', 'window', 'independent'])
+    @validate_params(using=KNNValidator)
+    def query_neighbors(
+        self,
+        X: Array[float],
+        lengths: Optional[Array[int]] = None,
+        sort: bool = True,
+        **kwargs
+    ) -> Tuple[
+        Array[int],
+        Array[float],
+        Union[Array[int], Array[float]]
+    ]:
         """Queries the k nearest neighbors in the training set for each sequence in X"""
-        # check_X_lengths (if lengths is none, use whole input as single sequence)
-
-        # NOTE: This isn't used in predict() as we have to maintain correct order of the top k here
-        #   So will have to do sort after argpartition, which may be slow
-
-        # self.compute_distance_matrix()
-        #
-
-        # Indices of k nearest in self.X for each element in X (M x K)
-        # Distances of k nearest in self.X for each elemnet in X (M x K)
-        #
-        pass
+        distances = self.compute_distance_matrix(X, lengths)
+        partition_by = range(self.k) if sort else self.k
+        k_idxs = np.argpartition(distances, partition_by, axis=1)[:, :self.k]
+        k_distances = np.take_along_axis(distances, k_idxs, axis=1)
+        k_outputs = self.y_[k_idxs]
+        return k_idxs, k_distances, k_outputs
 
     @requires_fit
-    @validate_params(using=KNNConfig)
     @override_params(['window', 'independent'])
-    def compute_distance_matrix(self, X, lengths, **kwargs):
-        # check_X_lengths (if lengths is none, use whole input as single sequence)
-        # X, lengths = check_X_lengths(X, lengths)
+    @validate_params(using=KNNValidator)
+    def compute_distance_matrix(
+        self,
+        X: Array[float],
+        lengths: Optional[Array[int]] = None,
+        **kwargs
+    ) -> Array[float]:
+        """Calculates a matrix of DTW distances between the provided data
+        and the training data.
 
-        # If len(lengths) = 1 paralellize over columns for single sequence and still produce 2d dist mat
-        # np.atleast_2d
+        TODO
+        """
+        data = BaseMultivariateFloatSequenceValidator(X=X, lengths=lengths)
+        n_jobs = effective_n_jobs(self.n_jobs, data.lengths)
+        dtw_ = self._dtw()
 
-        # TODO: Paralellize over rows (and maybe columns)
-        mat = np.zeros((len(lengths), len(self.lengths)))
-        for i, x1 in enumerate(iter_X_lengths(X, lengths)):
-            row = np.zeros(len(self.lengths))
-            for j, x2 in enumerate(iter_X_lengths(self.X, self.lengths)):
-                row[j] = self.dtw_(x1, x2)
-            mat[i] = row
+        row_chunk_idxs = np.array_split(get_X_idxs(data.lengths), n_jobs)
+        col_chunk_idxs = np.array_split(self.idxs_, n_jobs)
 
-        return mat
+        return np.vstack(
+            Parallel(n_jobs=n_jobs)(
+                delayed(self._distance_matrix_row_chunk)(
+                    row_idxs, col_chunk_idxs, data.X, n_jobs, dtw_
+                ) for row_idxs in row_chunk_idxs
+            )
+        )
 
-    # def _find_k_nearest(self, distances):
-    #     """Returns"""
+    @override_params(['window', 'independent'])
+    @validate_params(using=KNNValidator)
+    def dtw(self, A: Array[float], B: Array[float], **kwargs) -> float:
+        A = SingleMultivariateFloatSequenceValidator(sequence=A).sequence
+        B = SingleMultivariateFloatSequenceValidator(sequence=B).sequence
+        return self._dtw(A, B)
 
-    # def _find_k_nearest(self, distances):
-    #     """Returns the labels and weightings (or scores) of the k-nearest neighbors"""
-    #     idx = np.argpartition(distances, self._k)[:self._k]
-    #     return self._y_[idx], self._weighting(distances[idx])
+    @check_plotting_dependencies
+    @override_params(['window'])
+    @validate_params(using=KNNValidator)
+    def plot_warping_path_1d(
+        self,
+        a: Array[float],
+        b: Array[float],
+        **kwargs
+    ) -> 'matplotlib.axes.Axes':
+        import matplotlib.pyplot as plt
+        from dtaidistance import dtw_visualisation
 
-    # def _find_max_labels(self, nearest_labels, nearest_scores):
-    #     """Returns the mode label(s) of the k nearest neighbors.
-    #     Vectorization from: https://stackoverflow.com/a/49239335
-    #     """
-    #     # Sort the labels in ascending order (and sort distances in the same order)
-    #     sorted_labels_idx = nearest_labels.argsort()
-    #     sorted_labels, sorted_scores = nearest_labels[sorted_labels_idx], nearest_scores[sorted_labels_idx]
-    #     # Identify the indices where the sorted labels change (so we can group by labels)
-    #     change_idx = np.concatenate(([0], np.nonzero(np.diff(sorted_labels))[0] + 1))
-    #     # Calculate the total score for each label
-    #     label_scores = np.add.reduceat(sorted_scores, change_idx)
-    #     # Find the change index of the maximum score(s)
-    #     max_score_idx = change_idx[self._multi_argmax(label_scores)]
-    #     # Map the change index of the maximum scores back to the actual label(s)
-    #     max_labels = sorted_labels[max_score_idx]
-    #     # Store class scores
-    #     scores = np.full(len(self.classes_), -np.inf)
-    #     scores[sorted_labels[change_idx]] = label_scores
-    #     # Map the change index of the maximum scores back to the actual label(s), and return scores
-    #     return max_labels, scores
+        a = SingleUnivariateFloatSequenceValidator(sequence=a).sequence
+        b = SingleUnivariateFloatSequenceValidator(sequence=b).sequence
 
-    # def _predict(self, x1, verbose=False):
-    #     """Makes a prediction for a single observation sequence."""
-    #     # Calculate DTW distances between x1 and all other sequences
-    #     distances = np.array([self._dtw(x1, x2) for x2 in tqdm(self._X_, desc='Calculating distances', disable=not(verbose))])
-    #     # Find the k-nearest neighbors by DTW distance
-    #     nearest_labels, nearest_scores = self._find_k_nearest(distances)
-    #     # Out of the k-nearest neighbors, find the label(s) which had the highest total weighting
-    #     max_labels, scores = self._find_max_labels(nearest_labels, nearest_scores)
-    #     # Randomly pick from the set of labels with the maximum label score
-    #     label = self._random_state.choice(max_labels, size=1)
-    #     # Combine the label with the scores
-    #     return np.concatenate((label, scores))
+        if self.independent:
+            warnings.warn('Warping paths cannot be plotted with independent warping - using dependent warping')
 
-    # def _dtw_1d(self, a, b, window):
-    #     pass
+        window = self._window(a, b)
+        _, paths = dtw.warping_paths(a, b, window=window)
+        best_path = dtw.best_path(paths)
 
-    # def _dtwi(self, A, B):
-    #     pass
+        return dtw_visualisation.plot_warpingpaths(a, b, paths, best_path)
 
-    # def _dtwd(self, A, B):
-    #     pass
+    @check_plotting_dependencies
+    @requires_fit
+    @override_params(['window', 'independent'])
+    @validate_params(using=KNNValidator)
+    def plot_dtw_histogram(
+        self,
+        X: Array[float],
+        lengths: Optional[Array[int]] = None,
+        ax: Optional['matplotlib.axes.Axes'] = None,
+        **kwargs
+    ) -> 'matplotlib.axes.Axes':
+        import matplotlib.pyplot as plt
 
-    # def _multi_argmax(self, arr):
-    #     pass
+        distances = self.compute_distance_matrix(X, lengths)
 
+        if ax is None:
+            _, ax = plt.subplots()
+        ax.hist(distances.flatten())
+        return ax
+
+    @check_plotting_dependencies
+    @requires_fit
+    @override_params(['weighting', 'window', 'independent'])
+    @validate_params(using=KNNValidator)
+    def plot_score_histogram(
+        self,
+        X: Array[float],
+        lengths: Optional[Array[int]] = None,
+        ax: Optional['matplotlib.axes.Axes'] = None,
+        **kwargs
+    ) -> 'matplotlib.axes.Axes':
+        import matplotlib.pyplot as plt
+
+        distances = self.compute_distance_matrix(X, lengths)
+        scores = self._weighting()(distances)
+
+        if ax is None:
+            _, ax = plt.subplots()
+        ax.hist(scores.flatten())
+        return ax
+
+    def _dtw1d(self, a: Array[float], b: Array[float], window: int) -> float:
+        """Computes the DTW distance between two univariate sequences."""
+        return dtw.distance(a, b, use_c=self.use_c, window=window)
+
+    def _window(self, A: Array[float], B: Array[float]) -> int:
+        """TODO"""
+        return max(1, int(self.window * max(len(A), len(B))))
+
+    def _dtwi(self, A: Array[float], B: Array[float]) -> float:
+        """Computes the multivariate DTW distance as the sum of the pairwise per-feature DTW distances,
+        allowing each feature to be warped independently."""
+        window = self._window(A, B)
+        return np.sum([self._dtw1d(A[:, i], B[:, i], window) for i in range(A.shape[1])])
+
+    def _dtwd(self, A: Array[float], B: Array[float]) -> float:
+        """Computes the multivariate DTW distance so that the warping of the features depends on each other,
+        by modifying the local distance measure."""
+        window = self._window(A, B)
+        return dtw_ndim.distance(A, B, use_c=self.use_c, window=window)
+
+    def _dtw(self) -> Callable:
+        """TODO"""
+        return self._dtwi if self.independent else self._dtwd
+
+    def _weighting(self) -> Callable:
+        """TODO"""
+        if callable(self.weighting):
+            return self.weighting
+        elif KNNWeightingType(self.weighting) == KNNWeightingType.UNIFORM:
+            return lambda x: np.ones_like(x)
+
+    def _distance_matrix_row_chunk(
+        self,
+        row_idxs: Array[int],
+        col_chunk_idxs: List[Array[int]],
+        X: Array[float],
+        n_jobs: int,
+        dist: Callable
+    ) -> Array[float]:
+        """Calculates a distance sub-matrix for a subset of rows over all columns."""
+        return np.hstack(
+            Parallel(n_jobs=n_jobs)(
+                delayed(self._distance_matrix_row_col_chunk)(
+                    col_idxs, row_idxs, X, dist
+                ) for col_idxs in col_chunk_idxs
+            )
+        )
+
+    def _distance_matrix_row_col_chunk(
+        self,
+        col_idxs: Array[int],
+        row_idxs: Array[int],
+        X: Array[float],
+        dist: Callable
+    ) -> Array[float]:
+        """Calculates a distance sub-matrix for a subset of rows and columns."""
+        distances = np.zeros((len(row_idxs), len(col_idxs)))
+        for i, x_row in enumerate(iter_X(X, row_idxs)):
+            for j, x_col in enumerate(iter_X(self.X_, col_idxs)):
+                distances[i, j] = dist(x_row, x_col)
+        return distances
+
+    @requires_fit
+    def save(self, path: Any):
+        # Fetch main parameters and fitted values
+        state = {
+            'params': self.get_params(),
+            'fitted': {k:v for k, v in self.__dict__.items() if k.endswith('_')}
+        }
+
+        # Serialize weighting function
+        state['params']['weighting'] = marshal.dumps(
+            (self.weighting.__code__, self.weighting.__name__)
+        )
+
+        # Serialize model
+        joblib.dump(state, path)
+
+    @classmethod
+    def load(cls, path):
+        state = joblib.load(path)
+
+        # Deserialize weighting function
+        weighting, name = marshal.loads(state['params']['weighting'])
+        state['params']['weighting'] = types.FunctionType(weighting, globals(), name)
+
+        # Set main parameters
+        model = cls(**state['params'])
+
+        # Set fitted values
+        for k, v in state['fitted'].items():
+            setattr(model, k, v)
+
+        # Return deserialized model
+        return model

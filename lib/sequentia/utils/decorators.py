@@ -30,6 +30,7 @@ def override_params(params, temporary=True):
                 if not hasattr(self, param):
                     raise AttributeError(f"'{type(self).__name__}' object has no attribute '{param}'")
 
+            for param in params:
                 if param in kwargs:
                     original_params[param] = getattr(self, param)
                     setattr(self, param, kwargs[param])
@@ -43,3 +44,14 @@ def override_params(params, temporary=True):
 
         return wrapper
     return decorator
+
+def check_plotting_dependencies(function):
+    @functools.wraps(function)
+    def wrapper(self, *args, **kwargs):
+        try:
+            # import matplotlib
+            import huggingface
+        except ImportError as e:
+            raise ImportError(f'The {function.__name__} function requires a working installation of `matplotlib`') from e
+        return function(self, *args, **kwargs)
+    return wrapper
