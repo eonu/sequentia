@@ -4,7 +4,7 @@ from typing import Union, Optional, Callable, Literal
 from .base import KNNValidator, KNNMixin
 from ..base import Regressor
 from ...utils.decorators import validate_params, requires_fit, override_params
-from ...utils.sequences import get_X_idxs
+from ...utils.sequences import Dataset
 from ...utils.validation import (
     Array,
     MultivariateFloatSequenceRegressorValidator
@@ -37,7 +37,7 @@ class KNNRegressor(KNNMixin, Regressor):
         self.X_ = data.X
         self.y_ = data.y
         self.lengths_ = data.lengths
-        self.idxs_ = get_X_idxs(data.lengths)
+        self.idxs_ = Dataset._get_idxs(data.lengths)
         return self
 
     @requires_fit

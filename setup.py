@@ -11,6 +11,8 @@ VERSION = '0.13.1'
 with open('README.md', 'r', encoding='utf8') as fh:
     long_description = fh.read()
 
+# TODO: Add pydantic
+
 pkg_versions = {
     # setup dependencies (core)
     'Cython': '>=0.28.5',

@@ -26,7 +26,7 @@ from ...utils.validation import (
     SingleUnivariateFloatSequenceValidator,
     SingleMultivariateFloatSequenceValidator
 )
-from ...utils.sequences import iter_X, get_X_idxs
+from ...utils.sequences import iter_X, Dataset
 from ...utils.multiprocessing import effective_n_jobs
 
 @unique
@@ -95,10 +95,11 @@ class KNNMixin:
         TODO
         """
         data = BaseMultivariateFloatSequenceValidator(X=X, lengths=lengths)
+
         n_jobs = effective_n_jobs(self.n_jobs, data.lengths)
         dtw_ = self._dtw()
 
-        row_chunk_idxs = np.array_split(get_X_idxs(data.lengths), n_jobs)
+        row_chunk_idxs = np.array_split(Dataset._get_idxs(data.lengths), n_jobs)
         col_chunk_idxs = np.array_split(self.idxs_, n_jobs)
 
         return np.vstack(

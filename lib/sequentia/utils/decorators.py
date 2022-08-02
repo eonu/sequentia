@@ -49,9 +49,8 @@ def check_plotting_dependencies(function):
     @functools.wraps(function)
     def wrapper(self, *args, **kwargs):
         try:
-            # import matplotlib
-            import huggingface
+            import matplotlib
         except ImportError as e:
-            raise ImportError(f'The {function.__name__} function requires a working installation of `matplotlib`') from e
+            raise ImportError(f'The {function.__name__} function requires a working installation of matplotlib') from e
         return function(self, *args, **kwargs)
     return wrapper
