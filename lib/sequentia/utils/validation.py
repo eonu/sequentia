@@ -167,10 +167,3 @@ def check_classes(y, classes=None):
             raise ValueError(f'Encountered label(s) in `y` not present in specified classes - {unseen_labels}')
 
     return classes_
-
-def check_iterable(obj):
-    try:
-        iter(obj)
-        return hasattr(obj, '__len__')
-    except TypeError:
-        return False

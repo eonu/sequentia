@@ -3,7 +3,7 @@ import copy
 import numpy as np
 from pydantic import validator
 
-from .validation import check_classes, check_iterable, BaseSequenceValidator
+from .validation import check_classes, BaseSequenceValidator
 
 def iter_X(X, idxs):
     for start, end in idxs:
@@ -48,41 +48,6 @@ class Dataset:
         self._X_y = (self._X, self._y)
         self._X_lengths = (self._X, self._lengths)
         self._X_y_lengths = (self._X, self._y, self._lengths)
-
-    @classmethod
-    def from_arrays(cls, X, y=None):
-        # 3D numpy array (multivariate sequences, equal length)
-        # 2D numpy array (BxTx1 univariate sequences of equal length)
-        # List of lists (univariate sequences)
-        # List of lists of lists (multivariate sequences)
-        # List of numpy arrays / numpy ragged
-
-        # Try to convert to numpy, catch error, check if dtype=object
-
-        # Check if iterable
-        # Check if elements are numbers or more iterables
-        #   If numbers, then dealing with a single sequence
-        #     Check that y is also length 1 (if y is not None)
-        #   If iterables, check if elements are numbers or more iterables
-        #     If numbers, we have a ragged array of lists, or maybe all equal
-        #       Doesn't matter which case, just find lengths and concatenate
-        #     If iterables, we have multivariate sequnces
-        #       Use lengths to find out which axis is dimension and which is time step
-        #       If all lengths the same along each axis, assume BxTxD
-
-        if check_iterable(X):
-            elements_are_iterable = np.array([check_iterable(x) for x in X])
-            if elements_are_iterable.all():
-                # TODO: Check if all the same length
-                pass
-            elif (~elements_are_iterable).all():
-                # TODO: Check if castable to int/float
-                # Single 1d sequence
-                pass
-            else:
-                raise ValueError('mix of iterables and non-iterables')
-        else:
-            pass
 
     def split(self):
         # TODO: Train-test split - careful stratifying when y is not classes
