@@ -1,14 +1,17 @@
 from __future__ import annotations
 from typing import Union, Optional, Callable, Literal
 
-from .base import KNNValidator, KNNMixin
-from ..base import Regressor
-from ...utils.decorators import validate_params, requires_fit, override_params
-from ...utils.sequences import Dataset
-from ...utils.validation import (
+from sequentia.models.knn.base import KNNValidator, KNNMixin
+from sequentia.models.base import Regressor
+
+from sequentia.utils.decorators import validate_params, requires_fit, override_params
+from sequentia.utils.data import SequentialDataset
+from sequentia.utils.validation import (
     Array,
     MultivariateFloatSequenceRegressorValidator
 )
+
+__all__ = ['KNNRegressor']
 
 class KNNRegressor(KNNMixin, Regressor):
     @validate_params(using=KNNValidator)
@@ -37,7 +40,7 @@ class KNNRegressor(KNNMixin, Regressor):
         self.X_ = data.X
         self.y_ = data.y
         self.lengths_ = data.lengths
-        self.idxs_ = Dataset._get_idxs(data.lengths)
+        self.idxs_ = SequentialDataset._get_idxs(data.lengths)
         return self
 
     @requires_fit

@@ -6,16 +6,20 @@ import numpy as np
 from numba import njit, prange
 from sklearn.utils import check_random_state
 
-from .base import KNNValidator, KNNMixin
-from ..base import Classifier
-from ...utils.decorators import validate_params, requires_fit, override_params
-from ...utils.sequences import Dataset
-from ...utils.validation import (
+from sequentia.models.knn.base import KNNValidator, KNNMixin
+from sequentia.models.base import Classifier
+
+from sequentia.utils.decorators import validate_params, requires_fit, override_params
+from sequentia.utils.data import SequentialDataset
+from sequentia.utils.multiprocessing import effective_n_jobs
+from sequentia.utils.validation import (
+    check_classes,
+    check_is_fitted,
     Array,
-    MultivariateFloatSequenceClassifierValidator,
-    check_classes
+    MultivariateFloatSequenceClassifierValidator
 )
-from ...utils.multiprocessing import effective_n_jobs
+
+__all__ = ['KNNClassifier']
 
 class KNNClassifier(KNNMixin, Classifier):
     @validate_params(using=KNNValidator)
@@ -45,11 +49,10 @@ class KNNClassifier(KNNMixin, Classifier):
         lengths: Optional[Array[int]] = None
     ) -> KNNClassifier:
         data = MultivariateFloatSequenceClassifierValidator(X=X, y=y, lengths=lengths)
-        dataset = Dataset(data.X, data.y, data.lengths)
         self.X_ = data.X
         self.y_ = data.y
         self.lengths_ = data.lengths
-        self.idxs_ = Dataset._get_idxs(data.lengths)
+        self.idxs_ = SequentialDataset._get_idxs(data.lengths)
         self.random_state_ = check_random_state(self.random_state)
         self.classes_ = check_classes(y, self.classes)
         return self
@@ -138,3 +141,12 @@ class KNNClassifier(KNNMixin, Classifier):
             elif arr[i] == max_:
                 all_.append(i)
         return np.array(all_)
+
+    def __eq__(self, other):
+        eq = super().__eq__(other)
+        self_fitted = check_is_fitted(self, ['classes_'], True)
+        other_fitted = check_is_fitted(self, ['classes_'], True)
+        eq &= self_fitted == other_fitted
+        if self_fitted and other_fitted:
+            eq &= np.array_equal(self.classes_, other.classes_)
+        return eq

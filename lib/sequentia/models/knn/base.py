@@ -17,8 +17,16 @@ try:
 except ImportError:
     pass
 
-from ...utils.decorators import validate_params, requires_fit, override_params, check_plotting_dependencies
-from ...utils.validation import (
+from sequentia.utils.data import SequentialDataset
+from sequentia.utils.multiprocessing import effective_n_jobs
+from sequentia.utils.decorators import (
+    validate_params,
+    override_params,
+    requires_fit,
+    check_plotting_dependencies
+)
+from sequentia.utils.validation import (
+    check_is_fitted,
     Array,
     Validator,
     SingleMultivariateFloatSequenceValidator,
@@ -26,8 +34,8 @@ from ...utils.validation import (
     SingleUnivariateFloatSequenceValidator,
     SingleMultivariateFloatSequenceValidator
 )
-from ...utils.sequences import iter_X, Dataset
-from ...utils.multiprocessing import effective_n_jobs
+
+__all__ = ['KNNWeightingType', 'KNNValidator', 'KNNMixin']
 
 @unique
 class KNNWeightingType(Enum):
@@ -54,8 +62,6 @@ class KNNValidator(Validator):
     @validator('random_state')
     def check_random_state(cls, value):
         return check_random_state(value)
-
-# TODO: Make uninstantiatable
 
 class KNNMixin:
     @requires_fit
@@ -99,7 +105,7 @@ class KNNMixin:
         n_jobs = effective_n_jobs(self.n_jobs, data.lengths)
         dtw_ = self._dtw()
 
-        row_chunk_idxs = np.array_split(Dataset._get_idxs(data.lengths), n_jobs)
+        row_chunk_idxs = np.array_split(SequentialDataset._get_idxs(data.lengths), n_jobs)
         col_chunk_idxs = np.array_split(self.idxs_, n_jobs)
 
         return np.vstack(
@@ -239,10 +245,33 @@ class KNNMixin:
     ) -> Array[float]:
         """Calculates a distance sub-matrix for a subset of rows and columns."""
         distances = np.zeros((len(row_idxs), len(col_idxs)))
-        for i, x_row in enumerate(iter_X(X, row_idxs)):
-            for j, x_col in enumerate(iter_X(self.X_, col_idxs)):
+        for i, x_row in enumerate(SequentialDataset._iter_X(X, row_idxs)):
+            for j, x_col in enumerate(SequentialDataset._iter_X(self.X_, col_idxs)):
                 distances[i, j] = dist(x_row, x_col)
         return distances
+
+    def __eq__(self, other):
+        if not isinstance(other, KNNMixin):
+            return False
+
+        eq = True
+
+        params = ('k', 'window', 'independent')
+        self_params = self.get_params()
+        other_params = other.get_params()
+        for param in params:
+            eq &= self_params[param] == other_params[param]
+
+        fitted_params = ('X_', 'y_', 'lengths_')
+        self_fitted = check_is_fitted(self, fitted_params, True)
+        other_fitted = check_is_fitted(other, fitted_params, True)
+        eq &= self_fitted == other_fitted
+        if self_fitted and other_fitted:
+            eq &= np.array_equal(self.X_, other.X_)
+            eq &= np.array_equal(self.y_, other.y_)
+            eq &= np.array_equal(self.lengths_, other.lengths_)
+
+        return eq
 
     @requires_fit
     def save(self, path: Any):

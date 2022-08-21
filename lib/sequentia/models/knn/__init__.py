@@ -1,3 +1,3 @@
-from .base import KNNMixin
-from .classifier import KNNClassifier
-from .regressor import KNNRegressor
+from .base import *
+from .classifier import *
+from .regressor import *

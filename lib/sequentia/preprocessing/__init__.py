@@ -1,2 +1,2 @@
-from .base import Transform
+from .base import *
 from .transforms import *

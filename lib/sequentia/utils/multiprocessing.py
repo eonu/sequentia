@@ -1,7 +1,9 @@
 import joblib
 from typing import Optional
 
-from .validation import Array
+from sequentia.utils.validation import Array
+
+__all__ = ['effective_n_jobs']
 
 def effective_n_jobs(n_jobs: int, lengths: Optional[Array[int]] = None) -> int:
     n_jobs_ = 1

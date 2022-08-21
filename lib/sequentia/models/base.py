@@ -4,7 +4,9 @@ from typing import Optional, Union, Any
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from sklearn.metrics import accuracy_score, r2_score
 
-from ..utils.validation import Array
+from sequentia.utils.validation import Array
+
+__all__ = ['Classifier', 'Regressor']
 
 class Classifier(BaseEstimator, ClassifierMixin):
     def fit(

@@ -1,7 +1,9 @@
 from .base import HMM
 
+__all__ = ['GaussianMixtureHMM', 'MultinomialHMM']
+
 class GaussianMixtureHMM(HMM):
     pass
 
-class CategoricalHMM(HMM):
+class MultinomialHMM(HMM):
     pass

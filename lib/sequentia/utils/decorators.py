@@ -1,6 +1,13 @@
 import inspect, functools
 
-from sklearn.utils.validation import check_is_fitted
+from sequentia.utils.validation import check_is_fitted
+
+__all__ = [
+    'validate_params', 
+    'requires_fit', 
+    'override_params', 
+    'check_plotting_dependencies'
+]
 
 def validate_params(using):
     def decorator(function):

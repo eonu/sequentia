@@ -1,4 +1,4 @@
-from .base import HMM, Topology
-from .variants import GaussianMixtureHMM, CategoricalHMM
-from .topologies import ErgodicTopology, LeftRightTopology, LinearTopology
-from .classifier import HMMClassifier
+from .base import *
+from .classifier import *
+from .topologies import *
+from .variants import *

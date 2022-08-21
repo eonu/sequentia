@@ -4,6 +4,60 @@ import numpy as np
 from pydantic import BaseModel, validator, root_validator
 from sklearn.utils.multiclass import unique_labels
 from sklearn.multiclass import check_classification_targets
+from sklearn.utils.validation import NotFittedError
+
+__all__ = [
+    'check_classes',
+    'check_is_fitted',
+    'Validator',
+    'TypedArray',
+    'ArrayMeta',
+    'Array',
+    'BaseSequenceValidator',
+    'BaseUnivariateCategoricalSequenceValidator',
+    'UnivariateCategoricalSequenceClassifierValidator',
+    'BaseMultivariateFloatSequenceValidator',
+    'MultivariateFloatSequenceClassifierValidator',
+    'MultivariateFloatSequenceRegressorValidator',
+    'SingleUnivariateFloatSequenceValidator',
+    'SingleMultivariateFloatSequenceValidator'
+]
+
+def check_classes(y, classes=None):
+    check_classification_targets(y)
+    unique_y = unique_labels(y)
+
+    classes_ = None
+    if classes is None:
+        classes_ = unique_y
+    else:
+        classes_np = np.array(classes).flatten()
+        if not np.issubdtype(classes_np.dtype, np.integer):
+            raise TypeError(f'Expected classes to be integers')
+
+        _, idx = np.unique(classes_np, return_index=True)
+        classes_ = classes_np[np.sort(idx)]
+        unseen_labels = set(unique_y) - set(classes_np)
+        if len(unseen_labels) > 0:
+            raise ValueError(f'Encountered label(s) in `y` not present in specified classes - {unseen_labels}')
+
+    return classes_
+
+def check_is_fitted(estimator, attributes=None, return_=False):
+    fitted = False
+    if attributes is None:
+        fitted = any(attr.endswith('_') for attr in estimator.__dict__.keys() if '__' not in attr)
+    else:
+        fitted = all(hasattr(estimator, attr) for attr in attributes)
+
+    if return_:
+        return fitted
+
+    if not fitted:
+        raise NotFittedError(
+            f'This {estimator.__class__.__name__} instance is not fitted yet. '
+            "Call 'fit' with appropriate arguments before using this method."
+        )
 
 class Validator(BaseModel):
     @classmethod
@@ -147,23 +201,3 @@ class SingleMultivariateFloatSequenceValidator(Validator):
             )
 
         return sequence
-
-def check_classes(y, classes=None):
-    check_classification_targets(y)
-    unique_y = unique_labels(y)
-
-    classes_ = None
-    if classes is None:
-        classes_ = unique_y
-    else:
-        classes_np = np.array(classes).flatten()
-        if not np.issubdtype(classes_np, np.integer):
-            raise TypeError(f'Expected classes to be integers')
-
-        _, idx = np.unique(classes_np, return_index=True)
-        classes_ = classes_np[np.sort(idx)]
-        unseen_labels = set(unique_y) - set(classes_np)
-        if len(unseen_labels) > 0:
-            raise ValueError(f'Encountered label(s) in `y` not present in specified classes - {unseen_labels}')
-
-    return classes_
