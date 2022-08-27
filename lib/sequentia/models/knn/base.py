@@ -3,11 +3,11 @@ import joblib
 import marshal
 import warnings
 from enum import Enum, unique
-from typing import Optional, Union, Callable, Literal, Tuple, List, Any
+from typing import Optional, Union, Callable, Literal, Tuple, List
 from joblib import Parallel, delayed
 
 import numpy as np
-from pydantic import NegativeInt, PositiveInt, confloat, validator
+from pydantic import NegativeInt, NonNegativeInt, PositiveInt, confloat, validator
 from dtaidistance import dtw, dtw_ndim
 from sklearn.utils import check_random_state
 
@@ -35,21 +35,21 @@ from sequentia.utils.validation import (
     SingleMultivariateFloatSequenceValidator
 )
 
-__all__ = ['KNNWeightingType', 'KNNValidator', 'KNNMixin']
+__all__ = ['WeightingType', 'KNNValidator', 'KNNMixin']
 
 @unique
-class KNNWeightingType(Enum):
+class WeightingType(Enum):
     UNIFORM = 'uniform'
 
 class KNNValidator(Validator):
     k: PositiveInt = 1,
-    weighting: Union[Literal[KNNWeightingType.UNIFORM], Callable] = KNNWeightingType.UNIFORM,
+    weighting: Union[Literal[WeightingType.UNIFORM], Callable] = WeightingType.UNIFORM,
     window: confloat(ge=0, le=1) = 1,
     independent: bool = False,
     classes: Optional[Array[int]] = None,
     use_c: bool = False,
     n_jobs: Union[NegativeInt, PositiveInt] = 1,
-    random_state: Optional[Any] = None
+    random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = None
 
     @validator('use_c')
     def check_use_c(cls, value):
@@ -216,7 +216,7 @@ class KNNMixin:
         """TODO"""
         if callable(self.weighting):
             return self.weighting
-        elif KNNWeightingType(self.weighting) == KNNWeightingType.UNIFORM:
+        elif WeightingType(self.weighting) == WeightingType.UNIFORM:
             return lambda x: np.ones_like(x)
 
     def _distance_matrix_row_chunk(
@@ -274,7 +274,7 @@ class KNNMixin:
         return eq
 
     @requires_fit
-    def save(self, path: Any):
+    def save(self, path):
         # Fetch main parameters and fitted values
         state = {
             'params': self.get_params(),

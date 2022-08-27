@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Union, Optional, Callable, Literal
+from typing import Union, Optional, Callable
 from joblib import Parallel, delayed
 
 import numpy as np
@@ -25,7 +25,7 @@ class KNNClassifier(KNNMixin, Classifier):
     @validate_params(using=KNNValidator)
     def __init__(self, *,
         k: int = 1,
-        weighting: Union[Literal['uniform'], Callable] = 'uniform', # TODO: Must be a non-negative matrix function!
+        weighting: Union[str, Callable] = 'uniform', # TODO: Must be a non-negative matrix function!
         window: float = 1,
         independent: bool = False,
         classes: Optional[Array[int]] = None,

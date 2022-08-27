@@ -60,6 +60,9 @@ def check_is_fitted(estimator, attributes=None, return_=False):
         )
 
 class Validator(BaseModel):
+    class Config:
+        arbitrary_types_allowed = True
+
     @classmethod
     def fields(cls):
         return list(cls.__fields__.keys())

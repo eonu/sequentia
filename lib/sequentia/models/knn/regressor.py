@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Union, Optional, Callable, Literal
+from typing import Union, Optional, Callable
 
 from sequentia.models.knn.base import KNNValidator, KNNMixin
 from sequentia.models.base import Regressor
@@ -17,7 +17,7 @@ class KNNRegressor(KNNMixin, Regressor):
     @validate_params(using=KNNValidator)
     def __init__(self, *,
         k: int = 1,
-        weighting: Union[Literal['uniform'], Callable] = 'uniform', # TODO: Must be a non-negative matrix function!
+        weighting: Union[str, Callable] = 'uniform', # TODO: Must be a non-negative matrix function!
         window: float = 1,
         independent: bool = False,
         use_c: bool = False,
