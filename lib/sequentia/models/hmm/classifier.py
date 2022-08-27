@@ -29,6 +29,8 @@ class HMMClassifierValidator(Validator):
     n_jobs: Union[NegativeInt, PositiveInt] = 1,
     random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = None
 
+    # TODO: Check that prior sums to 1 if dict
+
     @validator('random_state')
     def check_random_state(cls, value):
         return check_random_state(value)
@@ -54,7 +56,13 @@ class HMMClassifier(Classifier):
             raise TypeError('Expected `label` to be an integer')
         self.models[label] = model
 
-    def fit(self, X, y=None, lengths=None):
+    def fit(self, X=None, y=None, lengths=None):
+        # TODO: If X is None:
+        # - Check that all models have been fitted
+        # - Check that classes is same as models dict keys
+        # - Don't fit HMMs
+        # - Override the random_states of the fitted HMMs
+
         data = MultivariateFloatSequenceClassifierValidator(X=X, y=y, lengths=lengths)
         self.random_state_ = check_random_state(self.random_state)
         self.classes_ = check_classes(y, self.classes)

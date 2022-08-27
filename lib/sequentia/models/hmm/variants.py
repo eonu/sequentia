@@ -41,10 +41,14 @@ class HMM(BaseEstimator):
         n_states: int = 5,
         topology: str = 'left-right'
     ):
+        # TODO
         pass
 
     def fit(self, X, lengths=None):
-        pass
+        raise NotImplementedError
+
+    def n_params(self):
+        raise NotImplementedError
 
 @unique
 class CovarianceType(Enum):
