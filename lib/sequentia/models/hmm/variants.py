@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 import warnings
 from enum import Enum, unique
@@ -11,180 +13,123 @@ from sklearn.utils import check_random_state
 
 from sequentia.utils.decorators import validate_params, requires_fit
 from sequentia.utils.validation import (
+    Array,
     Validator,
-    BaseMultivariateFloatSequenceValidator
+    BaseMultivariateFloatSequenceValidator,
+    BaseUnivariateCategoricalSequenceValidator
 )
 from sequentia.models.hmm.topologies import (
-    Topology, 
-    LeftRightTopology,
-    TopologyType, 
+    ErgodicTopology,
+    TopologyType,
     TOPOLOGY_MAP
 )
 
 __all__ = ['HMM', 'GaussianMixtureHMM', 'MultinomialHMM']
 
-DEFAULT_PARAMS = 'stmcw'
+DEFAULT_GMM_PARAMS = 'stmcw'
+DEFAULT_MULTINOMIAL_PARAMS = 'ste'
 
 class HMMValidator(Validator):
-    n_states: PositiveInt = 5
-    topology: Optional[TopologyType] = TopologyType.LEFT_RIGHT
+    n_states: PositiveInt = 2
+    topology: Optional[TopologyType] = None
     random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = None
+    hmmlearn_kwargs: Dict[str, Any] = dict()
+
+    _DEFAULT_PARAMS = 'st'
+    _UNSETTABLE_HMMLEARN_PARAMS = ['random_state', 'init_params', 'params']
+    _STATE_PARAMS = []
 
     @validator('random_state')
     def check_random_state(cls, value):
         return check_random_state(value)
 
-class HMM(BaseEstimator):
-    @validate_params(using=HMMValidator)
-    def __init__(
-        self,
-        n_states: int = 5,
-        topology: str = 'left-right'
-    ):
-        # TODO
-        pass
-
-    def fit(self, X, lengths=None):
-        raise NotImplementedError
-
-    def n_params(self):
-        raise NotImplementedError
-
-@unique
-class CovarianceType(Enum):
-    SPHERICAL = 'spherical'
-    DIAGONAL = 'diag'
-    FULL = 'full'
-    TIED = 'tied'
-
-class GaussianMixtureHMMValidator(HMMValidator):
-    n_components: PositiveInt = 3
-    covariance_type: CovarianceType = CovarianceType.FULL
-    hmmlearn_kwargs: Dict[str, Any] = dict(init_params=DEFAULT_PARAMS, params=DEFAULT_PARAMS)
-
     @validator('hmmlearn_kwargs')
     def check_hmmlearn_kwargs(cls, value):
         params = value.copy()
-        unsettable = ('n_components', 'n_mix', 'covariance_type', 'random_state', 'init_params', 'params')
 
         for param in value.keys():
-            if param in unsettable:
+            if param in cls._UNSETTABLE_HMMLEARN_PARAMS:
                 if param == 'init_params':
-                    if set(params[param]) != set(DEFAULT_PARAMS):
-                        params[param] = DEFAULT_PARAMS
+                    if set(params[param]) != set(cls._DEFAULT_PARAMS):
+                        params[param] = cls._DEFAULT_PARAMS
                         warnings.warn(
-                            f"The `init_params` hmmlearn argument cannot be overridden manually - defaulting to all parameters 'stmcw'.\n"
-                            'Use the set_start_probs(), set_transitions(), set_state_means(), set_state_covariances() and set_state_weights() methods to initialize model parameters.'
+                            f"The `init_params` hmmlearn argument cannot be overridden manually - defaulting to all parameters '{cls._DEFAULT_PARAMS}'.\n"
+                            f'Use the set_start_probs(), set_transitions(), {", ".join([f"set_state_{state_param}()" for state_param in cls._STATE_PARAMS])} methods to initialize model parameters.'
                         )
                 elif param == 'params':
-                    if set(params[param]) != set(DEFAULT_PARAMS):
-                        params[param] = DEFAULT_PARAMS
+                    if set(params[param]) != set(cls._DEFAULT_PARAMS):
+                        params[param] = cls._DEFAULT_PARAMS
                         warnings.warn(
-                            f"The `params` hmmlearn argument cannot be overridden manually - defaulting to all parameters 'stmcw'.\n"
+                            f"The `params` hmmlearn argument cannot be overridden manually - defaulting to all parameters '{cls._DEFAULT_PARAMS}'.\n"
                             'Use the freeze() and unfreeze() methods to specify the learnable model parameters.'
                         )
                 else:
                     del params[param]
                     warnings.warn(
-                        f'The `{param}` hmmlearn argument cannot be overriden manually.\n'
-                        'Use the GaussianMixtureHMM constructor to specify this argument.'
-                    )     
+                        f'The `{param}` hmmlearn argument cannot be overriden manually - '
+                        f'use the {cls.__name__.split("Validator")[0]} constructor to specify this argument.'
+                    )
 
         if 'init_params' not in params:
-            params['init_params'] = 'stmcw'
+            params['init_params'] = cls._DEFAULT_PARAMS
             warnings.warn(
-                "No initializable parameters set in hmmlearn `init_params` argument - defaulting to 'stmcw'.\n"
-                'If you intended to manually initialize all parameters, use the methods:\n'
+                f"No initializable parameters set in hmmlearn `init_params` argument - defaulting to '{cls._DEFAULT_PARAMS}'.\n"
+                'If you intend to manually initialize all parameters, use the methods:\n'
                 '- set_start_probs()\n'
                 '- set_transitions()\n'
-                '- set_state_means()\n'
-                '- set_state_covariances()\n'
-                '- set_state_weights()\n'
+                + "\n".join([f'- set_state_{state_param}()' for state_param in cls._STATE_PARAMS])
+                + '\n'
             )
 
         if 'params' not in params:
-            params['params'] = 'stmcw'
+            params['params'] = cls._DEFAULT_PARAMS
             warnings.warn(
-                "No learnable parameters set in hmmlearn `params` argument - defaulting to 'stmcw'.\n"
-                'If you intended to make no parameters learnable, call the freeze() method with no arguments.'
+                f"No learnable parameters set in hmmlearn `params` argument - defaulting to '{cls._DEFAULT_PARAMS}'.\n"
+                'If you intend to make no parameters learnable, call the freeze() method with no arguments.'
             )
 
         return params
 
-class GaussianMixtureHMM(HMM):
-    @validate_params(using=GaussianMixtureHMMValidator)
+class HMM(BaseEstimator):
     def __init__(
-        self, *,
-        n_states: int = 5, 
-        n_components: int = 3, 
-        covariance_type: str = 'full', 
-        topology: str = 'left-right', 
-        random_state: Optional[Union[int, np.random.RandomState]] = None, 
-        hmmlearn_kwargs: dict = dict(init_params='stmcw', params='stmcw')
+        self,
+        n_states: int,
+        topology: Optional[str],
+        random_state: Optional[Union[int, np.random.RandomState]],
+        hmmlearn_kwargs: Dict[str, Any]
     ):
+        if type(self) == HMM:
+            raise NotImplementedError(
+                f'Abstract class {type(self).__name__} cannot be instantiated - '
+                'use the subclassing HMMs defined in the sequentia.models.hmm module'
+            )
+
         self.n_states = n_states
-        self.n_components = n_components
-        self.covariance_type = covariance_type
         self.topology = topology
         self.random_state = random_state
         self.hmmlearn_kwargs = hmmlearn_kwargs
         self._skip_init_params = set()
         self._skip_params = set()
 
-    def fit(self, X, lengths=None):
-        data = BaseMultivariateFloatSequenceValidator(X=X, lengths=lengths)
-        self.random_state_ = check_random_state(self.random_state)
-        if self.topology is None:
-            self.topology_ = None
-        else:
-            self.topology_ = TOPOLOGY_MAP[TopologyType(self.topology)](self.n_states, self.random_state_)
-        self._check_init_params()
+    def fit(self, X, lengths):
+        raise NotImplementedError
 
-        self.model = hmmlearn.hmm.GMMHMM(
-            n_components=self.n_states,
-            n_mix=self.n_components,
-            covariance_type=self.covariance_type,
-            random_state=self.random_state_,
-            init_params=''.join(set(DEFAULT_PARAMS) - self._skip_init_params),
-            params=''.join(set(DEFAULT_PARAMS) - self._skip_params)
-        )
-
-        for attr in ('startprob', 'transmat', 'means', 'covars', 'weights'):
-            if hasattr(self, f'_{attr}'):
-                setattr(self.model, f'{attr}_', getattr(self, f'_{attr}'))
-
-        self.model.fit(data.X, lengths=data.lengths)
-        self.n_seqs_ = len(data.lengths)
-
-        return self
-    
-    @requires_fit
     def n_params(self):
         n_params = 0
         if 's' not in self._skip_params:
             n_params += self.model.startprob_.size
         if 't' not in self._skip_params:
             n_params += self.model.transmat_.size
-        if 'm' not in self._skip_params:
-            n_params += self.model.means_.size
-        if 'c' not in self._skip_params:
-            n_params += self.model.covars_.size
-        if 'w' not in self._skip_params:
-            n_params += self.model.weights_.size
         return n_params
 
-    @requires_fit
-    def bic(self, X, lengths=None):
-        data = BaseMultivariateFloatSequenceValidator(X=X, lengths=lengths)
-        max_log_likelihood = self.model.score(data.X, lengths=data.lengths)
+    def bic(self, X, lengths):
+        max_log_likelihood = self.model.score(X, lengths)
         n_params = self.n_params()
         n_seqs = len(lengths)
         return n_params * np.log(n_seqs) - 2 * np.log(max_log_likelihood)
 
-    @requires_fit
-    def aic(self, X, lengths=None):
-        data = BaseMultivariateFloatSequenceValidator(X=X, lengths=lengths)
-        max_log_likelihood = self.model.score(data.X, lengths=data.lengths)
+    def aic(self, X, lengths):
+        max_log_likelihood = self.model.score(X, lengths)
         n_params = self.n_params()
         return 2 * n_params - 2 * np.log(max_log_likelihood)
 
@@ -218,140 +163,230 @@ class GaussianMixtureHMM(HMM):
             except Exception as e:
                 raise error from e
 
-    def set_state_means(self, values):
-        if isinstance(values, np.ndarray):
-            self._means = values
-            self._skip_init_params |= set('m')
-        else:
-            raise ValueError("Invalid state means - expected an array")
-
-    def set_state_covariances(self, values):
-        if isinstance(values, np.ndarray):
-            self._covars = values
-            self._skip_init_params |= set('c')
-        else:
-            raise ValueError("Invalid state covariances - expected an array")
-
-    def set_state_weights(self, values):
-        if isinstance(values, np.ndarray):
-            self._weights = values
-            self._skip_init_params |= set('w')
-        else:
-            raise ValueError("Invalid state mixture weights - expected an array")
-
     def freeze(self, params=None):
         self._skip_params |= set(self._modify_params(params))
 
     def unfreeze(self, params=None):
         self._skip_params -= set(self._modify_params(params))
 
-    def _check_init_params(self):
-        if 's' in self._skip_init_params:
-            if not hasattr(self, '_startprob'):
-                warnings.warn(
-                    'Starting probabilities were marked as uninitializable but no starting probabilities were given - '
-                    'defaulting to random starting probabilities'
-                )
-                self.set_start_probs(values='random')
-            if isinstance(self._startprob, str):
-                if self.topology_ is None:
-                    raise RuntimeError('Unable to generate starting probabilities as no topology has been provided')
-                if self._startprob == 'uniform':
-                    self._startprob = self.topology_.uniform_start_probs()
-                elif self._startprob == 'random':
-                    self._startprob = self.topology_.random_start_probs()
-            elif isinstance(self._startprob, np.ndarray):
-                if self.topology_ is None:
-                    raise RuntimeError('Unable to set starting probabilities as no topology has been provided')
-                self._startprob = self.topology_.check_start_probs(self._startprob)
-        else:
-            if hasattr(self, '_startprob'):
-                warnings.warn(
-                    'Starting probabilities were marked to be initialized by hmmlearn but a value was set - '
-                    'unsetting provided starting probabilities'
-                )
-                del self._startprob
-            else:
-                if self.topology_ is not None:
-                    self._startprob = self.topology_.random_start_probs()
-                    topology = self.topology_.__class__.__name__
-                    warnings.warn(
-                        'Starting probabilities were marked to be initialized by hmmlearn but a topology was provided - '
-                        f'generating random starting probabilities from {topology}.\n'
-                        f'- To set starting probabilities according to {topology}, manually call set_start_probs() before fitting.\n'
-                        '- To use hmmlearn initialization, set topology=None.'
-                    )
-
-        if 't' in self._skip_init_params:
-            if not hasattr(self, '_transmat'):
-                warnings.warn(
-                    'Transition matrix was marked as uninitializable but no transition matrix was given - '
-                    'defaulting to random transition matrix'
-                )
-                self.set_transitions(values='random')
-            if isinstance(self._transmat, str):
-                if self.topology_ is None:
-                    raise RuntimeError('Unable to generate transition matrix as no topology has been provided')
-                if self._transmat == 'uniform':
-                    self._transmat = self.topology_.uniform_transitions()
-                elif self._transmat == 'random':
-                    self._transmat = self.topology_.random_transitions()
-            elif isinstance(self._transmat, np.ndarray):
-                if self.topology_ is None:
-                    raise RuntimeError('Unable to set transition matrix as no topology has been provided')
-                self._transmat = self.topology_.check_transitions(self._transmat)
-        else:
-            if hasattr(self, '_transmat'):
-                warnings.warn(
-                    'Transition matrix was marked to be initialized by hmmlearn but a value was set - '
-                    'unsetting provided transition matrix'
-                )
-                del self._transmat
-            else:
-                if self.topology_ is not None:
-                    self._transmat = self.topology_.random_transitions()
-                    topology = self.topology_.__class__.__name__
-                    warnings.warn(
-                        'Transition matrix was marked to be initialized by hmmlearn but a topology was provided - '
-                        f'generating random transition matrix from {topology}.\n'
-                        f'- To set a transition matrix according to {topology}, manually call set_transitions() before fitting.\n'
-                        '- To use hmmlearn initialization, set topology=None.'
-                    )
-
-        if 'm' in self._skip_init_params:
-            if not hasattr(self, '_means'):
-                warnings.warn(
-                    'State means were marked as uninitializable but no state means were given - '
-                    'defaulting to hmmlearn initialization'
-                )
-                self._skip_init_params -= set('m')
-
-        if 'c' in self._skip_init_params:
-            if not hasattr(self, '_covars'):
-                warnings.warn(
-                    'State covariances were marked as uninitializable but no state covariances were given - '
-                    'defaulting to hmmlearn initialization'
-                )
-                self._skip_init_params -= set('c')
-
-        if 'w' in self._skip_init_params:
-            if not hasattr(self, '_weights'):
-                warnings.warn(
-                    'State mixture weights were marked as uninitializable but no state mixture weights were given - '
-                    'defaulting to hmmlearn initialization'
-                )
-                self._skip_init_params -= set('w')
-
     def _modify_params(self, params):
-        error_msg = "Expected a string consisting of any combination of 's', 't', 'm', 'c', 'w'"
+        defaults = self.DEFAULT_PARAMS
+        error_msg = f"Expected a string consisting of any combination of {defaults}"
         if isinstance(params, str):
-            if bool(re.compile(r'[^stmcw]').search(params)):
+            if bool(re.compile(fr'[^{defaults}]').search(params)):
                 raise ValueError(error_msg)
         elif params is None:
-            params = 'stmcw'
+            params = defaults
         else:
             raise TypeError(error_msg)
         return params
 
+    def _check_init_params(self):
+        topology = self.topology_ or ErgodicTopology(self.n_states, check_random_state(self.random_state))
+
+        if 's' in self._skip_init_params:
+            if isinstance(self._startprob, str):
+                if self._startprob == 'uniform':
+                    self._startprob = topology.uniform_start_probs()
+                elif self._startprob == 'random':
+                    self._startprob = topology.random_start_probs()
+            elif isinstance(self._startprob, np.ndarray):
+                self._startprob = topology.check_start_probs(self._startprob)
+        else:
+            if self.topology_ is not None:
+                self.set_start_probs(topology.random_start_probs())
+
+        if 't' in self._skip_init_params:
+            if isinstance(self._transmat, str):
+                if self._transmat == 'uniform':
+                    self._transmat = topology.uniform_transitions()
+                elif self._transmat == 'random':
+                    self._transmat = topology.random_transitions()
+            elif isinstance(self._transmat, np.ndarray):
+                if topology is not None:
+                    self._transmat = topology.check_transitions(self._transmat)
+        else:
+            if self.topology_ is not None:
+                self.set_transitions(topology.random_transitions())
+
+@unique
+class CovarianceType(Enum):
+    SPHERICAL = 'spherical'
+    DIAGONAL = 'diag'
+    FULL = 'full'
+    TIED = 'tied'
+
+class GaussianMixtureHMMValidator(HMMValidator):
+    n_components: PositiveInt = 1
+    covariance_type: CovarianceType = CovarianceType.FULL
+    hmmlearn_kwargs: Dict[str, Any] = dict(init_params=DEFAULT_GMM_PARAMS, params=DEFAULT_GMM_PARAMS)
+
+    _DEFAULT_PARAMS = DEFAULT_GMM_PARAMS
+    _UNSETTABLE_HMMLEARN_PARAMS = HMMValidator._UNSETTABLE_HMMLEARN_PARAMS + ['n_components', 'n_mix', 'covariance_type']
+    _STATE_PARAMS = ['means', 'covariances', 'weights']
+
+class GaussianMixtureHMM(HMM):
+    DEFAULT_PARAMS = DEFAULT_GMM_PARAMS
+
+    @validate_params(using=GaussianMixtureHMMValidator)
+    def __init__(
+        self, *,
+        n_states: int = 2,
+        n_components: int = 1,
+        covariance_type: str = 'full',
+        topology: Optional[str] = None,
+        random_state: Optional[Union[int, np.random.RandomState]] = None,
+        hmmlearn_kwargs: dict = dict(
+            init_params=DEFAULT_GMM_PARAMS,
+            params=DEFAULT_GMM_PARAMS
+        )
+    ):
+        super().__init__(n_states, topology, random_state, hmmlearn_kwargs)
+        self.n_components = n_components
+        self.covariance_type = covariance_type
+
+    def fit(self, X, lengths=None):
+        data = BaseMultivariateFloatSequenceValidator(X=X, lengths=lengths)
+        self.random_state_ = check_random_state(self.random_state)
+        if self.topology is None:
+            self.topology_ = None
+        else:
+            self.topology_ = TOPOLOGY_MAP[TopologyType(self.topology)](self.n_states, self.random_state_)
+        self._check_init_params()
+
+        kwargs = self.hmmlearn_kwargs
+        kwargs['init_params'] = ''.join(set(kwargs['init_params']) - self._skip_init_params)
+        kwargs['params'] = ''.join(set(kwargs['params']) - self._skip_params)
+
+        self.model = hmmlearn.hmm.GMMHMM(
+            n_components=self.n_states,
+            n_mix=self.n_components,
+            covariance_type=self.covariance_type,
+            random_state=self.random_state_,
+            **kwargs
+        )
+
+        for attr in ('startprob', 'transmat', 'means', 'covars', 'weights'):
+            if hasattr(self, f'_{attr}'):
+                setattr(self.model, f'{attr}_', getattr(self, f'_{attr}'))
+
+        self.model.fit(data.X, lengths=data.lengths)
+        self.n_seqs_ = len(data.lengths)
+
+        return self
+
+    @requires_fit
+    def n_params(self):
+        n_params = super().n_params()
+        if 'm' not in self._skip_params:
+            n_params += self.model.means_.size
+        if 'c' not in self._skip_params:
+            n_params += self.model.covars_.size
+        if 'w' not in self._skip_params:
+            n_params += self.model.weights_.size
+        return n_params
+
+    @requires_fit
+    def bic(self, X, lengths=None):
+        data = BaseMultivariateFloatSequenceValidator(X=X, lengths=lengths)
+        return super().bic(data.X, data.lengths)
+
+    @requires_fit
+    def aic(self, X, lengths=None):
+        data = BaseMultivariateFloatSequenceValidator(X=X, lengths=lengths)
+        return super().aic(data.X, data.lengths)
+
+    def set_state_means(self, values):
+        self._means = Array[float].validate_type(values)
+        self._skip_init_params |= set('m')
+
+    def set_state_covariances(self, values):
+        self._covars = Array[float].validate_type(values)
+        self._skip_init_params |= set('c')
+
+    def set_state_weights(self, values):
+        self._weights = Array[float].validate_type(values)
+        self._skip_init_params |= set('w')
+
+class MultinomialHMMValidator(HMMValidator):
+    hmmlearn_kwargs: Dict[str, Any] = dict(init_params=DEFAULT_MULTINOMIAL_PARAMS, params=DEFAULT_MULTINOMIAL_PARAMS)
+
+    _DEFAULT_PARAMS = DEFAULT_MULTINOMIAL_PARAMS
+    _STATE_PARAMS = ['emissions']
+
 class MultinomialHMM(HMM):
-    pass
+    DEFAULT_PARAMS = DEFAULT_MULTINOMIAL_PARAMS
+
+    @validate_params(using=MultinomialHMMValidator)
+    def __init__(
+        self, *,
+        n_states: int = 2,
+        topology: Optional[str] = None,
+        random_state: Optional[Union[int, np.random.RandomState]] = None,
+        hmmlearn_kwargs: dict = dict(
+            init_params=DEFAULT_MULTINOMIAL_PARAMS,
+            params=DEFAULT_MULTINOMIAL_PARAMS
+        )
+    ):
+        super().__init__(n_states, topology, random_state, hmmlearn_kwargs)
+
+    def fit(
+        self,
+        X: Array[int],
+        lengths: Optional[Array[int]] = None
+    ) -> MultinomialHMM:
+        data = BaseUnivariateCategoricalSequenceValidator(X=X, lengths=lengths)
+        self.random_state_ = check_random_state(self.random_state)
+        if self.topology is None:
+            self.topology_ = None
+        else:
+            self.topology_ = TOPOLOGY_MAP[TopologyType(self.topology)](self.n_states, self.random_state_)
+        self._check_init_params()
+
+        kwargs = self.hmmlearn_kwargs
+        kwargs['init_params'] = ''.join(set(kwargs['init_params']) - self._skip_init_params)
+        kwargs['params'] = ''.join(set(kwargs['params']) - self._skip_params)
+
+        self.model = hmmlearn.hmm.MultinomialHMM(
+            n_components=self.n_states,
+            random_state=self.random_state_,
+            **kwargs
+        )
+
+        for attr in ('startprob', 'transmat', 'emissionprob'):
+            if hasattr(self, f'_{attr}'):
+                setattr(self.model, f'{attr}_', getattr(self, f'_{attr}'))
+
+        self.model.fit(data.X, lengths=data.lengths)
+        self.n_seqs_ = len(data.lengths)
+
+        return self
+
+    @requires_fit
+    def n_params(self) -> int:
+        n_params = super().n_params()
+        if 'e' not in self._skip_params:
+            n_params += self.model.emissionprob_.size
+        return n_params
+
+    @requires_fit
+    def bic(
+        self,
+        X: Array[int],
+        lengths: Optional[Array[int]] = None
+    ) -> float:
+        data = BaseUnivariateCategoricalSequenceValidator(X=X, lengths=lengths)
+        return super().bic(data.X, data.lengths)
+
+    @requires_fit
+    def aic(
+        self,
+        X: Array[int],
+        lengths: Optional[Array[int]] = None
+    ) -> float:
+        data = BaseUnivariateCategoricalSequenceValidator(X=X, lengths=lengths)
+        return super().aic(data.X, data.lengths)
+
+    def set_state_emissions(self, values):
+        self._emissionprob = Array[float].validate_type(values)
+        self._skip_init_params |= set('e')

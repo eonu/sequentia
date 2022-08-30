@@ -55,7 +55,7 @@ def check_is_fitted(estimator, attributes=None, return_=False):
 
     if not fitted:
         raise NotFittedError(
-            f'This {estimator.__class__.__name__} instance is not fitted yet. '
+            f'This {type(estimator).__name__} instance is not fitted yet. '
             "Call 'fit' with appropriate arguments before using this method."
         )
 

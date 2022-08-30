@@ -250,29 +250,6 @@ class KNNMixin:
                 distances[i, j] = dist(x_row, x_col)
         return distances
 
-    def __eq__(self, other):
-        if not isinstance(other, KNNMixin):
-            return False
-
-        eq = True
-
-        params = ('k', 'window', 'independent')
-        self_params = self.get_params()
-        other_params = other.get_params()
-        for param in params:
-            eq &= self_params[param] == other_params[param]
-
-        fitted_params = ('X_', 'y_', 'lengths_')
-        self_fitted = check_is_fitted(self, fitted_params, True)
-        other_fitted = check_is_fitted(other, fitted_params, True)
-        eq &= self_fitted == other_fitted
-        if self_fitted and other_fitted:
-            eq &= np.array_equal(self.X_, other.X_)
-            eq &= np.array_equal(self.y_, other.y_)
-            eq &= np.array_equal(self.lengths_, other.lengths_)
-
-        return eq
-
     @requires_fit
     def save(self, path):
         # Fetch main parameters and fitted values

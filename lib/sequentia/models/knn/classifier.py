@@ -54,7 +54,7 @@ class KNNClassifier(KNNMixin, Classifier):
         self.lengths_ = data.lengths
         self.idxs_ = SequentialDataset._get_idxs(data.lengths)
         self.random_state_ = check_random_state(self.random_state)
-        self.classes_ = check_classes(y, self.classes)
+        self.classes_ = check_classes(data.y, self.classes)
         return self
 
     @requires_fit

@@ -5,6 +5,7 @@ from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from sklearn.metrics import accuracy_score, r2_score
 
 from sequentia.utils.validation import Array
+from sequentia.utils.decorators import requires_fit
 
 __all__ = ['Classifier', 'Regressor']
 
@@ -38,6 +39,7 @@ class Classifier(BaseEstimator, ClassifierMixin):
     ) -> Array[float]:
         raise NotImplementedError
 
+    @requires_fit
     def score(
         self,
         X: Union[Array[int], Array[float]],
@@ -64,6 +66,7 @@ class Regressor(BaseEstimator, RegressorMixin):
     ) -> Array[float]:
         raise NotImplementedError
 
+    @requires_fit
     def score(
         self,
         X: Array[float],
