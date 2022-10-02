@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import Union, Optional, Callable
 
+from pydantic import NegativeInt, PositiveInt, confloat
+
 from sequentia.models.knn.base import KNNValidator, KNNMixin
 from sequentia.models.base import Regressor
 
@@ -14,15 +16,22 @@ from sequentia.utils.validation import (
 __all__ = ['KNNRegressor']
 
 class KNNRegressor(KNNMixin, Regressor):
+    """TODO
+
+    weighting must be a non-negative matrix function!
+    """
+
     @validate_params(using=KNNValidator)
-    def __init__(self, *,
-        k: int = 1,
-        weighting: Union[str, Callable] = 'uniform', # TODO: Must be a non-negative matrix function!
-        window: float = 1,
+    def __init__(
+        self,
+        *,
+        k: PositiveInt = 1,
+        weighting: Optional[Callable] = None,
+        window: confloat(ge=0, le=1) = 1,
         independent: bool = False,
         use_c: bool = False,
-        n_jobs: int = 1
-    ):
+        n_jobs: Union[NegativeInt, PositiveInt] = 1
+    ) -> KNNRegressor:
         self.k = k
         self.weighting = weighting
         self.window = window

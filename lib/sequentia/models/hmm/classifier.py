@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from enum import Enum, unique
-from typing import Optional, Union, Dict
+from typing import Optional, Union, Dict, Literal
 from joblib import Parallel, delayed
 
 import numpy as np
@@ -53,18 +55,28 @@ class HMMClassifierValidator(Validator):
         return values
 
 class HMMClassifier(Classifier):
+    """TODO"""
+
     @validate_params(using=HMMClassifierValidator)
-    def __init__(self, *,
-        prior: Optional[Union[str, dict]] = 'frequency',
+    def __init__(
+        self,
+        *,
+        prior: Optional[Union[Literal["frequency"], Dict[int, confloat(ge=0, le=1)]]] = 'frequency',
         classes: Optional[Array[int]] = None,
-        n_jobs: int = 1
-    ):
+        n_jobs: Union[NegativeInt, PositiveInt] = 1
+    ) -> HMMClassifier:
         self.prior = prior
         self.classes = classes
         self.n_jobs = n_jobs
         self.models = {}
 
-    def add_model(self, model: HMM, label: int):
+    def add_model(
+        self,
+        model: HMM,
+        label: int
+    ):
+        """TODO"""
+
         if not isinstance(model, HMM):
             raise TypeError('Expected `model` argument to be a type of HMM')
         if len(self.models) > 0:
@@ -75,7 +87,14 @@ class HMMClassifier(Classifier):
                 )
         self.models[int(label)] = model
 
-    def fit(self, X=None, y=None, lengths=None):
+    def fit(
+        self,
+        X: Optional[Array] = None,
+        y: Optional[Array[int]] = None,
+        lengths: Optional[Array[int]] = None
+    ) -> HMMClassifier:
+        """TODO"""
+
         if X is None or y is None:
             if len(self.models) == 0:
                 raise RuntimeError(
@@ -132,14 +151,24 @@ class HMMClassifier(Classifier):
                 )
             self.prior_ = self.prior
 
+        return self
+
     @requires_fit
-    def predict(self, X, lengths=None):
+    def predict(
+        self,
+        X: Array,
+        lengths: Optional[Array] = None
+    ) -> Array[int]:
         scores = self.predict_scores(X, lengths)
         max_score_idxs = scores.argmax(axis=1)
         return self.classes_[max_score_idxs]
 
     @requires_fit
-    def predict_proba(self, X, lengths=None):
+    def predict_proba(
+        self,
+        X: Array,
+        lengths: Optional[Array] = None
+    ) -> Array[float]:
         proba = self.predict_scores(X, lengths)
         proba -= proba.max(axis=1, keepdims=True)
         proba = np.exp(proba)
@@ -147,7 +176,11 @@ class HMMClassifier(Classifier):
         return proba
 
     @requires_fit
-    def predict_scores(self, X, lengths=None):
+    def predict_scores(
+        self,
+        X: Array,
+        lengths: Optional[Array] = None
+    ) -> Array[float]:
         data = self._base_sequence_validator(X=X, lengths=lengths)
         n_jobs = effective_n_jobs(self.n_jobs, data.lengths)
         chunk_idxs = np.array_split(SequentialDataset._get_idxs(data.lengths), n_jobs)
@@ -160,7 +193,7 @@ class HMMClassifier(Classifier):
 
     @validate_params(using=HMMClassifierValidator)
     @override_params(HMMClassifierValidator.fields(), temporary=False)
-    def set_params(self, **kwargs):
+    def set_params(self, **kwargs) -> HMMClassifier:
         return self
 
     def _compute_scores_chunk(self, idxs, X):

@@ -3,7 +3,7 @@ import joblib
 import marshal
 import warnings
 from enum import Enum, unique
-from typing import Optional, Union, Callable, Literal, Tuple, List
+from typing import Optional, Union, Callable, Literal, Tuple, List, Any
 from joblib import Parallel, delayed
 
 import numpy as np
@@ -42,13 +42,13 @@ class WeightingType(Enum):
     UNIFORM = 'uniform'
 
 class KNNValidator(Validator):
-    k: PositiveInt = 1,
-    weighting: Union[Literal[WeightingType.UNIFORM], Callable] = WeightingType.UNIFORM,
-    window: confloat(ge=0, le=1) = 1,
-    independent: bool = False,
-    classes: Optional[Array[int]] = None,
-    use_c: bool = False,
-    n_jobs: Union[NegativeInt, PositiveInt] = 1,
+    k: PositiveInt = 1
+    weighting: Optional[Callable] = None
+    window: confloat(ge=0, le=1) = 1
+    independent: bool = False
+    classes: Optional[Array[int]] = None
+    use_c: bool = False
+    n_jobs: Union[NegativeInt, PositiveInt] = 1
     random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = None
 
     @validator('use_c')
@@ -76,9 +76,13 @@ class KNNMixin:
     ) -> Tuple[
         Array[int],
         Array[float],
-        Union[Array[int], Array[float]]
+        Array
     ]:
-        """Queries the k nearest neighbors in the training set for each sequence in X"""
+        """Queries the k nearest neighbors in the training set for each sequence in X
+
+        TODO
+        """
+
         distances = self.compute_distance_matrix(X, lengths)
         partition_by = range(self.k) if sort else self.k
         k_idxs = np.argpartition(distances, partition_by, axis=1)[:, :self.k]
@@ -100,6 +104,7 @@ class KNNMixin:
 
         TODO
         """
+
         data = BaseMultivariateFloatSequenceValidator(X=X, lengths=lengths)
 
         n_jobs = effective_n_jobs(self.n_jobs, data.lengths)
@@ -119,6 +124,8 @@ class KNNMixin:
     @override_params(['window', 'independent'])
     @validate_params(using=KNNValidator)
     def dtw(self, A: Array[float], B: Array[float], **kwargs) -> float:
+        """TODO"""
+
         A = SingleMultivariateFloatSequenceValidator(sequence=A).sequence
         B = SingleMultivariateFloatSequenceValidator(sequence=B).sequence
         return self._dtw(A, B)
@@ -132,6 +139,8 @@ class KNNMixin:
         b: Array[float],
         **kwargs
     ) -> 'matplotlib.axes.Axes':
+        """TODO"""
+
         import matplotlib.pyplot as plt
         from dtaidistance import dtw_visualisation
 
@@ -158,6 +167,8 @@ class KNNMixin:
         ax: Optional['matplotlib.axes.Axes'] = None,
         **kwargs
     ) -> 'matplotlib.axes.Axes':
+        """TODO"""
+
         import matplotlib.pyplot as plt
 
         distances = self.compute_distance_matrix(X, lengths)
@@ -178,6 +189,8 @@ class KNNMixin:
         ax: Optional['matplotlib.axes.Axes'] = None,
         **kwargs
     ) -> 'matplotlib.axes.Axes':
+        """TODO"""
+
         import matplotlib.pyplot as plt
 
         distances = self.compute_distance_matrix(X, lengths)
@@ -190,33 +203,39 @@ class KNNMixin:
 
     def _dtw1d(self, a: Array[float], b: Array[float], window: int) -> float:
         """Computes the DTW distance between two univariate sequences."""
+
         return dtw.distance(a, b, use_c=self.use_c, window=window)
 
     def _window(self, A: Array[float], B: Array[float]) -> int:
         """TODO"""
+
         return max(1, int(self.window * max(len(A), len(B))))
 
     def _dtwi(self, A: Array[float], B: Array[float]) -> float:
         """Computes the multivariate DTW distance as the sum of the pairwise per-feature DTW distances,
         allowing each feature to be warped independently."""
+
         window = self._window(A, B)
         return np.sum([self._dtw1d(A[:, i], B[:, i], window) for i in range(A.shape[1])])
 
     def _dtwd(self, A: Array[float], B: Array[float]) -> float:
         """Computes the multivariate DTW distance so that the warping of the features depends on each other,
         by modifying the local distance measure."""
+
         window = self._window(A, B)
         return dtw_ndim.distance(A, B, use_c=self.use_c, window=window)
 
     def _dtw(self) -> Callable:
         """TODO"""
+
         return self._dtwi if self.independent else self._dtwd
 
     def _weighting(self) -> Callable:
         """TODO"""
+
         if callable(self.weighting):
             return self.weighting
-        elif WeightingType(self.weighting) == WeightingType.UNIFORM:
+        else:
             return lambda x: np.ones_like(x)
 
     def _distance_matrix_row_chunk(
@@ -227,7 +246,11 @@ class KNNMixin:
         n_jobs: int,
         dist: Callable
     ) -> Array[float]:
-        """Calculates a distance sub-matrix for a subset of rows over all columns."""
+        """Calculates a distance sub-matrix for a subset of rows over all columns.
+
+        TODO
+        """
+
         return np.hstack(
             Parallel(n_jobs=n_jobs)(
                 delayed(self._distance_matrix_row_col_chunk)(
@@ -243,7 +266,11 @@ class KNNMixin:
         X: Array[float],
         dist: Callable
     ) -> Array[float]:
-        """Calculates a distance sub-matrix for a subset of rows and columns."""
+        """Calculates a distance sub-matrix for a subset of rows and columns.
+
+        TODO
+        """
+
         distances = np.zeros((len(row_idxs), len(col_idxs)))
         for i, x_row in enumerate(SequentialDataset._iter_X(X, row_idxs)):
             for j, x_col in enumerate(SequentialDataset._iter_X(self.X_, col_idxs)):
@@ -251,7 +278,9 @@ class KNNMixin:
         return distances
 
     @requires_fit
-    def save(self, path):
+    def save(self, path: Any):
+        """TODO"""
+
         # Fetch main parameters and fitted values
         state = {
             'params': self.get_params(),
@@ -268,6 +297,8 @@ class KNNMixin:
 
     @classmethod
     def load(cls, path):
+        """TODO"""
+
         state = joblib.load(path)
 
         # Deserialize weighting function

@@ -5,6 +5,7 @@ from joblib import Parallel, delayed
 import numpy as np
 from numba import njit, prange
 from sklearn.utils import check_random_state
+from pydantic import NonNegativeInt, NegativeInt, PositiveInt, confloat
 
 from sequentia.models.knn.base import KNNValidator, KNNMixin
 from sequentia.models.base import Classifier
@@ -22,17 +23,24 @@ from sequentia.utils.validation import (
 __all__ = ['KNNClassifier']
 
 class KNNClassifier(KNNMixin, Classifier):
+    """TODO
+
+    weighting must be a non-negative matrix function!
+    """
+
     @validate_params(using=KNNValidator)
-    def __init__(self, *,
-        k: int = 1,
-        weighting: Union[str, Callable] = 'uniform', # TODO: Must be a non-negative matrix function!
-        window: float = 1,
+    def __init__(
+        self,
+        *,
+        k: PositiveInt = 1,
+        weighting: Optional[Callable] = None,
+        window: confloat(ge=0, le=1) = 1,
         independent: bool = False,
         classes: Optional[Array[int]] = None,
         use_c: bool = False,
-        n_jobs: int = 1,
-        random_state: Optional[Union[int, np.random.RandomState]] = None
-    ):
+        n_jobs: Union[NegativeInt, PositiveInt] = 1,
+        random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = None
+    ) -> KNNClassifier:
         self.k = k
         self.weighting = weighting
         self.window = window
@@ -95,7 +103,11 @@ class KNNClassifier(KNNMixin, Classifier):
         labels: Array[int],
         weightings: Array[float]
     ) -> Array[float]:
-        """Calculates the sum of the weightings for each label group."""
+        """Calculates the sum of the weightings for each label group.
+
+        TODO
+        """
+
         scores = np.zeros((len(labels), len(self.classes_)))
         for i, k in enumerate(self.classes_):
             scores[:, i] = np.einsum('ij,ij->i', labels == k, weightings)
@@ -105,7 +117,11 @@ class KNNClassifier(KNNMixin, Classifier):
         self,
         scores: Array[float]
     ) -> Array[int]:
-        """Returns the label of the k nearest neighbors with the highest score for each example."""
+        """Returns the label of the k nearest neighbors with the highest score for each example.
+
+        TODO
+        """
+
         n_jobs = effective_n_jobs(self.n_jobs, scores)
         score_chunks = np.array_split(scores, n_jobs)
         return np.concatenate(
@@ -119,7 +135,11 @@ class KNNClassifier(KNNMixin, Classifier):
         self,
         score_chunk: Array[float]
     ) -> Array[int]:
-        """Returns the label with the highest score for each item in the chunk."""
+        """Returns the label with the highest score for each item in the chunk.
+
+        TODO
+        """
+
         max_labels = np.zeros(len(score_chunk), dtype=int)
         for i, scores in enumerate(score_chunk):
             max_score_idxs = self._multi_argmax(scores)
@@ -133,7 +153,10 @@ class KNNClassifier(KNNMixin, Classifier):
     ) -> Array[int]:
         """Same as numpy.argmax but returns all occurrences of the maximum and only requires a single pass.
         From: https://stackoverflow.com/a/58652335
+
+        TODO
         """
+
         all_, max_ = [0], arr[0]
         for i in prange(1, len(arr)):
             if arr[i] > max_:
@@ -141,12 +164,3 @@ class KNNClassifier(KNNMixin, Classifier):
             elif arr[i] == max_:
                 all_.append(i)
         return np.array(all_)
-
-    def __eq__(self, other):
-        eq = super().__eq__(other)
-        self_fitted = check_is_fitted(self, ['classes_'], True)
-        other_fitted = check_is_fitted(self, ['classes_'], True)
-        eq &= self_fitted == other_fitted
-        if self_fitted and other_fitted:
-            eq &= np.array_equal(self.classes_, other.classes_)
-        return eq

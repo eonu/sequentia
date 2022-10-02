@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 import warnings
 from enum import Enum, unique
-from typing import Optional, Union, Dict, Any
+from typing import Optional, Union, Dict, Any, Literal
 from pydantic import NonNegativeInt, PositiveInt, validator
 
 import numpy as np
@@ -97,7 +97,7 @@ class HMM(BaseEstimator):
         topology: Optional[str],
         random_state: Optional[Union[int, np.random.RandomState]],
         hmmlearn_kwargs: Dict[str, Any]
-    ):
+    ) -> HMM:
         if type(self) == HMM:
             raise NotImplementedError(
                 f'Abstract class {type(self).__name__} cannot be instantiated - '
@@ -111,10 +111,16 @@ class HMM(BaseEstimator):
         self._skip_init_params = set()
         self._skip_params = set()
 
-    def fit(self, X, lengths):
+    def fit(
+        self,
+        X: Array,
+        lengths: Optional[Array[int]] = None
+    ) -> HMM:
         raise NotImplementedError
 
-    def n_params(self):
+    def n_params(self) -> NonNegativeInt:
+        """TODO"""
+
         n_params = 0
         if 's' not in self._skip_params:
             n_params += self.model.startprob_.size
@@ -122,18 +128,35 @@ class HMM(BaseEstimator):
             n_params += self.model.transmat_.size
         return n_params
 
-    def bic(self, X, lengths):
+    def bic(
+        self,
+        X: Array,
+        lengths: Optional[Array[int]] = None
+    ) -> float:
+        """TODO"""
+
         max_log_likelihood = self.model.score(X, lengths)
         n_params = self.n_params()
         n_seqs = len(lengths)
         return n_params * np.log(n_seqs) - 2 * np.log(max_log_likelihood)
 
-    def aic(self, X, lengths):
+    def aic(
+        self,
+        X: Array,
+        lengths: Optional[Array[int]] = None
+    ) -> float:
+        """TODO"""
+
         max_log_likelihood = self.model.score(X, lengths)
         n_params = self.n_params()
         return 2 * n_params - 2 * np.log(max_log_likelihood)
 
-    def set_start_probs(self, values='random'):
+    def set_start_probs(
+        self,
+        values: Union[Array, Literal["random"]] = 'random'
+    ):
+        """TODO"""
+
         error = ValueError("Invalid start probabilities - expected: 'uniform', 'random' or an array of probabilities")
         if isinstance(values, str):
             if values in ('uniform', 'random'):
@@ -148,7 +171,12 @@ class HMM(BaseEstimator):
             except Exception as e:
                 raise error from e
 
-    def set_transitions(self, values='random'):
+    def set_transitions(
+        self,
+        values: Union[Array, Literal["random"]] = 'random'
+    ):
+        """TODO"""
+
         error = ValueError("Invalid transition matrix - expected: 'uniform', 'random' or an array of probabilities")
         if isinstance(values, str):
             if values in ('uniform', 'random'):
@@ -163,10 +191,20 @@ class HMM(BaseEstimator):
             except Exception as e:
                 raise error from e
 
-    def freeze(self, params=None):
+    def freeze(
+        self,
+        params: Optional[str] = None
+    ):
+        """TODO"""
+
         self._skip_params |= set(self._modify_params(params))
 
-    def unfreeze(self, params=None):
+    def unfreeze(
+        self,
+        params: Optional[str] = None
+    ):
+        """TODO"""
+
         self._skip_params -= set(self._modify_params(params))
 
     def _modify_params(self, params):
@@ -226,26 +264,35 @@ class GaussianMixtureHMMValidator(HMMValidator):
     _STATE_PARAMS = ['means', 'covariances', 'weights']
 
 class GaussianMixtureHMM(HMM):
+    """TODO"""
+
     DEFAULT_PARAMS = DEFAULT_GMM_PARAMS
 
     @validate_params(using=GaussianMixtureHMMValidator)
     def __init__(
-        self, *,
-        n_states: int = 2,
-        n_components: int = 1,
-        covariance_type: str = 'full',
-        topology: Optional[str] = None,
-        random_state: Optional[Union[int, np.random.RandomState]] = None,
-        hmmlearn_kwargs: dict = dict(
+        self,
+        *,
+        n_states: PositiveInt = 2,
+        n_components: PositiveInt = 1,
+        covariance_type: Literal["spherical", "diag", "full", "tied"] = "full",
+        topology: Optional[Literal["ergodic", "left-right", "linear"]] = None,
+        random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = None,
+        hmmlearn_kwargs: Dict[str, Any] = dict(
             init_params=DEFAULT_GMM_PARAMS,
             params=DEFAULT_GMM_PARAMS
         )
-    ):
+    ) -> GaussianMixtureHMM:
         super().__init__(n_states, topology, random_state, hmmlearn_kwargs)
         self.n_components = n_components
         self.covariance_type = covariance_type
 
-    def fit(self, X, lengths=None):
+    def fit(
+        self,
+        X: Array[float],
+        lengths: Optional[Array[int]] = None
+    ) -> GaussianMixtureHMM:
+        """TODO"""
+
         data = BaseMultivariateFloatSequenceValidator(X=X, lengths=lengths)
         self.random_state_ = check_random_state(self.random_state)
         if self.topology is None:
@@ -276,7 +323,7 @@ class GaussianMixtureHMM(HMM):
         return self
 
     @requires_fit
-    def n_params(self):
+    def n_params(self) -> NonNegativeInt:
         n_params = super().n_params()
         if 'm' not in self._skip_params:
             n_params += self.model.means_.size
@@ -287,47 +334,67 @@ class GaussianMixtureHMM(HMM):
         return n_params
 
     @requires_fit
-    def bic(self, X, lengths=None):
+    def bic(
+        self,
+        X: Array[float],
+        lengths: Optional[Array[int]] = None
+    ) -> float:
         data = BaseMultivariateFloatSequenceValidator(X=X, lengths=lengths)
         return super().bic(data.X, data.lengths)
 
     @requires_fit
-    def aic(self, X, lengths=None):
+    def aic(
+        self,
+        X: Array[float],
+        lengths: Optional[Array[int]] = None
+    ) -> float:
         data = BaseMultivariateFloatSequenceValidator(X=X, lengths=lengths)
         return super().aic(data.X, data.lengths)
 
-    def set_state_means(self, values):
+    def set_state_means(self, values: Array[float]):
+        """TODO"""
+
         self._means = Array[float].validate_type(values)
         self._skip_init_params |= set('m')
 
-    def set_state_covariances(self, values):
+    def set_state_covariances(self, values: Array[float]):
+        """TODO"""
+
         self._covars = Array[float].validate_type(values)
         self._skip_init_params |= set('c')
 
-    def set_state_weights(self, values):
+    def set_state_weights(self, values: Array[float]):
+        """TODO"""
+
         self._weights = Array[float].validate_type(values)
         self._skip_init_params |= set('w')
 
 class MultinomialHMMValidator(HMMValidator):
-    hmmlearn_kwargs: Dict[str, Any] = dict(init_params=DEFAULT_MULTINOMIAL_PARAMS, params=DEFAULT_MULTINOMIAL_PARAMS)
+    hmmlearn_kwargs: Dict[str, Any] = dict(
+        init_params=DEFAULT_MULTINOMIAL_PARAMS,
+        params=DEFAULT_MULTINOMIAL_PARAMS
+    )
 
     _DEFAULT_PARAMS = DEFAULT_MULTINOMIAL_PARAMS
     _STATE_PARAMS = ['emissions']
 
 class MultinomialHMM(HMM):
+    """TODO"""
+
     DEFAULT_PARAMS = DEFAULT_MULTINOMIAL_PARAMS
 
     @validate_params(using=MultinomialHMMValidator)
     def __init__(
-        self, *,
-        n_states: int = 2,
-        topology: Optional[str] = None,
-        random_state: Optional[Union[int, np.random.RandomState]] = None,
-        hmmlearn_kwargs: dict = dict(
+        self,
+        *,
+        n_states: PositiveInt = 2,
+        topology: Optional[Literal["ergodic", "left-right", "linear"]] = None,
+        random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = None,
+        hmmlearn_kwargs: Dict[str, Any] = dict(
             init_params=DEFAULT_MULTINOMIAL_PARAMS,
             params=DEFAULT_MULTINOMIAL_PARAMS
         )
-    ):
+    ) -> MultinomialHMM:
         super().__init__(n_states, topology, random_state, hmmlearn_kwargs)
 
     def fit(
@@ -363,7 +430,7 @@ class MultinomialHMM(HMM):
         return self
 
     @requires_fit
-    def n_params(self) -> int:
+    def n_params(self) -> NonNegativeInt:
         n_params = super().n_params()
         if 'e' not in self._skip_params:
             n_params += self.model.emissionprob_.size
@@ -387,6 +454,8 @@ class MultinomialHMM(HMM):
         data = BaseUnivariateCategoricalSequenceValidator(X=X, lengths=lengths)
         return super().aic(data.X, data.lengths)
 
-    def set_state_emissions(self, values):
+    def set_state_emissions(self, values: Array[float]):
+        """TODO"""
+
         self._emissionprob = Array[float].validate_type(values)
         self._skip_init_params |= set('e')
