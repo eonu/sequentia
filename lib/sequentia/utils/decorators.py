@@ -1,15 +1,8 @@
 import inspect, functools
 
-from sequentia.utils.validation import check_is_fitted
+from sequentia.utils.validation import _check_is_fitted
 
-__all__ = [
-    'validate_params',
-    'requires_fit',
-    'override_params',
-    'check_plotting_dependencies'
-]
-
-def validate_params(using):
+def _validate_params(using):
     def decorator(function):
         @functools.wraps(function)
         def wrapper(self, *args, **kwargs):
@@ -20,14 +13,14 @@ def validate_params(using):
         return wrapper
     return decorator
 
-def requires_fit(function):
+def _requires_fit(function):
     @functools.wraps(function)
     def wrapper(self, *args, **kwargs):
-        check_is_fitted(self)
+        _check_is_fitted(self)
         return function(self, *args, **kwargs)
     return wrapper
 
-def override_params(params, temporary=True):
+def _override_params(params, temporary=True):
     def decorator(function):
         @functools.wraps(function)
         def wrapper(self, *args, **kwargs):
@@ -52,7 +45,7 @@ def override_params(params, temporary=True):
         return wrapper
     return decorator
 
-def check_plotting_dependencies(function):
+def _check_plotting_dependencies(function):
     @functools.wraps(function)
     def wrapper(self, *args, **kwargs):
         try:

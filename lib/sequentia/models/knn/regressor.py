@@ -1,43 +1,26 @@
 from __future__ import annotations
-from typing import Union, Optional, Callable
 
-from pydantic import NegativeInt, PositiveInt, confloat
+from typing import Optional
 
-from sequentia.models.knn.base import KNNValidator, KNNMixin
-from sequentia.models.base import Regressor
+from sklearn.utils import check_random_state
 
-from sequentia.utils.decorators import validate_params, requires_fit, override_params
+from sequentia.models.knn.base import _KNNMixin, _KNNValidator
+from sequentia.models.base import _Regressor
+
+from sequentia.utils.decorators import _validate_params, _requires_fit, _override_params
 from sequentia.utils.data import SequentialDataset
 from sequentia.utils.validation import (
     Array,
-    MultivariateFloatSequenceRegressorValidator
+    _MultivariateFloatSequenceRegressorValidator
 )
 
 __all__ = ['KNNRegressor']
 
-class KNNRegressor(KNNMixin, Regressor):
-    """TODO
+class KNNRegressor(_KNNMixin, _Regressor):
+    """A k-nearest neighbor regressor that uses DTW as a distance measure for sequence comparison.
 
-    weighting must be a non-negative matrix function!
+    The regressor computes the output as a distance weighted sum of the outputs of the sequences within the DTW k-neighborhood of the sequence being predicted.
     """
-
-    @validate_params(using=KNNValidator)
-    def __init__(
-        self,
-        *,
-        k: PositiveInt = 1,
-        weighting: Optional[Callable] = None,
-        window: confloat(ge=0, le=1) = 1,
-        independent: bool = False,
-        use_c: bool = False,
-        n_jobs: Union[NegativeInt, PositiveInt] = 1
-    ) -> KNNRegressor:
-        self.k = k
-        self.weighting = weighting
-        self.window = window
-        self.independent = independent
-        self.use_c = use_c
-        self.n_jobs = n_jobs
 
     def fit(
         self,
@@ -45,14 +28,15 @@ class KNNRegressor(KNNMixin, Regressor):
         y: Array[int],
         lengths: Optional[Array[int]] = None
     ) -> KNNRegressor:
-        data = MultivariateFloatSequenceRegressorValidator(X=X, y=y, lengths=lengths)
+        data = _MultivariateFloatSequenceRegressorValidator(X=X, y=y, lengths=lengths)
         self.X_ = data.X
         self.y_ = data.y
         self.lengths_ = data.lengths
         self.idxs_ = SequentialDataset._get_idxs(data.lengths)
+        self.random_state_ = check_random_state(self.random_state)
         return self
 
-    @requires_fit
+    @_requires_fit
     def predict(
         self,
         X: Array[float],
@@ -62,7 +46,7 @@ class KNNRegressor(KNNMixin, Regressor):
         k_weightings = self._weighting()(k_distances)
         return (k_outputs * k_weightings).sum(axis=1) / k_weightings.sum(axis=1)
 
-    @validate_params(using=KNNValidator)
-    @override_params(['k', 'weighting', 'window', 'independent', 'use_c', 'n_jobs'], temporary=False)
+    @_validate_params(using=_KNNValidator)
+    @_override_params(['k', 'weighting', 'window', 'independent', 'use_c', 'n_jobs'], temporary=False)
     def set_params(self, **kwargs):
         return self

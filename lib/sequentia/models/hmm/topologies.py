@@ -1,17 +1,8 @@
 import warnings
-from enum import Enum, unique
 
 import numpy as np
 
-__all__ = ['TopologyType', 'Topology', 'ErgodicTopology', 'LeftRightTopology', 'LinearTopology', 'TOPOLOGY_MAP']
-
-@unique
-class TopologyType(Enum):
-    ERGODIC = 'ergodic'
-    LEFT_RIGHT = 'left-right'
-    LINEAR = 'linear'
-
-class Topology:
+class _Topology:
     """Represents a topology for a HMM, imposing restrictions on the transition matrix and initial state distribution.
 
     Parameters
@@ -102,7 +93,7 @@ class Topology:
             raise ValueError('Transition probabilities out of each state must sum to one')
         return transitions
 
-class ErgodicTopology(Topology):
+class _ErgodicTopology(_Topology):
     """Represents the topology for an ergodic HMM, imposing non-zero probabilities in the transition matrix.
 
     Parameters
@@ -150,7 +141,7 @@ class ErgodicTopology(Topology):
             warnings.warn('Zero probabilities in ergodic transition matrix - these transition probabilities will not be learned')
         return transitions
 
-class LeftRightTopology(Topology):
+class _LeftRightTopology(_Topology):
     """Represents the topology for a left-right HMM, imposing an upper-triangular transition matrix.
 
     Parameters
@@ -204,7 +195,7 @@ class LeftRightTopology(Topology):
             raise ValueError('Left-right transition matrix must be upper-triangular')
         return transitions
 
-class LinearTopology(LeftRightTopology):
+class _LinearTopology(_LeftRightTopology):
     """Represents the topology for a linear HMM.
 
     Parameters
@@ -260,8 +251,8 @@ class LinearTopology(LeftRightTopology):
             raise ValueError('Linear transition matrix must only consist of a diagonal and upper diagonal')
         return transitions
 
-TOPOLOGY_MAP = {
-    TopologyType.ERGODIC: ErgodicTopology,
-    TopologyType.LEFT_RIGHT: LeftRightTopology,
-    TopologyType.LINEAR: LinearTopology,
+_topologies = {
+    "ergodic": _ErgodicTopology,
+    "left-right": _LeftRightTopology,
+    "linear": _LinearTopology,
 }

@@ -9,36 +9,21 @@
     :target: https://github.com/eonu/sequentia
     :align: center
 
-About
-=====
+Sequentia
+=========
 
 TODO
 
-API reference
--------------
+.. toctree::
+   :caption: Sequentia
+   :titlesonly:
 
-.. autoclass:: sequentia.models.knn.regressor.KNNRegressor
-   :members:
-   :inherited-members:
-   :exclude-members: get_params, set_params
+   sections/models/index
+   sections/preprocessing/index
+   sections/datasets/index
 
-.. autoclass:: sequentia.models.knn.classifier.KNNClassifier
-   :members:
-   :inherited-members:
-   :exclude-members: get_params, set_params
+Documentation Search and Index
+==============================
 
-.. autoclass:: sequentia.models.hmm.classifier.HMMClassifier
-   :members:
-   :inherited-members:
-   :exclude-members: get_params, set_params
-
-.. autoclass:: sequentia.models.hmm.variants.GaussianMixtureHMM
-   :members:
-   :inherited-members:
-   :exclude-members: get_params, set_params
-
-.. autoclass:: sequentia.models.hmm.variants.MultinomialHMM
-   :members:
-   :inherited-members:
-   :exclude-members: get_params, set_params
-
+* :ref:`search`
+* :ref:`genindex`

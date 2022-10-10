@@ -6,7 +6,7 @@
 
 # -- Path setup --------------------------------------------------------------
 
-import sys, os, subprocess
+import sys, os
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -40,7 +40,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
     'numpydoc',
-    'm2r2'
+    'm2r2',
 ]
 
 intersphinx_mapping = {
@@ -48,7 +48,8 @@ intersphinx_mapping = {
     'tslearn': ('https://tslearn.readthedocs.io/en/stable/', None)
 }
 
-autodoc_member_order = 'alphabetical'
+autodoc_members = True
+autodoc_member_order = 'groupwise' # bysource, groupwise, alphabetical
 autosummary_generate = True
 numpydoc_show_class_members = False
 
@@ -81,3 +82,7 @@ autodoc_class_signature = "separated"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# Custom stylesheets
+def setup(app):
+    app.add_css_file('css/toc.css')

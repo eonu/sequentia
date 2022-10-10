@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from enum import Enum, unique
 from typing import Optional, Union, Dict, Literal
 from joblib import Parallel, delayed
 
@@ -8,31 +7,23 @@ import numpy as np
 from pydantic import NegativeInt, PositiveInt, confloat, validator, root_validator
 from sklearn.utils.validation import NotFittedError
 
-from sequentia.utils.multiprocessing import effective_n_jobs
-from sequentia.utils.decorators import validate_params, override_params, requires_fit
-from sequentia.utils.validation import (
-    check_classes,
-    check_is_fitted,
-    Array,
-    Validator,
-    MultivariateFloatSequenceClassifierValidator,
-    UnivariateCategoricalSequenceClassifierValidator,
-    BaseMultivariateFloatSequenceValidator,
-    BaseUnivariateCategoricalSequenceValidator
-)
+from sequentia.models.base import _Classifier
+from sequentia.models.hmm.variants import HMM
 from sequentia.utils.data import SequentialDataset
-from sequentia.models.base import Classifier
-from sequentia.models.hmm.variants import HMM, GaussianMixtureHMM, MultinomialHMM
+from sequentia.utils.multiprocessing import _effective_n_jobs
+from sequentia.utils.decorators import _validate_params, _override_params, _requires_fit
+from sequentia.utils.validation import (
+    _check_classes,
+    _check_is_fitted,
+    Array,
+    _Validator,
+)
 
 __all__ = ['HMMClassifier']
 
-@unique
-class PriorType(Enum):
-    FREQUENCY = 'frequency'
-
-class HMMClassifierValidator(Validator):
-    prior: Optional[Union[PriorType, Dict[int, confloat(ge=0, le=1)]]] = PriorType.FREQUENCY
-    classes: Optional[Array[int]] = None,
+class _HMMClassifierValidator(_Validator):
+    prior: Optional[Union[Literal["frequency"], Dict[int, confloat(ge=0, le=1)]]] = "frequency"
+    classes: Optional[Array[int]] = None
     n_jobs: Union[NegativeInt, PositiveInt] = 1
 
     @validator('prior')
@@ -44,7 +35,7 @@ class HMMClassifierValidator(Validator):
 
     @root_validator
     def check_prior_keys_with_classes(cls, values):
-        if 'prior' in values and 'classes'in values:
+        if 'prior' in values and 'classes' in values:
             prior, classes = values['prior'], values['classes']
             if isinstance(prior, dict) and classes is not None:
                 if set(prior.keys()) != set(classes):
@@ -54,10 +45,10 @@ class HMMClassifierValidator(Validator):
                     )
         return values
 
-class HMMClassifier(Classifier):
+class HMMClassifier(_Classifier):
     """TODO"""
 
-    @validate_params(using=HMMClassifierValidator)
+    @_validate_params(using=_HMMClassifierValidator)
     def __init__(
         self,
         *,
@@ -82,10 +73,20 @@ class HMMClassifier(Classifier):
         if len(self.models) > 0:
             if type(model) != type(list(self.models.values())[-1]):
                 raise TypeError(
-                    f'Model of type {type(model).__name__} must be the same as models already provided '
+                    f'Model of type {type(model).__name__} must be the same as the models already provided '
                     f'to this {type(self).__name__} instance'
                 )
         self.models[int(label)] = model
+
+    def add_models(
+        self,
+        models: Dict[int, HMM]
+    ):
+        """TODO"""
+        if not all(isinstance(model, HMM) for model in models.values()):
+            raise TypeError('Expected all provided `models` to be a type of HMM')
+        for label, model in models.items():
+            self.add_model(model, label)
 
     def fit(
         self,
@@ -103,14 +104,14 @@ class HMMClassifier(Classifier):
                 )
 
             for label, model in self.models.items():
-                if not check_is_fitted(model, return_=True):
+                if not _check_is_fitted(model, return_=True):
                     raise NotFittedError(
                         f'The model corresponding to label {label} must be pre-fitted if '
                         f'no training data is provided to this {type(self).__name__} instance'
                     )
 
             if self.classes is not None:
-                # Same logic as check_classes()
+                # Same logic as _check_classes()
                 classes_np = np.array(self.classes).flatten()
                 if not np.issubdtype(classes_np.dtype, np.integer):
                     raise TypeError(f'Expected classes to be integers')
@@ -120,7 +121,7 @@ class HMMClassifier(Classifier):
                 # Fetch classes from provided models
                 self.classes_ = np.array(list(self.models.keys()))
         else:
-            self.classes_ = check_classes(Array[int].validate_type(y), self.classes)
+            self.classes_ = _check_classes(Array[int].validate_type(y), self.classes)
 
         # Check that each label has a HMM (and vice versa)
         if set(self.models.keys()) != set(self.classes_):
@@ -140,7 +141,7 @@ class HMMClassifier(Classifier):
         if self.prior is None:
             self.prior_ = {c:1/len(self.classes_) for c, _ in self.models.items()}
         elif isinstance(self.prior, str):
-            if PriorType(self.prior) == PriorType.FREQUENCY:
+            if self.prior == "frequency":
                 total_seqs = sum(model.n_seqs_ for model in self.models.values())
                 self.prior_ = {c:model.n_seqs_/total_seqs for c, model in self.models.items()}
         elif isinstance(self.prior, dict):
@@ -153,7 +154,7 @@ class HMMClassifier(Classifier):
 
         return self
 
-    @requires_fit
+    @_requires_fit
     def predict(
         self,
         X: Array,
@@ -163,7 +164,7 @@ class HMMClassifier(Classifier):
         max_score_idxs = scores.argmax(axis=1)
         return self.classes_[max_score_idxs]
 
-    @requires_fit
+    @_requires_fit
     def predict_proba(
         self,
         X: Array,
@@ -175,14 +176,14 @@ class HMMClassifier(Classifier):
         proba /= proba.sum(axis=1, keepdims=True)
         return proba
 
-    @requires_fit
+    @_requires_fit
     def predict_scores(
         self,
         X: Array,
         lengths: Optional[Array] = None
     ) -> Array[float]:
         data = self._base_sequence_validator(X=X, lengths=lengths)
-        n_jobs = effective_n_jobs(self.n_jobs, data.lengths)
+        n_jobs = _effective_n_jobs(self.n_jobs, data.lengths)
         chunk_idxs = np.array_split(SequentialDataset._get_idxs(data.lengths), n_jobs)
         return np.concatenate(
             Parallel(n_jobs=n_jobs)(
@@ -191,8 +192,8 @@ class HMMClassifier(Classifier):
             )
         )
 
-    @validate_params(using=HMMClassifierValidator)
-    @override_params(HMMClassifierValidator.fields(), temporary=False)
+    @_validate_params(using=_HMMClassifierValidator)
+    @_override_params(_HMMClassifierValidator.fields(), temporary=False)
     def set_params(self, **kwargs) -> HMMClassifier:
         return self
 
@@ -205,22 +206,16 @@ class HMMClassifier(Classifier):
     def _compute_log_posterior(self, x):
         log_posterior = np.full(len(self.classes_), -np.inf)
         for i, k in enumerate(self.classes_):
-            model = self.models[k].model
+            model = self.models[k]
             log_prior = np.log(self.prior_[k])
-            log_likelihood = model.score(x)
+            log_likelihood = model._score(x)
             log_posterior[i] = log_prior + log_likelihood
         return log_posterior
 
     def _base_sequence_validator(self, **kwargs):
         model = self.models[0]
-        if isinstance(model, GaussianMixtureHMM):
-            return BaseMultivariateFloatSequenceValidator(**kwargs)
-        elif isinstance(model, MultinomialHMM):
-            return BaseUnivariateCategoricalSequenceValidator(**kwargs)
+        return model._base_sequence_validator(**kwargs)
 
     def _sequence_classifier_validator(self, **kwargs):
         model = self.models[0]
-        if isinstance(model, GaussianMixtureHMM):
-            return MultivariateFloatSequenceClassifierValidator(**kwargs)
-        elif isinstance(model, MultinomialHMM):
-            return UnivariateCategoricalSequenceClassifierValidator(**kwargs)
+        return model._sequence_classifier_validator(**kwargs)
