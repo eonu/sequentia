@@ -42,6 +42,11 @@ pkg_versions = {
     'librosa': '==0.8.0'
 }
 
+# TODO
+# sphinx-tabs 3.4.0, <3.4.1
+# sphinx_autodoc_typehints
+# sphinx-autobuild
+
 extra_pkgs = {
     'pytest': ['dev', 'test'],
     **{pkg:['dev', 'docs'] for pkg in ('sphinx', 'numpydoc', 'sphinx_rtd_theme', 'm2r2', 'Jinja2')},

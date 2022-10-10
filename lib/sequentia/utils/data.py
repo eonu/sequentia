@@ -4,13 +4,13 @@ import warnings
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-from sequentia.utils.validation import check_classes, BaseSequenceValidator
+from sequentia.utils.validation import _check_classes, _BaseSequenceValidator
 
 __all__ = ['SequentialDataset']
 
 class SequentialDataset:
     def __init__(self, X, y=None, lengths=None, classes=None):
-        data = BaseSequenceValidator(X=X, lengths=lengths, y=y)
+        data = _BaseSequenceValidator(X=X, lengths=lengths, y=y)
 
         self._X = data.X
         self._y = data.y
@@ -18,7 +18,7 @@ class SequentialDataset:
 
         self._classes = None
         if self._y is not None and np.issubdtype(self._y.dtype, np.integer):
-            self._classes = check_classes(self._y, classes)
+            self._classes = _check_classes(self._y, classes)
 
         self._idxs = self._get_idxs(self.lengths)
 
@@ -39,14 +39,14 @@ class SequentialDataset:
                     stratify = self._y
             else:
                 stratify = None
-        
+
         idxs = np.arange(len(self._lengths))
         train_idxs, test_idxs = train_test_split(
-            idxs, 
-            test_size=test_size, 
-            train_size=train_size, 
-            random_state=random_state, 
-            shuffle=shuffle, 
+            idxs,
+            test_size=test_size,
+            train_size=train_size,
+            random_state=random_state,
+            shuffle=shuffle,
             stratify=stratify
         )
 
@@ -63,7 +63,7 @@ class SequentialDataset:
 
         data_train = SequentialDataset(np.vstack(X_train), y=y_train, lengths=lengths_train, classes=classes)
         data_test = SequentialDataset(np.vstack(X_test), y=y_test, lengths=lengths_test, classes=classes)
-            
+
         return data_train, data_test
 
     def iter_by_class(self):
@@ -117,7 +117,7 @@ class SequentialDataset:
                 eq &= np.array_equal(self._y, other._y)
         else:
             return False
-        
+
         if type(self._classes) == type(other._classes):
             if isinstance(self._classes, np.ndarray):
                 eq &= np.array_equal(self._classes, other._classes)
@@ -175,7 +175,7 @@ class SequentialDataset:
 
         if self._classes is not None:
             arrs['classes'] = self._classes
-        
+
         save_fun = np.savez_compressed if compress else np.savez
         save_fun(path, **arrs)
 

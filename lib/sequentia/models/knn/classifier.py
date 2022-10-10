@@ -1,46 +1,32 @@
 from __future__ import annotations
-from typing import Union, Optional, Callable
+
+from typing import Union, Optional
 from joblib import Parallel, delayed
 
 import numpy as np
 from numba import njit, prange
 from sklearn.utils import check_random_state
 
-from sequentia.models.knn.base import KNNValidator, KNNMixin
-from sequentia.models.base import Classifier
+from sequentia.models.knn.base import _KNNMixin, _KNNValidator
+from sequentia.models.base import _Classifier
 
-from sequentia.utils.decorators import validate_params, requires_fit, override_params
+from sequentia.utils.decorators import _validate_params, _requires_fit, _override_params
 from sequentia.utils.data import SequentialDataset
-from sequentia.utils.multiprocessing import effective_n_jobs
+from sequentia.utils.multiprocessing import _effective_n_jobs
 from sequentia.utils.validation import (
-    check_classes,
-    check_is_fitted,
+    _check_classes,
     Array,
-    MultivariateFloatSequenceClassifierValidator
+    _MultivariateFloatSequenceClassifierValidator
 )
 
 __all__ = ['KNNClassifier']
 
-class KNNClassifier(KNNMixin, Classifier):
-    @validate_params(using=KNNValidator)
-    def __init__(self, *,
-        k: int = 1,
-        weighting: Union[str, Callable] = 'uniform', # TODO: Must be a non-negative matrix function!
-        window: float = 1,
-        independent: bool = False,
-        classes: Optional[Array[int]] = None,
-        use_c: bool = False,
-        n_jobs: int = 1,
-        random_state: Optional[Union[int, np.random.RandomState]] = None
-    ):
-        self.k = k
-        self.weighting = weighting
-        self.window = window
-        self.independent = independent
-        self.classes = classes
-        self.use_c = use_c
-        self.n_jobs = n_jobs
-        self.random_state = random_state
+class KNNClassifier(_KNNMixin, _Classifier):
+    """A k-nearest neighbor classifier that uses DTW as a distance measure for sequence comparison.
+
+    The classifier computes the score for each class as the total of the distance weightings of every sequence belonging to that class,
+    within the DTW k-neighborhood of the sequence being classified.
+    """
 
     def fit(
         self,
@@ -48,16 +34,18 @@ class KNNClassifier(KNNMixin, Classifier):
         y: Array[int],
         lengths: Optional[Array[int]] = None
     ) -> KNNClassifier:
-        data = MultivariateFloatSequenceClassifierValidator(X=X, y=y, lengths=lengths)
+        """TODO"""
+
+        data = _MultivariateFloatSequenceClassifierValidator(X=X, y=y, lengths=lengths)
         self.X_ = data.X
         self.y_ = data.y
         self.lengths_ = data.lengths
         self.idxs_ = SequentialDataset._get_idxs(data.lengths)
         self.random_state_ = check_random_state(self.random_state)
-        self.classes_ = check_classes(data.y, self.classes)
+        self.classes_ = _check_classes(data.y, self.classes)
         return self
 
-    @requires_fit
+    @_requires_fit
     def predict(
         self,
         X: Array[float],
@@ -66,7 +54,7 @@ class KNNClassifier(KNNMixin, Classifier):
         class_scores = self.predict_scores(X, lengths)
         return self._find_max_labels(class_scores)
 
-    @requires_fit
+    @_requires_fit
     def predict_proba(
         self,
         X: Array[float],
@@ -75,7 +63,7 @@ class KNNClassifier(KNNMixin, Classifier):
         class_scores = self.predict_scores(X, lengths)
         return class_scores / class_scores.sum(axis=1, keepdims=True)
 
-    @requires_fit
+    @_requires_fit
     def predict_scores(
         self,
         X: Array[float],
@@ -85,8 +73,8 @@ class KNNClassifier(KNNMixin, Classifier):
         k_weightings = self._weighting()(k_distances)
         return self._compute_scores(k_labels, k_weightings)
 
-    @validate_params(using=KNNValidator)
-    @override_params(KNNValidator.fields(), temporary=False)
+    @_validate_params(using=_KNNValidator)
+    @_override_params(_KNNValidator.fields(), temporary=False)
     def set_params(self, **kwargs):
         return self
 
@@ -95,7 +83,11 @@ class KNNClassifier(KNNMixin, Classifier):
         labels: Array[int],
         weightings: Array[float]
     ) -> Array[float]:
-        """Calculates the sum of the weightings for each label group."""
+        """Calculates the sum of the weightings for each label group.
+
+        TODO
+        """
+
         scores = np.zeros((len(labels), len(self.classes_)))
         for i, k in enumerate(self.classes_):
             scores[:, i] = np.einsum('ij,ij->i', labels == k, weightings)
@@ -105,8 +97,12 @@ class KNNClassifier(KNNMixin, Classifier):
         self,
         scores: Array[float]
     ) -> Array[int]:
-        """Returns the label of the k nearest neighbors with the highest score for each example."""
-        n_jobs = effective_n_jobs(self.n_jobs, scores)
+        """Returns the label of the k nearest neighbors with the highest score for each example.
+
+        TODO
+        """
+
+        n_jobs = _effective_n_jobs(self.n_jobs, scores)
         score_chunks = np.array_split(scores, n_jobs)
         return np.concatenate(
             Parallel(n_jobs=n_jobs)(
@@ -119,7 +115,11 @@ class KNNClassifier(KNNMixin, Classifier):
         self,
         score_chunk: Array[float]
     ) -> Array[int]:
-        """Returns the label with the highest score for each item in the chunk."""
+        """Returns the label with the highest score for each item in the chunk.
+
+        TODO
+        """
+
         max_labels = np.zeros(len(score_chunk), dtype=int)
         for i, scores in enumerate(score_chunk):
             max_score_idxs = self._multi_argmax(scores)
@@ -133,7 +133,10 @@ class KNNClassifier(KNNMixin, Classifier):
     ) -> Array[int]:
         """Same as numpy.argmax but returns all occurrences of the maximum and only requires a single pass.
         From: https://stackoverflow.com/a/58652335
+
+        TODO
         """
+
         all_, max_ = [0], arr[0]
         for i in prange(1, len(arr)):
             if arr[i] > max_:
@@ -141,12 +144,3 @@ class KNNClassifier(KNNMixin, Classifier):
             elif arr[i] == max_:
                 all_.append(i)
         return np.array(all_)
-
-    def __eq__(self, other):
-        eq = super().__eq__(other)
-        self_fitted = check_is_fitted(self, ['classes_'], True)
-        other_fitted = check_is_fitted(self, ['classes_'], True)
-        eq &= self_fitted == other_fitted
-        if self_fitted and other_fitted:
-            eq &= np.array_equal(self.classes_, other.classes_)
-        return eq
