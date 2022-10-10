@@ -203,7 +203,7 @@ class HMM(BaseEstimator):
                 elif self._transmat == 'random':
                     self._transmat = topology.random_transitions()
             elif isinstance(self._transmat, np.ndarray):
-                if topology is not None:
+                if self.topology_ is not None:
                     self._transmat = topology.check_transitions(self._transmat)
         else:
             if self.topology_ is not None:
