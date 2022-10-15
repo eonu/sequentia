@@ -60,7 +60,7 @@ class HMMClassifier(_Classifier):
         :param prior: TODO.
         :param classes: Set of possible class labels.
 
-            - If not provided, these will be determined from the labels in training data.
+            - If not provided, these will be determined from the training data labels.
             - If provided, output from methods such as :func:`predict_proba` and :func:`predict_scores` 
               will follow the ordering of the class labels provided here.
 
