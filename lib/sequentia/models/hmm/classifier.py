@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Union, Dict, Literal
+from typing import Optional, Union, Dict, Literal, Any
 from joblib import Parallel, delayed
 
 import numpy as np
@@ -52,10 +52,26 @@ class HMMClassifier(_Classifier):
     def __init__(
         self,
         *,
-        prior: Optional[Union[Literal["frequency"], Dict[int, confloat(ge=0, le=1)]]] = 'frequency',
+        prior: Optional[Union[Literal["frequency"], dict]] = 'frequency',
         classes: Optional[Array[int]] = None,
         n_jobs: Union[NegativeInt, PositiveInt] = 1
     ) -> HMMClassifier:
+        """
+        :param prior: TODO.
+        :param classes: Set of possible class labels.
+
+            - If not provided, these will be determined from the labels in training data.
+            - If provided, output from methods such as :func:`predict_proba` and :func:`predict_scores` 
+              will follow the ordering of the class labels provided here.
+
+        :param n_jobs: Maximum number of concurrently running workers.
+
+            - If 1, no parallelism is used at all (useful for debugging).
+            - If -1, all CPUs are used.
+            - If < -1, ``(n_cpus + 1 + n_jobs)`` are used — e.g. ``n_jobs=-2`` uses all but one.
+
+        """
+
         self.prior = prior
         self.classes = classes
         self.n_jobs = n_jobs
@@ -66,7 +82,13 @@ class HMMClassifier(_Classifier):
         model: HMM,
         label: int
     ):
-        """TODO"""
+        """Adds a single HMM to the classifier.
+        
+        :param model: HMM to add to the classifier.
+        :param label: Class represented by the HMM.
+        
+        :note: All models added to the classifier must be of the same type — either :class:`.GaussianMixtureHMM` or :class:`.MultinomialHMM`.
+        """
 
         if not isinstance(model, HMM):
             raise TypeError('Expected `model` argument to be a type of HMM')
@@ -82,7 +104,12 @@ class HMMClassifier(_Classifier):
         self,
         models: Dict[int, HMM]
     ):
-        """TODO"""
+        """Adds HMMs to the classifier. 
+
+        :param models: HMMs to add to the classifier. The key for each HMM should be the label of the class represented by the HMM.
+
+        :note: All models added to the classifier must be of the same type — either :class:`.GaussianMixtureHMM` or :class:`.MultinomialHMM`.
+        """
         if not all(isinstance(model, HMM) for model in models.values()):
             raise TypeError('Expected all provided `models` to be a type of HMM')
         for label, model in models.items():
@@ -158,8 +185,27 @@ class HMMClassifier(_Classifier):
     def predict(
         self,
         X: Array,
-        lengths: Optional[Array] = None
+        lengths: Optional[Array[int]] = None
     ) -> Array[int]:
+        """Predicts classes for the provided observation sequence(s).
+        
+        :param X: Univariate or multivariate observation sequence(s).
+
+            - Should be a single 1D array if :class:`.MultinomialHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
+            - Should have length as the 1st dimension and features as the 2nd dimension.
+            - Should be a concatenated sequence if multiple sequences are provided,
+              with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
+
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
+
+            - If ``None``, then ``X`` is assumed to be a single observation sequence.
+            - ``len(X)`` should be equal to ``sum(lengths)``.
+
+        :note: This method requires a trained classifier — see :func:`fit`.
+
+        :return: Class predictions.
+        """
+
         scores = self.predict_scores(X, lengths)
         max_score_idxs = scores.argmax(axis=1)
         return self.classes_[max_score_idxs]
@@ -168,8 +214,29 @@ class HMMClassifier(_Classifier):
     def predict_proba(
         self,
         X: Array,
-        lengths: Optional[Array] = None
-    ) -> Array[float]:
+        lengths: Optional[Array[int]] = None
+    ) -> Array[confloat(ge=0, le=1)]:
+        """Predicts class membership probabilities for the provided observation sequence(s).
+
+        Probabilities are calculated as the posterior probability of each HMM generating the sequence.
+        
+        :param X: Univariate or multivariate observation sequence(s).
+
+            - Should be a single 1D array if :class:`.MultinomialHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
+            - Should have length as the 1st dimension and features as the 2nd dimension.
+            - Should be a concatenated sequence if multiple sequences are provided,
+              with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
+
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
+
+            - If ``None``, then ``X`` is assumed to be a single observation sequence.
+            - ``len(X)`` should be equal to ``sum(lengths)``.
+
+        :note: This method requires a trained classifier — see :func:`fit`.
+
+        :return: Class membership probabilities.
+        """
+
         proba = self.predict_scores(X, lengths)
         proba -= proba.max(axis=1, keepdims=True)
         proba = np.exp(proba)
@@ -180,8 +247,29 @@ class HMMClassifier(_Classifier):
     def predict_scores(
         self,
         X: Array,
-        lengths: Optional[Array] = None
+        lengths: Optional[Array[int]] = None
     ) -> Array[float]:
+        """Predicts class scores for the provided observation sequence(s).
+
+        Scores are calculated as the log posterior probability of each HMM generating the sequence.
+        
+        :param X: Univariate or multivariate observation sequence(s).
+
+            - Should be a single 1D array if :class:`.MultinomialHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
+            - Should have length as the 1st dimension and features as the 2nd dimension.
+            - Should be a concatenated sequence if multiple sequences are provided,
+              with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
+
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
+
+            - If ``None``, then ``X`` is assumed to be a single observation sequence.
+            - ``len(X)`` should be equal to ``sum(lengths)``.
+
+        :note: This method requires a trained classifier — see :func:`fit`.
+
+        :return: Class scores.
+        """
+
         data = self._base_sequence_validator(X=X, lengths=lengths)
         n_jobs = _effective_n_jobs(self.n_jobs, data.lengths)
         chunk_idxs = np.array_split(SequentialDataset._get_idxs(data.lengths), n_jobs)
@@ -191,6 +279,41 @@ class HMMClassifier(_Classifier):
                 for idxs in chunk_idxs
             )
         )
+
+    @_requires_fit
+    def score(
+        self,
+        X: Array,
+        y: Array[int],
+        lengths: Optional[Array[int]],
+        normalize: bool = True,
+        sample_weight: Optional[Array] = None,
+    ) -> confloat(ge=0, le=100):
+        """Predicts classes for the provided observation sequence(s) and calculates classification accuracy.
+        
+        :param X: Univariate or multivariate observation sequence(s).
+
+            - Should be a single 1D array if :class:`.MultinomialHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
+            - Should have length as the 1st dimension and features as the 2nd dimension.
+            - Should be a concatenated sequence if multiple sequences are provided,
+              with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
+
+        :param y: Classes corresponding to the observation sequence(s) in ``X``.
+
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
+
+            - If ``None``, then ``X`` is assumed to be a single observation sequence.
+            - ``len(X)`` should be equal to ``sum(lengths)``.
+
+        :param normalize: See :func:`sklearn:sklearn.metrics.accuracy_score`.
+
+        :param sample_weight: See :func:`sklearn:sklearn.metrics.accuracy_score`.
+
+        :note: This method requires a trained classifier — see :func:`fit`.
+
+        :return: Classification accuracy.
+        """
+        super().score(X, y, lengths, sample_weight)
 
     @_validate_params(using=_HMMClassifierValidator)
     @_override_params(_HMMClassifierValidator.fields(), temporary=False)

@@ -22,7 +22,6 @@ class _Classifier(BaseEstimator, ClassifierMixin):
         X: Array,
         lengths: Optional[Array[int]] = None
     ) -> Array[int]:
-        """TODO"""
 
         raise NotImplementedError
 
@@ -50,12 +49,13 @@ class _Classifier(BaseEstimator, ClassifierMixin):
         X: Array,
         y: Array[int],
         lengths: Optional[Array[int]] = None,
+        normalize: bool = True,
         sample_weight: Optional[Any] = None
     ) -> float:
         """TODO"""
 
         y_pred = self.predict(X, lengths)
-        return accuracy_score(y, y_pred, sample_weight=sample_weight)
+        return accuracy_score(y, y_pred, normalize=normalize, sample_weight=sample_weight)
 
 class _Regressor(BaseEstimator, RegressorMixin):
     def fit(

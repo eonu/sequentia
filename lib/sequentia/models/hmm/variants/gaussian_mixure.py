@@ -84,7 +84,7 @@ class GaussianMixtureHMM(HMM):
         :param covariance_type: Type of covariance matrix in the emission model mixture distribution for each state.
         :param topology: Transition topology of the Markov chain — see :ref:`topologies`.
 
-          - If ``None``, behaves the same as ``'ergodic'`` but with `hmmlearn <https://hmmlearn.readthedocs.io/en/latest/>`__ initialization.
+            - If ``None``, behaves the same as ``'ergodic'`` but with `hmmlearn <https://hmmlearn.readthedocs.io/en/latest/>`__ initialization.
 
         :param random_state: Seed or :class:`numpy:numpy.random.RandomState` object for reproducible pseudo-randomness.
         :param hmmlearn_kwargs: Additional key-word arguments provided to the `hmmlearn <https://hmmlearn.readthedocs.io/en/latest/>`__ HMM constructor.
@@ -109,7 +109,7 @@ class GaussianMixtureHMM(HMM):
             - Should be a concatenated sequence if multiple sequences are provided,
               with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
 
-        :param lengths: Lengths of the observation sequences provided in ``X``.
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
 
             - If ``None``, then ``X`` is assumed to be a single observation sequence.
             - ``len(X)`` should be equal to ``sum(lengths)``.
@@ -189,7 +189,7 @@ class GaussianMixtureHMM(HMM):
             - Should be a concatenated sequence if multiple sequences are provided,
               with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
 
-        :param lengths: Lengths of the observation sequences provided in ``X``.
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
 
             - If ``None``, then ``X`` is assumed to be a single observation sequence.
             - ``len(X)`` should be equal to ``sum(lengths)``.
@@ -215,7 +215,7 @@ class GaussianMixtureHMM(HMM):
             - Should be a concatenated sequence if multiple sequences are provided,
               with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
 
-        :param lengths: Lengths of the observation sequences provided in ``X``.
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
 
             - If ``None``, then ``X`` is assumed to be a single observation sequence.
             - ``len(X)`` should be equal to ``sum(lengths)``.

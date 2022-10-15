@@ -1,3 +1,3 @@
 from .base import *
-from .gaussian_mix import *
+from .gaussian_mixure import *
 from .multinomial import *

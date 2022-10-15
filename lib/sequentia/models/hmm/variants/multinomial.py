@@ -71,7 +71,7 @@ class MultinomialHMM(HMM):
             - Should be a concatenated sequence if multiple sequences are provided,
               with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
 
-        :param lengths: Lengths of the observation sequences provided in ``X``.
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
 
             - If ``None``, then ``X`` is assumed to be a single observation sequence.
             - ``len(X)`` should be equal to ``sum(lengths)``.
@@ -143,7 +143,7 @@ class MultinomialHMM(HMM):
             - Should be a concatenated sequence if multiple sequences are provided,
               with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
 
-        :param lengths: Lengths of the observation sequences provided in ``X``.
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
 
             - If ``None``, then ``X`` is assumed to be a single observation sequence.
             - ``len(X)`` should be equal to ``sum(lengths)``.
@@ -168,7 +168,7 @@ class MultinomialHMM(HMM):
             - Should be a concatenated sequence if multiple sequences are provided,
               with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
 
-        :param lengths: Lengths of the observation sequences provided in ``X``.
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
 
             - If ``None``, then ``X`` is assumed to be a single observation sequence.
             - ``len(X)`` should be equal to ``sum(lengths)``.
