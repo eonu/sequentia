@@ -46,7 +46,15 @@ class _HMMClassifierValidator(_Validator):
         return values
 
 class HMMClassifier(_Classifier):
-    """TODO"""
+    """A classifier consisting of HMMs, each trained independently to recognize sequences of a single class.
+
+    The predicted class for a given observation sequence is the class represented by the HMM
+    which produces the maximum posterior probability for the observation sequence.
+
+    Examples
+    --------
+    TODO
+    """
 
     @_validate_params(using=_HMMClassifierValidator)
     def __init__(
@@ -57,11 +65,17 @@ class HMMClassifier(_Classifier):
         n_jobs: Union[NegativeInt, PositiveInt] = 1
     ) -> HMMClassifier:
         """
-        :param prior: TODO.
+        :param prior: Type of prior probability to assign to each HMM.
+
+            - If ``None``, a uniform prior will be used, making each HMM equally likely.
+            - If ``"frequency"``, the prior probability of each HMM is equal to the fraction of total observation sequences that the HMM was fitted with.
+            - If a ``dict``, custom prior probabilities can be assigned to each HMM.
+              The keys should be the label of the class represented by the HMM, and the value should be the prior probability for the HMM.
+
         :param classes: Set of possible class labels.
 
             - If not provided, these will be determined from the training data labels.
-            - If provided, output from methods such as :func:`predict_proba` and :func:`predict_scores` 
+            - If provided, output from methods such as :func:`predict_proba` and :func:`predict_scores`
               will follow the ordering of the class labels provided here.
 
         :param n_jobs: Maximum number of concurrently running workers.
@@ -69,12 +83,14 @@ class HMMClassifier(_Classifier):
             - If 1, no parallelism is used at all (useful for debugging).
             - If -1, all CPUs are used.
             - If < -1, ``(n_cpus + 1 + n_jobs)`` are used — e.g. ``n_jobs=-2`` uses all but one.
-
         """
-
+        #: Type of prior probability to assign to each HMM.
         self.prior = prior
+        #: Set of possible class labels.
         self.classes = classes
+        #: Maximum number of concurrently running workers.
         self.n_jobs = n_jobs
+        #: HMMs constituting the :class:`.HMMClassifier`.
         self.models = {}
 
     def add_model(
@@ -83,13 +99,12 @@ class HMMClassifier(_Classifier):
         label: int
     ):
         """Adds a single HMM to the classifier.
-        
+
         :param model: HMM to add to the classifier.
         :param label: Class represented by the HMM.
-        
+
         :note: All models added to the classifier must be of the same type — either :class:`.GaussianMixtureHMM` or :class:`.MultinomialHMM`.
         """
-
         if not isinstance(model, HMM):
             raise TypeError('Expected `model` argument to be a type of HMM')
         if len(self.models) > 0:
@@ -104,7 +119,7 @@ class HMMClassifier(_Classifier):
         self,
         models: Dict[int, HMM]
     ):
-        """Adds HMMs to the classifier. 
+        """Adds HMMs to the classifier.
 
         :param models: HMMs to add to the classifier. The key for each HMM should be the label of the class represented by the HMM.
 
@@ -188,7 +203,7 @@ class HMMClassifier(_Classifier):
         lengths: Optional[Array[int]] = None
     ) -> Array[int]:
         """Predicts classes for the provided observation sequence(s).
-        
+
         :param X: Univariate or multivariate observation sequence(s).
 
             - Should be a single 1D array if :class:`.MultinomialHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
@@ -205,7 +220,6 @@ class HMMClassifier(_Classifier):
 
         :return: Class predictions.
         """
-
         scores = self.predict_scores(X, lengths)
         max_score_idxs = scores.argmax(axis=1)
         return self.classes_[max_score_idxs]
@@ -219,7 +233,7 @@ class HMMClassifier(_Classifier):
         """Predicts class membership probabilities for the provided observation sequence(s).
 
         Probabilities are calculated as the posterior probability of each HMM generating the sequence.
-        
+
         :param X: Univariate or multivariate observation sequence(s).
 
             - Should be a single 1D array if :class:`.MultinomialHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
@@ -236,7 +250,6 @@ class HMMClassifier(_Classifier):
 
         :return: Class membership probabilities.
         """
-
         proba = self.predict_scores(X, lengths)
         proba -= proba.max(axis=1, keepdims=True)
         proba = np.exp(proba)
@@ -252,7 +265,7 @@ class HMMClassifier(_Classifier):
         """Predicts class scores for the provided observation sequence(s).
 
         Scores are calculated as the log posterior probability of each HMM generating the sequence.
-        
+
         :param X: Univariate or multivariate observation sequence(s).
 
             - Should be a single 1D array if :class:`.MultinomialHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
@@ -269,7 +282,6 @@ class HMMClassifier(_Classifier):
 
         :return: Class scores.
         """
-
         data = self._base_sequence_validator(X=X, lengths=lengths)
         n_jobs = _effective_n_jobs(self.n_jobs, data.lengths)
         chunk_idxs = np.array_split(SequentialDataset._get_idxs(data.lengths), n_jobs)
@@ -290,7 +302,7 @@ class HMMClassifier(_Classifier):
         sample_weight: Optional[Array] = None,
     ) -> confloat(ge=0, le=100):
         """Predicts classes for the provided observation sequence(s) and calculates classification accuracy.
-        
+
         :param X: Univariate or multivariate observation sequence(s).
 
             - Should be a single 1D array if :class:`.MultinomialHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.

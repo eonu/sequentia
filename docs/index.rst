@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. image:: /_static/logo.png
+.. image:: /_static/images/logo.png
     :alt: Sequentia
     :width: 125px
     :target: https://github.com/eonu/sequentia
