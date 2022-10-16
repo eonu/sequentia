@@ -29,7 +29,7 @@ A HMM is composed of:
 - a **Markov chain**, which models the probability of transitioning between hidden states.
 - an **emission model**, which models the probability of emitting an observation from a hidden state.
 
-A HMM is defined by the following parameters:
+A HMM :math:`\lambda` is defined by the following parameters:
 
 - | **Initial state distribution** :math:`\boldsymbol{\pi}`:
   | A probability distribution that dictates the probability of the HMM starting in each state.
@@ -56,27 +56,37 @@ A HMM is defined by the following parameters:
 
      Numerical sequence support in Sequentia assumes unbounded real-valued emissions which are modelled according to a multivariate Gaussian mixture distribution.
 
-HMMs are fitted to observation sequences using the Baum-Welch (or forward-backward) algorithm.
-
-..   | A collection of :math:`M` continuous multivariate probability distributions (one for each state)
-..     that each dictate the probability of the HMM generating an observation :math:`\mathbf{o}`, given some current state.
-..     Recall that we are generally considering multivariate observation sequences – that is,
-..     at time :math:`t`, we have an observation :math:`\mathbf{o}^{(t)}=\left(o_1^{(t)}, o_2^{(t)}, \ldots, o_D^{(t)}\right)`.
-..     The fact that the observations are multivariate necessitates a multivariate emission distribution.
-..     Sequentia uses a mixture of `multivariate Gaussian distributions <https://en.wikipedia.org/wiki/Multivariate_normal_distribution>`_.
-
+HMMs are fitted to observation sequences using the Baum-Welch (or forward-backward) algorithm which learns all of the parameters described above via Expectation-Maximization (EM).
 
 .. _topologies:
 
 Topologies
 ----------
 
-TODO
+The nature of the transition matrix determines the **topology** of the HMM.
+
+Three common types of topology used in sequence modelling are **ergodic**, **left-right** and **linear**.
+
+- **Ergodic topology**: All states have a non-zero probability of transitioning to any state.
+- **Left-right topology**: States are arranged in a way such that any state may only transition to itself or any state ahead of it, but not to any previous state.
+- **Linear topology**: Same as left-right, but states are only permitted to transition to the next state.
+
+Left-right topologies are particularly useful for modelling sequences where ordering must be respected.
+
+.. image:: /_static/images/topologies.svg
+    :alt: HMM Topologies
+    :width: 100%
+
+.. note::
+
+   | Sequentia will still permit zero probabilities in an ergodic transition matrix, but will issue a warning stating that these probabilities will not be learned.
 
 Making predictions
 ------------------
 
-TODO
+Multiple HMMs trained to recognize individual observation sequence classes can be combined to form a single multi-class classifier that makes predictions according to posterior maximization.
+
+See :ref:`hmm_classifier` for more detail on how HMMs can be used for classification.
 
 .. rubric:: References
 

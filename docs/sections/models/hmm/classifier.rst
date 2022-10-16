@@ -1,3 +1,6 @@
+.. _hmm_classifier:
+
+
 HMM Classifier
 ==============
 
@@ -5,7 +8,7 @@ Multiple HMMs can be combined to form a multi-class classifier.
 
 The :class:`.HMMClassifier` can be used to classify:
 
-- Univariate/multivariate real-valued observation sequences, by using :class:`.GaussianMixtureHMM` models.
+- Univariate/multivariate numerical observation sequences, by using :class:`.GaussianMixtureHMM` models.
 - Univariate categorical observation sequences, by using :class:`.MultinomialHMM` models.
 
 To classify a new observation sequence :math:`O'`, the :class:`.HMMClassifier` works by:
