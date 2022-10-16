@@ -83,22 +83,29 @@ class _KNNMixin:
     ):
         """
         :param k: Number of neighbors.
+
         :param weighting: A callable that specifies how distance weighting should be performed.
             The callable should accept a :class:`numpy:numpy.ndarray` of DTW distances, apply an element-wise weighting transformation
             to the matrix of DTW distances, then return an equally-sized :class:`numpy:numpy.ndarray` of weightings.
             If ``None``, then a uniform weighting of 1 will be applied to all distances.
+
         :param window: The width of the Sakoe—Chiba band global constrant as a fraction of the length of the longest of the two sequences being compared.
 
             - A larger constraint will speed up the DTW alignment by restricting the maximum deviation from the diagonal of the DTW matrix.
             - Too much constraint may lead to poor alignment.
 
             The default value of 1 corresponds to full DTW computation with no global constraint applied.
-        :param independent: Whether or not to allow features to be warped independently from each other. See [#dtw_multi]_ for an overview of independent and dependent dynamic time warping.
-        :param use_c: Whether or not to use fast pure C compiled functions from `dtaidistance <https://github.com/wannesm/dtaidistance>`__ to perform the DTW computations.
-        :param n_jobs: Number of jobs to run in parallel.
 
-            - Setting this to -1 will use all available CPU cores.
-            - Setting this to values below -1 will use ``(n_cpus + 1 + n_jobs)`` CPUs, e.g. ``n_job=-2`` will use all but one CPU.
+        :param independent: Whether or not to allow features to be warped independently from each other. See [#dtw_multi]_ for an overview of independent and dependent dynamic time warping.
+
+        :param use_c: Whether or not to use fast pure C compiled functions from `dtaidistance <https://github.com/wannesm/dtaidistance>`__ to perform the DTW computations.
+
+        :param n_jobs: Maximum number of concurrently running workers.
+
+            - If 1, no parallelism is used at all (useful for debugging).
+            - If -1, all CPUs are used.
+            - If < -1, ``(n_cpus + 1 + n_jobs)`` are used — e.g. ``n_jobs=-2`` uses all but one.
+
         :param random_state: Seed or :class:`numpy:numpy.random.RandomState` object for reproducible pseudo-randomness.
         """
 
