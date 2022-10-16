@@ -53,7 +53,51 @@ class HMMClassifier(_Classifier):
 
     Examples
     --------
-    TODO
+    Using a :class:`.HMMClassifier` (with :class:`.GaussianMixtureHMM` models) to classify spoken digits. ::
+
+        import numpy as np
+        from sequentia.datasets import load_digits
+        from sequentia.models import GaussianMixtureHMM, HMMClassifier
+
+        # Seed for reproducible pseudo-randomness
+        random_state = np.random.RandomState(1)
+
+        # Fetch MFCCs of spoken digits
+        data = load_digits(random_state=random_state)
+        train_data, test_data = data.split(test_size=0.2)
+
+        # Create a HMMClassifier using a class frequency prior
+        clf = HMMClassifier(prior='frequency')
+
+        # Add an untrained HMM for each class
+        for label in data.classes:
+            model = GaussianMixtureHMM(random_state=random_state)
+            clf.add_model(model, label)
+            
+        # Fit the HMMs by providing training observation sequences for all classes
+        X_train, y_train, lengths_train = train_data.X_y_lengths
+        clf.fit(X_train, y_train, lengths_train)
+
+        # Predict classes for the test observation sequences
+        X_test, y_test, lengths_test = test_data.X_y_lengths
+        y_pred = clf.predict(X_test, y_test, lengths_test)
+
+    As done in the above example, we can provide unfitted HMMs using :func:`add_model` or :func:`add_models`, 
+    then provide training observation sequences for all classes to :func:`fit`, which will automatically train each HMM on the appropriate subset of data.
+
+    Alternatively, we may provide pre-fitted HMMs and call :func:`fit` with no arguments. ::
+
+        # Create a HMMClassifier using a class frequency prior
+        clf = HMMClassifier(prior='frequency')
+        
+       # Manually fit each HMM on its own subset of data
+        for X_train, lengths_train, label for train_data.iter_by_class():
+            model = GaussianMixtureHMM(random_state=random_state)
+            model.fit(X_train, lengths_train)
+            clf.add_model(model, label)
+            
+        # Fit the classifier
+        clf.fit()
     """
 
     @_validate_params(using=_HMMClassifierValidator)
@@ -136,8 +180,27 @@ class HMMClassifier(_Classifier):
         y: Optional[Array[int]] = None,
         lengths: Optional[Array[int]] = None
     ) -> HMMClassifier:
-        """TODO"""
+        """Fits the HMMs to the provided observation sequence(s).
 
+        - If fitted models were provided with :func:`add_model` or :func:`add_models`, no arguments should be passed to :func:`fit`.
+        - If unfitted models were provided with :func:`add_model` or :func:`add_models`, training data ``X``, ``y`` and ``lengths`` must be provided to :func:`fit`.
+
+        :param X: Univariate or multivariate observation sequence(s).
+
+            - Should be a single 1D array if :class:`.MultinomialHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
+            - Should have length as the 1st dimension and features as the 2nd dimension.
+            - Should be a concatenated sequence if multiple sequences are provided,
+              with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
+
+        :param y: Classes corresponding to sequence(s) provided in ``X``.
+
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
+
+            - If ``None``, then ``X`` is assumed to be a single observation sequence.
+            - ``len(X)`` should be equal to ``sum(lengths)``.
+
+        :return: The fitted HMM.
+        """
         if X is None or y is None:
             if len(self.models) == 0:
                 raise RuntimeError(
