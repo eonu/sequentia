@@ -54,7 +54,7 @@ A HMM is defined by the following parameters:
    - | For numerical sequences, the emission distribution :math:`b_m(\mathbf{o}^{(t)})` at state :math:`m` is a multivariate continuous distribution
        of the probability of the observation :math:`\mathbf{o}^{(t)}` at time :math:`t`.
 
-     Numerical sequence support for Sequentia assumes unbounded real-valued emissions which are modelled according to a multivariate Gaussian mixture distribution.
+     Numerical sequence support in Sequentia assumes unbounded real-valued emissions which are modelled according to a multivariate Gaussian mixture distribution.
 
 HMMs are fitted to observation sequences using the Baum-Welch (or forward-backward) algorithm.
 
