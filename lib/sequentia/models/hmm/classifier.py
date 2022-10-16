@@ -388,7 +388,7 @@ class HMMClassifier(_Classifier):
 
         :return: Classification accuracy.
         """
-        super().score(X, y, lengths, sample_weight)
+        super().score(X, y, lengths, normalize, sample_weight)
 
     @_validate_params(using=_HMMClassifierValidator)
     @_override_params(_HMMClassifierValidator.fields(), temporary=False)
