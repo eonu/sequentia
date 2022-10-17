@@ -9,7 +9,11 @@ HMM Variants
 
 ----
 
-Introduction
-------------
+Sequentia provides two types of HMMs that can be used with a HMM Classifier.
 
-TODO
+- | **Gaussian Mixture HMM**: 
+  | For modelling univariate or multivariate numerical sequences with real-valued obervations.
+  | e.g. MFCCs, sEMG/ECG/EEG signals, position/rotation signals, word embeddings.
+- | **Multinomial HMM**: 
+  | For modelling univariate categorical sequences with observations from a finite set of symbols.
+  | e.g. DNA sequences, part-of-speech tags.
