@@ -117,7 +117,7 @@ class HMM(BaseEstimator):
         self,
         values: Union[Array, Literal["uniform", "random"]] = 'random'
     ):
-        """Sets the initial state probabilities of the HMM's Markov chain.
+        """Sets the initial state probabilities.
 
         If this method is **not** called, initial state probabilities are initialized depending on the value of ``topology`` provided to :func:`__init__`.
 
@@ -151,9 +151,9 @@ class HMM(BaseEstimator):
         self,
         values: Union[Array, Literal["uniform", "random"]] = 'random'
     ):
-        """Sets the state transition probability matrix of the HMM's Markov chain.
+        """Sets the transition probability matrix.
 
-        If this method is **not** called, transition probabilities are initialized depending on the value of ``topology`` provided to :func:`__init__`.
+        If this method is **not** called, transition probabilities are initialized depending on the value of ``topology`` provided to :func:`__init__`:
 
         - If ``topology`` was set to ``'ergodic'``, ``'left-right'`` or ``'linear'``, then random probabilities will be assigned according to the topology by calling :func:`set_transitions` with ``value='random'``.
         - If ``topology`` was set to ``None``, then initial state probabilities will be initialized by `hmmlearn <https://hmmlearn.readthedocs.io/en/latest/>`__.

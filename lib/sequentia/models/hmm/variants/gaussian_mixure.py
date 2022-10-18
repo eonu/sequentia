@@ -80,8 +80,8 @@ class GaussianMixtureHMM(HMM):
     ) -> GaussianMixtureHMM:
         """
         :param n_states: Number of states in the Markov chain.
-        :param n_components: Number of Gaussian components in the emission model mixture distribution for each state.
-        :param covariance_type: Type of covariance matrix in the emission model mixture distribution for each state.
+        :param n_components: Number of Gaussian components in the mixture emission distribution for each state.
+        :param covariance_type: Type of covariance matrix in the mixture emission distribution for each state - see :ref:`covariance_types`.
         :param topology: Transition topology of the Markov chain — see :ref:`topologies`.
 
             - If ``None``, behaves the same as ``'ergodic'`` but with `hmmlearn <https://hmmlearn.readthedocs.io/en/latest/>`__ initialization.
@@ -227,9 +227,9 @@ class GaussianMixtureHMM(HMM):
         return super().aic(X, lengths)
 
     def set_state_means(self, values: Array[float]):
-        """Sets the state Gaussian mixture distribution means of the HMM's emission model.
+        """Sets the mean vectors of the state emission distributions.
 
-        If this method is **not** called, emission distribution means will be initialized by `hmmlearn <https://hmmlearn.readthedocs.io/en/latest/>`__.
+        If this method is **not** called, mean vectors will be initialized by `hmmlearn <https://hmmlearn.readthedocs.io/en/latest/>`__.
 
         :param values: Array of emission distribution mean values.
 
@@ -239,11 +239,11 @@ class GaussianMixtureHMM(HMM):
         self._skip_init_params |= set('m')
 
     def set_state_covariances(self, values: Array[float]):
-        """Sets the state Gaussian mixture distribution covariance matrices of the HMM's emission model.
+        """Sets the covariance matrices of the state emission distributions.
 
-        If this method is **not** called, emission distribution covariances will be initialized by `hmmlearn <https://hmmlearn.readthedocs.io/en/latest/>`__.
+        If this method is **not** called, covariance matrices will be initialized by `hmmlearn <https://hmmlearn.readthedocs.io/en/latest/>`__.
 
-        :param values: Array of emission distribution covariances values.
+        :param values: Array of emission distribution covariance values.
 
         :note: If used, this method should normally be called before :func:`fit`.
         """
@@ -251,11 +251,11 @@ class GaussianMixtureHMM(HMM):
         self._skip_init_params |= set('c')
 
     def set_state_weights(self, values: Array[float]):
-        """Sets the state Gaussian mixture distribution weights of the HMM's emission model.
+        """Sets the component mixture weights of the state emission distributions.
 
-        If this method is **not** called, emission distribution weights will be initialized by `hmmlearn <https://hmmlearn.readthedocs.io/en/latest/>`__.
+        If this method is **not** called, component mixture weights will be initialized by `hmmlearn <https://hmmlearn.readthedocs.io/en/latest/>`__.
 
-        :param values: Array of emission distribution mixture weights.
+        :param values: Array of emission distribution component mixture weights.
 
         :note: If used, this method should normally be called before :func:`fit`.
         """
@@ -266,24 +266,22 @@ class GaussianMixtureHMM(HMM):
         self,
         params: str = _defaults.hmmlearn_kwargs["params"],
     ):
-        """Freezes the trainable parameters of the HMM's Markov chain and/or emission model,
-        preventing them from being updated during the Baum—Welch algorithm.
+        """Freezes the trainable parameters of the HMM, preventing them from being updated during the Baum—Welch algorithm.
 
         :param params: A string specifying which parameters to freeze. Can contain a combination of:
 
-            - ``'s'`` for initial state probabilities (Markov chain parameters),
-            - ``'t'`` for transition probabilities (Markov chain parameters),
-            - ``'m'`` for GMM emission distribution means (emission parameters),
-            - ``'c'`` for GMM emission distribution covariances (emission parameters),
-            - ``'w'`` for GMM emission distribution mixture weights (emission parameters).
+            - ``'s'`` for initial state probabilities,
+            - ``'t'`` for transition probabilities,
+            - ``'m'`` for emission distribution means,
+            - ``'c'`` for emission distribution covariances,
+            - ``'w'`` for emission distribution mixture weights.
 
         :note: If used, this method should normally be called before :func:`fit`.
 
         See Also
         --------
         unfreeze:
-            Unfreezes the trainable parameters of the HMM's Markov chain and/or emission model,
-            allowing them to be updated during the Baum—Welch algorithm.
+            Unfreezes the trainable parameters of the HMM, allowing them to be updated during the Baum—Welch algorithm.
         """
         super().freeze(params)
 
@@ -291,22 +289,20 @@ class GaussianMixtureHMM(HMM):
         self,
         params: str = _defaults.hmmlearn_kwargs["params"],
     ):
-        """Unfreezes the trainable parameters of the HMM's Markov chain and/or emission model,
-        allowing them to be updated during the Baum—Welch algorithm.
+        """Unfreezes the trainable parameters of the HMM, allowing them to be updated during the Baum—Welch algorithm.
 
         :param params: A string specifying which parameters to unfreeze. Can contain a combination of:
 
-            - ``'s'`` for initial state probabilities (Markov chain parameters),
-            - ``'t'`` for transition probabilities (Markov chain parameters),
-            - ``'m'`` for GMM emission distribution means (emission parameters),
-            - ``'c'`` for GMM emission distribution covariances (emission parameters),
-            - ``'w'`` for GMM emission distribution mixture weights (emission parameters).
+            - ``'s'`` for initial state probabilities,
+            - ``'t'`` for transition probabilities,
+            - ``'m'`` for emission distribution means,
+            - ``'c'`` for emission distribution covariances,
+            - ``'w'`` for emission distribution mixture weights.
 
         See Also
         --------
         freeze:
-            Freezes the trainable parameters of the HMM's Markov chain and/or emission model,
-            preventing them from be updated during the Baum—Welch algorithm.
+            Freezes the trainable parameters of the HMM, preventing them from be updated during the Baum—Welch algorithm.
         """
         super().freeze(params)
 

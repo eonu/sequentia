@@ -195,22 +195,20 @@ class MultinomialHMM(HMM):
         self,
         params: str = _defaults.hmmlearn_kwargs["params"],
     ):
-        """Freezes the trainable parameters of the HMM's Markov chain and/or emission model,
-        preventing them from being updated during the Baum—Welch algorithm.
+        """Freezes the trainable parameters of the HMM, preventing them from being updated during the Baum—Welch algorithm.
 
         :param params: A string specifying which parameters to freeze. Can contain a combination of:
 
-            - ``'s'`` for initial state probabilities (Markov chain parameters),
-            - ``'t'`` for transition probabilities (Markov chain parameters),
-            - ``'e'`` for emission probailities (emission parameters).
+            - ``'s'`` for initial state probabilities,
+            - ``'t'`` for transition probabilities,
+            - ``'e'`` for emission probailities.
 
         :note: If used, this method should normally be called before :func:`fit`.
 
         See Also
         --------
         unfreeze:
-            Unfreezes the trainable parameters of the HMM's Markov chain or emission model,
-            allowing them to be updated during the Baum—Welch algorithm.
+            Unfreezes the trainable parameters of the HMM, allowing them to be updated during the Baum—Welch algorithm.
         """
         super().freeze(params)
 
@@ -218,20 +216,18 @@ class MultinomialHMM(HMM):
         self,
         params: str = _defaults.hmmlearn_kwargs["params"],
     ):
-        """Unfreezes the trainable parameters of the HMM's Markov chain and/or emission model,
-        allowing them to be updated during the Baum—Welch algorithm.
+        """Unfreezes the trainable parameters of the HMM, allowing them to be updated during the Baum—Welch algorithm.
 
         :param params: A string specifying which parameters to unfreeze. Can contain a combination of:
 
-            - ``'s'`` for initial state probabilities (Markov chain parameters),
-            - ``'t'`` for transition probabilities (Markov chain parameters),
-            - ``'e'`` for emission probailities (emission parameters).
+            - ``'s'`` for initial state probabilities,
+            - ``'t'`` for transition probabilities,
+            - ``'e'`` for emission probailities.
 
         See Also
         --------
         freeze:
-            Freezes the trainable parameters of the HMM's Markov chain and/or emission model,
-            preventing them from being updated during the Baum—Welch algorithm.
+            Freezes the trainable parameters of the HMM, preventing them from being updated during the Baum—Welch algorithm.
         """
         super().freeze(params)
 
