@@ -24,8 +24,8 @@ To classify a new observation sequence :math:`O'`, the :class:`.HMMClassifier` w
 
    .. math::
 
-      c' = \operatorname*{\arg\max}_{c\in\{1,\ldots,C\}}\ p(\lambda_c\ |\ O)
-         = \operatorname*{\arg\\max}_{c\in\{1,\ldots,C\}}\ \mathbb{P}(O\ |\ \lambda_c)p(\lambda_c)
+      c' = \operatorname*{\arg\max}_{c\in\{1,\ldots,C\}}\ p(\lambda_c\ |\ O')
+         = \operatorname*{\arg\\max}_{c\in\{1,\ldots,C\}}\ \mathbb{P}(O'\ |\ \lambda_c)p(\lambda_c)
 
 These steps are summarized in the diagram below.
 

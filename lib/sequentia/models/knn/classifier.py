@@ -129,7 +129,7 @@ class KNNClassifier(_KNNMixin, _Classifier):
     @staticmethod
     @njit
     def _multi_argmax(
-        arr: Union[Array[int], Array[float]]
+        arr: Array
     ) -> Array[int]:
         """Same as numpy.argmax but returns all occurrences of the maximum and only requires a single pass.
         From: https://stackoverflow.com/a/58652335
