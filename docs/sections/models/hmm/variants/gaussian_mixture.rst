@@ -3,7 +3,7 @@ Gaussian Mixture HMM
 
 The Gaussian Mixture HMM is a variant of HMM that uses a multivariate Gaussian mixture model as the emission distribution for each state.
 
-This HMM variant can be used to recognize unbounded real-valued univariate or multivariate emissions.
+This HMM variant can be used to recognize unbounded real-valued univariate or multivariate sequences.
 
 Emissions
 ---------
