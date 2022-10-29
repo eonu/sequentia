@@ -17,7 +17,7 @@ The emission distribution :math:`b_m` of an observation :math:`\mathbf{o}^{(t)}`
 Where:
 
 - | :math:`\mathbf{o}^{(t)}=\left(o_1^{(t)}, o_2^{(t)}, \ldots, o_D^{(t)}\right)` is a single **observation** at time :math:`t`, such that :math:`\mathbf{o}^{(t)}\in\mathbb{R}^D`.
-- | :math:`c_k^{(m)}` is a **component mixture weight** for the :math:`k^\text{th}` Gaussian component of the :math:`m^\text{th}` state, such that :math:`\sum_{k=1}^K c_k^{(m)} = 1` and :math:`c_k^{(m)}\in[0, 1]` for all :math:`k`.
+- | :math:`c_k^{(m)}` is a **component mixture weight** for the :math:`k^\text{th}` Gaussian component of the :math:`m^\text{th}` state, such that :math:`\sum_{k=1}^K c_k^{(m)} = 1` and :math:`c_k^{(m)}\in[0, 1]`.
 - | :math:`\boldsymbol\mu_k^{(m)}` is a **mean vector** for the :math:`k^\text{th}` Gaussian component of the :math:`m^\text{th}` state, such that :math:`\boldsymbol\mu_k^{(m)}\in\mathbb{R}^D`.
 - | :math:`\Sigma_k^{(m)}` is a **covariance matrix** for the :math:`k^\text{th}` Gaussian component of the :math:`m^\text{th}` state, such that :math:`\Sigma_k^{(m)}\in\mathbb{R}^{D\times D}` and :math:`\Sigma_k^{(m)}` is symmetric and positive semi-definite.
 - | :math:`\mathcal{N}_D` is the :math:`D`-dimensional multivariate Gaussian probability density function.
