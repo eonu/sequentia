@@ -109,6 +109,8 @@ class HMMClassifier(_Classifier):
         n_jobs: Union[NegativeInt, PositiveInt] = 1
     ) -> HMMClassifier:
         """
+        Initializes a :class:`.HMMClassifier`.
+
         :param prior: Type of prior probability to assign to each HMM.
 
             - If ``None``, a uniform prior will be used, making each HMM equally likely.
@@ -180,7 +182,7 @@ class HMMClassifier(_Classifier):
         y: Optional[Array[int]] = None,
         lengths: Optional[Array[int]] = None
     ) -> HMMClassifier:
-        """Fits the HMMs to the provided observation sequence(s).
+        """Fits the HMMs to the sequence(s) in ``X``.
 
         - If fitted models were provided with :func:`add_model` or :func:`add_models`, no arguments should be passed to :func:`fit`.
         - If unfitted models were provided with :func:`add_model` or :func:`add_models`, training data ``X``, ``y`` and ``lengths`` must be provided to :func:`fit`.
@@ -199,7 +201,7 @@ class HMMClassifier(_Classifier):
             - If ``None``, then ``X`` is assumed to be a single observation sequence.
             - ``len(X)`` should be equal to ``sum(lengths)``.
 
-        :return: The fitted HMM.
+        :return: The fitted classifier.
         """
         if X is None or y is None:
             if len(self.models) == 0:
@@ -265,7 +267,7 @@ class HMMClassifier(_Classifier):
         X: Array,
         lengths: Optional[Array[int]] = None
     ) -> Array[int]:
-        """Predicts classes for the provided observation sequence(s).
+        """Predicts classes for the sequence(s) in ``X``.
 
         :param X: Univariate or multivariate observation sequence(s).
 
@@ -293,7 +295,7 @@ class HMMClassifier(_Classifier):
         X: Array,
         lengths: Optional[Array[int]] = None
     ) -> Array[confloat(ge=0, le=1)]:
-        """Predicts class membership probabilities for the provided observation sequence(s).
+        """Predicts class probabilities for the sequence(s) in ``X``.
 
         Probabilities are calculated as the posterior probability of each HMM generating the sequence.
 
@@ -325,7 +327,7 @@ class HMMClassifier(_Classifier):
         X: Array,
         lengths: Optional[Array[int]] = None
     ) -> Array[float]:
-        """Predicts class scores for the provided observation sequence(s).
+        """Predicts class scores for the sequence(s) in ``X``.
 
         Scores are calculated as the log posterior probability of each HMM generating the sequence.
 
@@ -363,8 +365,8 @@ class HMMClassifier(_Classifier):
         lengths: Optional[Array[int]],
         normalize: bool = True,
         sample_weight: Optional[Array] = None,
-    ) -> confloat(ge=0, le=100):
-        """Predicts classes for the provided observation sequence(s) and calculates classification accuracy.
+    ) -> float:
+        """Calculates accuracy for the sequence(s) in ``X``.
 
         :param X: Univariate or multivariate observation sequence(s).
 
@@ -388,7 +390,7 @@ class HMMClassifier(_Classifier):
 
         :return: Classification accuracy.
         """
-        super().score(X, y, lengths, normalize, sample_weight)
+        return super().score(X, y, lengths, normalize, sample_weight)
 
     @_validate_params(using=_HMMClassifierValidator)
     @_override_params(_HMMClassifierValidator.fields(), temporary=False)

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from typing import Union, Optional
+from types import SimpleNamespace
+from typing import Optional, Union, Callable
 from joblib import Parallel, delayed
 
 import numpy as np
+from pydantic import NegativeInt, NonNegativeInt, PositiveInt, confloat
 from numba import njit, prange
 from sklearn.utils import check_random_state
 
@@ -21,12 +23,91 @@ from sequentia.utils.validation import (
 
 __all__ = ['KNNClassifier']
 
+_defaults = SimpleNamespace(
+    **{
+        **_KNNMixin._defaults.__dict__,
+        "classes": None,
+    }
+)
+
+class _KNNClassifierValidator(_KNNValidator):
+    classes: Optional[Array[int]] = _defaults.classes
+
 class KNNClassifier(_KNNMixin, _Classifier):
     """A k-nearest neighbor classifier that uses DTW as a distance measure for sequence comparison.
 
     The classifier computes the score for each class as the total of the distance weightings of every sequence belonging to that class,
     within the DTW k-neighborhood of the sequence being classified.
+
+    TODO: Example
     """
+
+    _defaults = _defaults
+
+    @_validate_params(using=_KNNClassifierValidator)
+    def __init__(
+        self,
+        *,
+        k: PositiveInt = _defaults.k,
+        weighting: Optional[Callable] = _defaults.weighting,
+        window: confloat(ge=0, le=1) = _defaults.window,
+        independent: bool = _defaults.independent,
+        classes: Optional[Array[int]] = None,
+        use_c: bool = _defaults.use_c,
+        n_jobs: Union[NegativeInt, PositiveInt] = _defaults.n_jobs,
+        random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = _defaults.random_state
+    ) -> KNNClassifier:
+        """
+        Initializes the :class:`.KNNClassifier`.
+
+        :param k: Number of neighbors.
+
+        :param weighting: A callable that specifies how distance weighting should be performed.
+            The callable should accept a :class:`numpy:numpy.ndarray` of DTW distances, apply an element-wise weighting transformation
+            to the matrix of DTW distances, then return an equally-sized :class:`numpy:numpy.ndarray` of weightings.
+            If ``None``, then a uniform weighting of 1 will be applied to all distances.
+
+        :param window: The width of the Sakoe—Chiba band global constrant as a fraction of the length of the longest of the two sequences being compared.
+
+            - A larger constraint will speed up the DTW alignment by restricting the maximum deviation from the diagonal of the DTW matrix.
+            - Too much constraint may lead to poor alignment.
+
+            The default value of 1 corresponds to full DTW computation with no global constraint applied.
+
+        :param independent: Whether or not to allow features to be warped independently from each other. See [#dtw_multi]_ for an overview of independent and dependent dynamic time warping.
+
+        :param classes: Set of possible class labels.
+
+            - If not provided, these will be determined from the training data labels.
+            - If provided, output from methods such as :func:`predict_proba` and :func:`predict_scores`
+              will follow the ordering of the class labels provided here.
+
+        :param use_c: Whether or not to use fast pure C compiled functions from `dtaidistance <https://github.com/wannesm/dtaidistance>`__ to perform the DTW computations.
+
+        :param n_jobs: Maximum number of concurrently running workers.
+
+            - If 1, no parallelism is used at all (useful for debugging).
+            - If -1, all CPUs are used.
+            - If < -1, ``(n_cpus + 1 + n_jobs)`` are used — e.g. ``n_jobs=-2`` uses all but one.
+
+        :param random_state: Seed or :class:`numpy:numpy.random.RandomState` object for reproducible pseudo-randomness.
+        """
+        #: Number of neighbors.
+        self.k = k
+        #: A callable that specifies how distance weighting should be performed.
+        self.weighting = weighting
+        #: The width of the Sakoe—Chiba band global constrant as a fraction of the length of the longest of the two sequences being compared.
+        self.window = window
+        #: Whether or not to allow features to be warped independently from each other.
+        self.independent = independent
+        #: Set of possible class labels.
+        self.classes = classes
+        #: Whether or not to use fast pure C compiled functions from `dtaidistance <https://github.com/wannesm/dtaidistance>`__ to perform the DTW computations.
+        self.use_c = use_c
+        #: Maximum number of concurrently running workers.
+        self.n_jobs = n_jobs
+        #: Seed or :class:`numpy:numpy.random.RandomState` object for reproducible pseudo-randomness.
+        self.random_state = random_state
 
     def fit(
         self,
@@ -34,8 +115,24 @@ class KNNClassifier(_KNNMixin, _Classifier):
         y: Array[int],
         lengths: Optional[Array[int]] = None
     ) -> KNNClassifier:
-        """TODO"""
+        """Fits the classifier to the sequence(s) in ``X``.
 
+        :param X: Univariate or multivariate observation sequence(s).
+
+            - Should be a single 1D or 2D array.
+            - Should have length as the 1st dimension and features as the 2nd dimension.
+            - Should be a concatenated sequence if multiple sequences are provided,
+              with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
+
+        :param y: Classes corresponding to sequence(s) provided in ``X``.
+
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
+
+            - If ``None``, then ``X`` is assumed to be a single observation sequence.
+            - ``len(X)`` should be equal to ``sum(lengths)``.
+
+        :return: The fitted classifier.
+        """
         data = _MultivariateFloatSequenceClassifierValidator(X=X, y=y, lengths=lengths)
         self.X_ = data.X
         self.y_ = data.y
@@ -51,6 +148,24 @@ class KNNClassifier(_KNNMixin, _Classifier):
         X: Array[float],
         lengths: Optional[Array[int]] = None
     ) -> Array[int]:
+        """Predicts classes for the sequence(s) in ``X``.
+
+        :param X: Univariate or multivariate observation sequence(s).
+
+            - Should be a single 1D or 2D array.
+            - Should have length as the 1st dimension and features as the 2nd dimension.
+            - Should be a concatenated sequence if multiple sequences are provided,
+              with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
+
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
+
+            - If ``None``, then ``X`` is assumed to be a single observation sequence.
+            - ``len(X)`` should be equal to ``sum(lengths)``.
+
+        :note: This method requires a trained classifier — see :func:`fit`.
+
+        :return: Class predictions.
+        """
         class_scores = self.predict_scores(X, lengths)
         return self._find_max_labels(class_scores)
 
@@ -60,6 +175,26 @@ class KNNClassifier(_KNNMixin, _Classifier):
         X: Array[float],
         lengths: Optional[Array[int]] = None
     ) -> Array[float]:
+        """Predicts class probabilities for the sequence(s) in ``X``.
+
+        Probabilities are calculated as normalized class scores.
+
+        :param X: Univariate or multivariate observation sequence(s).
+
+            - Should be a single 1D or 2D array.
+            - Should have length as the 1st dimension and features as the 2nd dimension.
+            - Should be a concatenated sequence if multiple sequences are provided,
+              with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
+
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
+
+            - If ``None``, then ``X`` is assumed to be a single observation sequence.
+            - ``len(X)`` should be equal to ``sum(lengths)``.
+
+        :note: This method requires a trained classifier — see :func:`fit`.
+
+        :return: Class membership probabilities.
+        """
         class_scores = self.predict_scores(X, lengths)
         return class_scores / class_scores.sum(axis=1, keepdims=True)
 
@@ -69,9 +204,64 @@ class KNNClassifier(_KNNMixin, _Classifier):
         X: Array[float],
         lengths: Optional[Array[int]] = None
     ) -> Array[float]:
+        """Predicts class scores for the sequence(s) in ``X``.
+
+        Scores are calculated as the class distance weighting sums of all training sequences in the k-neighborhood.
+
+        :param X: Univariate or multivariate observation sequence(s).
+
+            - Should be a single 1D or 2D array.
+            - Should have length as the 1st dimension and features as the 2nd dimension.
+            - Should be a concatenated sequence if multiple sequences are provided,
+              with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
+
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
+
+            - If ``None``, then ``X`` is assumed to be a single observation sequence.
+            - ``len(X)`` should be equal to ``sum(lengths)``.
+
+        :note: This method requires a trained classifier — see :func:`fit`.
+
+        :return: Class scores.
+        """
         _, k_distances, k_labels = self.query_neighbors(X, lengths, sort=False)
         k_weightings = self._weighting()(k_distances)
         return self._compute_scores(k_labels, k_weightings)
+
+    @_requires_fit
+    def score(
+        self,
+        X: Array,
+        y: Array[int],
+        lengths: Optional[Array[int]],
+        normalize: bool = True,
+        sample_weight: Optional[Array] = None,
+    ) -> float:
+        """Calculates accuracy for the sequence(s) in ``X``.
+
+        :param X: Univariate or multivariate observation sequence(s).
+
+            - Should be a single 1D or 2D array.
+            - Should have length as the 1st dimension and features as the 2nd dimension.
+            - Should be a concatenated sequence if multiple sequences are provided,
+              with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
+
+        :param y: Classes corresponding to the observation sequence(s) in ``X``.
+
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
+
+            - If ``None``, then ``X`` is assumed to be a single observation sequence.
+            - ``len(X)`` should be equal to ``sum(lengths)``.
+
+        :param normalize: See :func:`sklearn:sklearn.metrics.accuracy_score`.
+
+        :param sample_weight: See :func:`sklearn:sklearn.metrics.accuracy_score`.
+
+        :note: This method requires a trained classifier — see :func:`fit`.
+
+        :return: Classification accuracy.
+        """
+        return super().score(X, y, lengths, normalize, sample_weight)
 
     @_validate_params(using=_KNNValidator)
     @_override_params(_KNNValidator.fields(), temporary=False)

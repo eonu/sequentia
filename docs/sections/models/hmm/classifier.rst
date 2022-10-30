@@ -37,6 +37,18 @@ These steps are summarized in the diagram below.
 API reference
 -------------
 
+.. autosummary::
+
+   ~sequentia.models.hmm.classifier.HMMClassifier
+   ~sequentia.models.hmm.classifier.HMMClassifier.__init__
+   ~sequentia.models.hmm.classifier.HMMClassifier.add_model
+   ~sequentia.models.hmm.classifier.HMMClassifier.add_models
+   ~sequentia.models.hmm.classifier.HMMClassifier.fit
+   ~sequentia.models.hmm.classifier.HMMClassifier.predict
+   ~sequentia.models.hmm.classifier.HMMClassifier.predict_proba
+   ~sequentia.models.hmm.classifier.HMMClassifier.predict_scores
+   ~sequentia.models.hmm.classifier.HMMClassifier.score
+
 .. autoclass:: sequentia.models.hmm.classifier.HMMClassifier
    :members:
    :inherited-members:

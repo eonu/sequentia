@@ -4,8 +4,9 @@ import types
 import joblib
 import marshal
 import warnings
+import pathlib
 from types import SimpleNamespace
-from typing import Optional, Union, Callable, Tuple, List, Any
+from typing import Optional, Union, Callable, Tuple, List, Any, IO
 from joblib import Parallel, delayed
 
 import numpy as np
@@ -40,7 +41,6 @@ _defaults = SimpleNamespace(
     weighting=None,
     window=1,
     independent=False,
-    classes=None,
     use_c=False,
     n_jobs=1,
     random_state=None,
@@ -51,7 +51,6 @@ class _KNNValidator(_Validator):
     weighting: Optional[Callable] = _defaults.weighting
     window: confloat(ge=0, le=1) = _defaults.window
     independent: bool = _defaults.independent
-    classes: Optional[Array[int]] = _defaults.classes
     use_c: bool = _defaults.use_c
     n_jobs: Union[NegativeInt, PositiveInt] = _defaults.n_jobs
     random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = _defaults.random_state
@@ -69,53 +68,7 @@ class _KNNValidator(_Validator):
         return check_random_state(value)
 
 class _KNNMixin:
-    @_validate_params(using=_KNNValidator)
-    def __init__(
-        self,
-        *,
-        k: PositiveInt = _defaults.k,
-        weighting: Optional[Callable] = _defaults.weighting,
-        window: confloat(ge=0, le=1) = _defaults.window,
-        independent: bool = _defaults.independent,
-        use_c: bool = _defaults.use_c,
-        n_jobs: Union[NegativeInt, PositiveInt] = _defaults.n_jobs,
-        random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = _defaults.random_state
-    ):
-        """
-        :param k: Number of neighbors.
-
-        :param weighting: A callable that specifies how distance weighting should be performed.
-            The callable should accept a :class:`numpy:numpy.ndarray` of DTW distances, apply an element-wise weighting transformation
-            to the matrix of DTW distances, then return an equally-sized :class:`numpy:numpy.ndarray` of weightings.
-            If ``None``, then a uniform weighting of 1 will be applied to all distances.
-
-        :param window: The width of the Sakoe—Chiba band global constrant as a fraction of the length of the longest of the two sequences being compared.
-
-            - A larger constraint will speed up the DTW alignment by restricting the maximum deviation from the diagonal of the DTW matrix.
-            - Too much constraint may lead to poor alignment.
-
-            The default value of 1 corresponds to full DTW computation with no global constraint applied.
-
-        :param independent: Whether or not to allow features to be warped independently from each other. See [#dtw_multi]_ for an overview of independent and dependent dynamic time warping.
-
-        :param use_c: Whether or not to use fast pure C compiled functions from `dtaidistance <https://github.com/wannesm/dtaidistance>`__ to perform the DTW computations.
-
-        :param n_jobs: Maximum number of concurrently running workers.
-
-            - If 1, no parallelism is used at all (useful for debugging).
-            - If -1, all CPUs are used.
-            - If < -1, ``(n_cpus + 1 + n_jobs)`` are used — e.g. ``n_jobs=-2`` uses all but one.
-
-        :param random_state: Seed or :class:`numpy:numpy.random.RandomState` object for reproducible pseudo-randomness.
-        """
-
-        self.k = k
-        self.weighting = weighting
-        self.window = window
-        self.independent = independent
-        self.use_c = use_c
-        self.n_jobs = n_jobs
-        self.random_state = random_state
+    _defaults = _defaults
 
     @_requires_fit
     @_override_params(['k', 'window', 'independent'])
@@ -125,15 +78,39 @@ class _KNNMixin:
         X: Array[float],
         lengths: Optional[Array[int]] = None,
         sort: bool = True,
-        **kwargs
+        **kwargs,
     ) -> Tuple[
         Array[int],
         Array[float],
         Array
     ]:
-        """Queries the k nearest neighbors in the training set for each sequence in X
+        """Queries the k-nearest training observation sequences to each sequence in ``X``.
 
-        TODO
+        :param X: Univariate or multivariate observation sequence(s).
+
+            - Should be a single 1D or 2D array.
+            - Should have length as the 1st dimension and features as the 2nd dimension.
+            - Should be a concatenated sequence if multiple sequences are provided,
+              with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
+
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
+
+            - If ``None``, then ``X`` is assumed to be a single observation sequence.
+            - ``len(X)`` should be equal to ``sum(lengths)``.
+
+        :param sort: Whether to sort the neighbors in order of nearest to furthest.
+
+        :param \*\*kwargs: Model parameters to temporarily override (*for experimentation purposes*).
+            
+            - ``k``: See :func:`__init__`.
+            - ``window``: See :func:`__init__`.
+            - ``independent``: See :func:`__init__`.
+
+        :return: K-nearest neighbors for each sequence in ``X``.
+
+            - Indices of the k-nearest training sequences.
+            - DTW distances of the k-nearest training sequences.
+            - Corresponding outputs of the k-nearest training sequences.
         """
 
         distances = self.compute_distance_matrix(X, lengths)
@@ -152,10 +129,28 @@ class _KNNMixin:
         lengths: Optional[Array[int]] = None,
         **kwargs
     ) -> Array[float]:
-        """Calculates a matrix of DTW distances between the provided data
-        and the training data.
+        """Calculates a matrix of DTW distances between the sequences in ``X`` and the training sequences.
 
-        TODO
+        :param X: Univariate or multivariate observation sequence(s).
+
+            - Should be a single 1D or 2D array.
+            - Should have length as the 1st dimension and features as the 2nd dimension.
+            - Should be a concatenated sequence if multiple sequences are provided,
+              with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
+
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
+
+            - If ``None``, then ``X`` is assumed to be a single observation sequence.
+            - ``len(X)`` should be equal to ``sum(lengths)``.
+
+        :param \*\*kwargs: Model parameters to temporarily override (*for experimentation purposes*).
+            
+            - ``window``: See :func:`__init__`.
+            - ``independent``: See :func:`__init__`.
+
+        :note: This method requires a trained classifier — see :func:`fit`.
+
+        :return: DTW distance matrix.
         """
 
         data = _BaseMultivariateFloatSequenceValidator(X=X, lengths=lengths)
@@ -177,7 +172,19 @@ class _KNNMixin:
     @_override_params(['window', 'independent'])
     @_validate_params(using=_KNNValidator)
     def dtw(self, A: Array[float], B: Array[float], **kwargs) -> float:
-        """TODO"""
+        """Calculates the DTW distance between two univariate or multivariate sequences.
+        
+        :param A: The first sequence.
+
+        :param B: The second sequence.
+
+        :param \*\*kwargs: Model parameters to temporarily override (*for experimentation purposes*).
+            
+            - ``window``: See :func:`__init__`.
+            - ``independent``: See :func:`__init__`.
+
+        :return: DTW distance.
+        """
 
         A = _SingleMultivariateFloatSequenceValidator(sequence=A).sequence
         B = _SingleMultivariateFloatSequenceValidator(sequence=B).sequence
@@ -192,15 +199,25 @@ class _KNNMixin:
         b: Array[float],
         **kwargs
     ) -> 'matplotlib.axes.Axes':
-        """TODO"""
+        """Calculates the DTW matrix between two sequences and plots the optimal warping path.
+
+        :param a: The first sequence.
+
+        :param b: The second sequence.
+        
+        :note: Only supports univariate sequences.
+
+        :param \*\*kwargs: Model parameters to temporarily override (*for experimentation purposes*).
+            
+            - ``window``: See :func:`__init__`.
+
+        :return: Plot axes.
+        """
 
         from dtaidistance import dtw_visualisation
 
         a = _SingleUnivariateFloatSequenceValidator(sequence=a).sequence
         b = _SingleUnivariateFloatSequenceValidator(sequence=b).sequence
-
-        if self.independent:
-            warnings.warn('Warping paths cannot be plotted with independent warping - using dependent warping')
 
         window = self._window(a, b)
         _, paths = dtw.warping_paths(a, b, window=window)
@@ -219,7 +236,31 @@ class _KNNMixin:
         ax: Optional['matplotlib.axes.Axes'] = None,
         **kwargs
     ) -> 'matplotlib.axes.Axes':
-        """TODO"""
+        """Calculates DTW distances between ``X`` and training sequences, and plots a distance histogram.
+        
+        :param X: Univariate or multivariate observation sequence(s).
+
+            - Should be a single 1D or 2D array.
+            - Should have length as the 1st dimension and features as the 2nd dimension.
+            - Should be a concatenated sequence if multiple sequences are provided,
+              with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
+
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
+
+            - If ``None``, then ``X`` is assumed to be a single observation sequence.
+            - ``len(X)`` should be equal to ``sum(lengths)``.
+
+        :param ax: Plot axes. If ``None``, new axes are created.
+
+        :param \*\*kwargs: Model parameters to temporarily override (*for experimentation purposes*).
+            
+            - ``window``: See :func:`__init__`.
+            - ``independent``: See :func:`__init__`.
+
+        :note: This method requires a trained classifier — see :func:`fit`.
+
+        :return: Plot axes.
+        """
 
         import matplotlib.pyplot as plt
 
@@ -234,23 +275,48 @@ class _KNNMixin:
     @_requires_fit
     @_override_params(['weighting', 'window', 'independent'])
     @_validate_params(using=_KNNValidator)
-    def plot_score_histogram(
+    def plot_weight_histogram(
         self,
         X: Array[float],
         lengths: Optional[Array[int]] = None,
         ax: Optional['matplotlib.axes.Axes'] = None,
         **kwargs
     ) -> 'matplotlib.axes.Axes':
-        """TODO"""
+        """Calculates DTW weights between ``X`` and training sequences, and plots a weight histogram.
+        
+        :param X: Univariate or multivariate observation sequence(s).
+
+            - Should be a single 1D or 2D array.
+            - Should have length as the 1st dimension and features as the 2nd dimension.
+            - Should be a concatenated sequence if multiple sequences are provided,
+              with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
+
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
+
+            - If ``None``, then ``X`` is assumed to be a single observation sequence.
+            - ``len(X)`` should be equal to ``sum(lengths)``.
+
+        :param ax: Plot axes. If ``None``, new axes are created.
+
+        :param \*\*kwargs: Model parameters to temporarily override (*for experimentation purposes*).
+            
+            - ``weighting``: See :func:`__init__`.
+            - ``window``: See :func:`__init__`.
+            - ``independent``: See :func:`__init__`.
+
+        :note: This method requires a trained classifier — see :func:`fit`.
+
+        :return: Plot axes.
+        """
 
         import matplotlib.pyplot as plt
 
         distances = self.compute_distance_matrix(X, lengths)
-        scores = self._weighting()(distances)
+        weightings = self._weighting()(distances)
 
         if ax is None:
             _, ax = plt.subplots()
-        ax.hist(scores.flatten())
+        ax.hist(weightings.flatten())
         return ax
 
     def _dtw1d(self, a: Array[float], b: Array[float], window: int) -> float:
@@ -330,8 +396,18 @@ class _KNNMixin:
         return distances
 
     @_requires_fit
-    def save(self, path: Any):
-        """TODO"""
+    def save(self, path: Union[str, pathlib.Path, IO]):
+        """Serializes and saves a fitted KNN estimator.
+
+        :param path: Location to save the serialized estimator.
+
+        :note: This method requires a trained classifier — see :func:`fit`.
+        
+        See Also
+        --------
+        load:
+            Loads and deserializes a fitted KNN estimator.
+        """
 
         # Fetch main parameters and fitted values
         state = {
@@ -348,8 +424,18 @@ class _KNNMixin:
         joblib.dump(state, path)
 
     @classmethod
-    def load(cls, path):
-        """TODO"""
+    def load(cls, path: Union[str, pathlib.Path, IO]):
+        """Loads and deserializes a fitted KNN estimator.
+
+        :param path: Location to load the serialized estimator from.
+
+        :return: Fitted KNN estimator.
+        
+        See Also
+        --------
+        save:
+            Serializes and saves a fitted KNN estimator.
+        """
 
         state = joblib.load(path)
 

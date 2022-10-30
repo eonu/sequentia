@@ -21,17 +21,17 @@ from sequentia.utils.validation import (
 
 __all__ = ['GaussianMixtureHMM']
 
-_defaults = SimpleNamespace(**{
-    **HMM._defaults.__dict__,
-    **dict(
-        n_components=3,
-        covariance_type="spherical",
-        hmmlearn_kwargs=dict(
+_defaults = SimpleNamespace(
+    **{
+        **HMM._defaults.__dict__,
+        "n_components": 3,
+        "covariance_type": "spherical",
+        "hmmlearn_kwargs": dict(
             init_params="stmcw",
             params="stmcw",
         )
-    )
-})
+    }
+)
 
 
 class GaussianMixtureHMM(HMM):
@@ -100,7 +100,7 @@ class GaussianMixtureHMM(HMM):
         X: Array[float],
         lengths: Optional[Array[int]] = None
     ) -> GaussianMixtureHMM:
-        """Fits the HMM to the provided observation sequences using the Baum—Welch algorithm.
+        """Fits the HMM to the sequences in ``X``, using the Baum—Welch algorithm.
 
         :param X: Univariate or multivariate observation sequence(s).
 

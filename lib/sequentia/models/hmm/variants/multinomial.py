@@ -21,15 +21,15 @@ from sequentia.utils.validation import (
 
 __all__ = ['MultinomialHMM']
 
-_defaults = SimpleNamespace(**{
-    **HMM._defaults.__dict__,
-    **dict(
-        hmmlearn_kwargs=dict(
+_defaults = SimpleNamespace(
+    **{
+        **HMM._defaults.__dict__,
+        "hmmlearn_kwargs": dict(
             init_params="ste",
             params="ste",
         )
-    )
-})
+    }
+)
 
 class MultinomialHMM(HMM):
     """A hidden Markov model with univariate multinomial emissions."""
@@ -63,7 +63,7 @@ class MultinomialHMM(HMM):
         X: Array[int],
         lengths: Optional[Array[int]] = None
     ) -> MultinomialHMM:
-        """Fits the HMM to the provided observation sequences using the Baum—Welch algorithm.
+        """Fits the HMM to the sequences in ``X``, using the Baum—Welch algorithm.
 
         :param X: Univariate observation sequence(s).
 

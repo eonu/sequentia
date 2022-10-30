@@ -22,7 +22,6 @@ class _Classifier(BaseEstimator, ClassifierMixin):
         X: Array,
         lengths: Optional[Array[int]] = None
     ) -> Array[int]:
-
         raise NotImplementedError
 
     def predict_proba(
@@ -30,8 +29,6 @@ class _Classifier(BaseEstimator, ClassifierMixin):
         X: Array,
         lengths: Optional[Array[int]] = None
     ) -> Array[float]:
-        """TODO"""
-
         raise NotImplementedError
 
     def predict_scores(
@@ -39,8 +36,6 @@ class _Classifier(BaseEstimator, ClassifierMixin):
         X: Array,
         lengths: Optional[Array[int]] = None
     ) -> Array[float]:
-        """TODO"""
-
         raise NotImplementedError
 
     @_requires_fit
@@ -52,8 +47,6 @@ class _Classifier(BaseEstimator, ClassifierMixin):
         normalize: bool = True,
         sample_weight: Optional[Any] = None
     ) -> float:
-        """TODO"""
-
         y_pred = self.predict(X, lengths)
         return accuracy_score(y, y_pred, normalize=normalize, sample_weight=sample_weight)
 
@@ -64,8 +57,6 @@ class _Regressor(BaseEstimator, RegressorMixin):
         y: Array[float],
         lengths: Optional[Array[int]] = None
     ) -> _Regressor:
-        """TODO"""
-
         raise NotImplementedError
 
     def predict(
@@ -73,8 +64,6 @@ class _Regressor(BaseEstimator, RegressorMixin):
         X: Array[float],
         lengths: Optional[Array[int]] = None
     ) -> Array[float]:
-        """TODO"""
-
         raise NotImplementedError
 
     @_requires_fit
@@ -85,7 +74,5 @@ class _Regressor(BaseEstimator, RegressorMixin):
         lengths: Optional[Array[int]] = None,
         sample_weight: Optional[Any] = None
     ) -> float:
-        """TODO"""
-
         y_pred = self.predict(X, lengths)
         return r2_score(y, y_pred, sample_weight=sample_weight)

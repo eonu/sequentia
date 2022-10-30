@@ -142,7 +142,7 @@ class _BaseSingleUnivariateSequenceValidator(_Validator):
             raise ValueError('Expected the sequence to have a maximum of two dimensions')
 
         if sequence.shape[1] > 1:
-            raise ValueError('Expected the sequence to have one dimension')
+            raise ValueError('Expected the sequence to be univariate')
 
         if len(sequence) == 0:
             raise ValueError('Expected the sequence to have at least one observation')
