@@ -57,7 +57,7 @@ class HMMClassifier(_Classifier):
 
         import numpy as np
         from sequentia.datasets import load_digits
-        from sequentia.models import GaussianMixtureHMM, HMMClassifier
+        from sequentia.models.hmm import GaussianMixtureHMM, HMMClassifier
 
         # Seed for reproducible pseudo-randomness
         random_state = np.random.RandomState(1)
@@ -79,8 +79,8 @@ class HMMClassifier(_Classifier):
         clf.fit(X_train, y_train, lengths_train)
 
         # Predict classes for the test observation sequences
-        X_test, y_test, lengths_test = test_data.X_y_lengths
-        y_pred = clf.predict(X_test, y_test, lengths_test)
+        X_test, lengths_test = test_data.X_lengths
+        y_pred = clf.predict(X_test, lengths_test)
 
     As done in the above example, we can provide unfitted HMMs using :func:`add_model` or :func:`add_models`, 
     then provide training observation sequences for all classes to :func:`fit`, which will automatically train each HMM on the appropriate subset of data.

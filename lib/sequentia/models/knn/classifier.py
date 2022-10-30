@@ -39,7 +39,31 @@ class KNNClassifier(_KNNMixin, _Classifier):
     The classifier computes the score for each class as the total of the distance weightings of every sequence belonging to that class,
     within the DTW k-neighborhood of the sequence being classified.
 
-    TODO: Example
+    Examples
+    --------
+    Using a :class:`.KNNClassifier` to classify spoken digits. ::
+
+        import numpy as np
+        from sequentia.datasets import load_digits
+        from sequentia.models.knn import KNNClassifier
+
+        # Seed for reproducible pseudo-randomness
+        random_state = np.random.RandomState(1)
+
+        # Fetch MFCCs of spoken digits
+        data = load_digits(random_state=random_state)
+        train_data, test_data = data.split(test_size=0.2)
+
+        # Create a HMMClassifier using a class frequency prior
+        clf = KNNClassifier()
+            
+        # Fit the classifier
+        X_train, y_train, lengths_train = train_data.X_y_lengths
+        clf.fit(X_train, y_train, lengths_train)
+
+        # Predict classes for the test observation sequences
+        X_test, lengths_test = test_data.X_lengths
+        y_pred = clf.predict(X_test, lengths_test)
     """
 
     _defaults = _defaults

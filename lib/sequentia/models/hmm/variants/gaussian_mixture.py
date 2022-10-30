@@ -43,7 +43,7 @@ class GaussianMixtureHMM(HMM):
 
         import numpy as np
         from sequentia.datasets import load_digits
-        from sequentia.models import GaussianMixtureHMM
+        from sequentia.models.hmm import GaussianMixtureHMM
 
         # Seed for reproducible pseudo-randomness
         random_state = np.random.RandomState(1)
