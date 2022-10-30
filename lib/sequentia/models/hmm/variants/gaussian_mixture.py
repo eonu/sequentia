@@ -79,6 +79,8 @@ class GaussianMixtureHMM(HMM):
         hmmlearn_kwargs: Dict[str, Any] = deepcopy(_defaults.hmmlearn_kwargs)
     ) -> GaussianMixtureHMM:
         """
+        Initializes the :class:`.GaussianMixtureHMM`.
+
         :param n_states: Number of states in the Markov chain.
         :param n_components: Number of Gaussian components in the mixture emission distribution for each state.
         :param covariance_type: Type of covariance matrix in the mixture emission distribution for each state - see :ref:`covariance_types`.
@@ -150,7 +152,7 @@ class GaussianMixtureHMM(HMM):
         self,
         x: Array[float],
     ) -> float:
-        """Calculates the log-likelihood of the HMM generating a **single** observation sequence.
+        """Calculates the log-likelihood of the HMM generating a single observation sequence.
 
         :param x: Univariate or multivariate observation sequence.
 

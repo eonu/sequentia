@@ -32,7 +32,10 @@ _defaults = SimpleNamespace(
 )
 
 class MultinomialHMM(HMM):
-    """A hidden Markov model with univariate multinomial emissions."""
+    """A hidden Markov model with univariate multinomial emissions.
+    
+    TODO: Example
+    """
 
     _base_sequence_validator = _BaseUnivariateCategoricalSequenceValidator
     _single_sequence_validator = _SingleUnivariateCategoricalSequenceValidator
@@ -48,6 +51,8 @@ class MultinomialHMM(HMM):
         hmmlearn_kwargs: Dict[str, Any] = deepcopy(_defaults.hmmlearn_kwargs)
     ) -> MultinomialHMM:
         """
+        Initializes the :class:`.MultinomialHMM`.
+
         :param n_states: Number of states in the Markov chain.
         :param topology: Transition topology of the Markov chain — see :ref:`topologies`.
 
@@ -110,7 +115,7 @@ class MultinomialHMM(HMM):
         self,
         x: Array[int],
     ) -> float:
-        """Calculates the log-likelihood of the HMM generating a **single** observation sequence.
+        """Calculates the log-likelihood of the HMM generating a single observation sequence.
 
         :param x: Univariate observation sequence.
 

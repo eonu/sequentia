@@ -47,6 +47,23 @@ Estimating a full covariance matrix is not always necessary, particularly when a
 API reference
 -------------
 
+.. autosummary::
+
+   ~sequentia.models.hmm.variants.GaussianMixtureHMM
+   ~sequentia.models.hmm.variants.GaussianMixtureHMM.__init__
+   ~sequentia.models.hmm.variants.GaussianMixtureHMM.aic
+   ~sequentia.models.hmm.variants.GaussianMixtureHMM.bic
+   ~sequentia.models.hmm.variants.GaussianMixtureHMM.fit
+   ~sequentia.models.hmm.variants.GaussianMixtureHMM.freeze
+   ~sequentia.models.hmm.variants.GaussianMixtureHMM.n_params
+   ~sequentia.models.hmm.variants.GaussianMixtureHMM.score
+   ~sequentia.models.hmm.variants.GaussianMixtureHMM.set_start_probs
+   ~sequentia.models.hmm.variants.GaussianMixtureHMM.set_state_covariances
+   ~sequentia.models.hmm.variants.GaussianMixtureHMM.set_state_means
+   ~sequentia.models.hmm.variants.GaussianMixtureHMM.set_state_weights
+   ~sequentia.models.hmm.variants.GaussianMixtureHMM.set_transitions
+   ~sequentia.models.hmm.variants.GaussianMixtureHMM.unfreeze
+
 .. autoclass:: sequentia.models.hmm.variants.GaussianMixtureHMM
    :members:
    :inherited-members:
