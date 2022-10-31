@@ -107,5 +107,10 @@ setup(
     setup_requires = setup_requires,
     install_requires = install_requires,
     extras_require = extras_require,
-    package_data={'sequentia': ['datasets/data/digits.npz']}
+    package_data={
+        'sequentia': [
+            'datasets/data/digits.npz',
+            'datasets/data/gene_familites.npz'
+        ]
+    }
 )
