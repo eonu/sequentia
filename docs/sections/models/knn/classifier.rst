@@ -21,9 +21,18 @@ To classify a sequence :math:`O'`, the :class:`.KNNClassifier` works by:
 API reference
 -------------
 
+Class
+^^^^^
+
 .. autosummary::
 
    ~sequentia.models.knn.classifier.KNNClassifier
+
+Methods
+^^^^^^^
+
+.. autosummary::
+
    ~sequentia.models.knn.classifier.KNNClassifier.__init__
    ~sequentia.models.knn.classifier.KNNClassifier.compute_distance_matrix
    ~sequentia.models.knn.classifier.KNNClassifier.dtw
@@ -38,6 +47,8 @@ API reference
    ~sequentia.models.knn.classifier.KNNClassifier.query_neighbors
    ~sequentia.models.knn.classifier.KNNClassifier.save
    ~sequentia.models.knn.classifier.KNNClassifier.score
+
+|
 
 .. autoclass:: sequentia.models.knn.classifier.KNNClassifier
    :members:

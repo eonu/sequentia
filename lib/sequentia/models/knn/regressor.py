@@ -38,8 +38,7 @@ class KNNRegressor(_KNNMixin, _Regressor):
         n_jobs: Union[NegativeInt, PositiveInt] = _defaults.n_jobs,
         random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = _defaults.random_state
     ) -> KNNRegressor:
-        """
-        Initializes the :class:`.KNNRegressor`.
+        """Initializes the :class:`.KNNRegressor`.
 
         :param k: Number of neighbors.
 

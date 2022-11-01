@@ -50,8 +50,7 @@ class MultinomialHMM(HMM):
         random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = _defaults.random_state,
         hmmlearn_kwargs: Dict[str, Any] = deepcopy(_defaults.hmmlearn_kwargs)
     ) -> MultinomialHMM:
-        """
-        Initializes the :class:`.MultinomialHMM`.
+        """Initializes the :class:`.MultinomialHMM`.
 
         :param n_states: Number of states in the Markov chain.
         :param topology: Transition topology of the Markov chain — see :ref:`topologies`.

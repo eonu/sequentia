@@ -25,9 +25,18 @@ To predict an output :math:`y'\in\mathbb{R}` for a sequence :math:`O'`, the :cla
 API reference
 -------------
 
+Class
+^^^^^
+
 .. autosummary::
 
    ~sequentia.models.knn.regressor.KNNRegressor
+
+Methods
+^^^^^^^
+
+.. autosummary::
+
    ~sequentia.models.knn.regressor.KNNRegressor.__init__
    ~sequentia.models.knn.regressor.KNNRegressor.compute_distance_matrix
    ~sequentia.models.knn.regressor.KNNRegressor.dtw
@@ -40,6 +49,8 @@ API reference
    ~sequentia.models.knn.regressor.KNNRegressor.query_neighbors
    ~sequentia.models.knn.regressor.KNNRegressor.save
    ~sequentia.models.knn.regressor.KNNRegressor.score
+
+|
 
 .. autoclass:: sequentia.models.knn.regressor.KNNRegressor
    :members:

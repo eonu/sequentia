@@ -37,9 +37,18 @@ These steps are summarized in the diagram below.
 API reference
 -------------
 
+Class
+^^^^^
+
 .. autosummary::
 
    ~sequentia.models.hmm.classifier.HMMClassifier
+
+Methods
+^^^^^^^
+
+.. autosummary::
+
    ~sequentia.models.hmm.classifier.HMMClassifier.__init__
    ~sequentia.models.hmm.classifier.HMMClassifier.add_model
    ~sequentia.models.hmm.classifier.HMMClassifier.add_models
@@ -48,6 +57,8 @@ API reference
    ~sequentia.models.hmm.classifier.HMMClassifier.predict_proba
    ~sequentia.models.hmm.classifier.HMMClassifier.predict_scores
    ~sequentia.models.hmm.classifier.HMMClassifier.score
+
+|
 
 .. autoclass:: sequentia.models.hmm.classifier.HMMClassifier
    :members:

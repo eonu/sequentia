@@ -49,8 +49,8 @@ class GaussianMixtureHMM(HMM):
         random_state = np.random.RandomState(1)
 
         # Fetch MFCCs of spoken samples for the digit 3
-        data = load_digits(numbers=[3], random_state=random_state)
-        train_data, test_data = data.split(test_size=0.2)
+        data = load_digits(numbers=[3])
+        train_data, test_data = data.split(test_size=0.2, random_state=random_state)
 
         # Create and train a GaussianMixtureHMM to recognize the digit 3
         model = GaussianMixtureHMM(random_state=random_state)
@@ -78,8 +78,7 @@ class GaussianMixtureHMM(HMM):
         random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = _defaults.random_state,
         hmmlearn_kwargs: Dict[str, Any] = deepcopy(_defaults.hmmlearn_kwargs)
     ) -> GaussianMixtureHMM:
-        """
-        Initializes the :class:`.GaussianMixtureHMM`.
+        """Initializes the :class:`.GaussianMixtureHMM`.
 
         :param n_states: Number of states in the Markov chain.
         :param n_components: Number of Gaussian components in the mixture emission distribution for each state.

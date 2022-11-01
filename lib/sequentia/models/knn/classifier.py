@@ -51,8 +51,8 @@ class KNNClassifier(_KNNMixin, _Classifier):
         random_state = np.random.RandomState(1)
 
         # Fetch MFCCs of spoken digits
-        data = load_digits(random_state=random_state)
-        train_data, test_data = data.split(test_size=0.2)
+        data = load_digits()
+        train_data, test_data = data.split(test_size=0.2, random_state=random_state)
 
         # Create a HMMClassifier using a class frequency prior
         clf = KNNClassifier()
@@ -81,8 +81,7 @@ class KNNClassifier(_KNNMixin, _Classifier):
         n_jobs: Union[NegativeInt, PositiveInt] = _defaults.n_jobs,
         random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = _defaults.random_state
     ) -> KNNClassifier:
-        """
-        Initializes the :class:`.KNNClassifier`.
+        """Initializes the :class:`.KNNClassifier`.
 
         :param k: Number of neighbors.
 

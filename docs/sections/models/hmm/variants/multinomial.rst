@@ -38,9 +38,16 @@ The emission distributions for all states can be represented by a single :math:`
 API reference
 -------------
 
+Class
+^^^^^
+
 .. autosummary::
 
    ~sequentia.models.hmm.variants.MultinomialHMM
+
+Methods
+^^^^^^^
+
    ~sequentia.models.hmm.variants.MultinomialHMM.__init__
    ~sequentia.models.hmm.variants.MultinomialHMM.aic
    ~sequentia.models.hmm.variants.MultinomialHMM.bic
@@ -52,6 +59,8 @@ API reference
    ~sequentia.models.hmm.variants.MultinomialHMM.set_state_emissions
    ~sequentia.models.hmm.variants.MultinomialHMM.set_transitions
    ~sequentia.models.hmm.variants.MultinomialHMM.unfreeze
+
+|
 
 .. autoclass:: sequentia.models.hmm.variants.MultinomialHMM
    :members:

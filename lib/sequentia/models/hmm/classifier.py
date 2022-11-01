@@ -63,8 +63,8 @@ class HMMClassifier(_Classifier):
         random_state = np.random.RandomState(1)
 
         # Fetch MFCCs of spoken digits
-        data = load_digits(random_state=random_state)
-        train_data, test_data = data.split(test_size=0.2)
+        data = load_digits()
+        train_data, test_data = data.split(test_size=0.2, random_state=random_state)
 
         # Create a HMMClassifier using a class frequency prior
         clf = HMMClassifier(prior='frequency')
@@ -108,8 +108,7 @@ class HMMClassifier(_Classifier):
         classes: Optional[Array[int]] = None,
         n_jobs: Union[NegativeInt, PositiveInt] = 1
     ) -> HMMClassifier:
-        """
-        Initializes a :class:`.HMMClassifier`.
+        """Initializes a :class:`.HMMClassifier`.
 
         :param prior: Type of prior probability to assign to each HMM.
 

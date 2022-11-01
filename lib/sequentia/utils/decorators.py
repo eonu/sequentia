@@ -5,10 +5,12 @@ from sequentia.utils.validation import _check_is_fitted
 def _validate_params(using):
     def decorator(function):
         @functools.wraps(function)
-        def wrapper(self, *args, **kwargs):
+        def wrapper(self=None, *args, **kwargs):
             spec = inspect.getfullargspec(function)
             if spec.varkw == 'kwargs' or len(spec.kwonlyargs) > 0:
                 using.parse_obj(kwargs)
+            if self is None:
+                return function(*args, **kwargs)
             return function(self, *args, **kwargs)
         return wrapper
     return decorator
