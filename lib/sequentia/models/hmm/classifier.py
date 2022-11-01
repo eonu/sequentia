@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Optional, Union, Dict, Literal, Any
+from types import SimpleNamespace
+from typing import Optional, Union, Dict, Literal
 from joblib import Parallel, delayed
 
 import numpy as np
@@ -21,10 +22,16 @@ from sequentia.utils.validation import (
 
 __all__ = ['HMMClassifier']
 
+_defaults = SimpleNamespace(
+    prior="frequency",
+    classes=None,
+    n_jobs=1,
+)
+
 class _HMMClassifierValidator(_Validator):
-    prior: Optional[Union[Literal["frequency"], Dict[int, confloat(ge=0, le=1)]]] = "frequency"
-    classes: Optional[Array[int]] = None
-    n_jobs: Union[NegativeInt, PositiveInt] = 1
+    prior: Optional[Union[Literal["frequency"], Dict[int, confloat(ge=0, le=1)]]] = _defaults.prior
+    classes: Optional[Array[int]] = _defaults.classes
+    n_jobs: Union[NegativeInt, PositiveInt] = _defaults.n_jobs
 
     @validator('prior')
     def check_prior(cls, value):
@@ -100,13 +107,15 @@ class HMMClassifier(_Classifier):
         clf.fit()
     """
 
+    _defaults = _defaults
+
     @_validate_params(using=_HMMClassifierValidator)
     def __init__(
         self,
         *,
-        prior: Optional[Union[Literal["frequency"], dict]] = 'frequency',
-        classes: Optional[Array[int]] = None,
-        n_jobs: Union[NegativeInt, PositiveInt] = 1
+        prior: Optional[Union[Literal["frequency"], dict]] = _defaults.prior,
+        classes: Optional[Array[int]] = _defaults.classes,
+        n_jobs: Union[NegativeInt, PositiveInt] = _defaults.n_jobs,
     ) -> HMMClassifier:
         """Initializes a :class:`.HMMClassifier`.
 

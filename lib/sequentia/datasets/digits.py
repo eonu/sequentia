@@ -29,7 +29,7 @@ def load_digits(
     The `Free Spoken Digit Dataset (FSDD) <https://github.com/Jakobovski/free-spoken-digit-dataset>`_
     consists of 3000 recordings of the spoken digits 0-9.
 
-    The dataset consists of 50 recordings of each digit by 6 individual speakers.
+    This version consists of 13 MFCC features of 50 recordings for each digit by 6 individual speakers.
 
     :param numbers: Subset of digits to include in the dataset.    
     :return: A dataset object representing the loaded digits.
