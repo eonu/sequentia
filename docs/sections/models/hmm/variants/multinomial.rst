@@ -48,6 +48,8 @@ Class
 Methods
 ^^^^^^^
 
+.. autosummary::
+
    ~sequentia.models.hmm.variants.MultinomialHMM.__init__
    ~sequentia.models.hmm.variants.MultinomialHMM.aic
    ~sequentia.models.hmm.variants.MultinomialHMM.bic

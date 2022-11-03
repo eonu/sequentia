@@ -39,7 +39,11 @@ class GaussianMixtureHMM(HMM):
 
     Examples
     --------
-    Using a :class:`.GaussianMixtureHMM` to learn how to recognize spoken samples of the digit 3. ::
+    Using a :class:`.GaussianMixtureHMM` to learn how to recognize spoken samples of the digit 3. 
+    
+    See :func:`.load_digits` for more information on the sample dataset used in this example. 
+    
+    ::
 
         import numpy as np
         from sequentia.datasets import load_digits

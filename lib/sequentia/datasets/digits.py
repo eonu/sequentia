@@ -9,7 +9,7 @@ from sequentia.utils.data import SequentialDataset
 from sequentia.utils.validation import _Validator
 from sequentia.utils.decorators import _validate_params
 
-class DigitsValidator(_Validator):
+class _DigitsValidator(_Validator):
     numbers: Sequence[conint(ge=0, le=9)] = list(range(10))
 
     @validator('numbers')
@@ -19,7 +19,7 @@ class DigitsValidator(_Validator):
             raise ValueError('Expected numbers to be unique')
         return value
 
-@_validate_params(using=DigitsValidator)
+@_validate_params(using=_DigitsValidator)
 def load_digits(
     *,
     numbers: Sequence[int] = list(range(10)), 
@@ -31,7 +31,7 @@ def load_digits(
 
     This version consists of 13 MFCC features of 50 recordings for each digit by 6 individual speakers.
 
-    :param numbers: Subset of digits to include in the dataset.    
+    :param numbers: Subset of digits to include in the dataset.
     :return: A dataset object representing the loaded digits.
     """
     # Load the dataset from compressed numpy file

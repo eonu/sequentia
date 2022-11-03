@@ -1,5 +1,5 @@
-Free Spoken Digit Dataset
-=========================
+Digits
+======
 
 API reference
 -------------
