@@ -22,10 +22,8 @@ except ImportError:
 # -- Project information -----------------------------------------------------
 
 project = sequentia.__name__
-copyright = '2019-2023, Edwin Onuonga'
 author = sequentia.__author__
-
-# The full version, including alpha/beta/rc tags
+copyright = sequentia.__copyright__
 release = sequentia.__version__
 
 # -- General configuration ---------------------------------------------------
@@ -44,7 +42,7 @@ extensions = [
 ]
 
 intersphinx_mapping = {
-    'numpy': ('http://docs.scipy.org/doc/numpy/', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
     'sklearn': ('https://scikit-learn.org/stable/', None),
 }
 
@@ -58,7 +56,7 @@ master_doc = 'index'
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-source_suffix = ['.rst', '.md']
+source_suffix = ['.rst']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

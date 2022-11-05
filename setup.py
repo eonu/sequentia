@@ -20,7 +20,7 @@ setup(
     name = load_meta("name"),
     version = load_meta("version"),
     author = load_meta("author"),
-    author_email = 'ed@eonu.net',
+    author_email = load_meta("email"),
     description = 'HMM and DTW-based sequence machine learning algorithms in Python following an sklearn-like interface.',
     long_description = long_description,
     long_description_content_type = 'text/markdown',
@@ -40,7 +40,7 @@ setup(
         ]
     },
     classifiers = [
-        'Development Status :: 4 - Beta',
+        'Development Status :: 2 - Pre-Alpha',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
@@ -53,13 +53,14 @@ setup(
         'Topic :: Scientific/Engineering',
         'Natural Language :: English',
     ],
-    python_requires = '>=3.6,<3.10',
+    python_requires = '>=3.6',
     setup_requires = [
         'Cython>=0.28.5',
         'numpy>=1.17',
         'scipy>=1.3',
     ],
     install_requires = [
+        'numba>=0.56',
         'numpy>=1.17',
         'hmmlearn>=0.2.7',
         'dtaidistance[numpy]>=2.2',
@@ -78,7 +79,5 @@ setup(
             'Jinja2',
             'pytest',
         ]
-        # TODO:
-        # sphinx-tabs 3.4.0, <3.4.1
     }
 )
