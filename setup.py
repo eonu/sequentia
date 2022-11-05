@@ -53,7 +53,7 @@ setup(
         'Topic :: Scientific/Engineering',
         'Natural Language :: English',
     ],
-    python_requires = '>=3.6',
+    python_requires = '>=3.7',
     setup_requires = [
         'Cython>=0.28.5',
         'numpy>=1.17',

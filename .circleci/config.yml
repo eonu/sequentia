@@ -29,7 +29,7 @@ template: &template
         command: |
           export PATH="$HOME/miniconda/bin:$PATH"
           conda update -y conda
-          conda create -n sequentia python=$PYTHON_VERSION
+          conda create -n sequentia python=$PYTHON_VERSION -y
           source activate sequentia
           pip install ".[dev]"
           pytest lib/test --disable-pytest-warnings
@@ -38,24 +38,24 @@ jobs:
   python_3.5:
     <<: *template
     environment:
-      PYTHON_VERSION: 3.5
+      PYTHON_VERSION: "3.5"
   python_3.6:
     <<: *template
     environment:
-      PYTHON_VERSION: 3.6
+      PYTHON_VERSION: "3.6"
   python_3.7:
     <<: *template
     environment:
-      PYTHON_VERSION: 3.7
+      PYTHON_VERSION: "3.7"
   python_3.8:
     <<: *template
     environment:
-      PYTHON_VERSION: 3.8
+      PYTHON_VERSION: "3.8"
   python_3.9:
     <<: *template
     environment:
-      PYTHON_VERSION: 3.9
+      PYTHON_VERSION: "3.9"
   python_3.10:
     <<: *template
     environment:
-      PYTHON_VERSION: 3.10
+      PYTHON_VERSION: "3.10"
