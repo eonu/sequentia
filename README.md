@@ -32,7 +32,7 @@
     <a href="#build-status">Build Status</a> ·
     <a href="#features">Features</a> ·
     <a href="#documentation">Documentation</a> ·
-    <a href="#tutorials-and-examples">Tutorials and Examples</a> ·
+    <a href="#examples">Examples</a> ·
     <a href="#acknowledgments">Acknowledgments</a> ·
     <a href="#references">References</a> ·
     <a href="#contributors">Contributors</a>
@@ -84,7 +84,7 @@ The following models provided by Sequentia all support variable length sequences
 
 You can install Sequentia using `pip`.
 
-> **Note**: The current version of Sequentia is a pre-release of `v1.0.0` and requires the  `--pre` flag to be provided to the `pip install` command.
+> **Note**: The current version of Sequentia is a pre-release and requires the  `--pre` flag to be provided.
 
 ```console
 pip install --pre sequentia
@@ -98,7 +98,7 @@ Documentation for the package is available on [Read The Docs](https://sequentia.
 
 ## Examples
 
-This example demonstrates multivariate sequences classified into two classes `0`/`1` using the `KNNClassifier`.
+This example demonstrates multivariate sequences classified into classes `0`/`1` using the `KNNClassifier`.
 
 ```python
 import numpy as np
