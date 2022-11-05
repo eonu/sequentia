@@ -41,10 +41,10 @@ setup(
     },
     classifiers = [
         'Development Status :: 2 - Pre-Alpha',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'License :: OSI Approved :: MIT License',
         'Operating System :: Unix',
         'Operating System :: MacOS',
@@ -53,7 +53,7 @@ setup(
         'Topic :: Scientific/Engineering',
         'Natural Language :: English',
     ],
-    python_requires = '>=3.7',
+    python_requires = '>=3.8',
     setup_requires = [
         'Cython>=0.28.5',
         'numpy>=1.17',
