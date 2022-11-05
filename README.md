@@ -60,12 +60,6 @@ Some examples of how Sequentia can be on sequence data include:
 
 The following models provided by Sequentia all support variable length sequences.
 
-- [x] [Hidden Markov Models](https://sequentia.readthedocs.io/en/latest/sections/classifiers/gmmhmm.html) (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))<br/><em>Parameter estimation with the Baum-Welch algorithm and prediction with the forward algorithm</em> [[1]](#references)
-  - [x] Classification
-  - [x] Multivariate real-valued observations (Gaussian mixture model emissions)
-  - [x] Univariate categorical observations (multinomial emissions)
-  - [x] Linear, left-right and ergodic topologies
-  - [x] Multi-processed predictions
 - [x] [Dynamic Time Warping k-Nearest Neighbors](https://sequentia.readthedocs.io/en/latest/sections/classifiers/knn.html) (via [`dtaidistance`](https://github.com/wannesm/dtaidistance))
   - [x] Classification
   - [x] Regression
@@ -74,11 +68,17 @@ The following models provided by Sequentia all support variable length sequences
   - [x] Dependent and independent feature warping (DTWD/DTWI)
   - [x] Custom distance-weighted predictions
   - [x] Multi-processed predictions
+- [x] [Hidden Markov Models](https://sequentia.readthedocs.io/en/latest/sections/classifiers/gmmhmm.html) (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))<br/><em>Parameter estimation with the Baum-Welch algorithm and prediction with the forward algorithm</em> [[1]](#references)
+  - [x] Classification
+  - [x] Multivariate real-valued observations (Gaussian mixture model emissions)
+  - [x] Univariate categorical observations (multinomial emissions)
+  - [x] Linear, left-right and ergodic topologies
+  - [x] Multi-processed predictions
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/eonu/sequentia/master/docs/_static/images/classifier.png" width="80%"/><br/>
-  Example of a classification algorithm (HMM sequence classifier)
-</p>
+  <p align="center">
+    <img src="https://raw.githubusercontent.com/eonu/sequentia/master/docs/_static/images/classifier.png" width="80%"/><br/>
+    HMM Sequence Classifier
+  </p>
 
 ## Installation
 
@@ -98,7 +98,7 @@ Documentation for the package is available on [Read The Docs](https://sequentia.
 
 ## Examples
 
-This example demonstrates real-valued multivariate sequences classified into two classes `0`/`1` using the `KNNClassifier`.
+This example demonstrates multivariate sequences classified into two classes `0`/`1` using the `KNNClassifier`.
 
 ```python
 import numpy as np
@@ -128,7 +128,7 @@ y_new = clf.predict(x_new)
 
 ## Acknowledgments
 
-In earlier versions of the package (<0.10.0), an approximate DTW implementation [`fastdtw`](https://github.com/slaypni/fastdtw) was used in hopes of speeding up k-NN predictions, as the authors of the original FastDTW paper [[2]](#references) claim that approximated DTW alignments can be computed in linear memory and time, compared to the O(N^2) runtime complexity of the usual exact DTW implementation.
+In earlier versions of the package (<0.10.0), an approximate DTW implementation [`fastdtw`](https://github.com/slaypni/fastdtw) was used in hope of speeding up k-NN predictions, as the authors of the original FastDTW paper [[2]](#references) claim that approximated DTW alignments can be computed in linear memory and time, compared to the O(N^2) runtime complexity of the usual exact DTW implementation.
 
 I was contacted by [Prof. Eamonn Keogh](https://www.cs.ucr.edu/~eamonn/) whose work [[3]](#references) makes the surprising revelation that FastDTW is generally slower than the exact DTW algorithm that it approximates. Upon switching from the `fastdtw` package to [`dtaidistance`](https://github.com/wannesm/dtaidistance) (a very solid implementation of exact DTW with fast pure C compiled functions), DTW k-NN prediction times were indeed reduced drastically.
 
