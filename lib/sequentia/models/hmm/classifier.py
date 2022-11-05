@@ -9,7 +9,7 @@ from pydantic import NegativeInt, PositiveInt, confloat, validator, root_validat
 from sklearn.utils.validation import NotFittedError
 
 from sequentia.models.base import _Classifier
-from sequentia.models.hmm.variants import HMM
+from sequentia.models.hmm.variants.base import _HMM
 from sequentia.utils.data import SequentialDataset
 from sequentia.utils.multiprocessing import _effective_n_jobs
 from sequentia.utils.decorators import _validate_params, _override_params, _requires_fit
@@ -80,7 +80,7 @@ class HMMClassifier(_Classifier):
         for label in data.classes:
             model = GaussianMixtureHMM(random_state=random_state)
             clf.add_model(model, label)
-            
+
         # Fit the HMMs by providing training observation sequences for all classes
         X_train, y_train, lengths_train = train_data.X_y_lengths
         clf.fit(X_train, y_train, lengths_train)
@@ -89,20 +89,20 @@ class HMMClassifier(_Classifier):
         X_test, lengths_test = test_data.X_lengths
         y_pred = clf.predict(X_test, lengths_test)
 
-    As done in the above example, we can provide unfitted HMMs using :func:`add_model` or :func:`add_models`, 
+    As done in the above example, we can provide unfitted HMMs using :func:`add_model` or :func:`add_models`,
     then provide training observation sequences for all classes to :func:`fit`, which will automatically train each HMM on the appropriate subset of data.
 
     Alternatively, we may provide pre-fitted HMMs and call :func:`fit` with no arguments. ::
 
         # Create a HMMClassifier using a class frequency prior
         clf = HMMClassifier(prior='frequency')
-        
+
        # Manually fit each HMM on its own subset of data
         for X_train, lengths_train, label for train_data.iter_by_class():
             model = GaussianMixtureHMM(random_state=random_state)
             model.fit(X_train, lengths_train)
             clf.add_model(model, label)
-            
+
         # Fit the classifier
         clf.fit()
     """
@@ -149,7 +149,7 @@ class HMMClassifier(_Classifier):
 
     def add_model(
         self,
-        model: HMM,
+        model: _HMM,
         label: int
     ):
         """Adds a single HMM to the classifier.
@@ -159,7 +159,7 @@ class HMMClassifier(_Classifier):
 
         :note: All models added to the classifier must be of the same type — either :class:`.GaussianMixtureHMM` or :class:`.MultinomialHMM`.
         """
-        if not isinstance(model, HMM):
+        if not isinstance(model, _HMM):
             raise TypeError('Expected `model` argument to be a type of HMM')
         if len(self.models) > 0:
             if type(model) != type(list(self.models.values())[-1]):
@@ -171,7 +171,7 @@ class HMMClassifier(_Classifier):
 
     def add_models(
         self,
-        models: Dict[int, HMM]
+        models: Dict[int, _HMM]
     ):
         """Adds HMMs to the classifier.
 
@@ -179,7 +179,7 @@ class HMMClassifier(_Classifier):
 
         :note: All models added to the classifier must be of the same type — either :class:`.GaussianMixtureHMM` or :class:`.MultinomialHMM`.
         """
-        if not all(isinstance(model, HMM) for model in models.values()):
+        if not all(isinstance(model, _HMM) for model in models.values()):
             raise TypeError('Expected all provided `models` to be a type of HMM')
         for label, model in models.items():
             self.add_model(model, label)

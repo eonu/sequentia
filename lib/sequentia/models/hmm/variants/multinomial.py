@@ -10,7 +10,7 @@ import hmmlearn.hmm
 from sklearn.utils import check_random_state
 
 from sequentia.models.hmm.topologies import _topologies
-from sequentia.models.hmm.variants.base import HMM, _HMMValidator
+from sequentia.models.hmm.variants.base import _HMM, _HMMValidator
 from sequentia.utils.decorators import _validate_params, _requires_fit
 from sequentia.utils.validation import (
     Array,
@@ -23,7 +23,7 @@ __all__ = ['MultinomialHMM']
 
 _defaults = SimpleNamespace(
     **{
-        **HMM._defaults.__dict__,
+        **_HMM._defaults.__dict__,
         "hmmlearn_kwargs": dict(
             init_params="ste",
             params="ste",
@@ -31,15 +31,15 @@ _defaults = SimpleNamespace(
     }
 )
 
-class MultinomialHMM(HMM):
+class MultinomialHMM(_HMM):
     """A hidden Markov model with univariate multinomial emissions.
-    
+
     Examples
     --------
-    Using a :class:`.MultinomialHMM` to learn how to recognize DNA sequences from the synthetase gene family. 
-    
-    See :func:`.load_gene_families` for more information on the sample dataset used in this example. 
-    
+    Using a :class:`.MultinomialHMM` to learn how to recognize DNA sequences from the synthetase gene family.
+
+    See :func:`.load_gene_families` for more information on the sample dataset used in this example.
+
     ::
 
         import numpy as np

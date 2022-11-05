@@ -101,7 +101,7 @@ class _KNNMixin:
         :param sort: Whether to sort the neighbors in order of nearest to furthest.
 
         :param \*\*kwargs: Model parameters to temporarily override (*for experimentation purposes*).
-            
+
             - ``k``: See :func:`__init__`.
             - ``window``: See :func:`__init__`.
             - ``independent``: See :func:`__init__`.
@@ -144,7 +144,7 @@ class _KNNMixin:
             - ``len(X)`` should be equal to ``sum(lengths)``.
 
         :param \*\*kwargs: Model parameters to temporarily override (*for experimentation purposes*).
-            
+
             - ``window``: See :func:`__init__`.
             - ``independent``: See :func:`__init__`.
 
@@ -173,13 +173,13 @@ class _KNNMixin:
     @_validate_params(using=_KNNValidator)
     def dtw(self, A: Array[float], B: Array[float], **kwargs) -> float:
         """Calculates the DTW distance between two univariate or multivariate sequences.
-        
+
         :param A: The first sequence.
 
         :param B: The second sequence.
 
         :param \*\*kwargs: Model parameters to temporarily override (*for experimentation purposes*).
-            
+
             - ``window``: See :func:`__init__`.
             - ``independent``: See :func:`__init__`.
 
@@ -204,11 +204,11 @@ class _KNNMixin:
         :param a: The first sequence.
 
         :param b: The second sequence.
-        
+
         :note: Only supports univariate sequences.
 
         :param \*\*kwargs: Model parameters to temporarily override (*for experimentation purposes*).
-            
+
             - ``window``: See :func:`__init__`.
 
         :return: Plot axes.
@@ -237,7 +237,7 @@ class _KNNMixin:
         **kwargs
     ) -> 'matplotlib.axes.Axes':
         """Calculates DTW distances between ``X`` and training sequences, and plots a distance histogram.
-        
+
         :param X: Univariate or multivariate observation sequence(s).
 
             - Should be a single 1D or 2D array.
@@ -253,7 +253,7 @@ class _KNNMixin:
         :param ax: Plot axes. If ``None``, new axes are created.
 
         :param \*\*kwargs: Model parameters to temporarily override (*for experimentation purposes*).
-            
+
             - ``window``: See :func:`__init__`.
             - ``independent``: See :func:`__init__`.
 
@@ -283,7 +283,7 @@ class _KNNMixin:
         **kwargs
     ) -> 'matplotlib.axes.Axes':
         """Calculates DTW weights between ``X`` and training sequences, and plots a weight histogram.
-        
+
         :param X: Univariate or multivariate observation sequence(s).
 
             - Should be a single 1D or 2D array.
@@ -299,7 +299,7 @@ class _KNNMixin:
         :param ax: Plot axes. If ``None``, new axes are created.
 
         :param \*\*kwargs: Model parameters to temporarily override (*for experimentation purposes*).
-            
+
             - ``weighting``: See :func:`__init__`.
             - ``window``: See :func:`__init__`.
             - ``independent``: See :func:`__init__`.
@@ -402,7 +402,7 @@ class _KNNMixin:
         :param path: Location to save the serialized estimator.
 
         :note: This method requires a trained classifier — see :func:`fit`.
-        
+
         See Also
         --------
         load:
@@ -430,7 +430,7 @@ class _KNNMixin:
         :param path: Location to load the serialized estimator from.
 
         :return: Fitted KNN estimator.
-        
+
         See Also
         --------
         save:

@@ -10,7 +10,7 @@ import hmmlearn.hmm
 from sklearn.utils import check_random_state
 
 from sequentia.models.hmm.topologies import _topologies
-from sequentia.models.hmm.variants.base import HMM, _HMMValidator
+from sequentia.models.hmm.variants.base import _HMM, _HMMValidator
 from sequentia.utils.decorators import _validate_params, _requires_fit
 from sequentia.utils.validation import (
     Array,
@@ -23,7 +23,7 @@ __all__ = ['GaussianMixtureHMM']
 
 _defaults = SimpleNamespace(
     **{
-        **HMM._defaults.__dict__,
+        **_HMM._defaults.__dict__,
         "n_components": 3,
         "covariance_type": "spherical",
         "hmmlearn_kwargs": dict(
@@ -34,15 +34,15 @@ _defaults = SimpleNamespace(
 )
 
 
-class GaussianMixtureHMM(HMM):
+class GaussianMixtureHMM(_HMM):
     """A hidden Markov model with multivariate Gaussian mixture emissions.
 
     Examples
     --------
-    Using a :class:`.GaussianMixtureHMM` to learn how to recognize spoken samples of the digit 3. 
-    
-    See :func:`.load_digits` for more information on the sample dataset used in this example. 
-    
+    Using a :class:`.GaussianMixtureHMM` to learn how to recognize spoken samples of the digit 3.
+
+    See :func:`.load_digits` for more information on the sample dataset used in this example.
+
     ::
 
         import numpy as np
@@ -70,7 +70,7 @@ class GaussianMixtureHMM(HMM):
     _single_sequence_validator = _SingleMultivariateFloatSequenceValidator
     _sequence_classifier_validator = _MultivariateFloatSequenceClassifierValidator
     _defaults = _defaults
-    _unsettable_hmmlearn_kwargs = HMM._unsettable_hmmlearn_kwargs + ["n_components", "n_mix", "covariance_type"]
+    _unsettable_hmmlearn_kwargs = _HMM._unsettable_hmmlearn_kwargs + ["n_components", "n_mix", "covariance_type"]
 
     def __init__(
         self,

@@ -14,8 +14,6 @@ from sequentia.utils.decorators import _requires_fit
 from sequentia.utils.validation import Array, _Validator
 from sequentia.models.hmm.topologies import _ErgodicTopology
 
-__all__ = ['HMM']
-
 _defaults = SimpleNamespace(
     n_states=5,
     topology="left-right",
@@ -26,7 +24,7 @@ _defaults = SimpleNamespace(
     ),
 )
 
-class HMM(BaseEstimator):
+class _HMM(BaseEstimator):
     _base_sequence_validator = None
     _single_sequence_validator = None
     _sequence_classifier_validator = None
@@ -39,8 +37,8 @@ class HMM(BaseEstimator):
         topology: Optional[str],
         random_state: Optional[Union[NonNegativeInt, np.random.RandomState]],
         hmmlearn_kwargs: Dict[str, Any]
-    ) -> HMM:
-        if type(self) == HMM:
+    ) -> _HMM:
+        if type(self) == _HMM:
             raise NotImplementedError(
                 f'Abstract class {type(self).__name__} cannot be instantiated - '
                 'use the subclassing HMMs defined in the sequentia.models.hmm module'
@@ -64,7 +62,7 @@ class HMM(BaseEstimator):
         self,
         X: Array,
         lengths: Optional[Array[int]] = None
-    ) -> HMM:
+    ) -> _HMM:
         raise NotImplementedError
 
     @_requires_fit
@@ -241,7 +239,7 @@ class _HMMValidator(_Validator):
     random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = _defaults.random_state
     hmmlearn_kwargs: Dict[str, Any] = _defaults.hmmlearn_kwargs
 
-    _class = HMM
+    _class = _HMM
 
     @validator('random_state')
     def check_random_state(cls, value):
