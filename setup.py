@@ -1,94 +1,44 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 
+import re
 from setuptools import setup, find_packages
-
-import platform
-from pkg_resources import packaging
-
-VERSION = '0.13.1'
+from pathlib import Path
 
 with open('README.md', 'r', encoding='utf8') as fh:
     long_description = fh.read()
 
-# TODO: Add pydantic
-
-pkg_versions = {
-    # setup dependencies (core)
-    'Cython': '>=0.28.5',
-    'numpy': '>=1.17,<2',
-    'scipy': '>=1.3,<2',
-    # install dependencies (core)
-    'hmmlearn': '==0.2.7',
-    'dtaidistance[numpy]': '>=2.2,<2.3',
-    'scikit-learn': '>=0.22,<1',
-    'tqdm': '>=4.36,<5',
-    'joblib': '>=0.14,<1',
-    'tslearn': '>=0.5,<0.6',
-    # [docs]
-    'sphinx': '>=5,<6',
-    'numpydoc': '>=1.4,<1.5',
-    'sphinx_rtd_theme': '>=1',
-    'm2r2': '>=0.3,<0.4',
-    'Jinja2': '<3.1',
-    # [test]
-    'pytest': '==5.3.2',
-    # [notebooks]
-    'jupyter': '==1.0.0',
-    'requests': '==2.25.1',
-    'matplotlib': '==3.3.3',
-    'pandas': '==1.1.5',
-    'seaborn': '==0.11.1',
-    'librosa': '==0.8.0'
-}
-
-# TODO
-# sphinx-tabs 3.4.0, <3.4.1
-# sphinx_autodoc_typehints
-# sphinx-autobuild
-
-extra_pkgs = {
-    'pytest': ['dev', 'test'],
-    **{pkg:['dev', 'docs'] for pkg in ('sphinx', 'numpydoc', 'sphinx_rtd_theme', 'm2r2', 'Jinja2')},
-    **{pkg:['dev', 'notebooks'] for pkg in (
-        'jupyter', 'requests', 'matplotlib', 'pandas',
-        'seaborn', 'tqdm', 'librosa'
-    )},
-}
-
-def load_requires(*pkgs):
-    return [pkg + pkg_versions[pkg] for pkg in pkgs]
-
-def reverse_extra(extra):
-    return [pkg + pkg_versions[pkg] for pkg, extras in extra_pkgs.items() if extra in extras]
-
-python_requires = '>=3.6,<3.10'
-
-setup_requires = load_requires('Cython', 'numpy', 'scipy')
-
-install_requires = load_requires('numpy', 'hmmlearn', 'dtaidistance[numpy]', 'scipy', 'scikit-learn', 'tqdm', 'joblib', 'tslearn')
-if packaging.version.parse(platform.python_version()) < packaging.version.parse('3.8'):
-    install_requires.append('importlib_metadata') # Backports for importlib.metadata in Python <3.8
-
-extras_require = {extra:reverse_extra(extra) for extra in ('dev', 'test', 'notebooks', 'docs')}
+init = Path(__file__).parent / "lib" / "sequentia" / "__init__.py"
+def load_meta(meta):
+    with open(init, "r") as file:
+        info = re.search(rf'^__{meta}__\s*=\s*[\'"]([^\'"]*)[\'"]', file.read(), re.MULTILINE).group(1)
+        if not info:
+            raise RuntimeError(f"Could not load {repr(meta)} metadata")
+        return info
 
 setup(
-    name = 'sequentia',
-    version = VERSION,
-    author = 'Edwin Onuonga',
+    name = load_meta("name"),
+    version = load_meta("version"),
+    author = load_meta("author"),
     author_email = 'ed@eonu.net',
-    description = 'A machine learning interface for sequence classification algorithms in Python.',
+    description = 'HMM and DTW-based sequence machine learning algorithms in Python following an sklearn-like interface.',
     long_description = long_description,
     long_description_content_type = 'text/markdown',
     url = 'https://github.com/eonu/sequentia',
     project_urls = {
         'Documentation': 'https://sequentia.readthedocs.io/en/latest',
         'Bug Tracker': 'https://github.com/eonu/sequentia/issues',
-        'Source Code': 'https://github.com/eonu/sequentia'
+        'Source Code': 'https://github.com/eonu/sequentia',
     },
     license = 'MIT',
     package_dir = {'': 'lib'},
     packages = find_packages(where='lib'),
+    package_data={
+        'sequentia': [
+            'datasets/data/digits.npz',
+            'datasets/data/gene_familites.npz',
+        ]
+    },
     classifiers = [
         'Development Status :: 4 - Beta',
         'Programming Language :: Python :: 3.6',
@@ -101,16 +51,34 @@ setup(
         'Intended Audience :: Science/Research',
         'Topic :: Software Development',
         'Topic :: Scientific/Engineering',
-        'Natural Language :: English'
+        'Natural Language :: English',
     ],
-    python_requires = python_requires,
-    setup_requires = setup_requires,
-    install_requires = install_requires,
-    extras_require = extras_require,
-    package_data={
-        'sequentia': [
-            'datasets/data/digits.npz',
-            'datasets/data/gene_familites.npz'
+    python_requires = '>=3.6,<3.10',
+    setup_requires = [
+        'Cython>=0.28.5',
+        'numpy>=1.17',
+        'scipy>=1.3',
+    ],
+    install_requires = [
+        'numpy>=1.17',
+        'hmmlearn>=0.2.7',
+        'dtaidistance[numpy]>=2.2',
+        'scikit-learn>=0.22',
+        'joblib>=0.14',
+        'pydantic>=1.9',
+    ],
+    extras_require = {
+        'dev': [
+            'sphinx',
+            'numpydoc',
+            'sphinx_rtd_theme',
+            'sphinx-autodoc-typehints',
+            'sphinx-autobuild',
+            'm2r2',
+            'Jinja2',
+            'pytest',
         ]
+        # TODO:
+        # sphinx-tabs 3.4.0, <3.4.1
     }
 )

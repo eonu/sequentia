@@ -8,6 +8,7 @@ workflows:
       - python_3.7
       - python_3.8
       - python_3.9
+      - python_3.10
 
 template: &template
   docker:
@@ -15,7 +16,7 @@ template: &template
   steps:
     - checkout
     - run:
-        name: Set up Miniconda
+        name: Set up miniconda
         command: |
           apt update
           apt install -y wget
@@ -30,7 +31,7 @@ template: &template
           conda update -y conda
           conda create -n sequentia python=$PYTHON_VERSION
           source activate sequentia
-          pip install ".[test]"
+          pip install ".[dev]"
           pytest lib/test --disable-pytest-warnings
 
 jobs:
@@ -54,3 +55,7 @@ jobs:
     <<: *template
     environment:
       PYTHON_VERSION: 3.9
+  python_3.10:
+    <<: *template
+    environment:
+      PYTHON_VERSION: 3.10

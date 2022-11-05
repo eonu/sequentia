@@ -5,25 +5,26 @@
 
 .. image:: /_static/images/logo.png
     :alt: Sequentia
-    :width: 125px
+    :width: 75px
     :target: https://github.com/eonu/sequentia
     :align: center
 
 Sequentia
 =========
 
-TODO
+Sequentia is a Python package that provides various classification and regression algorithms for sequential data, including methods based on hidden Markov models and dynamic time warping.
+
+Features
+--------
 
 .. toctree::
-   :caption: Sequentia
    :titlesonly:
 
    sections/models/index
-   sections/preprocessing/index
    sections/datasets/index
 
 Documentation Search and Index
-==============================
+------------------------------
 
 * :ref:`search`
 * :ref:`genindex`

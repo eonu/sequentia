@@ -22,8 +22,6 @@ class KNNRegressor(_KNNMixin, _Regressor):
     """A k-nearest neighbor regressor that uses DTW as a distance measure for sequence comparison.
 
     The regressor computes the output as a distance weighted average of the outputs of the sequences within the DTW k-neighborhood of the sequence being predicted.
-
-    TODO: Example
     """
 
     @_validate_params(using=_KNNValidator)

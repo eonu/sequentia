@@ -21,12 +21,12 @@ except ImportError:
 
 # -- Project information -----------------------------------------------------
 
-project = 'sequentia'
+project = sequentia.__name__
 copyright = '2019-2023, Edwin Onuonga'
-author = 'Edwin Onuonga'
+author = sequentia.__author__
 
 # The full version, including alpha/beta/rc tags
-release = '0.20.0' # TODO sequentia.__version__
+release = sequentia.__version__
 
 # -- General configuration ---------------------------------------------------
 
