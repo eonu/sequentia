@@ -4,7 +4,6 @@ workflows:
   version: 2
   test:
     jobs:
-      - python_3.6
       - python_3.7
       - python_3.8
       - python_3.9
@@ -35,14 +34,6 @@ template: &template
           pytest lib/test --disable-pytest-warnings
 
 jobs:
-  python_3.5:
-    <<: *template
-    environment:
-      PYTHON_VERSION: "3.5"
-  python_3.6:
-    <<: *template
-    environment:
-      PYTHON_VERSION: "3.6"
   python_3.7:
     <<: *template
     environment:
