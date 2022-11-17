@@ -19,7 +19,7 @@ from sequentia.utils.validation import (
     _UnivariateCategoricalSequenceClassifierValidator,
 )
 
-__all__ = ['MultinomialHMM']
+__all__ = ['CategoricalHMM']
 
 _defaults = SimpleNamespace(
     **{
@@ -31,12 +31,12 @@ _defaults = SimpleNamespace(
     }
 )
 
-class MultinomialHMM(_HMM):
-    """A hidden Markov model with univariate multinomial emissions.
+class CategoricalHMM(_HMM):
+    """A hidden Markov model with univariate categorical emissions.
 
     Examples
     --------
-    Using a :class:`.MultinomialHMM` to learn how to recognize DNA sequences from the synthetase gene family.
+    Using a :class:`.CategoricalHMM` to learn how to recognize DNA sequences from the synthetase gene family.
 
     See :func:`.load_gene_families` for more information on the sample dataset used in this example.
 
@@ -44,7 +44,7 @@ class MultinomialHMM(_HMM):
 
         import numpy as np
         from sequentia.datasets import load_gene_families
-        from sequentia.models.hmm import MultinomialHMM
+        from sequentia.models.hmm import CategoricalHMM
 
         # Seed for reproducible pseudo-randomness
         random_state = np.random.RandomState(1)
@@ -53,8 +53,8 @@ class MultinomialHMM(_HMM):
         data, enc = load_gene_families(families=[4])
         train_data, test_data = data.split(test_size=0.2, random_state=random_state)
 
-        # Create and train a MultinomialHMM to recognize the synthetase DNA sequences
-        model = MultinomialHMM(random_state=random_state)
+        # Create and train a CategoricalHMM to recognize the synthetase DNA sequences
+        model = CategoricalHMM(random_state=random_state)
         X_train, lengths_train = train_data.X_lengths
         model.fit(X_train, lengths_train)
 
@@ -75,8 +75,8 @@ class MultinomialHMM(_HMM):
         topology: Optional[Literal["ergodic", "left-right", "linear"]] = _defaults.topology,
         random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = _defaults.random_state,
         hmmlearn_kwargs: Dict[str, Any] = deepcopy(_defaults.hmmlearn_kwargs)
-    ) -> MultinomialHMM:
-        """Initializes the :class:`.MultinomialHMM`.
+    ) -> CategoricalHMM:
+        """Initializes the :class:`.CategoricalHMM`.
 
         :param n_states: Number of states in the Markov chain.
         :param topology: Transition topology of the Markov chain — see :ref:`topologies`.
@@ -92,7 +92,7 @@ class MultinomialHMM(_HMM):
         self,
         X: Array[int],
         lengths: Optional[Array[int]] = None
-    ) -> MultinomialHMM:
+    ) -> CategoricalHMM:
         """Fits the HMM to the sequences in ``X``, using the Baum—Welch algorithm.
 
         :param X: Univariate observation sequence(s).
@@ -120,7 +120,7 @@ class MultinomialHMM(_HMM):
         kwargs['init_params'] = ''.join(set(kwargs['init_params']) - self._skip_init_params)
         kwargs['params'] = ''.join(set(kwargs['params']) - self._skip_params)
 
-        self.model = hmmlearn.hmm.MultinomialHMM(
+        self.model = hmmlearn.hmm.CategoricalHMM(
             n_components=self.n_states,
             random_state=self.random_state_,
             **kwargs
@@ -261,9 +261,9 @@ class MultinomialHMM(_HMM):
         """
         super().freeze(params)
 
-class _MultinomialHMMValidator(_HMMValidator):
+class _CategoricalHMMValidator(_HMMValidator):
     hmmlearn_kwargs: Dict[str, Any] = _defaults.hmmlearn_kwargs
 
-    _class = MultinomialHMM
+    _class = CategoricalHMM
 
-MultinomialHMM.__init__ = _validate_params(using=_MultinomialHMMValidator)(MultinomialHMM.__init__)
+CategoricalHMM.__init__ = _validate_params(using=_CategoricalHMMValidator)(CategoricalHMM.__init__)

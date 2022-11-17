@@ -1,7 +1,7 @@
-Multinomial HMM
+Categorical HMM
 ===============
 
-The Multinomial HMM is a variant of HMM that uses a discrete probability distribution over a finite set of symbols as the emission distribution for each state.
+The Categorical HMM is a variant of HMM that uses a discrete probability distribution over a finite set of symbols as the emission distribution for each state.
 
 This HMM variant can be used to recognize categorical univariate sequences.
 
@@ -43,28 +43,28 @@ Class
 
 .. autosummary::
 
-   ~sequentia.models.hmm.variants.MultinomialHMM
+   ~sequentia.models.hmm.variants.CategoricalHMM
 
 Methods
 ^^^^^^^
 
 .. autosummary::
 
-   ~sequentia.models.hmm.variants.MultinomialHMM.__init__
-   ~sequentia.models.hmm.variants.MultinomialHMM.aic
-   ~sequentia.models.hmm.variants.MultinomialHMM.bic
-   ~sequentia.models.hmm.variants.MultinomialHMM.fit
-   ~sequentia.models.hmm.variants.MultinomialHMM.freeze
-   ~sequentia.models.hmm.variants.MultinomialHMM.n_params
-   ~sequentia.models.hmm.variants.MultinomialHMM.score
-   ~sequentia.models.hmm.variants.MultinomialHMM.set_start_probs
-   ~sequentia.models.hmm.variants.MultinomialHMM.set_state_emissions
-   ~sequentia.models.hmm.variants.MultinomialHMM.set_transitions
-   ~sequentia.models.hmm.variants.MultinomialHMM.unfreeze
+   ~sequentia.models.hmm.variants.CategoricalHMM.__init__
+   ~sequentia.models.hmm.variants.CategoricalHMM.aic
+   ~sequentia.models.hmm.variants.CategoricalHMM.bic
+   ~sequentia.models.hmm.variants.CategoricalHMM.fit
+   ~sequentia.models.hmm.variants.CategoricalHMM.freeze
+   ~sequentia.models.hmm.variants.CategoricalHMM.n_params
+   ~sequentia.models.hmm.variants.CategoricalHMM.score
+   ~sequentia.models.hmm.variants.CategoricalHMM.set_start_probs
+   ~sequentia.models.hmm.variants.CategoricalHMM.set_state_emissions
+   ~sequentia.models.hmm.variants.CategoricalHMM.set_transitions
+   ~sequentia.models.hmm.variants.CategoricalHMM.unfreeze
 
 |
 
-.. autoclass:: sequentia.models.hmm.variants.MultinomialHMM
+.. autoclass:: sequentia.models.hmm.variants.CategoricalHMM
    :members:
    :inherited-members:
    :exclude-members: get_params, set_params

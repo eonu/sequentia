@@ -71,7 +71,7 @@ The following models provided by Sequentia all support variable length sequences
 - [x] [Hidden Markov Models](https://sequentia.readthedocs.io/en/latest/sections/classifiers/gmmhmm.html) (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))<br/><em>Parameter estimation with the Baum-Welch algorithm and prediction with the forward algorithm</em> [[1]](#references)
   - [x] Classification
   - [x] Multivariate real-valued observations (Gaussian mixture model emissions)
-  - [x] Univariate categorical observations (multinomial emissions)
+  - [x] Univariate categorical observations (discrete emissions)
   - [x] Linear, left-right and ergodic topologies
   - [x] Multi-processed predictions
 

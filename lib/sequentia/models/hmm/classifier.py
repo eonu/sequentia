@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import joblib
+import pathlib
 from types import SimpleNamespace
-from typing import Optional, Union, Dict, Literal
+from typing import Optional, Union, Dict, Literal, IO
 from joblib import Parallel, delayed
 
 import numpy as np
@@ -157,7 +159,7 @@ class HMMClassifier(_Classifier):
         :param model: HMM to add to the classifier.
         :param label: Class represented by the HMM.
 
-        :note: All models added to the classifier must be of the same type — either :class:`.GaussianMixtureHMM` or :class:`.MultinomialHMM`.
+        :note: All models added to the classifier must be of the same type — either :class:`.GaussianMixtureHMM` or :class:`.CategoricalHMM`.
         """
         if not isinstance(model, _HMM):
             raise TypeError('Expected `model` argument to be a type of HMM')
@@ -177,7 +179,7 @@ class HMMClassifier(_Classifier):
 
         :param models: HMMs to add to the classifier. The key for each HMM should be the label of the class represented by the HMM.
 
-        :note: All models added to the classifier must be of the same type — either :class:`.GaussianMixtureHMM` or :class:`.MultinomialHMM`.
+        :note: All models added to the classifier must be of the same type — either :class:`.GaussianMixtureHMM` or :class:`.CategoricalHMM`.
         """
         if not all(isinstance(model, _HMM) for model in models.values()):
             raise TypeError('Expected all provided `models` to be a type of HMM')
@@ -197,7 +199,7 @@ class HMMClassifier(_Classifier):
 
         :param X: Univariate or multivariate observation sequence(s).
 
-            - Should be a single 1D array if :class:`.MultinomialHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
+            - Should be a single 1D array if :class:`.CategoricalHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
             - Should have length as the 1st dimension and features as the 2nd dimension.
             - Should be a concatenated sequence if multiple sequences are provided,
               with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
@@ -279,7 +281,7 @@ class HMMClassifier(_Classifier):
 
         :param X: Univariate or multivariate observation sequence(s).
 
-            - Should be a single 1D array if :class:`.MultinomialHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
+            - Should be a single 1D array if :class:`.CategoricalHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
             - Should have length as the 1st dimension and features as the 2nd dimension.
             - Should be a concatenated sequence if multiple sequences are provided,
               with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
@@ -309,7 +311,7 @@ class HMMClassifier(_Classifier):
 
         :param X: Univariate or multivariate observation sequence(s).
 
-            - Should be a single 1D array if :class:`.MultinomialHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
+            - Should be a single 1D array if :class:`.CategoricalHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
             - Should have length as the 1st dimension and features as the 2nd dimension.
             - Should be a concatenated sequence if multiple sequences are provided,
               with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
@@ -341,7 +343,7 @@ class HMMClassifier(_Classifier):
 
         :param X: Univariate or multivariate observation sequence(s).
 
-            - Should be a single 1D array if :class:`.MultinomialHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
+            - Should be a single 1D array if :class:`.CategoricalHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
             - Should have length as the 1st dimension and features as the 2nd dimension.
             - Should be a concatenated sequence if multiple sequences are provided,
               with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
@@ -378,7 +380,7 @@ class HMMClassifier(_Classifier):
 
         :param X: Univariate or multivariate observation sequence(s).
 
-            - Should be a single 1D array if :class:`.MultinomialHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
+            - Should be a single 1D array if :class:`.CategoricalHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
             - Should have length as the 1st dimension and features as the 2nd dimension.
             - Should be a concatenated sequence if multiple sequences are provided,
               with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
@@ -427,3 +429,54 @@ class HMMClassifier(_Classifier):
     def _sequence_classifier_validator(self, **kwargs):
         model = self.models[0]
         return model._sequence_classifier_validator(**kwargs)
+
+    @_requires_fit
+    def save(self, path: Union[str, pathlib.Path, IO]):
+        """Serializes and saves a fitted HMM classifier.
+
+        :param path: Location to save the serialized classifier.
+
+        :note: This method requires a trained classifier — see :func:`fit`.
+
+        See Also
+        --------
+        load:
+            Loads and deserializes a fitted HMM classifier.
+        """
+
+        # Fetch main parameters and fitted values
+        state = {
+            'params': self.get_params(),
+            'models': self.models,
+            'fitted': {k:v for k, v in self.__dict__.items() if k.endswith('_')}
+        }
+
+        # Serialize model
+        joblib.dump(state, path)
+
+    @classmethod
+    def load(cls, path: Union[str, pathlib.Path, IO]) -> HMMClassifier:
+        """Loads and deserializes a fitted HMM classifier.
+
+        :param path: Location to load the serialized classifier from.
+
+        :return: Fitted HMM classifier.
+
+        See Also
+        --------
+        save:
+            Serializes and saves a fitted HMM classifier.
+        """
+
+        state = joblib.load(path)
+
+        # Set main parameters
+        model = cls(**state['params'])
+        model.models = state['models']
+
+        # Set fitted values
+        for k, v in state['fitted'].items():
+            setattr(model, k, v)
+
+        # Return deserialized model
+        return model

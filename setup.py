@@ -61,7 +61,7 @@ setup(
     install_requires = [
         'numba>=0.56',
         'numpy>=1.17',
-        'hmmlearn>=0.2.7',
+        'hmmlearn>=0.2.8',
         'dtaidistance[numpy]>=2.2',
         'scikit-learn>=0.22',
         'joblib>=0.14',
@@ -75,6 +75,7 @@ setup(
             'sphinx-autodoc-typehints',
             'sphinx-autobuild',
             'm2r2',
+            'mistune==0.8.4',
             'Jinja2',
             'pytest',
         ]
