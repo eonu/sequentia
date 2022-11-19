@@ -326,8 +326,7 @@ class _KNNMixin:
 
     def _window(self, A: Array[float], B: Array[float]) -> int:
         """TODO"""
-
-        return max(1, int(self.window * max(len(A), len(B))))
+        return int(self.window * min(len(A), len(B)))
 
     def _dtwi(self, A: Array[float], B: Array[float]) -> float:
         """Computes the multivariate DTW distance as the sum of the pairwise per-feature DTW distances,
@@ -339,22 +338,16 @@ class _KNNMixin:
     def _dtwd(self, A: Array[float], B: Array[float]) -> float:
         """Computes the multivariate DTW distance so that the warping of the features depends on each other,
         by modifying the local distance measure."""
-
         window = self._window(A, B)
         return dtw_ndim.distance(A, B, use_c=self.use_c, window=window)
 
     def _dtw(self) -> Callable:
         """TODO"""
-
         return self._dtwi if self.independent else self._dtwd
 
     def _weighting(self) -> Callable:
         """TODO"""
-
-        if callable(self.weighting):
-            return self.weighting
-        else:
-            return lambda x: np.ones_like(x)
+        return self.weighting if callable(self.weighting) else lambda x: np.ones_like(x)
 
     def _distance_matrix_row_chunk(
         self,

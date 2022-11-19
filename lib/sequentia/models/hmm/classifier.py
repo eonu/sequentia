@@ -443,7 +443,6 @@ class HMMClassifier(_Classifier):
         load:
             Loads and deserializes a fitted HMM classifier.
         """
-
         # Fetch main parameters and fitted values
         state = {
             'params': self.get_params(),
@@ -467,7 +466,6 @@ class HMMClassifier(_Classifier):
         save:
             Serializes and saves a fitted HMM classifier.
         """
-
         state = joblib.load(path)
 
         # Set main parameters

@@ -90,12 +90,12 @@ class KNNClassifier(_KNNMixin, _Classifier):
             to the matrix of DTW distances, then return an equally-sized :class:`numpy:numpy.ndarray` of weightings.
             If ``None``, then a uniform weighting of 1 will be applied to all distances.
 
-        :param window: The width of the Sakoe—Chiba band global constrant as a fraction of the length of the longest of the two sequences being compared.
+        :param window: The size of the Sakoe—Chiba band global constrant as a fraction of the length of the shortest of the two sequences being compared.
 
-            - A larger constraint will speed up the DTW alignment by restricting the maximum deviation from the diagonal of the DTW matrix.
-            - Too much constraint may lead to poor alignment.
-
-            The default value of 1 corresponds to full DTW computation with no global constraint applied.
+            - A larger window will give more freedom to the DTW alignment, allowing more deviation but leading to potentially slower computation. 
+              A window of 1 is equivalent to full DTW computation with no global constraint applied.
+            - A smaller window will restrict the DTW alignment, and possibly speed up the DTW computation. 
+              A window of 0 is equivalent to Euclidean distance.
 
         :param independent: Whether or not to allow features to be warped independently from each other. See [#dtw_multi]_ for an overview of independent and dependent dynamic time warping.
 
@@ -119,7 +119,7 @@ class KNNClassifier(_KNNMixin, _Classifier):
         self.k = k
         #: A callable that specifies how distance weighting should be performed.
         self.weighting = weighting
-        #: The width of the Sakoe—Chiba band global constrant as a fraction of the length of the longest of the two sequences being compared.
+        #: The size of the Sakoe—Chiba band global constrant as a fraction of the length of the shortest of the two sequences being compared.
         self.window = window
         #: Whether or not to allow features to be warped independently from each other.
         self.independent = independent
