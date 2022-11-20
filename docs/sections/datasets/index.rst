@@ -29,6 +29,7 @@ Methods
 .. autosummary::
 
    ~sequentia.utils.SequentialDataset.__init__
+   ~sequentia.utils.SequentialDataset.copy
    ~sequentia.utils.SequentialDataset.iter_by_class
    ~sequentia.utils.SequentialDataset.load
    ~sequentia.utils.SequentialDataset.save
