@@ -284,3 +284,21 @@ class SequentialDataset:
             Stores the dataset in ``.npz`` format.
         """
         return cls(**np.load(path))
+
+    def copy(self) -> SequentialDataset:
+        """Creates a copy of the dataset.
+
+        :return: Dataset copy.
+        """
+        params = {
+            "X": self.X,
+            "lengths": self.lengths,
+        }
+
+        if self._y is not None:
+            params["y"] = self.y
+
+        if self._classes is not None:
+            params["classes"] = self.classes
+        
+        return SequentialDataset(**params)
