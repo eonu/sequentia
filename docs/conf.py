@@ -6,7 +6,7 @@
 
 # -- Path setup --------------------------------------------------------------
 
-import sys, os, subprocess
+import sys, os
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -21,11 +21,9 @@ except ImportError:
 
 # -- Project information -----------------------------------------------------
 
-project = 'sequentia'
-copyright = '2019-2023, Edwin Onuonga'
-author = 'Edwin Onuonga'
-
-# The full version, including alpha/beta/rc tags
+project = sequentia.__name__
+author = sequentia.__author__
+copyright = sequentia.__copyright__
 release = sequentia.__version__
 
 # -- General configuration ---------------------------------------------------
@@ -40,15 +38,16 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
     'numpydoc',
-    'm2r2'
+    'm2r2',
 ]
 
 intersphinx_mapping = {
-    'numpy': ('http://docs.scipy.org/doc/numpy/', None),
-    'tslearn': ('https://tslearn.readthedocs.io/en/stable/', None)
+    'numpy': ('https://numpy.org/doc/stable/', None),
+    'sklearn': ('https://scikit-learn.org/stable/', None),
 }
 
-autodoc_member_order = 'bysource'
+autodoc_members = True
+autodoc_member_order = 'groupwise' # bysource, groupwise, alphabetical
 autosummary_generate = True
 numpydoc_show_class_members = False
 
@@ -57,7 +56,7 @@ master_doc = 'index'
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-source_suffix = ['.rst', '.md']
+source_suffix = ['.rst']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -72,9 +71,16 @@ exclude_patterns = ['_build']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'pyramid' # sphinx_rtd_theme
+
+autodoc_typehints = "description"
+autodoc_class_signature = "separated"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# Custom stylesheets
+def setup(app):
+    app.add_css_file('css/toc.css')

@@ -33,28 +33,11 @@ Please make new branches based on the current `dev` branch, and merge your PR ba
 
 If you intend to help contribute to Sequentia, you will need some additional dependencies for running tests, notebooks and generating documentation.
 
-Depending on what you intend to do, you can specify the following extras.
+You can specify the `dev` extra when installing Sequentia to do this.
 
-- For running tests in the `/lib/test` directory:
-
-  ```console
-  pip install sequentia[test]
-  ```
-- For generating Sphinx documentation in the `/docs` directory:
-
-  ```console
-  pip install sequentia[docs]
-  ```
-- For running notebooks in the `/notebooks` directory:
-
-  ```console
-  pip install sequentia[notebooks]
-  ```
-- **Recommended**: For a full development suite which installs all of the above extras:
-
-  ```console
-  pip install sequentia[dev]
-  ```
+```console
+pip install --pre sequentia[dev]
+```
 
 If installing a Sequentia from a local directory, you can use `pip install -e .` from within that directory, or `pip install -e .[xxx]` to install with extras.
 
