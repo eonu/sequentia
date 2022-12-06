@@ -2,16 +2,16 @@
 
 #### Major changes
 
-- Rework interface to follow sklearn-like patterns.
-- Remove `preprocessing` module (temporarily until design is finalized).
-- Add KNN regression.
-- Add HMM classifier with categorical emissions.
-- Use Pydantic for better validation.
-- Add `datasets` module for sample datasets.
-- Split KNN logic across more functions.
-- Better multi-processing for KNN.
-- Documentation rework + switch Sphinx documentation theme.
-- Fix Sakoe-Chiba width calculation.
+- Rework interface to follow sklearn-like patterns. ([#226](https://github.com/eonu/sequentia/issues/226))
+- Remove `preprocessing` module (temporarily until design is finalized). ([#226](https://github.com/eonu/sequentia/issues/226))
+- Add KNN regression. ([#226](https://github.com/eonu/sequentia/issues/226))
+- Add HMM classifier with categorical emissions. ([#226](https://github.com/eonu/sequentia/issues/226))
+- Use Pydantic for better validation. ([#226](https://github.com/eonu/sequentia/issues/226))
+- Add `datasets` module for sample datasets. ([#226](https://github.com/eonu/sequentia/issues/226))
+- Split KNN logic across more functions. ([#226](https://github.com/eonu/sequentia/issues/226))
+- Better multi-processing for KNN. ([#226](https://github.com/eonu/sequentia/issues/226))
+- Documentation rework + switch Sphinx documentation theme. ([#226](https://github.com/eonu/sequentia/issues/226))
+- Fix Sakoe-Chiba width calculation. ([#226](https://github.com/eonu/sequentia/issues/226))
 
 ## [0.13.1](https://github.com/eonu/sequentia/releases/tag/v0.13.1)
 
