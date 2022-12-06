@@ -1,3 +1,18 @@
+## [1.0.0pre1](https://github.com/eonu/sequentia/releases/tag/v1.0.0pre1)
+
+#### Major changes
+
+- Rework interface to follow sklearn-like patterns.
+- Remove `preprocessing` module (temporarily until design is finalized).
+- Add KNN regression.
+- Add HMM classifier with categorical emissions.
+- Use Pydantic for better validation.
+- Add `datasets` module for sample datasets.
+- Split KNN logic across more functions.
+- Better multi-processing for KNN.
+- Documentation rework + switch Sphinx documentation theme.
+- Fix Sakoe-Chiba width calculation.
+
 ## [0.13.1](https://github.com/eonu/sequentia/releases/tag/v0.13.1)
 
 #### Major changes
