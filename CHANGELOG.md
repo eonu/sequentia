@@ -1,3 +1,9 @@
+## [1.0.0a2](https://github.com/eonu/sequentia/releases/tag/v1.0.0a2)
+
+#### Minor changes
+
+- Fix broken link on README.md. ([#229](https://github.com/eonu/sequentia/issues/229))
+
 ## [1.0.0a1](https://github.com/eonu/sequentia/releases/tag/v1.0.0a1)
 
 #### Major changes
