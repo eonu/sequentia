@@ -1,12 +1,12 @@
 <p align="center">
   <h1 align="center">
-    <img src="/docs/_static/logo.png" width="125px" alt="Logo created by DALL·E Mini"><br/>
+    <img src="https://raw.githubusercontent.com/eonu/sequentia/master/docs/_static/logo.png" width="75px"><br/>
     Sequentia
   </h1>
 </p>
 
 <p align="center">
-  <em>A machine learning interface for sequence classification algorithms in Python.</em>
+  <em>HMM and DTW-based sequence machine learning algorithms in Python following an sklearn-like interface.</em>
 </p>
 
 <p align="center">
@@ -32,7 +32,7 @@
     <a href="#build-status">Build Status</a> ·
     <a href="#features">Features</a> ·
     <a href="#documentation">Documentation</a> ·
-    <a href="#tutorials-and-examples">Tutorials and Examples</a> ·
+    <a href="#examples">Examples</a> ·
     <a href="#acknowledgments">Acknowledgments</a> ·
     <a href="#references">References</a> ·
     <a href="#contributors">Contributors</a>
@@ -41,14 +41,14 @@
 
 ## About
 
-Sequentia is a Python package that provides various classification algorithms for sequential data, including classifiers based on hidden Markov models and dynamic time warping.
+Sequentia is a Python package that provides various classification and regression algorithms for sequential data, including methods based on hidden Markov models and dynamic time warping.
 
-Some examples of how Sequentia can be used in sequence classification include:
+Some examples of how Sequentia can be on sequence data include:
 
 - determining a spoken word based on its audio signal or alternative representations such as MFCCs,
-- identifying heart conditions such as arrhythmia from ECG signals,
 - predicting motion intent for gesture control from sEMG signals,
-- classifying hand-written characters according to their pen-tip trajectories.
+- classifying hand-written characters according to their pen-tip trajectories,
+- predicting the gene family that a DNA sequence belong to.
 
 ## Build Status
 
@@ -58,110 +58,67 @@ Some examples of how Sequentia can be used in sequence classification include:
 
 ## Features
 
-Sequentia provides the following algorithms, all supporting multivariate sequences with different durations.
+The following models provided by Sequentia all support variable length sequences.
 
-### Classification algorithms
-
-- [x] [Hidden Markov Models](https://sequentia.readthedocs.io/en/latest/sections/classifiers/gmmhmm.html) (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))<br/><em>Parameter estimation with the Baum-Welch algorithm and prediction with the forward algorithm</em> [[1]](#references)
-  - [x] Gaussian Mixture Model emissions
-  - [x] Linear, left-right and ergodic topologies
-  - [x] Multi-processed predictions
 - [x] [Dynamic Time Warping k-Nearest Neighbors](https://sequentia.readthedocs.io/en/latest/sections/classifiers/knn.html) (via [`dtaidistance`](https://github.com/wannesm/dtaidistance))
+  - [x] Classification
+  - [x] Regression
+  - [x] Multivariate real-valued observations
   - [x] Sakoe–Chiba band global warping constraint
-  - [x] Dependent and independent feature warping (DTWD & DTWI)
+  - [x] Dependent and independent feature warping (DTWD/DTWI)
   - [x] Custom distance-weighted predictions
   - [x] Multi-processed predictions
+- [x] [Hidden Markov Models](https://sequentia.readthedocs.io/en/latest/sections/classifiers/gmmhmm.html) (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))<br/><em>Parameter estimation with the Baum-Welch algorithm and prediction with the forward algorithm</em> [[1]](#references)
+  - [x] Classification
+  - [x] Multivariate real-valued observations (Gaussian mixture model emissions)
+  - [x] Univariate categorical observations (discrete emissions)
+  - [x] Linear, left-right and ergodic topologies
+  - [x] Multi-processed predictions
 
-<p align="center">
-  <img src="/docs/_static/classifier.png" width="80%"/><br/>
-  Example of a classification algorithm (HMM sequence classifier)
-</p>
-
-### Preprocessing methods
-
-- [x] Centering, standardization and min-max scaling
-- [x] Decimation and mean downsampling
-- [x] Mean and median filtering
-- [ ] Dimensionality reduction (<em>soon!</em>)
+  <p align="center">
+    <img src="https://raw.githubusercontent.com/eonu/sequentia/master/docs/_static/images/classifier.png" width="80%"/><br/>
+    HMM Sequence Classifier
+  </p>
 
 ## Installation
 
 You can install Sequentia using `pip`.
 
+### Stable
+
+The latest stable version of Sequentia can be installed with the following command.
+
 ```console
 pip install sequentia
 ```
 
-<details>
-<summary>
-    <b>Click here for installation instructions for contributing to Sequentia or running the notebooks.</b>
-</summary>
-<p>
+### Pre-release
 
-If you intend to help contribute to Sequentia, you will need some additional dependencies for running tests, notebooks and generating documentation.
+Pre-release versions include new features which are in active development and may change unpredictably.
 
-Depending on what you intend to do, you can specify the following extras.
+The latest pre-release version can be installed with the following command.
 
-- For running tests in the `/lib/test` directory:
+```console
+pip install --pre sequentia
+```
 
-  ```console
-  pip install sequentia[test]
-  ```
-- For generating Sphinx documentation in the `/docs` directory:
+### Development
 
-  ```console
-  pip install sequentia[docs]
-  ```
-- For running notebooks in the `/notebooks` directory:
-
-  ```console
-  pip install sequentia[notebooks]
-  ```
-- **A full development suite which installs all of the above extras:**
-
-  ```console
-  pip install sequentia[dev]
-  ```
-
-</p>
-</details>
+Please see the [contribution guidelines](/CONTRIBUTING.md) to see installation instructions for contributing to Sequentia.
 
 ## Documentation
 
 Documentation for the package is available on [Read The Docs](https://sequentia.readthedocs.io/en/latest).
 
-## Tutorials and Examples
+## Examples
 
-For detailed tutorials and examples on the usage of Sequentia, [see the notebooks here](https://nbviewer.jupyter.org/github/eonu/sequentia/tree/master/notebooks/).
-
-Below are some basic examples of how univariate and multivariate sequences can be used in Sequentia.
-
-### Univariate sequences
+This example demonstrates multivariate sequences classified into classes `0`/`1` using the `KNNClassifier`.
 
 ```python
-import numpy as np, sequentia as seq
+import numpy as np
+from sequentia.models import KNNClassifier
 
-# Generate training observation sequences and labels
-X, y = [
-  np.array([1, 0, 5, 3, 7, 2, 2, 4, 9, 8, 7]),
-  np.array([2, 1, 4, 6, 5, 8]),
-  np.array([5, 8, 0, 3, 1, 0, 2, 7, 9])
-], ['good', 'good', 'bad']
-
-# Create and fit the classifier
-clf = seq.KNNClassifier(k=1, classes=('good', 'bad')).fit(X, y)
-
-# Make a prediction for a new observation sequence
-x_new = np.array([0, 3, 2, 7, 9, 1, 1])
-y_new = clf.predict(x_new)
-```
-
-### Multivariate sequences
-
-```python
-import numpy as np, sequentia as seq
-
-# Generate training observation sequences and labels
+# Generate training sequences and labels
 X, y = [
   np.array([[1, 0, 5, 3, 7, 2, 2, 4, 9, 8, 7],
             [3, 8, 4, 0, 7, 1, 1, 3, 4, 2, 9]]).T,
@@ -169,10 +126,13 @@ X, y = [
             [5, 3, 9, 0, 8, 2]]).T,
   np.array([[5, 8, 0, 3, 1, 0, 2, 7, 9],
             [0, 2, 7, 1, 2, 9, 5, 8, 1]]).T
-], ['good', 'good', 'bad']
+], [0, 1, 1]
+
+# Sequentia expects a concatenated array of sequences (and their corresponding lengths)
+X, lengths = np.vstack(X), [len(x) for x in X]
 
 # Create and fit the classifier
-clf = seq.KNNClassifier(k=1, classes=('good', 'bad')).fit(X, y)
+clf = KNNClassifier(k=1).fit(X, y, lengths)
 
 # Make a prediction for a new observation sequence
 x_new = np.array([[0, 3, 2, 7, 9, 1, 1],
@@ -182,11 +142,11 @@ y_new = clf.predict(x_new)
 
 ## Acknowledgments
 
-In earlier versions of the package (<0.10.0), an approximate dynamic time warping algorithm implementation ([`fastdtw`](https://github.com/slaypni/fastdtw)) was used in hopes of speeding up k-NN predictions, as the authors of the original FastDTW paper [[2]](#references) claim that approximated DTW alignments can be computed in linear memory and time - compared to the O(N^2) runtime complexity of the usual exact DTW implementation.
+In earlier versions of the package, an approximate DTW implementation [`fastdtw`](https://github.com/slaypni/fastdtw) was used in hopes of speeding up k-NN predictions, as the authors of the original FastDTW paper [[2]](#references) claim that approximated DTW alignments can be computed in linear memory and time, compared to the O(N^2) runtime complexity of the usual exact DTW implementation.
 
-However, I was recently contacted by [Prof. Eamonn Keogh](https://www.cs.ucr.edu/~eamonn/) (at _University of California, Riverside_), whose recent work [[3]](#references) makes the surprising revelation that FastDTW is generally slower than the exact DTW algorithm that it approximates. Upon switching from the `fastdtw` package to [`dtaidistance`](https://github.com/wannesm/dtaidistance) (a very solid implementation of exact DTW with fast pure C compiled functions), DTW k-NN prediction times were indeed reduced drastically.
+I was contacted by [Prof. Eamonn Keogh](https://www.cs.ucr.edu/~eamonn/) whose work [[3]](#references) makes the surprising revelation that FastDTW is generally slower than the exact DTW algorithm that it approximates. Upon switching from the `fastdtw` package to [`dtaidistance`](https://github.com/wannesm/dtaidistance) (a very solid implementation of exact DTW with fast pure C compiled functions), DTW k-NN prediction times were indeed reduced drastically.
 
-I would like to thank Prof. Eamonn Keogh for directly reaching out to me regarding this finding!
+I would like to thank Prof. Eamonn Keogh for directly reaching out to me regarding this finding.
 
 ## References
 
