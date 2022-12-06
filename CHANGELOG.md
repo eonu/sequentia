@@ -1,3 +1,18 @@
+## [1.0.0a1](https://github.com/eonu/sequentia/releases/tag/v1.0.0a1)
+
+#### Major changes
+
+- Rework interface to follow sklearn-like patterns. ([#226](https://github.com/eonu/sequentia/issues/226))
+- Remove `preprocessing` module (temporarily until design is finalized). ([#226](https://github.com/eonu/sequentia/issues/226))
+- Add KNN regression. ([#226](https://github.com/eonu/sequentia/issues/226))
+- Add HMM classifier with categorical emissions. ([#226](https://github.com/eonu/sequentia/issues/226))
+- Use Pydantic for better validation. ([#226](https://github.com/eonu/sequentia/issues/226))
+- Add `datasets` module for sample datasets. ([#226](https://github.com/eonu/sequentia/issues/226))
+- Split KNN logic across more functions. ([#226](https://github.com/eonu/sequentia/issues/226))
+- Better multi-processing for KNN. ([#226](https://github.com/eonu/sequentia/issues/226))
+- Documentation rework + switch Sphinx documentation theme. ([#226](https://github.com/eonu/sequentia/issues/226))
+- Fix Sakoe-Chiba width calculation. ([#226](https://github.com/eonu/sequentia/issues/226))
+
 ## [0.13.1](https://github.com/eonu/sequentia/releases/tag/v0.13.1)
 
 #### Major changes
