@@ -1,6 +1,6 @@
 <p align="center">
   <h1 align="center">
-    <img src="https://raw.githubusercontent.com/eonu/sequentia/master/docs/_static/logo.png" width="75px"><br/>
+    <img src="https://raw.githubusercontent.com/eonu/sequentia/master/docs/_static/images/logo.png" width="75px"><br/>
     Sequentia
   </h1>
 </p>
