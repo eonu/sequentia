@@ -84,11 +84,25 @@ The following models provided by Sequentia all support variable length sequences
 
 You can install Sequentia using `pip`.
 
-> **Note**: The current version of Sequentia is a pre-release and requires the  `--pre` flag to be provided.
+### Stable
+
+The latest stable version of Sequentia can be installed with the following command.
+
+```console
+pip install sequentia
+```
+
+### Pre-release
+
+Pre-release versions include new features which are in active development and may change unpredictably.
+
+The latest pre-release version can be installed with the following command.
 
 ```console
 pip install --pre sequentia
 ```
+
+### Development
 
 Please see the [contribution guidelines](/CONTRIBUTING.md) to see installation instructions for contributing to Sequentia.
 
@@ -128,7 +142,7 @@ y_new = clf.predict(x_new)
 
 ## Acknowledgments
 
-In earlier versions of the package (<0.10.0), an approximate DTW implementation [`fastdtw`](https://github.com/slaypni/fastdtw) was used in hope of speeding up k-NN predictions, as the authors of the original FastDTW paper [[2]](#references) claim that approximated DTW alignments can be computed in linear memory and time, compared to the O(N^2) runtime complexity of the usual exact DTW implementation.
+In earlier versions of the package, an approximate DTW implementation [`fastdtw`](https://github.com/slaypni/fastdtw) was used in hopes of speeding up k-NN predictions, as the authors of the original FastDTW paper [[2]](#references) claim that approximated DTW alignments can be computed in linear memory and time, compared to the O(N^2) runtime complexity of the usual exact DTW implementation.
 
 I was contacted by [Prof. Eamonn Keogh](https://www.cs.ucr.edu/~eamonn/) whose work [[3]](#references) makes the surprising revelation that FastDTW is generally slower than the exact DTW algorithm that it approximates. Upon switching from the `fastdtw` package to [`dtaidistance`](https://github.com/wannesm/dtaidistance) (a very solid implementation of exact DTW with fast pure C compiled functions), DTW k-NN prediction times were indeed reduced drastically.
 
