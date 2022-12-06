@@ -1,4 +1,4 @@
-## [1.0.0pre1](https://github.com/eonu/sequentia/releases/tag/v1.0.0pre1)
+## [1.0.0a1](https://github.com/eonu/sequentia/releases/tag/v1.0.0a1)
 
 #### Major changes
 
