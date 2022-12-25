@@ -6,6 +6,7 @@ import numpy as np
 from sequentia.models import GaussianMixtureHMM
 from sequentia.models.hmm.topologies import _topologies
 from sequentia.datasets import load_digits
+from sequentia.utils.validation import _check_is_fitted
 
 from .....support.assertions import assert_equal, assert_not_equal
 from .....support.itertools import combinations
@@ -33,6 +34,7 @@ def assert_fit(hmm, data):
     assert (hmm.topology_ is not None) == (hmm.topology is not None)
     assert isinstance(hmm.model, hmmlearn.hmm.GMMHMM)
     assert len(hmm.model.monitor_.history) > 0
+    assert _check_is_fitted(hmm, return_=True)
 
 
 def test_gaussian_mixture_fit_n_states(data, random_state):

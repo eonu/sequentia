@@ -1,5 +1,5 @@
 from pkg_resources import resource_filename
-from typing import Sequence
+from typing import Iterable
 from operator import itemgetter
 
 import numpy as np
@@ -10,7 +10,7 @@ from sequentia.utils.validation import _Validator
 from sequentia.utils.decorators import _validate_params
 
 class _DigitsValidator(_Validator):
-    digits: Sequence[conint(ge=0, le=9)] = list(range(10))
+    digits: Iterable[conint(ge=0, le=9)] = list(range(10))
 
     @validator('digits')
     def check_digits(cls, value):
@@ -22,7 +22,7 @@ class _DigitsValidator(_Validator):
 @_validate_params(using=_DigitsValidator)
 def load_digits(
     *,
-    digits: Sequence[int] = list(range(10)),
+    digits: Iterable[int] = list(range(10)),
 ) -> SequentialDataset:
     """Loads MFCC features of spoken digit audio samples from the Free Spoken Digit Dataset.
 
