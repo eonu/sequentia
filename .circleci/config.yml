@@ -26,7 +26,9 @@ template: &template
         name: Set up environment, dependencies and run tests
         command: |
           export PATH="$HOME/miniconda/bin:$PATH"
-          conda update conda --force -y
+          conda uninstall setuptools -y
+          conda install setuptools -y
+          conda update conda -y
           conda create -n sequentia python=$PYTHON_VERSION -y
           source activate sequentia
           pip install ".[dev]"
