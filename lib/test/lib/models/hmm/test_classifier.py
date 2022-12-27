@@ -25,7 +25,7 @@ def random_state(request):
 @pytest.fixture(scope='module')
 def dataset(request):
     if request.param == 'digits':
-        return load_digits(digits=range(7))
+        return load_digits(digits=range(n_classes))
     elif request.param == 'gene_families':
         data, _ = load_gene_families()
         return data
@@ -128,17 +128,17 @@ def test_classifier_e2e(request, model, dataset, prior, prefit, random_state):
         assert_equal(y_pred, y_pred_load)
 
 
-@pytest.mark.parametrize('classes', [np.array([0, 1, 2]), np.array([2, 0, 1])])
+@pytest.mark.parametrize('classes', [[0, 1, 2], [2, 0, 1]])
 def test_classifier_compute_log_posterior(classes):
-    clf = HMMClassifier(prior=None)
-    clf.classes_ = classes
+    clf = HMMClassifier()
+    clf.classes_ = np.array(classes)
     clf.prior_ = {i: np.exp(i) for i in clf.classes_}
     clf.models = {i: Mock(_score=Mock(side_effect=lambda x: 0)) for i in clf.classes_}
     assert_equal(clf._compute_log_posterior(None), clf.classes_)
 
 
 def test_classifier_compute_scores_chunk():
-    clf = HMMClassifier(prior=None)
+    clf = HMMClassifier()
     clf.classes_ = np.arange(3)
     clf.prior_ = {i: np.exp(i) for i in clf.classes_}
     clf.models = {i: Mock(_score=Mock(side_effect=len)) for i in clf.classes_}
