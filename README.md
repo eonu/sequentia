@@ -43,7 +43,7 @@
 
 Sequentia is a Python package that provides various classification and regression algorithms for sequential data, including methods based on hidden Markov models and dynamic time warping.
 
-Some examples of how Sequentia can be on sequence data include:
+Some examples of how Sequentia can be used on sequence data include:
 
 - determining a spoken word based on its audio signal or alternative representations such as MFCCs,
 - predicting motion intent for gesture control from sEMG signals,
@@ -91,6 +91,12 @@ The latest stable version of Sequentia can be installed with the following comma
 ```console
 pip install sequentia
 ```
+
+#### C library compilation
+
+For optimal performance when using any of the k-NN based models, it is important that `dtaidistance` C libraries are compiled correctly.
+
+Please see the [`dtaidistance` installation guide](https://dtaidistance.readthedocs.io/en/latest/usage/installation.html) for troubleshooting if you run into C compilation issues, or if setting `use_c=True` on k-NN based models results in a warning.
 
 ### Pre-release
 
