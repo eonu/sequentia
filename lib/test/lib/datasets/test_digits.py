@@ -6,7 +6,7 @@ from ...support.assertions import assert_equal
 
 
 @pytest.mark.parametrize('digits', [list(range(10)), [2, 5]])
-def test_digits_full(digits):
+def test_digits(digits):
     data = load_digits(digits=digits)
 
     assert len(data) == 300 * len(digits)
