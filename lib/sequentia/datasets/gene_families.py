@@ -1,5 +1,5 @@
 from pkg_resources import resource_filename
-from typing import Sequence, Tuple
+from typing import Iterable, Tuple
 from operator import itemgetter
 
 import numpy as np
@@ -12,7 +12,7 @@ from sequentia.utils.decorators import _validate_params
 
 
 class _GeneFamiliesValidator(_Validator):
-    families: Sequence[conint(ge=0, le=6)] = list(range(7))
+    families: Iterable[conint(ge=0, le=6)] = list(range(7))
 
     @validator('families')
     def check_families(cls, value):
@@ -24,7 +24,7 @@ class _GeneFamiliesValidator(_Validator):
 @_validate_params(using=_GeneFamiliesValidator)
 def load_gene_families(
     *,
-    families: Sequence[int] = list(range(7))
+    families: Iterable[int] = list(range(7))
 ) -> Tuple[SequentialDataset, LabelEncoder]:
     """Loads human DNA sequences grouped by gene family.
 
@@ -46,8 +46,8 @@ def load_gene_families(
 
     :param families: Subset of gene families to include in the dataset.
 
-    :return: 
-        
+    :return:
+
         - A dataset object representing the loaded genetic data.
         - Label encoder used to encode the observation symbols into integers.
     """
