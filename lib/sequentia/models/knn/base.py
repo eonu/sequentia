@@ -37,7 +37,7 @@ except ImportError:
     pass
 
 _defaults = SimpleNamespace(
-    k=5,
+    k=1,
     weighting=None,
     window=1,
     independent=False,
@@ -120,6 +120,7 @@ class _KNNMixin:
         k_outputs = self.y_[k_idxs]
         return k_idxs, k_distances, k_outputs
 
+
     @_requires_fit
     @_override_params(['window', 'independent'])
     @_validate_params(using=_KNNValidator)
@@ -169,6 +170,7 @@ class _KNNMixin:
             )
         )
 
+
     @_override_params(['window', 'independent'])
     @_validate_params(using=_KNNValidator)
     def dtw(self, A: Array[float], B: Array[float], **kwargs) -> float:
@@ -189,6 +191,7 @@ class _KNNMixin:
         A = _SingleMultivariateFloatSequenceValidator(sequence=A).sequence
         B = _SingleMultivariateFloatSequenceValidator(sequence=B).sequence
         return self._dtw(A, B)
+
 
     @_check_plotting_dependencies
     @_override_params(['window'])
@@ -224,6 +227,7 @@ class _KNNMixin:
         best_path = dtw.best_path(paths)
 
         return dtw_visualisation.plot_warpingpaths(a, b, paths, best_path)
+
 
     @_check_plotting_dependencies
     @_requires_fit
@@ -270,6 +274,7 @@ class _KNNMixin:
             _, ax = plt.subplots()
         ax.hist(distances.flatten())
         return ax
+
 
     @_check_plotting_dependencies
     @_requires_fit
@@ -319,21 +324,23 @@ class _KNNMixin:
         ax.hist(weightings.flatten())
         return ax
 
+
     def _dtw1d(self, a: Array[float], b: Array[float], window: int) -> float:
         """Computes the DTW distance between two univariate sequences."""
-
         return dtw.distance(a, b, use_c=self.use_c, window=window)
+
 
     def _window(self, A: Array[float], B: Array[float]) -> int:
         """TODO"""
         return int(self.window * min(len(A), len(B)))
 
+
     def _dtwi(self, A: Array[float], B: Array[float]) -> float:
         """Computes the multivariate DTW distance as the sum of the pairwise per-feature DTW distances,
         allowing each feature to be warped independently."""
-
         window = self._window(A, B)
         return np.sum([self._dtw1d(A[:, i], B[:, i], window) for i in range(A.shape[1])])
+
 
     def _dtwd(self, A: Array[float], B: Array[float]) -> float:
         """Computes the multivariate DTW distance so that the warping of the features depends on each other,
@@ -341,13 +348,16 @@ class _KNNMixin:
         window = self._window(A, B)
         return dtw_ndim.distance(A, B, use_c=self.use_c, window=window)
 
+
     def _dtw(self) -> Callable:
         """TODO"""
         return self._dtwi if self.independent else self._dtwd
 
+
     def _weighting(self) -> Callable:
         """TODO"""
         return self.weighting if callable(self.weighting) else lambda x: np.ones_like(x)
+
 
     def _distance_matrix_row_chunk(
         self,
@@ -361,7 +371,6 @@ class _KNNMixin:
 
         TODO
         """
-
         return np.hstack(
             Parallel(n_jobs=n_jobs)(
                 delayed(self._distance_matrix_row_col_chunk)(
@@ -369,6 +378,7 @@ class _KNNMixin:
                 ) for col_idxs in col_chunk_idxs
             )
         )
+
 
     def _distance_matrix_row_col_chunk(
         self,
@@ -381,12 +391,12 @@ class _KNNMixin:
 
         TODO
         """
-
         distances = np.zeros((len(row_idxs), len(col_idxs)))
         for i, x_row in enumerate(SequentialDataset._iter_X(X, row_idxs)):
             for j, x_col in enumerate(SequentialDataset._iter_X(self.X_, col_idxs)):
                 distances[i, j] = dist(x_row, x_col)
         return distances
+
 
     @_requires_fit
     def save(self, path: Union[str, pathlib.Path, IO]):
@@ -401,7 +411,6 @@ class _KNNMixin:
         load:
             Loads and deserializes a fitted KNN estimator.
         """
-
         # Fetch main parameters and fitted values
         state = {
             'params': self.get_params(),
@@ -409,12 +418,16 @@ class _KNNMixin:
         }
 
         # Serialize weighting function
-        state['params']['weighting'] = marshal.dumps(
-            (self.weighting.__code__, self.weighting.__name__)
-        )
+        if self.weighting is None:
+            state['params']['weighting'] = self.weighting
+        else:
+            state['params']['weighting'] = marshal.dumps(
+                (self.weighting.__code__, self.weighting.__name__)
+            )
 
         # Serialize model
         joblib.dump(state, path)
+
 
     @classmethod
     def load(cls, path: Union[str, pathlib.Path, IO]):
@@ -429,12 +442,12 @@ class _KNNMixin:
         save:
             Serializes and saves a fitted KNN estimator.
         """
-
         state = joblib.load(path)
 
         # Deserialize weighting function
-        weighting, name = marshal.loads(state['params']['weighting'])
-        state['params']['weighting'] = types.FunctionType(weighting, globals(), name)
+        if state['params']['weighting'] is not None:
+            weighting, name = marshal.loads(state['params']['weighting'])
+            state['params']['weighting'] = types.FunctionType(weighting, globals(), name)
 
         # Set main parameters
         model = cls(**state['params'])

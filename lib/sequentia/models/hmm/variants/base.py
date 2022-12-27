@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 import warnings
+from copy import deepcopy
 from types import SimpleNamespace
 from typing import Optional, Union, Dict, Any, Literal
 from pydantic import NonNegativeInt, PositiveInt, validator
@@ -51,7 +52,7 @@ class _HMM(BaseEstimator):
         #: Seed or :class:`numpy:numpy.random.RandomState` object for reproducible pseudo-randomness.
         self.random_state = random_state
         #: Additional key-word arguments provided to the `hmmlearn <https://hmmlearn.readthedocs.io/en/latest/>`__ HMM constructor.
-        self.hmmlearn_kwargs = hmmlearn_kwargs
+        self.hmmlearn_kwargs = deepcopy(hmmlearn_kwargs)
         #: Underlying HMM object from `hmmlearn <https://hmmlearn.readthedocs.io/en/latest/>`__ — only set after :func:`fit`.
         self.model = None
 
@@ -193,7 +194,7 @@ class _HMM(BaseEstimator):
         self._skip_params -= set(self._modify_params(params))
 
     def _modify_params(self, params):
-        defaults = self._defaults.hmmlearn_kwargs["params"]
+        defaults = deepcopy(self._defaults.hmmlearn_kwargs["params"])
         error_msg = f"Expected a string consisting of any combination of {defaults}"
         if isinstance(params, str):
             if bool(re.compile(fr'[^{defaults}]').search(params)):
@@ -224,8 +225,7 @@ class _HMM(BaseEstimator):
                 elif self._transmat == 'random':
                     self._transmat = topology.random_transitions()
             elif isinstance(self._transmat, np.ndarray):
-                if topology is not None:
-                    self._transmat = topology.check_transitions(self._transmat)
+                self._transmat = topology.check_transitions(self._transmat)
         else:
             if self.topology_ is not None:
                 self.set_transitions(topology.random_transitions())
@@ -237,7 +237,7 @@ class _HMMValidator(_Validator):
     n_states: PositiveInt = _defaults.n_states
     topology: Optional[Literal["ergodic", "left-right", "linear"]] = _defaults.topology
     random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = _defaults.random_state
-    hmmlearn_kwargs: Dict[str, Any] = _defaults.hmmlearn_kwargs
+    hmmlearn_kwargs: Dict[str, Any] = deepcopy(_defaults.hmmlearn_kwargs)
 
     _class = _HMM
 
@@ -247,9 +247,9 @@ class _HMMValidator(_Validator):
 
     @validator('hmmlearn_kwargs')
     def check_hmmlearn_kwargs(cls, value):
-        params = value.copy()
+        params = deepcopy(value)
 
-        defaults = cls._class._defaults.hmmlearn_kwargs["params"]
+        defaults = deepcopy(cls._class._defaults.hmmlearn_kwargs["params"])
         setter_methods = [f"{func}()" for func in dir(cls._class) if func.startswith("set") and func != "set_params"]
 
         for param in value.keys():
@@ -285,7 +285,7 @@ class _HMMValidator(_Validator):
             params['params'] = defaults
             warnings.warn(
                 f"No learnable parameters set in hmmlearn `params` argument - defaulting to '{defaults}'. "
-                'If you intend to make no parameters learnable, call the freeze() method with no arguments.'
+                'If you intend to make no parameters learnable, use the freeze() method.'
             )
 
         return params

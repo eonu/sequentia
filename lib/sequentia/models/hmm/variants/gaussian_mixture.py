@@ -53,7 +53,7 @@ class GaussianMixtureHMM(_HMM):
         random_state = np.random.RandomState(1)
 
         # Fetch MFCCs of spoken samples for the digit 3
-        data = load_digits(numbers=[3])
+        data = load_digits(digits=[3])
         train_data, test_data = data.split(test_size=0.2, random_state=random_state)
 
         # Create and train a GaussianMixtureHMM to recognize the digit 3
@@ -129,7 +129,7 @@ class GaussianMixtureHMM(_HMM):
             self.topology_ = _topologies[self.topology](self.n_states, self.random_state_)
         self._check_init_params()
 
-        kwargs = self.hmmlearn_kwargs
+        kwargs = deepcopy(self.hmmlearn_kwargs)
         kwargs['init_params'] = ''.join(set(kwargs['init_params']) - self._skip_init_params)
         kwargs['params'] = ''.join(set(kwargs['params']) - self._skip_params)
 
@@ -269,7 +269,7 @@ class GaussianMixtureHMM(_HMM):
 
     def freeze(
         self,
-        params: str = _defaults.hmmlearn_kwargs["params"],
+        params: str = deepcopy(_defaults.hmmlearn_kwargs["params"]),
     ):
         """Freezes the trainable parameters of the HMM, preventing them from being updated during the Baum—Welch algorithm.
 
@@ -292,7 +292,7 @@ class GaussianMixtureHMM(_HMM):
 
     def unfreeze(
         self,
-        params: str = _defaults.hmmlearn_kwargs["params"],
+        params: str = deepcopy(_defaults.hmmlearn_kwargs["params"]),
     ):
         """Unfreezes the trainable parameters of the HMM, allowing them to be updated during the Baum—Welch algorithm.
 
@@ -309,12 +309,12 @@ class GaussianMixtureHMM(_HMM):
         freeze:
             Freezes the trainable parameters of the HMM, preventing them from be updated during the Baum—Welch algorithm.
         """
-        super().freeze(params)
+        super().unfreeze(params)
 
 class _GaussianMixtureHMMValidator(_HMMValidator):
     n_components: PositiveInt = _defaults.n_components
     covariance_type: Literal["spherical", "diag", "full", "tied"] = _defaults.covariance_type
-    hmmlearn_kwargs: Dict[str, Any] = _defaults.hmmlearn_kwargs
+    hmmlearn_kwargs: Dict[str, Any] = deepcopy(_defaults.hmmlearn_kwargs)
 
     _class = GaussianMixtureHMM
 

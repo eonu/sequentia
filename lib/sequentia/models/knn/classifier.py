@@ -56,7 +56,7 @@ class KNNClassifier(_KNNMixin, _Classifier):
 
         # Create a HMMClassifier using a class frequency prior
         clf = KNNClassifier()
-            
+
         # Fit the classifier
         X_train, y_train, lengths_train = train_data.X_y_lengths
         clf.fit(X_train, y_train, lengths_train)
@@ -92,9 +92,9 @@ class KNNClassifier(_KNNMixin, _Classifier):
 
         :param window: The size of the Sakoe—Chiba band global constrant as a fraction of the length of the shortest of the two sequences being compared.
 
-            - A larger window will give more freedom to the DTW alignment, allowing more deviation but leading to potentially slower computation. 
+            - A larger window will give more freedom to the DTW alignment, allowing more deviation but leading to potentially slower computation.
               A window of 1 is equivalent to full DTW computation with no global constraint applied.
-            - A smaller window will restrict the DTW alignment, and possibly speed up the DTW computation. 
+            - A smaller window will restrict the DTW alignment, and possibly speed up the DTW computation.
               A window of 0 is equivalent to Euclidean distance.
 
         :param independent: Whether or not to allow features to be warped independently from each other. See [#dtw_multi]_ for an overview of independent and dependent dynamic time warping.
@@ -300,7 +300,6 @@ class KNNClassifier(_KNNMixin, _Classifier):
 
         TODO
         """
-
         scores = np.zeros((len(labels), len(self.classes_)))
         for i, k in enumerate(self.classes_):
             scores[:, i] = np.einsum('ij,ij->i', labels == k, weightings)
@@ -314,7 +313,6 @@ class KNNClassifier(_KNNMixin, _Classifier):
 
         TODO
         """
-
         n_jobs = _effective_n_jobs(self.n_jobs, scores)
         score_chunks = np.array_split(scores, n_jobs)
         return np.concatenate(
@@ -332,7 +330,6 @@ class KNNClassifier(_KNNMixin, _Classifier):
 
         TODO
         """
-
         max_labels = np.zeros(len(score_chunk), dtype=int)
         for i, scores in enumerate(score_chunk):
             max_score_idxs = self._multi_argmax(scores)
@@ -349,7 +346,6 @@ class KNNClassifier(_KNNMixin, _Classifier):
 
         TODO
         """
-
         all_, max_ = [0], arr[0]
         for i in prange(1, len(arr)):
             if arr[i] > max_:

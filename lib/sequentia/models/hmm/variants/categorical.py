@@ -116,7 +116,7 @@ class CategoricalHMM(_HMM):
             self.topology_ = _topologies[self.topology](self.n_states, self.random_state_)
         self._check_init_params()
 
-        kwargs = self.hmmlearn_kwargs
+        kwargs = deepcopy(self.hmmlearn_kwargs)
         kwargs['init_params'] = ''.join(set(kwargs['init_params']) - self._skip_init_params)
         kwargs['params'] = ''.join(set(kwargs['params']) - self._skip_params)
 
@@ -223,7 +223,7 @@ class CategoricalHMM(_HMM):
 
     def freeze(
         self,
-        params: str = _defaults.hmmlearn_kwargs["params"],
+        params: str = deepcopy(_defaults.hmmlearn_kwargs["params"]),
     ):
         """Freezes the trainable parameters of the HMM, preventing them from being updated during the Baum—Welch algorithm.
 
@@ -244,7 +244,7 @@ class CategoricalHMM(_HMM):
 
     def unfreeze(
         self,
-        params: str = _defaults.hmmlearn_kwargs["params"],
+        params: str = deepcopy(_defaults.hmmlearn_kwargs["params"]),
     ):
         """Unfreezes the trainable parameters of the HMM, allowing them to be updated during the Baum—Welch algorithm.
 
@@ -259,10 +259,10 @@ class CategoricalHMM(_HMM):
         freeze:
             Freezes the trainable parameters of the HMM, preventing them from being updated during the Baum—Welch algorithm.
         """
-        super().freeze(params)
+        super().unfreeze(params)
 
 class _CategoricalHMMValidator(_HMMValidator):
-    hmmlearn_kwargs: Dict[str, Any] = _defaults.hmmlearn_kwargs
+    hmmlearn_kwargs: Dict[str, Any] = deepcopy(_defaults.hmmlearn_kwargs)
 
     _class = CategoricalHMM
 

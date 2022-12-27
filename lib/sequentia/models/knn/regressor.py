@@ -47,9 +47,9 @@ class KNNRegressor(_KNNMixin, _Regressor):
 
         :param window: The size of the Sakoe—Chiba band global constrant as a fraction of the length of the shortest of the two sequences being compared.
 
-            - A larger window will give more freedom to the DTW alignment, allowing more deviation but leading to potentially slower computation. 
+            - A larger window will give more freedom to the DTW alignment, allowing more deviation but leading to potentially slower computation.
               A window of 1 is equivalent to full DTW computation with no global constraint applied.
-            - A smaller window will restrict the DTW alignment, and possibly speed up the DTW computation. 
+            - A smaller window will restrict the DTW alignment, and possibly speed up the DTW computation.
               A window of 0 is equivalent to Euclidean distance.
 
         :param independent: Whether or not to allow features to be warped independently from each other. See [#dtw_multi]_ for an overview of independent and dependent dynamic time warping.

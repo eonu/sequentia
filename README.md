@@ -48,7 +48,7 @@ Some examples of how Sequentia can be on sequence data include:
 - determining a spoken word based on its audio signal or alternative representations such as MFCCs,
 - predicting motion intent for gesture control from sEMG signals,
 - classifying hand-written characters according to their pen-tip trajectories,
-- predicting the gene family that a DNA sequence belong to.
+- predicting the gene family that a DNA sequence belongs to.
 
 ## Build Status
 
@@ -60,7 +60,7 @@ Some examples of how Sequentia can be on sequence data include:
 
 The following models provided by Sequentia all support variable length sequences.
 
-- [x] [Dynamic Time Warping k-Nearest Neighbors](https://sequentia.readthedocs.io/en/latest/sections/classifiers/knn.html) (via [`dtaidistance`](https://github.com/wannesm/dtaidistance))
+- [x] [Dynamic Time Warping + k-Nearest Neighbors](https://sequentia.readthedocs.io/en/latest/sections/classifiers/knn.html) (via [`dtaidistance`](https://github.com/wannesm/dtaidistance))
   - [x] Classification
   - [x] Regression
   - [x] Multivariate real-valued observations
@@ -119,14 +119,15 @@ import numpy as np
 from sequentia.models import KNNClassifier
 
 # Generate training sequences and labels
-X, y = [
-  np.array([[1, 0, 5, 3, 7, 2, 2, 4, 9, 8, 7],
-            [3, 8, 4, 0, 7, 1, 1, 3, 4, 2, 9]]).T,
-  np.array([[2, 1, 4, 6, 5, 8],
-            [5, 3, 9, 0, 8, 2]]).T,
-  np.array([[5, 8, 0, 3, 1, 0, 2, 7, 9],
-            [0, 2, 7, 1, 2, 9, 5, 8, 1]]).T
-], [0, 1, 1]
+X = [
+  np.array([[1., 0., 5., 3., 7., 2., 2., 4., 9., 8., 7.],
+            [3., 8., 4., 0., 7., 1., 1., 3., 4., 2., 9.]]).T,
+  np.array([[2., 1., 4., 6., 5., 8.],
+            [5., 3., 9., 0., 8., 2.]]).T,
+  np.array([[5., 8., 0., 3., 1., 0., 2., 7., 9.],
+            [0., 2., 7., 1., 2., 9., 5., 8., 1.]]).T
+]
+y = [0, 1, 1]
 
 # Sequentia expects a concatenated array of sequences (and their corresponding lengths)
 X, lengths = np.vstack(X), [len(x) for x in X]
@@ -135,14 +136,14 @@ X, lengths = np.vstack(X), [len(x) for x in X]
 clf = KNNClassifier(k=1).fit(X, y, lengths)
 
 # Make a prediction for a new observation sequence
-x_new = np.array([[0, 3, 2, 7, 9, 1, 1],
-                  [2, 5, 7, 4, 2, 0, 8]]).T
+x_new = np.array([[0., 3., 2., 7., 9., 1., 1.],
+                  [2., 5., 7., 4., 2., 0., 8.]]).T
 y_new = clf.predict(x_new)
 ```
 
 ## Acknowledgments
 
-In earlier versions of the package, an approximate DTW implementation [`fastdtw`](https://github.com/slaypni/fastdtw) was used in hopes of speeding up k-NN predictions, as the authors of the original FastDTW paper [[2]](#references) claim that approximated DTW alignments can be computed in linear memory and time, compared to the O(N^2) runtime complexity of the usual exact DTW implementation.
+In earlier versions of the package, an approximate DTW implementation [`fastdtw`](https://github.com/slaypni/fastdtw) was used in hopes of speeding up k-NN predictions, as the authors of the original FastDTW paper [[2]](#references) claim that approximated DTW alignments can be computed in linear memory and time, compared to the O(N<sup>2</sup>) runtime complexity of the usual exact DTW implementation.
 
 I was contacted by [Prof. Eamonn Keogh](https://www.cs.ucr.edu/~eamonn/) whose work [[3]](#references) makes the surprising revelation that FastDTW is generally slower than the exact DTW algorithm that it approximates. Upon switching from the `fastdtw` package to [`dtaidistance`](https://github.com/wannesm/dtaidistance) (a very solid implementation of exact DTW with fast pure C compiled functions), DTW k-NN prediction times were indeed reduced drastically.
 
@@ -196,6 +197,12 @@ All contributions to this repository are greatly appreciated. Contribution guide
         <a href="https://github.com/manisci">
           <img src="https://avatars.githubusercontent.com/u/30268711?v=4" alt="manisci" width="60px">
           <br/><sub><b>manisci</b></sub>
+        </a>
+      </th>
+      <th align="center">
+        <a href="https://github.com/jonnor">
+          <img src="https://avatars.githubusercontent.com/u/45185?v=4" alt="jonnor" width="60px">
+          <br/><sub><b>jonnor</b></sub>
         </a>
       </th>
 			<!-- Add more <th></th> blocks for more contributors -->

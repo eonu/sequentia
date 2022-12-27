@@ -13,18 +13,19 @@ from sequentia.utils.validation import _check_classes, _BaseSequenceValidator, A
 
 __all__ = ['SequentialDataset']
 
+
 class SequentialDataset:
     """Utility wrapper for a generic sequential dataset."""
 
     def __init__(
-        self, 
-        X: Array, 
-        y: Optional[Array] = None, 
-        lengths: Optional[Array[int]] = None, 
+        self,
+        X: Array,
+        y: Optional[Array] = None,
+        lengths: Optional[Array[int]] = None,
         classes: Optional[Array[int]] = None
     ) -> SequentialDataset:
         """Initializes a :class:`.SequentialDataset`.
-        
+
         :param X: Univariate or multivariate observation sequence(s).
 
             - Should be a single 1D or 2D array.
@@ -59,24 +60,24 @@ class SequentialDataset:
         self._X_lengths = (self._X, self._lengths)
         self._X_y_lengths = (self._X, self._y, self._lengths)
 
+
     def split(
-        self, 
-        test_size: Optional[Union[NonNegativeInt, confloat(ge=0, le=1)]] = None, 
-        train_size: Optional[Union[NonNegativeInt, confloat(ge=0, le=1)]] = None, 
-        random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = None, 
-        shuffle: bool = True, 
+        self,
+        test_size: Optional[Union[NonNegativeInt, confloat(ge=0, le=1)]] = None,
+        train_size: Optional[Union[NonNegativeInt, confloat(ge=0, le=1)]] = None,
+        random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = None,
+        shuffle: bool = True,
         stratify: bool = False
     ) -> Tuple[SequentialDataset, SequentialDataset]:
         """Splits the dataset into two partitions (train/test).
 
         See :func:`sklearn:sklearn.model_selection.train_test_split`.
-        
+
         :param test_size: Size of the test partition.
         :param train_size: Size of the train partition.
         :param random_state: Seed or :class:`numpy:numpy.random.RandomState` object for reproducible pseudo-randomness.
         :param shuffle: Whether or not to shuffle the data before splitting. If ``shuffle=False`` then ``stratify`` must be ``False``.
         :param stratify: Whether or not to stratify the partitions by class labels.
-        :raises: ``ValueError`` - If ``stratify=True`` and ``y`` was not provided to :func:`__init__`, or is not categorical.
         :return: Dataset partitions.
         """
         if stratify and self._y is None:
@@ -118,10 +119,11 @@ class SequentialDataset:
 
         return data_train, data_test
 
+
     def iter_by_class(self) -> Iterator[Tuple[Array, Array, int]]:
         """Subsets the observation sequences by class.
-        
-        :raises: ``ValueError`` - If ``y`` was not provided to :func:`__init__`, or is not categorical.
+
+        :raises: ``AttributeError`` - If ``y`` was not provided to :func:`__init__`, or is not categorical.
         :return: Generator iterating over classes, yielding:
 
             - ``X`` subset of sequences belonging to the class.
@@ -129,7 +131,7 @@ class SequentialDataset:
             - Class used to subset ``X``.
         """
         if self._y is None:
-            raise ValueError('No `y` values were provided during initialization')
+            raise AttributeError('No `y` values were provided during initialization')
 
         if self._classes is None:
             raise RuntimeError('Cannot iterate by class on real-valued targets')
@@ -140,6 +142,7 @@ class SequentialDataset:
             lengths = self._lengths[ind]
             yield np.vstack(X), lengths, c
 
+
     @staticmethod
     def _get_idxs(lengths):
         ends = lengths.cumsum()
@@ -147,13 +150,16 @@ class SequentialDataset:
         starts[1:] = ends[:-1]
         return np.c_[starts, ends]
 
+
     @staticmethod
     def _iter_X(X, idxs):
         for start, end in idxs:
             yield X[start:end]
 
+
     def __len__(self):
         return len(self._lengths)
+
 
     def __getitem__(self, i):
         idxs = np.atleast_2d(self._idxs[i])
@@ -161,90 +167,78 @@ class SequentialDataset:
         X = X[0] if isinstance(i, int) and len(X) == 1 else X
         return X if self._y is None else (X, self._y[i])
 
+
     def __iter__(self):
         for i in range(len(self)):
             yield self[i]
 
-    def __eq__(self, other):
-        if not isinstance(other, SequentialDataset):
-            return False
-
-        eq = True
-        eq &= np.array_equal(self._X, other._X)
-        eq &= np.array_equal(self._lengths, other._lengths)
-
-        if type(self._y) == type(other._y):
-            if isinstance(self._y, np.ndarray):
-                eq &= np.array_equal(self._y, other._y)
-        else:
-            return False
-
-        if type(self._classes) == type(other._classes):
-            if isinstance(self._classes, np.ndarray):
-                eq &= np.array_equal(self._classes, other._classes)
-        else:
-            return False
-
-        return eq
 
     @property
     def X(self) -> Array:
         """Observation sequences."""
-        return copy.deepcopy(self._X)
+        return self._X
+
 
     @property
     def y(self) -> Array:
         """Outputs corresponding to ``X``.
-        
-        :raises: ``ValueError`` - If ``y`` was not provided to :func:`__init__`.
+
+        :raises: ``AttributeError`` - If ``y`` was not provided to :func:`__init__`.
         """
         if self._y is None:
-            raise ValueError('No `y` values were provided during initialization')
-        return copy.deepcopy(self._y)
+            raise AttributeError('No `y` values were provided during initialization')
+        return self._y
+
 
     @property
     def lengths(self) -> Array[int]:
         """Lengths corresponding to ``X``."""
-        return copy.deepcopy(self._lengths)
+        return self._lengths
+
 
     @property
     def classes(self) -> Optional[Array[int]]:
         """Set of unique classes in ``y``. If ``y`` is not categorical, then ``None``."""
-        return copy.deepcopy(self._classes)
+        return self._classes
+
 
     @property
     def idxs(self) -> Array[int]:
         """Observation sequence start and end indices."""
-        return copy.deepcopy(self._idxs)
+        return self._idxs
+
 
     @property
     def X_y(self) -> Tuple[Array, Array]:
         """Observation sequences and corresponding outputs.
-        
-        :raises: ``ValueError`` - If ``y`` was not provided to :func:`__init__`.
+
+        :raises: ``AttributeError`` - If ``y`` was not provided to :func:`__init__`.
         """
         if self._y is None:
-            raise ValueError('No `y` values were provided during initialization')
-        return copy.deepcopy(self._X_y)
+            raise AttributeError('No `y` values were provided during initialization')
+        return self._X_y
+
 
     @property
     def X_lengths(self) -> Tuple[Array, Array[int]]:
         """Observation sequences and corresponding lengths."""
-        return copy.deepcopy(self._X_lengths)
+        return self._X_lengths
+
 
     @property
     def X_y_lengths(self) -> Tuple[Array, Array, Array[int]]:
         """Observation sequences and corresponding outputs and lengths.
-        
-        :raises: ``ValueError`` - If ``y`` was not provided to :func:`__init__`.
+
+        :raises: ``AttributeError`` - If ``y`` was not provided to :func:`__init__`.
         """
         if self._y is None:
-            raise ValueError('No `y` values were provided during initialization')
-        return copy.deepcopy(self._X_y_lengths)
+            raise AttributeError('No `y` values were provided during initialization')
+        return self._X_y_lengths
+
 
     def save(self, path: Union[str, pathlib.Path, IO], compress: bool = True):
         """Stores the dataset in ``.npz`` format.
-        
+
         See :func:`numpy:numpy.savez` and :func:`numpy:numpy.savez_compressed`.
 
         :param path: Location to store the dataset.
@@ -269,12 +263,13 @@ class SequentialDataset:
         save_fun = np.savez_compressed if compress else np.savez
         save_fun(path, **arrs)
 
+
     @classmethod
     def load(cls, path: Union[str, pathlib.Path, IO]) -> SequentialDataset:
         """Loads a stored dataset in ``.npz`` format.
 
         See :func:`numpy:numpy.load`.
-        
+
         :param path: Location to store the dataset.
         :return: The loaded dataset.
 
@@ -285,20 +280,21 @@ class SequentialDataset:
         """
         return cls(**np.load(path))
 
+
     def copy(self) -> SequentialDataset:
         """Creates a copy of the dataset.
 
         :return: Dataset copy.
         """
         params = {
-            "X": self.X,
-            "lengths": self.lengths,
+            "X": copy.deepcopy(self._X),
+            "lengths": copy.deepcopy(self._lengths),
         }
 
         if self._y is not None:
-            params["y"] = self.y
+            params["y"] = copy.deepcopy(self._y)
 
         if self._classes is not None:
-            params["classes"] = self.classes
-        
+            params["classes"] = copy.deepcopy(self._classes)
+
         return SequentialDataset(**params)
