@@ -78,7 +78,6 @@ class SequentialDataset:
         :param random_state: Seed or :class:`numpy:numpy.random.RandomState` object for reproducible pseudo-randomness.
         :param shuffle: Whether or not to shuffle the data before splitting. If ``shuffle=False`` then ``stratify`` must be ``False``.
         :param stratify: Whether or not to stratify the partitions by class labels.
-        :raises: ``ValueError`` - If ``stratify=True`` and ``y`` was not provided to :func:`__init__`, or is not categorical.
         :return: Dataset partitions.
         """
         if stratify and self._y is None:
@@ -124,7 +123,7 @@ class SequentialDataset:
     def iter_by_class(self) -> Iterator[Tuple[Array, Array, int]]:
         """Subsets the observation sequences by class.
 
-        :raises: ``ValueError`` - If ``y`` was not provided to :func:`__init__`, or is not categorical.
+        :raises: ``AttributeError`` - If ``y`` was not provided to :func:`__init__`, or is not categorical.
         :return: Generator iterating over classes, yielding:
 
             - ``X`` subset of sequences belonging to the class.
@@ -184,7 +183,7 @@ class SequentialDataset:
     def y(self) -> Array:
         """Outputs corresponding to ``X``.
 
-        :raises: ``ValueError`` - If ``y`` was not provided to :func:`__init__`.
+        :raises: ``AttributeError`` - If ``y`` was not provided to :func:`__init__`.
         """
         if self._y is None:
             raise AttributeError('No `y` values were provided during initialization')
@@ -213,7 +212,7 @@ class SequentialDataset:
     def X_y(self) -> Tuple[Array, Array]:
         """Observation sequences and corresponding outputs.
 
-        :raises: ``ValueError`` - If ``y`` was not provided to :func:`__init__`.
+        :raises: ``AttributeError`` - If ``y`` was not provided to :func:`__init__`.
         """
         if self._y is None:
             raise AttributeError('No `y` values were provided during initialization')
@@ -230,7 +229,7 @@ class SequentialDataset:
     def X_y_lengths(self) -> Tuple[Array, Array, Array[int]]:
         """Observation sequences and corresponding outputs and lengths.
 
-        :raises: ``ValueError`` - If ``y`` was not provided to :func:`__init__`.
+        :raises: ``AttributeError`` - If ``y`` was not provided to :func:`__init__`.
         """
         if self._y is None:
             raise AttributeError('No `y` values were provided during initialization')
