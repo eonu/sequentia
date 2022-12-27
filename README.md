@@ -48,7 +48,7 @@ Some examples of how Sequentia can be on sequence data include:
 - determining a spoken word based on its audio signal or alternative representations such as MFCCs,
 - predicting motion intent for gesture control from sEMG signals,
 - classifying hand-written characters according to their pen-tip trajectories,
-- predicting the gene family that a DNA sequence belong to.
+- predicting the gene family that a DNA sequence belongs to.
 
 ## Build Status
 
@@ -60,7 +60,7 @@ Some examples of how Sequentia can be on sequence data include:
 
 The following models provided by Sequentia all support variable length sequences.
 
-- [x] [Dynamic Time Warping k-Nearest Neighbors](https://sequentia.readthedocs.io/en/latest/sections/classifiers/knn.html) (via [`dtaidistance`](https://github.com/wannesm/dtaidistance))
+- [x] [Dynamic Time Warping + k-Nearest Neighbors](https://sequentia.readthedocs.io/en/latest/sections/classifiers/knn.html) (via [`dtaidistance`](https://github.com/wannesm/dtaidistance))
   - [x] Classification
   - [x] Regression
   - [x] Multivariate real-valued observations
@@ -196,6 +196,12 @@ All contributions to this repository are greatly appreciated. Contribution guide
         <a href="https://github.com/manisci">
           <img src="https://avatars.githubusercontent.com/u/30268711?v=4" alt="manisci" width="60px">
           <br/><sub><b>manisci</b></sub>
+        </a>
+      </th>
+      <th align="center">
+        <a href="https://github.com/jonnor">
+          <img src="https://avatars.githubusercontent.com/u/45185?v=4" alt="jonnor" width="60px">
+          <br/><sub><b>jonnor</b></sub>
         </a>
       </th>
 			<!-- Add more <th></th> blocks for more contributors -->
