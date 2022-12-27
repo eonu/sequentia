@@ -25,7 +25,7 @@ from sequentia.utils.validation import (
 __all__ = ['HMMClassifier']
 
 _defaults = SimpleNamespace(
-    prior="frequency",
+    prior=None,
     classes=None,
     n_jobs=1,
 )

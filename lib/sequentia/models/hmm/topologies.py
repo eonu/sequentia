@@ -105,6 +105,8 @@ class _ErgodicTopology(_Topology):
         A random state object for reproducible randomness.
     """
 
+    name = "ergodic"
+
     def uniform_transitions(self) -> np.ndarray:
         """Sets the transition matrix as uniform (equal probability of transitioning
             to all other possible states from each state) corresponding to the topology.
@@ -152,6 +154,8 @@ class _LeftRightTopology(_Topology):
     random_state: numpy.random.RandomState
         A random state object for reproducible randomness.
     """
+
+    name = "left-right"
 
     def uniform_transitions(self) -> np.ndarray:
         """Sets the transition matrix as uniform (equal probability of transitioning
@@ -207,6 +211,8 @@ class _LinearTopology(_LeftRightTopology):
         A random state object for reproducible randomness.
     """
 
+    name = "linear"
+
     def uniform_transitions(self) -> np.ndarray:
         """Sets the transition matrix as uniform (equal probability of transitioning
             to all other possible states from each state) corresponding to the topology.
@@ -252,7 +258,6 @@ class _LinearTopology(_LeftRightTopology):
         return transitions
 
 _topologies = {
-    "ergodic": _ErgodicTopology,
-    "left-right": _LeftRightTopology,
-    "linear": _LinearTopology,
+    topology.name:topology
+    for topology in (_ErgodicTopology, _LeftRightTopology, _LinearTopology)
 }

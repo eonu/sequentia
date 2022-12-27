@@ -1,3 +1,19 @@
+## [1.0.0](https://github.com/eonu/sequentia/releases/tag/v1.0.0)
+
+#### Major changes
+
+- Fix `CategoricalHMM` and `GaussianMixtureHMM` parameter defaults for `params`/`init_params` being modified. ([#231](https://github.com/eonu/sequentia/issues/231))
+- Fix `CategoricalHMM` and `GaussianMixtureHMM` `unfreeze()` calling `super().freeze()` instead of `super().unfreeze()`. ([#231](https://github.com/eonu/sequentia/issues/231))
+- Fix serialization/deserialization for `_KNNMixin` when `weighting=None`. ([#231](https://github.com/eonu/sequentia/issues/231))
+- Add unit tests. ([#231](https://github.com/eonu/sequentia/issues/231))
+
+#### Minor changes
+
+- Change `load_digits` `numbers` parameter name to `digits`. ([#231](https://github.com/eonu/sequentia/issues/231))
+- Change `SequentialDataset` properties to not return copies of arrays. ([#231](https://github.com/eonu/sequentia/issues/231))
+- Remove `SequentialDataset.__eq__`. ([#231](https://github.com/eonu/sequentia/issues/231))
+- Change `HMMClassifier` `prior` default to `None`. ([#231](https://github.com/eonu/sequentia/issues/231))
+
 ## [1.0.0a2](https://github.com/eonu/sequentia/releases/tag/v1.0.0a2)
 
 #### Minor changes

@@ -65,7 +65,7 @@ setup(
         'dtaidistance[numpy]>=2.2',
         'scikit-learn>=0.22',
         'joblib>=0.14',
-        'pydantic>=1.9',
+        'pydantic<1.9',
     ],
     extras_require = {
         'dev': [
