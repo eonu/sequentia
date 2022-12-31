@@ -30,8 +30,10 @@ _defaults = SimpleNamespace(
     }
 )
 
+
 class _KNNClassifierValidator(_KNNValidator):
     classes: Optional[Array[int]] = _defaults.classes
+
 
 class KNNClassifier(_KNNMixin, _Classifier):
     """A k-nearest neighbor classifier that uses DTW as a distance measure for sequence comparison.
@@ -67,6 +69,7 @@ class KNNClassifier(_KNNMixin, _Classifier):
     """
 
     _defaults = _defaults
+
 
     @_validate_params(using=_KNNClassifierValidator)
     def __init__(
@@ -132,6 +135,7 @@ class KNNClassifier(_KNNMixin, _Classifier):
         #: Seed or :class:`numpy:numpy.random.RandomState` object for reproducible pseudo-randomness.
         self.random_state = random_state
 
+
     def fit(
         self,
         X: Array[float],
@@ -165,6 +169,7 @@ class KNNClassifier(_KNNMixin, _Classifier):
         self.classes_ = _check_classes(data.y, self.classes)
         return self
 
+
     @_requires_fit
     def predict(
         self,
@@ -191,6 +196,34 @@ class KNNClassifier(_KNNMixin, _Classifier):
         """
         class_scores = self.predict_scores(X, lengths)
         return self._find_max_labels(class_scores)
+
+
+    def fit_predict(
+        self,
+        X: Array[float],
+        y: Array[int],
+        lengths: Optional[Array[int]] = None
+    ) -> Array[int]:
+        """Fits the classifier to the sequence(s) in ``X`` and predicts classes for ``X``.
+
+        :param X: Univariate or multivariate observation sequence(s).
+
+            - Should be a single 1D or 2D array.
+            - Should have length as the 1st dimension and features as the 2nd dimension.
+            - Should be a concatenated sequence if multiple sequences are provided,
+              with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
+
+        :param y: Classes corresponding to sequence(s) provided in ``X``.
+
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
+
+            - If ``None``, then ``X`` is assumed to be a single observation sequence.
+            - ``len(X)`` should be equal to ``sum(lengths)``.
+
+        :return: Class predictions.
+        """
+        return super().fit_predict(X, y, lengths)
+
 
     @_requires_fit
     def predict_proba(
@@ -221,6 +254,7 @@ class KNNClassifier(_KNNMixin, _Classifier):
         class_scores = self.predict_scores(X, lengths)
         return class_scores / class_scores.sum(axis=1, keepdims=True)
 
+
     @_requires_fit
     def predict_scores(
         self,
@@ -250,6 +284,7 @@ class KNNClassifier(_KNNMixin, _Classifier):
         _, k_distances, k_labels = self.query_neighbors(X, lengths, sort=False)
         k_weightings = self._weighting()(k_distances)
         return self._compute_scores(k_labels, k_weightings)
+
 
     @_requires_fit
     def score(
@@ -286,10 +321,12 @@ class KNNClassifier(_KNNMixin, _Classifier):
         """
         return super().score(X, y, lengths, normalize, sample_weight)
 
+
     @_validate_params(using=_KNNValidator)
     @_override_params(_KNNValidator.fields(), temporary=False)
     def set_params(self, **kwargs):
         return self
+
 
     def _compute_scores(
         self,
@@ -304,6 +341,7 @@ class KNNClassifier(_KNNMixin, _Classifier):
         for i, k in enumerate(self.classes_):
             scores[:, i] = np.einsum('ij,ij->i', labels == k, weightings)
         return scores
+
 
     def _find_max_labels(
         self,
@@ -322,6 +360,7 @@ class KNNClassifier(_KNNMixin, _Classifier):
             )
         )
 
+
     def _find_max_labels_chunk(
         self,
         score_chunk: Array[float]
@@ -335,6 +374,7 @@ class KNNClassifier(_KNNMixin, _Classifier):
             max_score_idxs = self._multi_argmax(scores)
             max_labels[i] = self.random_state_.choice(self.classes_[max_score_idxs], size=1)
         return max_labels
+
 
     @staticmethod
     @njit

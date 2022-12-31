@@ -53,6 +53,7 @@ Methods
    ~sequentia.models.hmm.classifier.HMMClassifier.add_model
    ~sequentia.models.hmm.classifier.HMMClassifier.add_models
    ~sequentia.models.hmm.classifier.HMMClassifier.fit
+   ~sequentia.models.hmm.classifier.HMMClassifier.fit_predict
    ~sequentia.models.hmm.classifier.HMMClassifier.predict
    ~sequentia.models.hmm.classifier.HMMClassifier.predict_proba
    ~sequentia.models.hmm.classifier.HMMClassifier.predict_scores
