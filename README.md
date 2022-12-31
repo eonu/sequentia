@@ -275,7 +275,7 @@ All contributions to this repository are greatly appreciated. Contribution guide
 Sequentia is released under the [MIT](https://opensource.org/licenses/MIT) license.
 
 Certain parts of the source code are heavily adapted from [Scikit-Learn](scikit-learn.org/).
-Such files contain copy of [their BSD 3-Clause license](https://github.com/scikit-learn/scikit-learn/blob/main/COPYING).
+Such files contain copy of [their license](https://github.com/scikit-learn/scikit-learn/blob/main/COPYING).
 
 ---
 
