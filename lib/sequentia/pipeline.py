@@ -50,14 +50,12 @@ from sklearn.pipeline import _final_estimator_has
 from sklearn.utils.metaestimators import available_if
 from sklearn.utils import _print_elapsed_time
 from sklearn.utils.validation import check_memory
-from sklearn.base import BaseEstimator, ClassifierMixin, clone
+from sklearn.base import BaseEstimator, ClassifierMixin, TransformerMixin, clone
 
 from sequentia.preprocessing.base import Transform
 from sequentia.utils.validation import Array
 
 __all__ = ["Pipeline"]
-
-_pipeline = sklearn.pipeline.Pipeline(steps=[('', None)])
 
 
 class Pipeline(sklearn.pipeline.Pipeline):
@@ -142,6 +140,16 @@ class Pipeline(sklearn.pipeline.Pipeline):
             is completed.
         """
         super().__init__(steps, memory=memory, verbose=verbose)
+
+
+    def _can_transform(self):
+        return self._final_estimator == "passthrough" or hasattr(
+            self._final_estimator, "transform"
+        )
+
+
+    def _can_inverse_transform(self):
+        return all(hasattr(t, "inverse_transform") for _, _, t in self._iter())
 
 
     def _fit(
@@ -398,7 +406,7 @@ class Pipeline(sklearn.pipeline.Pipeline):
         return self.steps[-1][1].predict_proba(Xt, lengths)
 
 
-    @available_if(_pipeline._can_transform)
+    @available_if(_can_transform)
     def transform(
         self,
         X: Array,
@@ -434,10 +442,10 @@ class Pipeline(sklearn.pipeline.Pipeline):
             if isinstance(transform, Transform):
                 transform_params["lengths"] = lengths
             Xt = transform.transform(Xt, **transform_params)
-        return
+        return Xt
 
 
-    @available_if(_pipeline._can_inverse_transform)
+    @available_if(_can_inverse_transform)
     def inverse_transform(
         self,
         X: Array,
@@ -474,7 +482,7 @@ class Pipeline(sklearn.pipeline.Pipeline):
     def score(
         self,
         X: Array,
-        y: Array,
+        y: Optional[Array] = None,
         lengths: Optional[Array] = None,
         sample_weight: Optional[Any] = None
     ) -> float:
@@ -492,6 +500,7 @@ class Pipeline(sklearn.pipeline.Pipeline):
               with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
 
         :param y: Outputs corresponding to sequence(s) provided in ``X``.
+            Must be provided if the final estimator is a model, i.e. not a transform.
 
         :param lengths: Lengths of the observation sequence(s) provided in ``X``.
 
@@ -509,10 +518,16 @@ class Pipeline(sklearn.pipeline.Pipeline):
             if isinstance(transform, Transform):
                 transform_params["lengths"] = lengths
             Xt = transform.transform(Xt, **transform_params)
+
         score_params = {}
         if sample_weight is not None:
             score_params["sample_weight"] = sample_weight
-        return self.steps[-1][1].score(Xt, y, lengths, **score_params)
+
+        last_step = self.steps[-1][1]
+        if isinstance(last_step, TransformerMixin):
+            return last_step.score(Xt, lengths, **score_params)
+        else:
+            return last_step.score(Xt, y, lengths, **score_params)
 
 
 def _fit_transform_one(
