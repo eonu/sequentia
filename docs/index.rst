@@ -21,6 +21,7 @@ Features
    :titlesonly:
 
    sections/models/index
+   sections/preprocessing/index
    sections/datasets/index
 
 Documentation Search and Index

@@ -63,7 +63,7 @@ setup(
         'numpy>=1.17',
         'hmmlearn>=0.2.8',
         'dtaidistance[numpy]>=2.2',
-        'scikit-learn>=0.22',
+        'scikit-learn>=1.0',
         'joblib>=0.14',
         'pydantic<1.9',
     ],

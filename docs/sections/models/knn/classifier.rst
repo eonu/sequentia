@@ -6,10 +6,10 @@ The KNN Classifier is a classifier that uses the :math:`k`-NN algorithm with DTW
 To classify a sequence :math:`O'`, the :class:`.KNNClassifier` works by:
 
 1. | Calculating the **DTW distance** between :math:`O'` and every training sequence.
-   
+
 2. | Forming a **k-neighborhood** :math:`\mathcal{K}'=\left\{O^{(1)},\ldots,O^{(k)}\right\}` of the :math:`k` nearest training sequences to :math:`O'`.
 
-3. | Calculating a **distance weighting** for each sequence in :math:`\mathcal{K}'`. 
+3. | Calculating a **distance weighting** for each sequence in :math:`\mathcal{K}'`.
    | A uniform weighting of 1 is used by default, meaning that all sequences in :math:`\mathcal{K}'` have equal influence on the predicted class. However, custom functions such as :math:`e^{-x}` (where :math:`x` is the DTW distance) can be specified to increase classification weight on training sequences that are more similar to :math:`O'`.
 
 4. | Calculating a **score** for each of the unique classes corresponding to the sequences in :math:`\mathcal{K}'`.
@@ -37,6 +37,7 @@ Methods
    ~sequentia.models.knn.classifier.KNNClassifier.compute_distance_matrix
    ~sequentia.models.knn.classifier.KNNClassifier.dtw
    ~sequentia.models.knn.classifier.KNNClassifier.fit
+   ~sequentia.models.knn.classifier.KNNClassifier.fit_predict
    ~sequentia.models.knn.classifier.KNNClassifier.load
    ~sequentia.models.knn.classifier.KNNClassifier.plot_dtw_histogram
    ~sequentia.models.knn.classifier.KNNClassifier.plot_warping_path_1d

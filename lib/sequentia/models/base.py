@@ -8,6 +8,7 @@ from sklearn.metrics import accuracy_score, r2_score
 from sequentia.utils.validation import Array
 from sequentia.utils.decorators import _requires_fit
 
+
 class _Classifier(BaseEstimator, ClassifierMixin):
     def fit(
         self,
@@ -17,12 +18,23 @@ class _Classifier(BaseEstimator, ClassifierMixin):
     ) -> _Classifier:
         raise NotImplementedError
 
+
     def predict(
         self,
         X: Array,
         lengths: Optional[Array[int]] = None
     ) -> Array[int]:
         raise NotImplementedError
+
+
+    def fit_predict(
+        self,
+        X: Array,
+        y: Array[int],
+        lengths: Optional[Array[int]] = None
+    ) -> Array[int]:
+        return self.fit(X, y, lengths).predict(X, lengths)
+
 
     def predict_proba(
         self,
@@ -31,12 +43,14 @@ class _Classifier(BaseEstimator, ClassifierMixin):
     ) -> Array[float]:
         raise NotImplementedError
 
+
     def predict_scores(
         self,
         X: Array,
         lengths: Optional[Array[int]] = None
     ) -> Array[float]:
         raise NotImplementedError
+
 
     @_requires_fit
     def score(
@@ -50,6 +64,7 @@ class _Classifier(BaseEstimator, ClassifierMixin):
         y_pred = self.predict(X, lengths)
         return accuracy_score(y, y_pred, normalize=normalize, sample_weight=sample_weight)
 
+
 class _Regressor(BaseEstimator, RegressorMixin):
     def fit(
         self,
@@ -59,12 +74,23 @@ class _Regressor(BaseEstimator, RegressorMixin):
     ) -> _Regressor:
         raise NotImplementedError
 
+
     def predict(
         self,
         X: Array[float],
         lengths: Optional[Array[int]] = None
     ) -> Array[float]:
         raise NotImplementedError
+
+
+    def fit_predict(
+        self,
+        X: Array[float],
+        y: Array[float],
+        lengths: Optional[Array[int]] = None
+    ) -> Array[float]:
+        return self.fit(X, y, lengths).predict(X, lengths)
+
 
     @_requires_fit
     def score(

@@ -1,6 +1,7 @@
 from .datasets import *
 from .models import *
-# from .preprocessing import *
+from .preprocessing import *
+from .pipeline import *
 from .utils import *
 
 __name__ = "sequentia"

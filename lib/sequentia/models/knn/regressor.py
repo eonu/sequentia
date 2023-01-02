@@ -18,6 +18,7 @@ from sequentia.utils.validation import (
 
 __all__ = ['KNNRegressor']
 
+
 class KNNRegressor(_KNNMixin, _Regressor):
     """A k-nearest neighbor regressor that uses DTW as a distance measure for sequence comparison.
 
@@ -79,6 +80,7 @@ class KNNRegressor(_KNNMixin, _Regressor):
         #: Seed or :class:`numpy:numpy.random.RandomState` object for reproducible pseudo-randomness.
         self.random_state = random_state
 
+
     def fit(
         self,
         X: Array[float],
@@ -111,6 +113,7 @@ class KNNRegressor(_KNNMixin, _Regressor):
         self.random_state_ = check_random_state(self.random_state)
         return self
 
+
     @_requires_fit
     def predict(
         self,
@@ -138,6 +141,34 @@ class KNNRegressor(_KNNMixin, _Regressor):
         _, k_distances, k_outputs = self.query_neighbors(X, lengths, sort=False)
         k_weightings = self._weighting()(k_distances)
         return (k_outputs * k_weightings).sum(axis=1) / k_weightings.sum(axis=1)
+
+
+    def fit_predict(
+        self,
+        X: Array[float],
+        y: Array[float],
+        lengths: Optional[Array[int]] = None
+    ) -> Array[float]:
+        """Fits the regressor to the sequence(s) in ``X`` and predicts outputs for ``X``.
+
+        :param X: Univariate or multivariate observation sequence(s).
+
+            - Should be a single 1D or 2D array.
+            - Should have length as the 1st dimension and features as the 2nd dimension.
+            - Should be a concatenated sequence if multiple sequences are provided,
+              with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
+
+        :param y: Outputs corresponding to sequence(s) provided in ``X``.
+
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
+
+            - If ``None``, then ``X`` is assumed to be a single observation sequence.
+            - ``len(X)`` should be equal to ``sum(lengths)``.
+
+        :return: Output predictions.
+        """
+        return super().fit_predict(X, y, lengths)
+
 
     @_requires_fit
     def score(
@@ -170,6 +201,7 @@ class KNNRegressor(_KNNMixin, _Regressor):
         :return: Coefficient of determination.
         """
         return super().score(X, y, lengths, sample_weight)
+
 
     @_validate_params(using=_KNNValidator)
     @_override_params(['k', 'weighting', 'window', 'independent', 'use_c', 'n_jobs'], temporary=False)

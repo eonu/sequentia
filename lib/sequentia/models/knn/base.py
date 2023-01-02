@@ -46,6 +46,7 @@ _defaults = SimpleNamespace(
     random_state=None,
 )
 
+
 class _KNNValidator(_Validator):
     k: PositiveInt = _defaults.k
     weighting: Optional[Callable] = _defaults.weighting
@@ -55,6 +56,7 @@ class _KNNValidator(_Validator):
     n_jobs: Union[NegativeInt, PositiveInt] = _defaults.n_jobs
     random_state: Optional[Union[NonNegativeInt, np.random.RandomState]] = _defaults.random_state
 
+
     @validator('use_c')
     def check_use_c(cls, value):
         use_c = value
@@ -63,12 +65,15 @@ class _KNNValidator(_Validator):
             use_c = False
         return use_c
 
+
     @validator('random_state')
     def check_random_state(cls, value):
         return check_random_state(value)
 
+
 class _KNNMixin:
     _defaults = _defaults
+
 
     @_requires_fit
     @_override_params(['k', 'window', 'independent'])
@@ -112,7 +117,6 @@ class _KNNMixin:
             - DTW distances of the k-nearest training sequences.
             - Corresponding outputs of the k-nearest training sequences.
         """
-
         distances = self.compute_distance_matrix(X, lengths)
         partition_by = range(self.k) if sort else self.k
         k_idxs = np.argpartition(distances, partition_by, axis=1)[:, :self.k]
@@ -153,7 +157,6 @@ class _KNNMixin:
 
         :return: DTW distance matrix.
         """
-
         data = _BaseMultivariateFloatSequenceValidator(X=X, lengths=lengths)
 
         n_jobs = _effective_n_jobs(self.n_jobs, data.lengths)
@@ -187,7 +190,6 @@ class _KNNMixin:
 
         :return: DTW distance.
         """
-
         A = _SingleMultivariateFloatSequenceValidator(sequence=A).sequence
         B = _SingleMultivariateFloatSequenceValidator(sequence=B).sequence
         return self._dtw(A, B)
@@ -216,7 +218,6 @@ class _KNNMixin:
 
         :return: Plot axes.
         """
-
         from dtaidistance import dtw_visualisation
 
         a = _SingleUnivariateFloatSequenceValidator(sequence=a).sequence
@@ -265,7 +266,6 @@ class _KNNMixin:
 
         :return: Plot axes.
         """
-
         import matplotlib.pyplot as plt
 
         distances = self.compute_distance_matrix(X, lengths)
@@ -313,7 +313,6 @@ class _KNNMixin:
 
         :return: Plot axes.
         """
-
         import matplotlib.pyplot as plt
 
         distances = self.compute_distance_matrix(X, lengths)
