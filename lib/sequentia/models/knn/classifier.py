@@ -354,7 +354,7 @@ class KNNClassifier(_KNNMixin, _Classifier):
         n_jobs = _effective_n_jobs(self.n_jobs, scores)
         score_chunks = np.array_split(scores, n_jobs)
         return np.concatenate(
-            Parallel(n_jobs=n_jobs)(
+            Parallel(n_jobs=n_jobs, max_nbytes=None)(
                 delayed(self._find_max_labels_chunk)(score_chunk)
                 for score_chunk in score_chunks
             )

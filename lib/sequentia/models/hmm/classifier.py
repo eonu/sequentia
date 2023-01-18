@@ -405,7 +405,7 @@ class HMMClassifier(_Classifier):
         n_jobs = _effective_n_jobs(self.n_jobs, data.lengths)
         chunk_idxs = np.array_split(SequentialDataset._get_idxs(data.lengths), n_jobs)
         return np.concatenate(
-            Parallel(n_jobs=n_jobs)(
+            Parallel(n_jobs=n_jobs, max_nbytes=None)(
                 delayed(self._compute_scores_chunk)(idxs, data.X)
                 for idxs in chunk_idxs
             )
