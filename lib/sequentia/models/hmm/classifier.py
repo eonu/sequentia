@@ -30,10 +30,12 @@ _defaults = SimpleNamespace(
     n_jobs=1,
 )
 
+
 class _HMMClassifierValidator(_Validator):
     prior: Optional[Union[Literal["frequency"], Dict[int, confloat(ge=0, le=1)]]] = _defaults.prior
     classes: Optional[Array[int]] = _defaults.classes
     n_jobs: Union[NegativeInt, PositiveInt] = _defaults.n_jobs
+
 
     @validator('prior')
     def check_prior(cls, value):
@@ -41,6 +43,7 @@ class _HMMClassifierValidator(_Validator):
             if not np.isclose(sum(value.values()), 1):
                 raise ValueError('Prior distribution must sum to one')
         return value
+
 
     @root_validator
     def check_prior_keys_with_classes(cls, values):
@@ -53,6 +56,7 @@ class _HMMClassifierValidator(_Validator):
                         'ensure that every label in `classes` is present in `prior`'
                     )
         return values
+
 
 class HMMClassifier(_Classifier):
     """A classifier consisting of HMMs, each trained independently to recognize sequences of a single class.
@@ -111,6 +115,7 @@ class HMMClassifier(_Classifier):
 
     _defaults = _defaults
 
+
     @_validate_params(using=_HMMClassifierValidator)
     def __init__(
         self,
@@ -149,17 +154,20 @@ class HMMClassifier(_Classifier):
         #: HMMs constituting the :class:`.HMMClassifier`.
         self.models = {}
 
+
     def add_model(
         self,
         model: _HMM,
         label: int
-    ):
+    ) -> HMMClassifier:
         """Adds a single HMM to the classifier.
 
         :param model: HMM to add to the classifier.
         :param label: Class represented by the HMM.
 
         :note: All models added to the classifier must be of the same type — either :class:`.GaussianMixtureHMM` or :class:`.CategoricalHMM`.
+
+        :return: The classifier.
         """
         if not isinstance(model, _HMM):
             raise TypeError('Expected `model` argument to be a type of HMM')
@@ -170,21 +178,27 @@ class HMMClassifier(_Classifier):
                     f'to this {type(self).__name__} instance'
                 )
         self.models[int(label)] = model
+        return self
+
 
     def add_models(
         self,
         models: Dict[int, _HMM]
-    ):
+    ) -> HMMClassifier:
         """Adds HMMs to the classifier.
 
         :param models: HMMs to add to the classifier. The key for each HMM should be the label of the class represented by the HMM.
 
         :note: All models added to the classifier must be of the same type — either :class:`.GaussianMixtureHMM` or :class:`.CategoricalHMM`.
+
+        :return: The classifier.
         """
         if not all(isinstance(model, _HMM) for model in models.values()):
             raise TypeError('Expected all provided `models` to be a type of HMM')
         for label, model in models.items():
             self.add_model(model, label)
+        return self
+
 
     def fit(
         self,
@@ -271,6 +285,7 @@ class HMMClassifier(_Classifier):
 
         return self
 
+
     @_requires_fit
     def predict(
         self,
@@ -298,6 +313,34 @@ class HMMClassifier(_Classifier):
         scores = self.predict_scores(X, lengths)
         max_score_idxs = scores.argmax(axis=1)
         return self.classes_[max_score_idxs]
+
+
+    def fit_predict(
+        self,
+        X: Array,
+        y: Array[int],
+        lengths: Optional[Array[int]] = None
+    ) -> Array[int]:
+        """Fits the classifier to the sequence(s) in ``X`` and predicts classes for ``X``.
+
+        :param X: Univariate or multivariate observation sequence(s).
+
+            - Should be a single 1D array if :class:`.CategoricalHMM` is being used, or either a 1D or 2D array if :class:`.GaussianMixtureHMM` is being used.
+            - Should have length as the 1st dimension and features as the 2nd dimension.
+            - Should be a concatenated sequence if multiple sequences are provided,
+              with respective sequence lengths being provided in the ``lengths`` argument for decoding the original sequences.
+
+        :param y: Classes corresponding to sequence(s) provided in ``X``.
+
+        :param lengths: Lengths of the observation sequence(s) provided in ``X``.
+
+            - If ``None``, then ``X`` is assumed to be a single observation sequence.
+            - ``len(X)`` should be equal to ``sum(lengths)``.
+
+        :return: Class predictions.
+        """
+        return super().fit_predict(X, y, lengths)
+
 
     @_requires_fit
     def predict_proba(
@@ -331,6 +374,7 @@ class HMMClassifier(_Classifier):
         proba /= proba.sum(axis=1, keepdims=True)
         return proba
 
+
     @_requires_fit
     def predict_scores(
         self,
@@ -361,11 +405,12 @@ class HMMClassifier(_Classifier):
         n_jobs = _effective_n_jobs(self.n_jobs, data.lengths)
         chunk_idxs = np.array_split(SequentialDataset._get_idxs(data.lengths), n_jobs)
         return np.concatenate(
-            Parallel(n_jobs=n_jobs)(
+            Parallel(n_jobs=n_jobs, max_nbytes=None)(
                 delayed(self._compute_scores_chunk)(idxs, data.X)
                 for idxs in chunk_idxs
             )
         )
+
 
     @_requires_fit
     def score(
@@ -402,16 +447,19 @@ class HMMClassifier(_Classifier):
         """
         return super().score(X, y, lengths, normalize, sample_weight)
 
+
     @_validate_params(using=_HMMClassifierValidator)
     @_override_params(_HMMClassifierValidator.fields(), temporary=False)
     def set_params(self, **kwargs) -> HMMClassifier:
         return self
+
 
     def _compute_scores_chunk(self, idxs, X):
         scores = np.zeros((len(idxs), len(self.classes_)))
         for i, x in enumerate(SequentialDataset._iter_X(X, idxs)):
             scores[i] = self._compute_log_posterior(x)
         return scores
+
 
     def _compute_log_posterior(self, x):
         log_posterior = np.full(len(self.classes_), -np.inf)
@@ -422,13 +470,16 @@ class HMMClassifier(_Classifier):
             log_posterior[i] = log_prior + log_likelihood
         return log_posterior
 
+
     def _base_sequence_validator(self, **kwargs):
         model = self.models[0]
         return model._base_sequence_validator(**kwargs)
 
+
     def _sequence_classifier_validator(self, **kwargs):
         model = self.models[0]
         return model._sequence_classifier_validator(**kwargs)
+
 
     @_requires_fit
     def save(self, path: Union[str, pathlib.Path, IO]):
@@ -452,6 +503,7 @@ class HMMClassifier(_Classifier):
 
         # Serialize model
         joblib.dump(state, path)
+
 
     @classmethod
     def load(cls, path: Union[str, pathlib.Path, IO]) -> HMMClassifier:

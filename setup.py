@@ -40,7 +40,7 @@ setup(
         ]
     },
     classifiers = [
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
@@ -55,15 +55,15 @@ setup(
     python_requires = '>=3.8',
     setup_requires = [
         'Cython>=0.28.5',
-        'numpy>=1.17',
+        'numpy>=1.18,<1.24',
         'scipy>=1.3',
     ],
     install_requires = [
         'numba>=0.56',
-        'numpy>=1.17',
+        'numpy>=1.18,<1.24',
         'hmmlearn>=0.2.8',
-        'dtaidistance[numpy]>=2.2',
-        'scikit-learn>=0.22',
+        'dtaidistance>=2.3.10', # [numpy]
+        'scikit-learn>=1.0',
         'joblib>=0.14',
         'pydantic<1.9',
     ],

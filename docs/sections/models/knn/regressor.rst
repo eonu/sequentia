@@ -6,14 +6,14 @@ The KNN Regressor is a regressor that uses the :math:`k`-NN algorithm with DTW a
 To predict an output :math:`y'\in\mathbb{R}` for a sequence :math:`O'`, the :class:`.KNNRegressor` works by:
 
 1. | Calculating the **DTW distance** between :math:`O'` and every training sequence.
-   
+
 2. | Forming a **k-neighborhood** :math:`\mathcal{K}'=\left\{O^{(1)},\ldots,O^{(k)}\right\}` of the :math:`k` nearest training sequences to :math:`O'`.
 
-3. | Calculating a **distance weighting** :math:`w^{(1)},\ldots,w^{(k)}` for each sequence in :math:`\mathcal{K}'`. 
+3. | Calculating a **distance weighting** :math:`w^{(1)},\ldots,w^{(k)}` for each sequence in :math:`\mathcal{K}'`.
    | A uniform weighting of 1 is used by default, meaning that all sequences in :math:`\mathcal{K}'` have equal influence on the predicted output :math:`y'`. However, custom functions such as :math:`e^{-x}` (where :math:`x` is the DTW distance) can be specified to increase weight on training sequences that are more similar to :math:`O'`.
 
 4. | Calculating :math:`y'` as the **distance weighted mean of the outputs** :math:`y^{(1)},\ldots,y^{(k)}` of sequences in :math:`\mathcal{K}'`.
-   
+
    .. math::
 
       y' = \frac{\sum_{k=1}^Kw^{(k)}y^{(k)}}{\sum_{k=1}^Kw^{(k)}}
@@ -41,6 +41,7 @@ Methods
    ~sequentia.models.knn.regressor.KNNRegressor.compute_distance_matrix
    ~sequentia.models.knn.regressor.KNNRegressor.dtw
    ~sequentia.models.knn.regressor.KNNRegressor.fit
+   ~sequentia.models.knn.regressor.KNNRegressor.fit_predict
    ~sequentia.models.knn.regressor.KNNRegressor.load
    ~sequentia.models.knn.regressor.KNNRegressor.plot_dtw_histogram
    ~sequentia.models.knn.regressor.KNNRegressor.plot_warping_path_1d

@@ -35,7 +35,8 @@
     <a href="#examples">Examples</a> ·
     <a href="#acknowledgments">Acknowledgments</a> ·
     <a href="#references">References</a> ·
-    <a href="#contributors">Contributors</a>
+    <a href="#contributors">Contributors</a> ·
+    <a href="#licensing">Licensing</a>
   </sup>
 </p>
 
@@ -47,8 +48,7 @@ Some examples of how Sequentia can be used on sequence data include:
 
 - determining a spoken word based on its audio signal or alternative representations such as MFCCs,
 - predicting motion intent for gesture control from sEMG signals,
-- classifying hand-written characters according to their pen-tip trajectories,
-- predicting the gene family that a DNA sequence belongs to.
+- classifying hand-written characters according to their pen-tip trajectories.
 
 ## Build Status
 
@@ -58,27 +58,48 @@ Some examples of how Sequentia can be used on sequence data include:
 
 ## Features
 
+### Models
+
 The following models provided by Sequentia all support variable length sequences.
 
-- [x] [Dynamic Time Warping + k-Nearest Neighbors](https://sequentia.readthedocs.io/en/latest/sections/classifiers/knn.html) (via [`dtaidistance`](https://github.com/wannesm/dtaidistance))
-  - [x] Classification
-  - [x] Regression
-  - [x] Multivariate real-valued observations
-  - [x] Sakoe–Chiba band global warping constraint
-  - [x] Dependent and independent feature warping (DTWD/DTWI)
-  - [x] Custom distance-weighted predictions
-  - [x] Multi-processed predictions
-- [x] [Hidden Markov Models](https://sequentia.readthedocs.io/en/latest/sections/classifiers/gmmhmm.html) (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))<br/><em>Parameter estimation with the Baum-Welch algorithm and prediction with the forward algorithm</em> [[1]](#references)
-  - [x] Classification
-  - [x] Multivariate real-valued observations (Gaussian mixture model emissions)
-  - [x] Univariate categorical observations (discrete emissions)
-  - [x] Linear, left-right and ergodic topologies
-  - [x] Multi-processed predictions
+#### [Dynamic Time Warping + k-Nearest Neighbors](https://sequentia.readthedocs.io/en/latest/sections/models/knn/index.html) (via [`dtaidistance`](https://github.com/wannesm/dtaidistance))
 
-  <p align="center">
-    <img src="https://raw.githubusercontent.com/eonu/sequentia/master/docs/_static/images/classifier.png" width="80%"/><br/>
-    HMM Sequence Classifier
-  </p>
+- [x] Classification
+- [x] Regression
+- [x] Multivariate real-valued observations
+- [x] Sakoe–Chiba band global warping constraint
+- [x] Dependent and independent feature warping (DTWD/DTWI)
+- [x] Custom distance-weighted predictions
+- [x] Multi-processed predictions
+
+#### [Hidden Markov Models](https://sequentia.readthedocs.io/en/latest/sections/models/hmm/index.html) (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))
+
+Parameter estimation with the Baum-Welch algorithm and prediction with the forward algorithm [[1]](#references)
+
+- [x] Classification
+- [x] Multivariate real-valued observations (Gaussian mixture model emissions)
+- [x] Univariate categorical observations (discrete emissions)
+- [x] Linear, left-right and ergodic topologies
+- [x] Multi-processed predictions
+
+### Scikit-Learn compatibility
+
+Sequentia aims to follow the Scikit-Learn interface for estimators and transformations,
+as well as to be largely compatible with three core Scikit-Learn modules to improve the ease of model development:
+[`preprocessing`](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing), [`model_selection`](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection) and [`pipeline`](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.pipeline).
+
+While there are many other modules, maintaining full compatibility with Scikit-Learn is challenging and many of its features are inapplicable to sequential data, therefore we only focus on the relevant core modules.
+
+Despite some deviation from the Scikit-Learn interface in order to accommodate sequences, the following features are currently compatible with Sequentia.
+
+- [x] [`preprocessing`](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing)
+  - [x] [`FunctionTransformer`](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.FunctionTransformer.html#sklearn.preprocessing.FunctionTransformer) — via an adapted class definition
+  - [x] Function-based transformations (stateless)
+  - [x] Class-based transformations (stateful)
+- [ ] [`pipeline`](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.pipeline)
+  - [x] [`Pipeline`](https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline) — via an adapted class definition
+  - [ ] [`FeatureUnion`](https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.FeatureUnion.html#sklearn.pipeline.FeatureUnion)
+- [ ] [`model_selection`](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection)
 
 ## Installation
 
@@ -97,6 +118,13 @@ pip install sequentia
 For optimal performance when using any of the k-NN based models, it is important that `dtaidistance` C libraries are compiled correctly.
 
 Please see the [`dtaidistance` installation guide](https://dtaidistance.readthedocs.io/en/latest/usage/installation.html) for troubleshooting if you run into C compilation issues, or if setting `use_c=True` on k-NN based models results in a warning.
+
+You can use the following to check if the appropriate C libraries have been installed.
+
+```python
+from dtaidistance import dtw
+dtw.try_import_c()
+```
 
 ### Pre-release
 
@@ -118,40 +146,73 @@ Documentation for the package is available on [Read The Docs](https://sequentia.
 
 ## Examples
 
-This example demonstrates multivariate sequences classified into classes `0`/`1` using the `KNNClassifier`.
+Demonstration of classifying multivariate sequences with two features into two classes using the `KNNClassifier`.
+
+This example also shows a typical preprocessing workflow, as well as compatibility with Scikit-Learn.
 
 ```python
 import numpy as np
+
+from sklearn.preprocessing import scale
+from sklearn.decomposition import PCA
+
 from sequentia.models import KNNClassifier
+from sequentia.pipeline import Pipeline
+from sequentia.preprocessing import IndependentFunctionTransformer, mean_filter
 
-# Generate training sequences and labels
-X = [
-  np.array([[1., 0., 5., 3., 7., 2., 2., 4., 9., 8., 7.],
-            [3., 8., 4., 0., 7., 1., 1., 3., 4., 2., 9.]]).T,
-  np.array([[2., 1., 4., 6., 5., 8.],
-            [5., 3., 9., 0., 8., 2.]]).T,
-  np.array([[5., 8., 0., 3., 1., 0., 2., 7., 9.],
-            [0., 2., 7., 1., 2., 9., 5., 8., 1.]]).T
-]
-y = [0, 1, 1]
+# Create input data
+# - Sequentia expects sequences to be concatenated into a single array
+# - Sequence lengths are provided separately and used to decode the sequences when needed
+# - This avoids the need for complex structures such as lists of arrays with different lengths
 
-# Sequentia expects a concatenated array of sequences (and their corresponding lengths)
-X, lengths = np.vstack(X), [len(x) for x in X]
+# Sequences
+X = np.array([
+    # Sequence 1 - Length 3
+    [1.2 , 7.91],
+    [1.34, 6.6 ],
+    [0.92, 8.08],
+    # Sequence 2 - Length 5
+    [2.11, 6.97],
+    [1.83, 7.06],
+    [1.54, 5.98],
+    [0.86, 6.37],
+    [1.21, 5.8 ],
+    # Sequence 3 - Length 2
+    [1.7 , 6.22],
+    [2.01, 5.49]
+])
 
-# Create and fit the classifier
-clf = KNNClassifier(k=1).fit(X, y, lengths)
+# Sequence lengths
+lengths = np.array([3, 5, 2])
 
-# Make a prediction for a new observation sequence
-x_new = np.array([[0., 3., 2., 7., 9., 1., 1.],
-                  [2., 5., 7., 4., 2., 0., 8.]]).T
-y_new = clf.predict(x_new)
+# Sequence classes
+y = np.array([0, 1, 1])
+
+# Create a transformation pipeline that feeds into a KNNClassifier
+# 1. Individually denoise each sequence by applying a mean filter for each feature
+# 2. Individually standardize each sequence by subtracting the mean and dividing the s.d. for each feature
+# 3. Reduce the dimensionality of the data to a single feature by using PCA
+# 4. Pass the resulting transformed data into a KNNClassifier
+pipeline = Pipeline([
+    ('denoise', IndependentFunctionTransformer(mean_filter)),
+    ('scale', IndependentFunctionTransformer(scale)),
+    ('pca', PCA(n_components=1)),
+    ('knn', KNNClassifier(k=1))
+])
+
+# Fit the pipeline to the data - lengths must be provided
+pipeline.fit(X, y, lengths)
+
+# Predict classes for the sequences and calculate accuracy - lengths must be provided
+y_pred = pipeline.predict(X, lengths)
+acc = pipeline.score(X, y, lengths)
 ```
 
 ## Acknowledgments
 
 In earlier versions of the package, an approximate DTW implementation [`fastdtw`](https://github.com/slaypni/fastdtw) was used in hopes of speeding up k-NN predictions, as the authors of the original FastDTW paper [[2]](#references) claim that approximated DTW alignments can be computed in linear memory and time, compared to the O(N<sup>2</sup>) runtime complexity of the usual exact DTW implementation.
 
-I was contacted by [Prof. Eamonn Keogh](https://www.cs.ucr.edu/~eamonn/) whose work [[3]](#references) makes the surprising revelation that FastDTW is generally slower than the exact DTW algorithm that it approximates. Upon switching from the `fastdtw` package to [`dtaidistance`](https://github.com/wannesm/dtaidistance) (a very solid implementation of exact DTW with fast pure C compiled functions), DTW k-NN prediction times were indeed reduced drastically.
+I was contacted by [Prof. Eamonn Keogh](https://www.cs.ucr.edu/~eamonn/) whose work makes the surprising revelation that FastDTW is generally slower than the exact DTW algorithm that it approximates [[3]](#references). Upon switching from the `fastdtw` package to [`dtaidistance`](https://github.com/wannesm/dtaidistance) (a very solid implementation of exact DTW with fast pure C compiled functions), DTW k-NN prediction times were indeed reduced drastically.
 
 I would like to thank Prof. Eamonn Keogh for directly reaching out to me regarding this finding.
 
@@ -216,9 +277,16 @@ All contributions to this repository are greatly appreciated. Contribution guide
 	</thead>
 </table>
 
+## Licensing
+
+Sequentia is released under the [MIT](https://opensource.org/licenses/MIT) license.
+
+Certain parts of the source code are heavily adapted from [Scikit-Learn](scikit-learn.org/).
+Such files contain copy of [their license](https://github.com/scikit-learn/scikit-learn/blob/main/COPYING).
+
 ---
 
 <p align="center">
-  <b>Sequentia</b> &copy; 2019-2023, Edwin Onuonga - Released under the <a href="https://opensource.org/licenses/MIT">MIT</a> License.<br/>
+  <b>Sequentia</b> &copy; 2019-2023, Edwin Onuonga - Released under the <a href="https://opensource.org/licenses/MIT">MIT</a> license.<br/>
   <em>Authored and maintained by Edwin Onuonga.</em>
 </p>
