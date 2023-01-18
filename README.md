@@ -88,7 +88,7 @@ Sequentia aims to follow the Scikit-Learn interface for estimators and transform
 as well as to be largely compatible with three core Scikit-Learn modules to improve the ease of model development:
 [`preprocessing`](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing), [`model_selection`](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection) and [`pipeline`](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.pipeline).
 
-While there are many other important modules, full compatibility with Scikit-Learn is challenging and many of its features are in fact inapplicable to sequential data, therefore we only focus on the relevant core modules.
+While there are many other modules, maintaining full compatibility with Scikit-Learn is challenging and many of its features are inapplicable to sequential data, therefore we only focus on the relevant core modules.
 
 Despite some deviation from the Scikit-Learn interface in order to accommodate sequences, the following features are currently compatible with Sequentia.
 
@@ -119,6 +119,13 @@ For optimal performance when using any of the k-NN based models, it is important
 
 Please see the [`dtaidistance` installation guide](https://dtaidistance.readthedocs.io/en/latest/usage/installation.html) for troubleshooting if you run into C compilation issues, or if setting `use_c=True` on k-NN based models results in a warning.
 
+You can use the following to check if the appropriate C libraries have been installed.
+
+```python
+from dtaidistance import dtw
+dtw.try_import_c()
+```
+
 ### Pre-release
 
 Pre-release versions include new features which are in active development and may change unpredictably.
@@ -139,7 +146,7 @@ Documentation for the package is available on [Read The Docs](https://sequentia.
 
 ## Examples
 
-This example demonstrates multivariate sequence classification with two features and two classes, using the `KNNClassifier`.
+Demonstration of classifying multivariate sequences with two features into two classes using the `KNNClassifier`.
 
 This example also shows a typical preprocessing workflow, as well as compatibility with Scikit-Learn.
 
