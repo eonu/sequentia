@@ -166,7 +166,7 @@ class _KNNMixin:
         col_chunk_idxs = np.array_split(self.idxs_, n_jobs)
 
         return np.vstack(
-            Parallel(n_jobs=n_jobs)(
+            Parallel(n_jobs=n_jobs, max_nbytes=None)(
                 delayed(self._distance_matrix_row_chunk)(
                     row_idxs, col_chunk_idxs, data.X, n_jobs, dtw_
                 ) for row_idxs in row_chunk_idxs
@@ -371,7 +371,7 @@ class _KNNMixin:
         TODO
         """
         return np.hstack(
-            Parallel(n_jobs=n_jobs)(
+            Parallel(n_jobs=n_jobs, max_nbytes=None)(
                 delayed(self._distance_matrix_row_col_chunk)(
                     col_idxs, row_idxs, X, dist
                 ) for col_idxs in col_chunk_idxs
