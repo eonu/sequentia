@@ -97,14 +97,6 @@ class IndependentFunctionTransformer(Transform):
         Xt = transform.transform(data.X, data.lengths)
     """
 
-    _parameter_constraints: dict = {
-        "func": [callable, None],
-        "inverse_func": [callable, None],
-        "validate": ["boolean"],
-        "check_inverse": ["boolean"],
-        "kw_args": [dict, None],
-        "inv_kw_args": [dict, None],
-    }
 
     def __init__(
         self,
@@ -146,19 +138,9 @@ class IndependentFunctionTransformer(Transform):
         self.kw_args: Optional[Dict[str, Any]] = kw_args
         self.inv_kw_args: Optional[Dict[str, Any]] = inv_kw_args
 
-    def _check_input(self, X, lengths, *, reset):
+    def _check_input(self, X, lengths):
         data = _BaseSequenceValidator(X=X, lengths=lengths)
-        X, lengths = data.X, data.lengths
-        if self.validate:
-            X = self._validate_data(X, reset=reset)
-            return X, lengths
-        elif reset:
-            # Set feature_names_in_ and n_features_in_ even if validate=False
-            # We run this only when reset==True to store the attributes but not
-            # validate them, because validate=False
-            self._check_n_features(X, reset=reset)
-            self._check_feature_names(X, reset=reset)
-        return X, lengths
+        return data.X, data.lengths
 
     def _check_inverse_transform(self, X, lengths):
         """Check that func and inverse_func are the inverse."""
@@ -200,8 +182,7 @@ class IndependentFunctionTransformer(Transform):
 
         :return: The fitted transformer.
         """
-        self._validate_params()
-        X, lengths = self._check_input(X, lengths, reset=True)
+        X, lengths = self._check_input(X, lengths)
         if self.check_inverse and not (self.func is None or self.inverse_func is None):
             self._check_inverse_transform(X, lengths)
         return self
@@ -227,7 +208,7 @@ class IndependentFunctionTransformer(Transform):
 
         :return: The transformed array.
         """
-        X, lengths = self._check_input(X, lengths, reset=False)
+        X, lengths = self._check_input(X, lengths)
         return self._transform(X, lengths, func=self.func, kw_args=self.kw_args)
 
     def inverse_transform(
@@ -251,8 +232,7 @@ class IndependentFunctionTransformer(Transform):
 
         :return: The inverse transformed array.
         """
-        data = _BaseSequenceValidator(X=X, lengths=lengths)
-        X, lengths = data.X, data.lengths
+        X, lengths = self._check_input(X, lengths)
         if self.validate:
             X = check_array(X, accept_sparse=False)
         return self._transform(X, lengths, func=self.inverse_func, kw_args=self.inv_kw_args)
