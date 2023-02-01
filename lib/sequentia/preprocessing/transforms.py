@@ -252,7 +252,7 @@ class IndependentFunctionTransformer(Transform):
         return {"no_validation": not self.validate, "stateless": True}
 
 
-def mean_filter(x: Array, k: PositiveInt = 3) -> Array:
+def mean_filter(x: Array, k: PositiveInt = 5) -> Array:
     """Applies a mean filter of size ``k`` independently to each feature of the sequence,
     retaining the original input shape by using appropriate padding.
 
@@ -280,10 +280,10 @@ def mean_filter(x: Array, k: PositiveInt = 3) -> Array:
 
         # Apply the mean filter to the first sequence
         x, _ = data[0]
-        xt = mean_filter(x, k=5)
+        xt = mean_filter(x, k=7)
 
         # Create an independent mean filter transform
-        transform = IndependentFunctionTransformer(mean_filter, kw_args={"k": 5})
+        transform = IndependentFunctionTransformer(mean_filter, kw_args={"k": 7})
 
         # Apply the transform to all sequences
         Xt = transform.transform(data.X, data.lengths)
@@ -292,7 +292,7 @@ def mean_filter(x: Array, k: PositiveInt = 3) -> Array:
     return convolve(data.X, np.ones((k, 1)) / k, mode="same")
 
 
-def median_filter(x: Array, k: PositiveInt = 3) -> Array:
+def median_filter(x: Array, k: PositiveInt = 5) -> Array:
     """Applies a median filter of size ``k`` independently to each feature of the sequence,
     retaining the original input shape by using appropriate padding.
 
@@ -318,10 +318,10 @@ def median_filter(x: Array, k: PositiveInt = 3) -> Array:
 
         # Apply the median filter to the first sequence
         x, _ = data[0]
-        xt = median_filter(x, k=5)
+        xt = median_filter(x, k=7)
 
         # Create an independent median filter transform
-        transform = IndependentFunctionTransformer(median_filter, kw_args={"k": 5})
+        transform = IndependentFunctionTransformer(median_filter, kw_args={"k": 7})
 
         # Apply the transform to all sequences
         Xt = transform.transform(data.X, data.lengths)
