@@ -1,3 +1,18 @@
+# Changelog
+
+
+## [1.1.1](https://github.com/eonu/sequentia/releases/tag/v1.1.1)
+
+#### Major changes
+
+- Remove `scikit-learn` validation constraints from `IndependentFunctionTransformer`. ([#237](https://github.com/eonu/sequentia/pull/237))
+
+#### Minor changes
+
+- Change default `mean_filter`/`median_filter` width to 5. ([#238](https://github.com/eonu/sequentia/pull/238))
+- Update repository documentation. ([#239](https://github.com/eonu/sequentia/pull/239)) 
+
+
 ## [1.1.0](https://github.com/eonu/sequentia/releases/tag/v1.1.0)
 
 #### Major changes
