@@ -36,12 +36,11 @@ If you intend to help contribute to Sequentia, you will need some additional dep
 You can specify the `dev` extra when installing Sequentia to do this.
 
 ```console
-pip install --pre sequentia[dev]
+# from inside the sequentia repository folder
+pip install -e .[dev]
 ```
 
-If installing a Sequentia from a local directory, you can use `pip install -e .` from within that directory, or `pip install -e .[xxx]` to install with extras.
-
-Note that on some shells you may have to use quote marks, e.g. `pip install -e ".[xxx]"`.
+> **Note**: On some shells you may have to escape, e.g. `pip install -e ".[dev]"`
 
 ## License
 
