@@ -1,0 +1,68 @@
+name: Report unexpected behaviour
+description: If you came across something unexpected, let us know here!
+labels: [bug, pending]
+
+body:
+  - type: checkboxes
+    id: exists
+    attributes:
+      label: Has this already been reported?
+      description: If you haven't already, please look other existing issues to see if this bug has already been reported.
+      options:
+        - label: This is a new bug!
+          required: true
+
+  - type: textarea
+    id: expected-behaviour
+    attributes:
+      label: Expected behaviour
+      description: |
+        Please describe the behaviour that you expected to see.
+
+        If appropriate, provide any links to official Sequentia documentation that indicate this is the behaviour that is expected.
+    validations:
+      required: true
+
+  - type: textarea
+    id: observed-behaviour
+    attributes:
+      label: Observed behaviour
+      description: |
+        Please describe the unexpected behaviour that you observed.
+
+        Make sure to provide as much information as possible, so that we can investigate as thoroughly as we can.
+    validations:
+      required: true
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Code to reproduce
+      description: >
+        Please provide a snippet of code that shows how to reproduce the bug, 
+        making sure that it is [minimal and reproducible](https://stackoverflow.com/help/minimal-reproducible-example).
+
+      placeholder: |
+        import sequentia
+
+        ...
+      render: Python
+
+  - type: textarea
+    id: version
+    attributes:
+      label: Version details
+      description: |
+        To help us get to the root of the problem as fast as possible, please run the following command to display version information about:
+
+        - Python
+        - Sequentia
+        - Operating system
+
+        ```bash
+        python -c "import sequentia; print(sequentia.version.version_info())"
+        ```
+
+      render: Text
+    validations:
+      required: true

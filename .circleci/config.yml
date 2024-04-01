@@ -1,46 +1,62 @@
-version: 2
+version: "2.1"
 
-workflows:
-  version: 2
-  test:
-    jobs:
-      - python_3.8
-      - python_3.9
-      - python_3.10
-
-template: &template
-  docker:
-    - image: ubuntu:bionic
-  steps:
-    - checkout
-    - run:
-        name: Set up miniconda
-        command: |
-          apt update
-          apt install -y wget
-          cd $HOME
-          wget "https://repo.anaconda.com/miniconda/Miniconda3-4.7.10-Linux-x86_64.sh" -O miniconda.sh
-          printf '%s' "8a324adcc9eaf1c09e22a992bb6234d91a94146840ee6b11c114ecadafc68121  miniconda.sh" | sha256sum -c
-          bash miniconda.sh -b -p $HOME/miniconda
-    - run:
-        name: Set up environment, dependencies and run tests
-        command: |
-          export PATH="$HOME/miniconda/bin:$PATH"
-          conda create -n sequentia python=$PYTHON_VERSION -y
-          source activate sequentia
-          pip install ".[dev]"
-          pytest lib/test --disable-pytest-warnings
+orbs:
+  python: circleci/python@2.1.1
+  coveralls: coveralls/coveralls@2.2.1
 
 jobs:
-  python_3.8:
-    <<: *template
-    environment:
-      PYTHON_VERSION: "3.8"
-  python_3.9:
-    <<: *template
-    environment:
-      PYTHON_VERSION: "3.9"
-  python_3.10:
-    <<: *template
-    environment:
-      PYTHON_VERSION: "3.10"
+  linting:
+    executor:
+      name: python/default
+      tag: "3.11"
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: poetry
+          args: --only base
+      - run:
+          name: Linting
+          command: |
+            poetry run tox -e lint
+  tests:
+    parameters:
+      version:
+        type: string
+    executor:
+      name: python/default
+      tag: <<parameters.version>>
+    steps:
+      - checkout
+      - python/install-packages:
+          pkg-manager: poetry
+          args: --only base
+      - run:
+          name: Docstring tests
+          command: |
+            poetry run tox -e tests.doctest
+      - run:
+          name: Unit tests
+          command: |
+            poetry run -- tox -e tests.unit -- --cov
+      - coveralls/upload:
+          flag_name: <<parameters.version>>
+          parallel: true
+  coverage:
+    executor:
+      name: python/default
+    steps:
+      - coveralls/upload:
+          carryforward: 3.11, 3.12
+          parallel_finished: true
+
+workflows:
+  checks:
+    jobs:
+      - linting
+      - tests:
+          matrix:
+            parameters:
+              version: ["3.11", "3.12"]
+      - coverage:
+          requires:
+            - tests
