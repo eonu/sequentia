@@ -37,7 +37,7 @@ jobs:
       - run:
           name: Unit tests
           command: |
-            poetry run -- tox -e tests.unit -- --cov
+            poetry run -- tox -e tests -- --cov
       - coveralls/upload:
           flag_name: <<parameters.version>>
           parallel: true
