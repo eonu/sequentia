@@ -33,7 +33,7 @@ Source code modified from pydantic (https://github.com/pydantic/pydantic).
 
 __all__ = ["VERSION", "version_info"]
 
-VERSION = "2.0.0a1"
+VERSION = "2.0.0"
 
 
 def version_info() -> str:

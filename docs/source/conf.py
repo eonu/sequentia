@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.abspath("../.."))
 project = "sequentia"
 copyright = "2019-2025, Sequentia Developers"  # noqa: A001
 author = "Edwin Onuonga (eonu)"
-release = "2.0.0a1"
+release = "2.0.0"
 
 # -- General configuration ---------------------------------------------------
 
