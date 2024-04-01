@@ -55,7 +55,7 @@ class SequentialDataset:
             Set of possible class labels
             (only if ``y`` was provided with categorical values).
 
-            - If not provided, these will be determined from the training
+            If not provided, these will be determined from the training
             data labels.
         """
         X, lengths = _validation.check_X_lengths(

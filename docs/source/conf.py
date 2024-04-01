@@ -37,7 +37,7 @@ extensions = [
     "sphinx.ext.mathjax",
     # 'sphinx.ext.viewcode',
     "sphinx.ext.intersphinx",
-    "numpydoc",
+    # "numpydoc",
     "enum_tools.autoenum",
 ]
 

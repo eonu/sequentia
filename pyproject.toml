@@ -87,7 +87,7 @@ pydoclint = "0.3.8"
 
 [tool.poetry.group.docs.dependencies]
 sphinx = { version = "^7.2.4" }
-numpydoc = { version = "^1.6" }
+# numpydoc = { version = "^1.6" }
 sphinx-autobuild = { version = "^2021.3.14" }
 enum-tools = { version = ">=0.11,<1", extras = ["sphinx"] }
 
