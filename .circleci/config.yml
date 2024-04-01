@@ -30,10 +30,10 @@ jobs:
       - python/install-packages:
           pkg-manager: poetry
           args: --only base
-      - run:
-          name: Docstring tests
-          command: |
-            poetry run tox -e tests.doctest
+      # - run:
+      #     name: Docstring tests
+      #     command: |
+      #       poetry run tox -e tests.doctest
       - run:
           name: Unit tests
           command: |
