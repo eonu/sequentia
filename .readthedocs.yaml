@@ -5,9 +5,10 @@ build:
   tools:
     python: "3.11"
   jobs:
-    post_install:
+    post_create_environment:
       - pip install poetry
       - poetry config virtualenvs.create false
+    post_install:
       - poetry install --only base,main,docs
 
 sphinx:
