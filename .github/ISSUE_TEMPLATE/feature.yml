@@ -1,0 +1,21 @@
+name: Request a new feature or improvement
+description: If you have a suggestion for something that might improve Sequentia, let us know here!
+labels: [feature, pending]
+
+body:
+  - type: checkboxes
+    id: exists
+    attributes:
+      label: Does this suggestion already exist?
+      description: If you haven't already, please look through the documentation and other existing issues to see if this feature is already implemented.
+      options:
+        - label: This is a new feature!
+          required: true
+
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature description
+      description: Please describe the new feature or improvement that you would like.
+    validations:
+      required: true
