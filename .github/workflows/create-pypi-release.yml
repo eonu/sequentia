@@ -1,0 +1,19 @@
+name: Create PyPI release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Build and publish to PyPI
+        uses: JRubics/poetry-publish@v1.17
+        with:
+          python_version: "3.11.3"
+          poetry_version: "==1.7.1"
+          pypi_token: ${{ secrets.PYPI_TOKEN }}

@@ -8,7 +8,7 @@ ehthumbs.db
 Thumbs.db
 
 # Byte-compiled / optimized / DLL files
-__pycache__/
+__pycache__
 *.py[cod]
 *$py.class
 
@@ -73,6 +73,7 @@ docs/_build
 #   having no cross-platform support, pipenv may install dependencies that don't work, or not
 #   install all needed dependencies.
 Pipfile.lock
+poetry.lock
 
 # Environments
 .env
@@ -87,3 +88,9 @@ venv.bak/
 .spyderproject
 .spyproject
 .vscode
+
+# Ruff
+.ruff_cache
+
+# Changelog entry
+ENTRY.md

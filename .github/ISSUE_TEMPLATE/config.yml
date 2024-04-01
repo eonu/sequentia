@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Got a question?
+    url: "https://github.com/eonu/sequentia/discussions/new?category=questions"
+    about: Start a discussion on GitHub discussions where Sequentia developers and users can respond.

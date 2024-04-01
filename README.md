@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <em>HMM and DTW-based sequence machine learning algorithms in Python following an sklearn-like interface.</em>
+  <em>Scikit-Learn compatible HMM and DTW based sequence machine learning algorithms in Python.</em>
 </p>
 
 <p align="center">
@@ -19,6 +19,9 @@
     </a>
     <a href="https://sequentia.readthedocs.io/en/latest">
       <img src="https://img.shields.io/readthedocs/sequentia.svg?logo=read-the-docs&style=flat-square" alt="Read The Docs - Documentation">
+    </a>
+    <a href="https://coveralls.io/github/eonu/sequentia">
+      <img src="https://img.shields.io/coverallsCoverage/github/eonu/sequentia?logo=coveralls&style=flat-square" alt="Coveralls - Coverage"/>
     </a>
     <a href="https://raw.githubusercontent.com/eonu/sequentia/master/LICENSE">
       <img src="https://img.shields.io/pypi/l/sequentia?style=flat-square" alt="PyPI - License"/>
@@ -50,10 +53,15 @@ Some examples of how Sequentia can be used on sequence data include:
 - predicting motion intent for gesture control from sEMG signals,
 - classifying hand-written characters according to their pen-tip trajectories.
 
+### Why Sequentia?
+
+- **Simplicity and interpretability**: Sequentia offers a limited set of machine learning algorithms, chosen specifically to be more interpretable and easier to configure than more complex alternatives such as recurrent neural networks and transformers, while maintaining a high level of effectiveness.
+- **Familiar and user-friendly**: To fit more seamlessly into the workflow of data science practitioners, Sequentia follows the ubiquitous Scikit-Learn API, providing a familiar model development process for many, as well as enabling wider access to the rapidly growing Scikit-Learn ecosystem.
+
 ## Build Status
 
-| `master` | `dev` |
-| -------- | ------|
+| `master`                                                                                                                                                                                                 | `dev`                                                                                                                                                                                                      |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [![CircleCI Build (Master)](https://img.shields.io/circleci/build/github/eonu/sequentia/master?logo=circleci&style=flat-square)](https://app.circleci.com/pipelines/github/eonu/sequentia?branch=master) | [![CircleCI Build (Development)](https://img.shields.io/circleci/build/github/eonu/sequentia/dev?logo=circleci&style=flat-square)](https://app.circleci.com/pipelines/github/eonu/sequentia?branch=master) |
 
 ## Features
@@ -84,36 +92,19 @@ Parameter estimation with the Baum-Welch algorithm and prediction with the forwa
 
 ### Scikit-Learn compatibility
 
-Sequentia aims to follow the Scikit-Learn interface for estimators and transformations,
-as well as to be largely compatible with three core Scikit-Learn modules to improve the ease of model development:
-[`preprocessing`](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing), [`model_selection`](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection) and [`pipeline`](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.pipeline).
+**Sequentia (≥2.0) is fully compatible with the Scikit-Learn API (≥1.4), enabling for rapid development and prototyping of sequential models.**
 
-While there are many other modules, maintaining full compatibility with Scikit-Learn is challenging and many of its features are inapplicable to sequential data, therefore we only focus on the relevant core modules.
-
-Despite some deviation from the Scikit-Learn interface in order to accommodate sequences, the following features are currently compatible with Sequentia.
-
-- [x] [`preprocessing`](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.preprocessing)
-  - [x] [`FunctionTransformer`](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.FunctionTransformer.html#sklearn.preprocessing.FunctionTransformer) — via an adapted class definition
-  - [x] Function-based transformations (stateless)
-  - [x] Class-based transformations (stateful)
-- [ ] [`pipeline`](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.pipeline)
-  - [x] [`Pipeline`](https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html#sklearn.pipeline.Pipeline) — via an adapted class definition
-  - [ ] [`FeatureUnion`](https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.FeatureUnion.html#sklearn.pipeline.FeatureUnion)
-- [ ] [`model_selection`](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.model_selection)
+In most cases, the only necessary change is to add a `lengths` key-word argument to provide sequence length information, e.g. `fit(X, y, lengths=lengths)` instead of `fit(X, y)`.
 
 ## Installation
 
-You can install Sequentia using `pip`.
-
-### Stable
-
-The latest stable version of Sequentia can be installed with the following command.
+The latest stable version of Sequentia can be installed with the following command:
 
 ```console
 pip install sequentia
 ```
 
-#### C library compilation
+### C library compilation
 
 For optimal performance when using any of the k-NN based models, it is important that `dtaidistance` C libraries are compiled correctly.
 
@@ -124,16 +115,6 @@ You can use the following to check if the appropriate C libraries have been inst
 ```python
 from dtaidistance import dtw
 dtw.try_import_c()
-```
-
-### Pre-release
-
-Pre-release versions include new features which are in active development and may change unpredictably.
-
-The latest pre-release version can be installed with the following command.
-
-```console
-pip install --pre sequentia
 ```
 
 ### Development
@@ -155,10 +136,10 @@ import numpy as np
 
 from sklearn.preprocessing import scale
 from sklearn.decomposition import PCA
+from sklearn.pipeline import Pipeline
 
 from sequentia.models import KNNClassifier
-from sequentia.pipeline import Pipeline
-from sequentia.preprocessing import IndependentFunctionTransformer, mean_filter
+from sequentia.preprocessing import IndependentFunctionTransformer, median_filter
 
 # Create input data
 # - Sequentia expects sequences to be concatenated into a single array
@@ -179,7 +160,7 @@ X = np.array([
     [1.21, 5.8 ],
     # Sequence 3 - Length 2
     [1.7 , 6.22],
-    [2.01, 5.49]
+    [2.01, 5.49],
 ])
 
 # Sequence lengths
@@ -189,23 +170,23 @@ lengths = np.array([3, 5, 2])
 y = np.array([0, 1, 1])
 
 # Create a transformation pipeline that feeds into a KNNClassifier
-# 1. Individually denoise each sequence by applying a mean filter for each feature
+# 1. Individually denoise each sequence by applying a median filter for each feature
 # 2. Individually standardize each sequence by subtracting the mean and dividing the s.d. for each feature
 # 3. Reduce the dimensionality of the data to a single feature by using PCA
 # 4. Pass the resulting transformed data into a KNNClassifier
 pipeline = Pipeline([
-    ('denoise', IndependentFunctionTransformer(mean_filter)),
+    ('denoise', IndependentFunctionTransformer(median_filter)),
     ('scale', IndependentFunctionTransformer(scale)),
     ('pca', PCA(n_components=1)),
     ('knn', KNNClassifier(k=1))
 ])
 
 # Fit the pipeline to the data - lengths must be provided
-pipeline.fit(X, y, lengths)
+pipeline.fit(X, y, lengths=lengths)
 
 # Predict classes for the sequences and calculate accuracy - lengths must be provided
-y_pred = pipeline.predict(X, lengths)
-acc = pipeline.score(X, y, lengths)
+y_pred = pipeline.predict(X, lengths=lengths)
+acc = pipeline.score(X, y, lengths=lengths)
 ```
 
 ## Acknowledgments
@@ -282,11 +263,11 @@ All contributions to this repository are greatly appreciated. Contribution guide
 Sequentia is released under the [MIT](https://opensource.org/licenses/MIT) license.
 
 Certain parts of the source code are heavily adapted from [Scikit-Learn](scikit-learn.org/).
-Such files contain copy of [their license](https://github.com/scikit-learn/scikit-learn/blob/main/COPYING).
+Such files contain a copy of [their license](https://github.com/scikit-learn/scikit-learn/blob/main/COPYING).
 
 ---
 
 <p align="center">
-  <b>Sequentia</b> &copy; 2019-2023, Edwin Onuonga - Released under the <a href="https://opensource.org/licenses/MIT">MIT</a> license.<br/>
+  <b>Sequentia</b> &copy; 2019-2025, Edwin Onuonga - Released under the <a href="https://opensource.org/licenses/MIT">MIT</a> license.<br/>
   <em>Authored and maintained by Edwin Onuonga.</em>
 </p>

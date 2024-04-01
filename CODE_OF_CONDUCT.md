@@ -7,7 +7,7 @@ Our open source community strives to:
 - **Be friendly and patient.**
 - **Be welcoming**: We strive to be a community that welcomes and supports people of all backgrounds and identities. This includes, but is not limited to members of any race, ethnicity, culture, national origin, colour, immigration status, social and economic class, educational level, sex, sexual orientation, gender identity and expression, age, size, family status, political belief, religion, and mental and physical ability.
 - **Be considerate**: Your work will be used by other people, and you in turn will depend on the work of others. Any decision you take will affect users and colleagues, and you should take those consequences into account when making decisions. Remember that we're a world-wide community, so you might not be communicating in someone else's primary language.
-- **Be respectful**:  Not all of us will agree all the time, but disagreement is no excuse for poor behavior and poor manners. We might all experience some frustration now and then, but we cannot allow that frustration to turn into a personal attack. It’s important to remember that a community where people feel uncomfortable or threatened is not a productive one.
+- **Be respectful**: Not all of us will agree all the time, but disagreement is no excuse for poor behavior and poor manners. We might all experience some frustration now and then, but we cannot allow that frustration to turn into a personal attack. It’s important to remember that a community where people feel uncomfortable or threatened is not a productive one.
 - **Be careful in the words that you choose**: we are a community of professionals, and we conduct ourselves professionally. Be kind to others. Do not insult or put down other participants. Harassment and other exclusionary behavior aren't acceptable. This includes, but is not limited to:
   - Violent threats or language directed against another person.
   - Discriminatory jokes and language.
@@ -34,7 +34,7 @@ If you experience or witness unacceptable behavior—or have any other concerns�
 
 - Your contact information.
 - Names (real, nicknames, or pseudonyms) of any individuals involved. If there are additional witnesses, please
-include them as well. Your account of what occurred, and if you believe the incident is ongoing. If there is a publicly available record (e.g. a mailing list archive or a public IRC logger), please include a link.
+  include them as well. Your account of what occurred, and if you believe the incident is ongoing. If there is a publicly available record (e.g. a mailing list archive or a public IRC logger), please include a link.
 - Any additional information that may be helpful.
 
 After filing a report, a representative will contact you personally. If the person who is harassing you is part of the response team, they will recuse themselves from handling your incident. A representative will then review the incident, follow up with any additional questions, and make a decision as to how to respond. We will respect confidentiality requests for the purpose of protecting victims of abuse.
@@ -46,3 +46,10 @@ Anyone asked to stop unacceptable behavior is expected to comply immediately. If
 This code of conduct is based on the [Open Code of Conduct](https://github.com/todogroup/opencodeofconduct) from the [TODOGroup](http://todogroup.org).
 
 We are thankful for their work and all the communities who have paved the way with code of conducts.
+
+---
+
+<p align="center">
+  <b>Sequentia</b> &copy; 2019-2025, Edwin Onuonga - Released under the <a href="https://opensource.org/licenses/MIT">MIT</a> license.<br/>
+  <em>Authored and maintained by Edwin Onuonga.</em>
+</p>
