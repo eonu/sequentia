@@ -59,7 +59,6 @@ This repository relies on the use of [Tox](https://tox.wiki/en/4.11.3/) for runn
 This repository relies on the use of:
 
 - [Ruff](https://github.com/astral-sh/ruff) for linting and formatting Python source code,
-- [Pydoclint](https://jsh9.github.io/pydoclint/) for linting docstrings,
 - [Tox](https://tox.wiki/en/4.11.3/) for running linting and formatting in a virtual environment.
 
 To lint the source code using Ruff and Pydoclint with Tox:
