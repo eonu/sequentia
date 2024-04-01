@@ -50,18 +50,8 @@ This repository relies on the use of [Tox](https://tox.wiki/en/4.11.3/) for runn
 
 - Run **ALL tests** in a virtual environment:
   ```console
-  # a.k.a. poetry run invoke tests.install tests.doctest tests.unit
-  poetry run tox -e tests
-  ```
-- Run **ONLY unit tests** in a virtual environment:
-  ```console
   # a.k.a. poetry run invoke tests.install tests.unit
-  poetry run tox -e tests.unit
-  ```
-- Run **ONLY doctests** in a virtual environment:
-  ```console
-  # a.k.a. poetry run invoke tests.install tests.doctest
-  poetry run tox -e tests.doctest
+  poetry run tox -e tests
   ```
 
 ### Linting and formatting
