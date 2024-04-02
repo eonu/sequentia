@@ -297,7 +297,7 @@ class KNNClassifier(KNNMixin, ClassifierMixin):
         -----
         This method requires a trained classifier — see :func:`fit`.
         """
-        return np.log(self.predict_scores(X, lengths=lengths))
+        return np.log(self.predict_proba(X, lengths=lengths))
 
     @_validation.requires_fit
     def predict_proba(

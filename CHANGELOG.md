@@ -388,6 +388,12 @@ Nothing, initial release!
 
 </details>
 
+## [v2.0.1](https://github.com/eonu/sequentia/releases/tag/v2.0.1) - 2024-04-02
+
+### Bug Fixes
+
+- use log probs for `KNNClassifier.predict_log_proba` ([#247](https://github.com/eonu/sequentia/issues/247))
+
 ## [v2.0.0](https://github.com/eonu/sequentia/releases/tag/v2.0.0) - 2024-04-01
 
 ### Refactor
