@@ -46,18 +46,32 @@ def assert_fit(clf: KNNClassifier, /, *, data: SequentialDataset) -> None:
 
 @pytest.mark.parametrize("k", [1, 2, 5])
 @pytest.mark.parametrize("weighting", [None, lambda x: np.exp(-x)])
+@pytest.mark.parametrize("independent", [False, True])
 def test_classifier_e2e(
     helpers: t.Any,
     request: SubRequest,
-    k: int,
-    weighting: t.Callable | None,
     dataset: SequentialDataset,
     random_state: np.random.RandomState,
+    *,
+    k: int,
+    weighting: t.Callable | None,
+    independent: bool,
 ) -> None:
-    clf = KNNClassifier(k=k, weighting=weighting, random_state=random_state)
+    clf = KNNClassifier(
+        k=k,
+        weighting=weighting,
+        independent=independent,
+        random_state=random_state,
+    )
 
     assert clf.k == k
     assert clf.weighting == weighting
+    assert clf.independent == independent
+
+    if independent:
+        assert clf._dtw().__name__ == "_dtwi"
+    else:
+        assert clf._dtw().__name__ == "_dtwd"
 
     data = dataset.copy()
     data._X = data._X[:, :1]  # only use one feature
