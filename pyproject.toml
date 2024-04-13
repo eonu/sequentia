@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sequentia"
-version = "2.0.1"
+version = "2.0.2"
 license = "MIT"
 authors = ["Edwin Onuonga <ed@eonu.net>"]
 maintainers = ["Edwin Onuonga <ed@eonu.net>"]
