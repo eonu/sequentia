@@ -388,6 +388,12 @@ Nothing, initial release!
 
 </details>
 
+## [v2.0.2](https://github.com/eonu/sequentia/releases/tag/v2.0.2) - 2024-04-13
+
+### Bug Fixes
+
+- call `KNNMixin._dtw1d` when `independent=True` ([#251](https://github.com/eonu/sequentia/issues/251))
+
 ## [v2.0.1](https://github.com/eonu/sequentia/releases/tag/v2.0.1) - 2024-04-02
 
 ### Bug Fixes
