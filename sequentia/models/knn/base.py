@@ -206,7 +206,7 @@ class KNNMixin:
 
         def dtw(a: FloatArray, b: FloatArray) -> float:
             """Windowed DTW wrapper function."""
-            return self._dtw(a, b, window=window)
+            return self._dtw1d(a, b, window=window)
 
         return np.sum([dtw(A[:, i], B[:, i]) for i in range(A.shape[1])])
 
