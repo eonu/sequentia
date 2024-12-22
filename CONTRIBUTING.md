@@ -105,6 +105,6 @@ By contributing, you agree that your contributions will be licensed under the re
 ---
 
 <p align="center">
-  <b>Sequentia</b> &copy; 2019-2025, Edwin Onuonga - Released under the <a href="https://opensource.org/licenses/MIT">MIT</a> license.<br/>
+  <b>Sequentia</b> &copy; 2019, Edwin Onuonga - Released under the <a href="https://opensource.org/licenses/MIT">MIT</a> license.<br/>
   <em>Authored and maintained by Edwin Onuonga.</em>
 </p>
