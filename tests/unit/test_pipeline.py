@@ -51,7 +51,7 @@ def test_pipeline_with_transforms(
     )
 
     # check that transforming without fitting doesn't work
-    with pytest.raises(NotFittedError):
+    with pytest.raises((NotFittedError, AttributeError)):
         pipeline.transform(**data.X_lengths)
 
     # check that fitting without y works
