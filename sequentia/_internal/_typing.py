@@ -8,6 +8,6 @@ import numpy.typing as npt
 
 __all__ = ["FloatArray", "IntArray", "Array"]
 
-FloatArray = npt.NDArray[np.float_]
-IntArray = npt.NDArray[np.int_]
+FloatArray = npt.NDArray[np.float64]
+IntArray = npt.NDArray[np.int64]
 Array = FloatArray | IntArray
