@@ -50,6 +50,6 @@ We are thankful for their work and all the communities who have paved the way wi
 ---
 
 <p align="center">
-  <b>Sequentia</b> &copy; 2019-2025, Edwin Onuonga - Released under the <a href="https://opensource.org/licenses/MIT">MIT</a> license.<br/>
+  <b>Sequentia</b> &copy; 2019, Edwin Onuonga - Released under the <a href="https://opensource.org/licenses/MIT">MIT</a> license.<br/>
   <em>Authored and maintained by Edwin Onuonga.</em>
 </p>
