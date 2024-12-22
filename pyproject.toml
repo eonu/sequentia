@@ -23,6 +23,7 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
@@ -64,8 +65,11 @@ requires = ['poetry-core~=1.0', 'Cython>=0.28.5']
 build-backend = 'poetry.core.masonry.api'
 
 [tool.poetry.dependencies]
-python = "^3.11,<3.13"
-numba = ">=0.56,<1"
+python = "^3.11"
+numba = [
+    { version = ">=0.56,<1", python = "^3.11,<3.13" },
+    { version = ">=0.61.0rc2", python = ">=3.13" }
+]
 numpy = ">=1.19.5,<3"
 hmmlearn = ">=0.2.8,<1"
 dtaidistance = "^2.3.10"
