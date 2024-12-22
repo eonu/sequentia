@@ -46,7 +46,7 @@ jobs:
       name: python/default
     steps:
       - coveralls/upload:
-          carryforward: 3.11, 3.12
+          carryforward: 3.11, 3.12, 3.13
           parallel_finished: true
 
 workflows:
@@ -56,7 +56,7 @@ workflows:
       - tests:
           matrix:
             parameters:
-              version: ["3.11", "3.12"]
+              version: ["3.11", "3.12", "3.13"]
       - coverage:
           requires:
             - tests
