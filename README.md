@@ -142,11 +142,13 @@ Each result measures the total time taken to complete training and prediction re
 
 All of the above libraries support multiprocessing, and prediction was performed using 16 workers.
 
-<img src="benchmarks/benchmark.svg" width="350px" align="right"/>
+<img src="benchmarks/benchmark.svg" width="325px" align="right"/>
 
 > **Device information**:
 > - Processor: AMD Ryzen™ AI 7 PRO 360
-> - Memory: 64 GB LPDDR5X-7500MHz (8 cores, 16 threads, 2-5GHz)
+>   - 8 cores, 16 threads
+>   - 2-5GHz
+> - Memory: 64 GB LPDDR5X-7500MHz
 > - Solid State Drive: 1 TB SSD M.2 2280 PCIe Gen4 Performance TLC Opal 
 > - Operating system: Fedora Linux 41 (Workstation Edition)
 
