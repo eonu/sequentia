@@ -124,8 +124,6 @@ As DTW k-nearest neighbors is the core algorithm offered by Sequentia, below is 
 
 #### Benchmarks
 
-<img src="benchmarks/benchmark.svg" width="450px" align="right"/>
-
 To compare the above libraries in runtime performance on dynamic time warping k-nearest neighbors classification tasks, a simple benchmark was performed on a univariate sequence dataset.
 
 The [Free Spoken Digit Dataset](https://sequentia.readthedocs.io/en/latest/sections/datasets/digits.html) was used for benchmarking and consists of:
@@ -134,7 +132,7 @@ The [Free Spoken Digit Dataset](https://sequentia.readthedocs.io/en/latest/secti
   - 50 recordings of each digit for each of 6 speakers
   - 1500 used for training, 1500 used for testing (split via label stratification)
 - 13 features ([MFCCs](https://en.wikipedia.org/wiki/Mel-frequency_cepstrum))
-  - Only the first feature was used as not all of the libraries support multivariate sequences
+  - Only the first feature was used as not all of the above libraries support multivariate sequences
 - Sequence length statistics:
   - Minimum: 6
   - Median: 17
@@ -143,6 +141,8 @@ The [Free Spoken Digit Dataset](https://sequentia.readthedocs.io/en/latest/secti
 Each result measures the total time taken to complete training and prediction repeated 10 times on the above train/test split.
 
 All of the above libraries support multiprocessing, and prediction was performed using 16 workers.
+
+<img src="benchmarks/benchmark.svg" width="350px" align="right"/>
 
 > **Device information**:
 > - Processor: AMD Ryzen™ AI 7 PRO 360
