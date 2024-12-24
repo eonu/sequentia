@@ -227,7 +227,13 @@ lengths = np.array([3, 5, 2])
 # Sequence classes
 y = np.array([0, 1, 1])
 
-# Create a transformation pipeline that feeds into a KNNClassifier
+# Train and predict (without preprocessing)
+clf = KNNClassifier(k=1)
+clf.fit(X, y, lengths=lengths)
+y_pred = clf.predict(X, lengths=lengths)
+acc = pipeline.score(X, y, lengths=lengths)
+
+# Create a preprocessing pipeline that feeds into a KNNClassifier
 # 1. Individually denoise each sequence by applying a median filter for each feature
 # 2. Individually standardize each sequence by subtracting the mean and dividing the s.d. for each feature
 # 3. Reduce the dimensionality of the data to a single feature by using PCA
