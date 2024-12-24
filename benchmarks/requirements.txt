@@ -1,0 +1,6 @@
+# python==3.12.8
+sequentia==2.1.0
+aeon==1.0.0
+tslearn==0.6.3
+sktime==0.35.0
+pyts==0.13.0

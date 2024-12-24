@@ -96,6 +96,32 @@ Parameter estimation with the Baum-Welch algorithm and prediction with the forwa
 
 In most cases, the only necessary change is to add a `lengths` key-word argument to provide sequence length information, e.g. `fit(X, y, lengths=lengths)` instead of `fit(X, y)`.
 
+### Similar libraries
+
+As DTW k-nearest neighbors is the core algorithm offered by Sequentia, below is a comparison of the DTW k-nearest neighbors algorithm features supported Sequentia and similar libraries.
+
+||**sequentia**|[aeon](https://github.com/aeon-toolkit/aeon)|[tslearn](https://github.com/tslearn-team/tslearn)|[sktime](https://github.com/sktime/sktime)|[pyts](https://github.com/johannfaouzi/pyts)|
+|-|:-:|:-:|:-:|:-:|:-:|
+|Scikit-Learn compatible|✅|✅|✅|✅|✅|
+|Multivariate sequences|✅|✅|✅|✅|❌|
+|Variable length sequences|✅|✅|❌<sup>1</sup>|❌<sup>2</sup>|❌<sup>3</sup>|
+|No padding required|✅|❌|❌|❌<sup>2</sup>|❌<sup>3</sup>|
+|Classification|✅|✅|✅|✅|✅|
+|Regression|✅|✅|✅|✅|❌|
+|Preprocessing|✅|✅|✅|✅|✅|
+|Multiprocessing|✅|✅|✅|✅|✅|
+|Custom weighting|✅|✅|✅|✅|✅|
+|Sakoe-Chiba band constraint|✅|✅|✅|✅|✅|
+|Itakura paralellogram constraint|❌|✅|✅|✅|✅|
+|Dependent DTW (DTWD)|✅|✅|✅|✅|❌|
+|Independent DTW (DTWI)|✅|❌|❌|❌|✅|
+|Custom DTW measures|❌<sup>4</sup>|✅|❌|✅|✅|
+
+- <sup>1</sup>tslearn requires NaN/zero padding for variable length sequences, but doesn't seem to mask the padding.
+- <sup>2</sup>sktime does not support variable length sequences for kNN, so they must be padded (and padding is not masked).
+- <sup>3</sup>pyts does not support variable length sequences for kNN, so they must be padded (and padding is not masked).
+- <sup>4</sup>sequentia only supports [dtaidistance](https://github.com/wannesm/dtaidistance) which is one of the fastest DTW libraries in Python, as it is written in C.
+
 ## Installation
 
 The latest stable version of Sequentia can be installed with the following command:
