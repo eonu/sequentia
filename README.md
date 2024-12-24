@@ -34,6 +34,7 @@
     <a href="#about">About</a> ·
     <a href="#build-status">Build Status</a> ·
     <a href="#features">Features</a> ·
+    <a href="#installation">Installation</a> ·
     <a href="#documentation">Documentation</a> ·
     <a href="#examples">Examples</a> ·
     <a href="#acknowledgments">Acknowledgments</a> ·
@@ -95,6 +96,63 @@ Parameter estimation with the Baum-Welch algorithm and prediction with the forwa
 **Sequentia (≥2.0) is fully compatible with the Scikit-Learn API (≥1.4), enabling for rapid development and prototyping of sequential models.**
 
 In most cases, the only necessary change is to add a `lengths` key-word argument to provide sequence length information, e.g. `fit(X, y, lengths=lengths)` instead of `fit(X, y)`.
+
+### Similar libraries
+
+As DTW k-nearest neighbors is the core algorithm offered by Sequentia, below is a comparison of the DTW k-nearest neighbors algorithm features supported by Sequentia and similar libraries.
+
+||**`sequentia`**|[`aeon`](https://github.com/aeon-toolkit/aeon)|[`tslearn`](https://github.com/tslearn-team/tslearn)|[`sktime`](https://github.com/sktime/sktime)|[`pyts`](https://github.com/johannfaouzi/pyts)|
+|-|:-:|:-:|:-:|:-:|:-:|
+|Scikit-Learn compatible|✅|✅|✅|✅|✅|
+|Multivariate sequences|✅|✅|✅|✅|❌|
+|Variable length sequences|✅|✅|➖<sup>1</sup>|❌<sup>2</sup>|❌<sup>3</sup>|
+|No padding required|✅|❌|➖<sup>1</sup>|❌<sup>2</sup>|❌<sup>3</sup>|
+|Classification|✅|✅|✅|✅|✅|
+|Regression|✅|✅|✅|✅|❌|
+|Preprocessing|✅|✅|✅|✅|✅|
+|Multiprocessing|✅|✅|✅|✅|✅|
+|Custom weighting|✅|✅|✅|✅|✅|
+|Sakoe-Chiba band constraint|✅|✅|✅|✅|✅|
+|Itakura paralellogram constraint|❌|✅|✅|✅|✅|
+|Dependent DTW (DTWD)|✅|✅|✅|✅|❌|
+|Independent DTW (DTWI)|✅|❌|❌|❌|✅|
+|Custom DTW measures|❌<sup>4</sup>|✅|❌|✅|✅|
+
+- <sup>1</sup>`tslearn` supports variable length sequences with padding, but doesn't seem to mask the padding.
+- <sup>2</sup>`sktime` does not support variable length sequences, so they are padded (and padding is not masked).
+- <sup>3</sup>`pyts` does not support variable length sequences, so they are padded (and padding is not masked).
+- <sup>4</sup>`sequentia` only supports [`dtaidistance`](https://github.com/wannesm/dtaidistance), which is one of the fastest DTW libraries as it is written in C.
+
+### Benchmarks
+
+To compare the above libraries in runtime performance on dynamic time warping k-nearest neighbors classification tasks, a simple benchmark was performed on a univariate sequence dataset.
+
+The [Free Spoken Digit Dataset](https://sequentia.readthedocs.io/en/latest/sections/datasets/digits.html) was used for benchmarking and consists of:
+
+- 3000 recordings of 10 spoken digits (0-9)
+  - 50 recordings of each digit for each of 6 speakers
+  - 1500 used for training, 1500 used for testing (split via label stratification)
+- 13 features ([MFCCs](https://en.wikipedia.org/wiki/Mel-frequency_cepstrum))
+  - Only the first feature was used as not all of the above libraries support multivariate sequences
+- Sequence length statistics:
+  - Minimum: 6
+  - Median: 17
+  - Maximum: 92
+
+Each result measures the total time taken to complete training and prediction repeated 10 times.
+
+All of the above libraries support multiprocessing, and prediction was performed using 16 workers.
+
+<sup>*</sup>: `sktime`, `tslearn` and `pyts` seem to not mask padding, which may result in incorrect predictions.
+
+<img src="benchmarks/benchmark.svg" width="100%"/>
+
+> **Device information**:
+> - Product: ThinkPad T14s (Gen 6)
+> - Processor: AMD Ryzen™ AI 7 PRO 360 (8 cores, 16 threads, 2-5GHz)
+> - Memory: 64 GB LPDDR5X-7500MHz
+> - Solid State Drive: 1 TB SSD M.2 2280 PCIe Gen4 Performance TLC Opal 
+> - Operating system: Fedora Linux 41 (Workstation Edition)
 
 ## Installation
 
@@ -169,7 +227,13 @@ lengths = np.array([3, 5, 2])
 # Sequence classes
 y = np.array([0, 1, 1])
 
-# Create a transformation pipeline that feeds into a KNNClassifier
+# Train and predict (without preprocessing)
+clf = KNNClassifier(k=1)
+clf.fit(X, y, lengths=lengths)
+y_pred = clf.predict(X, lengths=lengths)
+acc = pipeline.score(X, y, lengths=lengths)
+
+# Create a preprocessing pipeline that feeds into a KNNClassifier
 # 1. Individually denoise each sequence by applying a median filter for each feature
 # 2. Individually standardize each sequence by subtracting the mean and dividing the s.d. for each feature
 # 3. Reduce the dimensionality of the data to a single feature by using PCA
