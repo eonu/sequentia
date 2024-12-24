@@ -100,7 +100,7 @@ In most cases, the only necessary change is to add a `lengths` key-word argument
 
 As DTW k-nearest neighbors is the core algorithm offered by Sequentia, below is a comparison of the DTW k-nearest neighbors algorithm features supported by Sequentia and similar libraries.
 
-||**sequentia**|[aeon](https://github.com/aeon-toolkit/aeon)|[tslearn](https://github.com/tslearn-team/tslearn)|[sktime](https://github.com/sktime/sktime)|[pyts](https://github.com/johannfaouzi/pyts)|
+||**`sequentia`**|[`aeon`](https://github.com/aeon-toolkit/aeon)|[`tslearn`](https://github.com/tslearn-team/tslearn)|[`sktime`](https://github.com/sktime/sktime)|[`pyts`](https://github.com/johannfaouzi/pyts)|
 |-|:-:|:-:|:-:|:-:|:-:|
 |Scikit-Learn compatible|✅|✅|✅|✅|✅|
 |Multivariate sequences|✅|✅|✅|✅|❌|
@@ -117,10 +117,10 @@ As DTW k-nearest neighbors is the core algorithm offered by Sequentia, below is 
 |Independent DTW (DTWI)|✅|❌|❌|❌|✅|
 |Custom DTW measures|❌<sup>4</sup>|✅|❌|✅|✅|
 
-- <sup>1</sup>tslearn supports variable length sequences with padding, but doesn't seem to mask the padding.
-- <sup>2</sup>sktime does not support variable length sequences so they must be padded (and padding is not masked).
-- <sup>3</sup>pyts does not support variable length sequences so they must be padded (and padding is not masked).
-- <sup>4</sup>sequentia only supports [dtaidistance](https://github.com/wannesm/dtaidistance) which is one of the fastest DTW libraries as it is written in C.
+- <sup>1</sup>`tslearn` supports variable length sequences with padding, but doesn't seem to mask the padding.
+- <sup>2</sup>sktime` does not support variable length sequences so they are padded (and padding is not masked).
+- <sup>3</sup>`pyts` does not support variable length sequences so they are padded (and padding is not masked).
+- <sup>4</sup>`sequentia` only supports [`dtaidistance`](https://github.com/wannesm/dtaidistance) which is one of the fastest DTW libraries as it is written in C.
 
 ### Benchmarks
 
@@ -143,6 +143,8 @@ Each result measures the total time taken to complete training and prediction re
 All of the above libraries support multiprocessing, and prediction was performed using 16 workers.
 
 <img src="benchmarks/benchmark.svg" width="100%"/>
+
+<sup>*</sup>: `sktime`, `tslearn` and `pyts` seem to not mask padding, which may result in incorrect predictions.
 
 > **Device information**:
 > - Processor: AMD Ryzen™ AI 7 PRO 360 (8 cores, 16 threads, 2-5GHz)
