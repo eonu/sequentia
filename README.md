@@ -98,14 +98,14 @@ In most cases, the only necessary change is to add a `lengths` key-word argument
 
 ### Similar libraries
 
-As DTW k-nearest neighbors is the core algorithm offered by Sequentia, below is a comparison of the DTW k-nearest neighbors algorithm features supported Sequentia and similar libraries.
+As DTW k-nearest neighbors is the core algorithm offered by Sequentia, below is a comparison of the DTW k-nearest neighbors algorithm features supported by Sequentia and similar libraries.
 
 ||**sequentia**|[aeon](https://github.com/aeon-toolkit/aeon)|[tslearn](https://github.com/tslearn-team/tslearn)|[sktime](https://github.com/sktime/sktime)|[pyts](https://github.com/johannfaouzi/pyts)|
 |-|:-:|:-:|:-:|:-:|:-:|
 |Scikit-Learn compatible|✅|✅|✅|✅|✅|
 |Multivariate sequences|✅|✅|✅|✅|❌|
-|Variable length sequences|✅|✅|❌<sup>1</sup>|❌<sup>2</sup>|❌<sup>3</sup>|
-|No padding required|✅|❌|❌|❌<sup>2</sup>|❌<sup>3</sup>|
+|Variable length sequences|✅|✅|➖<sup>1</sup>|❌<sup>2</sup>|❌<sup>3</sup>|
+|No padding required|✅|❌|➖<sup>1</sup>|❌<sup>2</sup>|❌<sup>3</sup>|
 |Classification|✅|✅|✅|✅|✅|
 |Regression|✅|✅|✅|✅|❌|
 |Preprocessing|✅|✅|✅|✅|✅|
@@ -117,10 +117,38 @@ As DTW k-nearest neighbors is the core algorithm offered by Sequentia, below is 
 |Independent DTW (DTWI)|✅|❌|❌|❌|✅|
 |Custom DTW measures|❌<sup>4</sup>|✅|❌|✅|✅|
 
-- <sup>1</sup>tslearn requires NaN/zero padding for variable length sequences, but doesn't seem to mask the padding.
-- <sup>2</sup>sktime does not support variable length sequences for kNN, so they must be padded (and padding is not masked).
-- <sup>3</sup>pyts does not support variable length sequences for kNN, so they must be padded (and padding is not masked).
-- <sup>4</sup>sequentia only supports [dtaidistance](https://github.com/wannesm/dtaidistance) which is one of the fastest DTW libraries in Python, as it is written in C.
+- <sup>1</sup>tslearn supports variable length sequences with padding, but doesn't seem to mask the padding.
+- <sup>2</sup>sktime does not support variable length sequences so they must be padded (and padding is not masked).
+- <sup>3</sup>pyts does not support variable length sequences so they must be padded (and padding is not masked).
+- <sup>4</sup>sequentia only supports [dtaidistance](https://github.com/wannesm/dtaidistance) which is one of the fastest DTW libraries as it is written in C.
+
+#### Benchmarks
+
+<img src="benchmarks/benchmark.svg" width="450px" align="right"/>
+
+To compare the above libraries in runtime performance on dynamic time warping k-nearest neighbors classification tasks, a simple benchmark was performed on a univariate sequence dataset.
+
+The [Free Spoken Digit Dataset](https://sequentia.readthedocs.io/en/latest/sections/datasets/digits.html) was used for benchmarking and consists of:
+
+- 3000 recordings of 10 spoken digits (0-9)
+  - 50 recordings of each digit for each of 6 speakers
+  - 1500 used for training, 1500 used for testing (split via label stratification)
+- 13 features ([MFCCs](https://en.wikipedia.org/wiki/Mel-frequency_cepstrum))
+  - Only the first feature was used as not all of the libraries support multivariate sequences
+- Sequence length statistics:
+  - Minimum: 6
+  - Median: 17
+  - Maximum: 92
+
+Each result measures the total time taken to complete training and prediction repeated 10 times on the above train/test split.
+
+All of the above libraries support multiprocessing, and prediction was performed using 16 workers.
+
+> **Device information**:
+> - Processor: AMD Ryzen™ AI 7 PRO 360
+> - Memory: 64 GB LPDDR5X-7500MHz (8 cores, 16 threads, 2-5GHz)
+> - Solid State Drive: 1 TB SSD M.2 2280 PCIe Gen4 Performance TLC Opal 
+> - Operating system: Fedora Linux 41 (Workstation Edition)
 
 ## Installation
 
