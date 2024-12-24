@@ -147,6 +147,7 @@ All of the above libraries support multiprocessing, and prediction was performed
 <img src="benchmarks/benchmark.svg" width="100%"/>
 
 > **Device information**:
+> - Product: ThinkPad T14s (Gen 6)
 > - Processor: AMD Ryzen™ AI 7 PRO 360 (8 cores, 16 threads, 2-5GHz)
 > - Memory: 64 GB LPDDR5X-7500MHz
 > - Solid State Drive: 1 TB SSD M.2 2280 PCIe Gen4 Performance TLC Opal 
