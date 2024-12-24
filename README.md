@@ -142,7 +142,7 @@ Each result measures the total time taken to complete training and prediction re
 
 All of the above libraries support multiprocessing, and prediction was performed using 16 workers.
 
-<img src="benchmarks/benchmark.svg" width="325px" align="right"/>
+<img src="benchmarks/benchmark.svg" width="700px"/>
 
 > **Device information**:
 > - Processor: AMD Ryzen™ AI 7 PRO 360
