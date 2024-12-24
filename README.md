@@ -122,7 +122,7 @@ As DTW k-nearest neighbors is the core algorithm offered by Sequentia, below is 
 - <sup>3</sup>pyts does not support variable length sequences so they must be padded (and padding is not masked).
 - <sup>4</sup>sequentia only supports [dtaidistance](https://github.com/wannesm/dtaidistance) which is one of the fastest DTW libraries as it is written in C.
 
-#### Benchmarks
+### Benchmarks
 
 To compare the above libraries in runtime performance on dynamic time warping k-nearest neighbors classification tasks, a simple benchmark was performed on a univariate sequence dataset.
 
