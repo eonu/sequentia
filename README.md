@@ -34,6 +34,7 @@
     <a href="#about">About</a> ·
     <a href="#build-status">Build Status</a> ·
     <a href="#features">Features</a> ·
+    <a href="#installation">Installation</a> ·
     <a href="#documentation">Documentation</a> ·
     <a href="#examples">Examples</a> ·
     <a href="#acknowledgments">Acknowledgments</a> ·
