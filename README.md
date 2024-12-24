@@ -118,9 +118,9 @@ As DTW k-nearest neighbors is the core algorithm offered by Sequentia, below is 
 |Custom DTW measures|❌<sup>4</sup>|✅|❌|✅|✅|
 
 - <sup>1</sup>`tslearn` supports variable length sequences with padding, but doesn't seem to mask the padding.
-- <sup>2</sup>`sktime` does not support variable length sequences so they are padded (and padding is not masked).
-- <sup>3</sup>`pyts` does not support variable length sequences so they are padded (and padding is not masked).
-- <sup>4</sup>`sequentia` only supports [`dtaidistance`](https://github.com/wannesm/dtaidistance) which is one of the fastest DTW libraries as it is written in C.
+- <sup>2</sup>`sktime` does not support variable length sequences, so they are padded (and padding is not masked).
+- <sup>3</sup>`pyts` does not support variable length sequences, so they are padded (and padding is not masked).
+- <sup>4</sup>`sequentia` only supports [`dtaidistance`](https://github.com/wannesm/dtaidistance), which is one of the fastest DTW libraries as it is written in C.
 
 ### Benchmarks
 
