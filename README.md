@@ -138,16 +138,14 @@ The [Free Spoken Digit Dataset](https://sequentia.readthedocs.io/en/latest/secti
   - Median: 17
   - Maximum: 92
 
-Each result measures the total time taken to complete training and prediction repeated 10 times on the above train/test split.
+Each result measures the total time taken to complete training and prediction repeated 10 times.
 
 All of the above libraries support multiprocessing, and prediction was performed using 16 workers.
 
 <img src="benchmarks/benchmark.svg" width="700px"/>
 
 > **Device information**:
-> - Processor: AMD Ryzen™ AI 7 PRO 360
->   - 8 cores, 16 threads
->   - 2-5GHz
+> - Processor: AMD Ryzen™ AI 7 PRO 360 (8 cores, 16 threads, 2-5GHz)
 > - Memory: 64 GB LPDDR5X-7500MHz
 > - Solid State Drive: 1 TB SSD M.2 2280 PCIe Gen4 Performance TLC Opal 
 > - Operating system: Fedora Linux 41 (Workstation Edition)
