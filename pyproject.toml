@@ -186,6 +186,7 @@ allow-star-arg-any = true
     "ARG",
 ]
 "sequentia/model_selection/*.py" = [
+    "D",
     "E", 
     "ANN", 
     "PLR", 

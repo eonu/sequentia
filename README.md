@@ -297,7 +297,7 @@ that includes most of the hyper-parameter search and cross-validation methods pr
 [`sklearn.model_selection`](https://scikit-learn.org/stable/api/sklearn.model_selection.html), 
 but adapted to work with sequences.
 
-For instance, we can use a grid search with k-fold cross-validation stratifying over labels
+For instance, we can perform a grid search with k-fold cross-validation stratifying over labels
 in order to find an optimal value for the number of neighbors in `KNNClassifier` for the 
 above pipeline.
 
@@ -400,7 +400,7 @@ All contributions to this repository are greatly appreciated. Contribution guide
 
 Sequentia is released under the [MIT](https://opensource.org/licenses/MIT) license.
 
-Certain parts of the source code are heavily adapted from [Scikit-Learn](scikit-learn.org/).
+Certain parts of source code are heavily adapted from [Scikit-Learn](scikit-learn.org/).
 Such files contain a copy of [their license](https://github.com/scikit-learn/scikit-learn/blob/main/COPYING).
 
 ---
