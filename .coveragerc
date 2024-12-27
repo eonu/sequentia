@@ -1,0 +1,2 @@
+[run]
+omit = "sequentia/model_selection/_validation.py"
