@@ -255,7 +255,7 @@ y_pred = clf.predict(X, lengths=lengths)
 acc = clf.score(X, y, lengths=lengths)
 ```
 
-Alternatively, we can use [`sklearn.preprocessing.Pipeline`](https://scikit-learn.org/1.5/modules/generated/sklearn.pipeline.Pipeline.html) to build a more complex preprocessing pipeline, e.g.:
+Alternatively, we can use [`sklearn.preprocessing.Pipeline`](https://scikit-learn.org/1.5/modules/generated/sklearn.pipeline.Pipeline.html) to build a more complex preprocessing pipeline:
 
 1. Individually denoise each sequence by applying a [median filter](https://sequentia.readthedocs.io/en/latest/sections/preprocessing/transforms/filters.html#sequentia.preprocessing.transforms.median_filter) to each sequence.
 2. Individually [standardize](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.scale.html) each sequence by subtracting the mean and dividing the s.d. for each feature.
@@ -264,7 +264,7 @@ Alternatively, we can use [`sklearn.preprocessing.Pipeline`](https://scikit-lear
 
 **Note**: Steps 1 and 2 use [`IndependentFunctionTransformer`](https://sequentia.readthedocs.io/en/latest/sections/preprocessing/transforms/function_transformer.html#sequentia.preprocessing.transforms.IndependentFunctionTransformer) provided by Sequentia to 
 apply the specified transformation to each sequence in `X` individually, rather than using 
-[`sklearn.preprocessing.FunctionTransformer`](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.FunctionTransformer.html#sklearn.preprocessing.FunctionTransformer) which would transform the entire `X`
+[`FunctionTransformer`](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.FunctionTransformer.html#sklearn.preprocessing.FunctionTransformer) from Scikit-Learn which would transform the entire `X`
 array once, treating it as a single sequence.
 
 ```python
