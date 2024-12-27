@@ -73,7 +73,7 @@ Some examples of how Sequentia can be used on sequence data include:
 
 Dynamic Time Warping (DTW) is a distance measure that can be applied to two sequences of different length.
 When used as a distance measure for the k-Nearest Neighbors (kNN) algorithm this results in a simple yet
-effective classification algorithm.
+effective inference algorithm.
 
 - [x] Classification
 - [x] Regression
