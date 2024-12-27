@@ -121,6 +121,7 @@ def assert_fit(clf: BaseHMM):
     ],
 )
 @pytest.mark.parametrize("fit_mode", list(FitMode))
+@pytest.mark.parametrize("n_jobs", [1, -1])
 def test_classifier_e2e(
     request: SubRequest,
     helpers: t.Any,
@@ -128,9 +129,10 @@ def test_classifier_e2e(
     dataset: SequentialDataset,
     prior: enums.PriorMode | dict[int, float],
     fit_mode: FitMode,
+    n_jobs: int,
     random_state: np.random.RandomState,
 ) -> None:
-    clf = HMMClassifier(prior=prior)
+    clf = HMMClassifier(prior=prior, n_jobs=n_jobs)
     clf.add_models({i: copy.deepcopy(model) for i in range(n_classes)})
 
     assert clf.prior == prior
@@ -156,6 +158,7 @@ def test_classifier_e2e(
             variant=type(model),
             model_kwargs=model.get_params(),
             prior=prior,
+            n_jobs=n_jobs,
         )
         clf.fit(**train.X_y_lengths)
 
