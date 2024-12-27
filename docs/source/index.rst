@@ -42,6 +42,7 @@ Features
 
    sections/models/index
    sections/preprocessing/index
+   sections/model_selection/index
    sections/datasets/index
    sections/configuration
 

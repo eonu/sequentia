@@ -62,7 +62,10 @@ Methods
    ~sequentia.models.hmm.classifier.HMMClassifier.save
    ~sequentia.models.hmm.classifier.HMMClassifier.score
 
-|
+.. _definitions:
+
+Definitions
+^^^^^^^^^^^
 
 .. autoclass:: sequentia.models.hmm.classifier.HMMClassifier
    :members:

@@ -23,6 +23,8 @@ def unit(c: Config, *, cov: bool = False) -> None:
     command: str = "poetry run pytest tests/"
 
     if cov:
-        command = f"{command} --cov sequentia --cov-report xml"
-
+        command = (
+            f"{command} --cov-config .coveragerc "
+            "--cov sequentia --cov-report xml"
+        )
     c.run(command)

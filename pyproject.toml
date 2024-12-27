@@ -185,6 +185,21 @@ allow-star-arg-any = true
     "SLF",
     "ARG",
 ]
+"sequentia/model_selection/*.py" = [
+    "D",
+    "E", 
+    "ANN", 
+    "PLR", 
+    "TRY", 
+    "EM", 
+    "T", 
+    "BLE", 
+    "RET", 
+    "SLF",
+    "UP",
+    "ARG",
+    "FA"
+]
 "tests/**/*.py" = ["D", "E", "S101"]
 # "tests/**/test_*.py" = ["ARG001", "S101", "D", "FA100", "FA102", "PLR0915"]
 "tests/**/test_*.py" = [

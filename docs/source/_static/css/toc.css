@@ -1,9 +1,7 @@
-/* Adds overflow to the Table of Contents on the side bar */
-div[aria-label="main navigation"] div.sphinxsidebarwrapper div:first-child {
+div.sphinxsidebarwrapper {
 	overflow-x: auto;
 }
 
-/* Hides any API reference lists in the Table of Contents */
-div[aria-label="main navigation"] div.sphinxsidebarwrapper div:first-child a[href="#api-reference"] + ul {
+div.sphinxsidebarwrapper a[href="#definitions"] + ul > li > ul {
 	display: none;
 }
