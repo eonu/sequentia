@@ -388,6 +388,21 @@ Nothing, initial release!
 
 </details>
 
+## [v2.5.0](https://github.com/eonu/sequentia/releases/tag/v2.5.0) - 2024-12-27
+
+### Documentation
+
+- update copyright notice ([#255](https://github.com/eonu/sequentia/issues/255))
+
+### Features
+
+- add `mise.toml` and support `numpy>=2` ([#254](https://github.com/eonu/sequentia/issues/254))
+- add python v3.13 support ([#253](https://github.com/eonu/sequentia/issues/253))
+- add library benchmarks ([#256](https://github.com/eonu/sequentia/issues/256))
+- add `model_selection` sub-package for hyper-parameters ([#257](https://github.com/eonu/sequentia/issues/257))
+- add model spec support to `HMMClassifier.__init__` ([#258](https://github.com/eonu/sequentia/issues/258))
+- add `HMMClassifier.fit` multiprocessing ([#259](https://github.com/eonu/sequentia/issues/259))
+
 ## [v2.0.2](https://github.com/eonu/sequentia/releases/tag/v2.0.2) - 2024-04-13
 
 ### Bug Fixes
