@@ -171,13 +171,13 @@ The latest stable version of Sequentia can be installed with the following comma
 pip install sequentia
 ```
 
-### C library compilation
+### C libraries
 
-For optimal performance when using any of the k-NN based models, it is important that `dtaidistance` C libraries are compiled correctly.
+For optimal performance when using any of the k-NN based models, it is important that the correct `dtaidistance` C libraries are accessible.
 
 Please see the [`dtaidistance` installation guide](https://dtaidistance.readthedocs.io/en/latest/usage/installation.html) for troubleshooting if you run into C compilation issues, or if setting `use_c=True` on k-NN based models results in a warning.
 
-You can use the following to check if the appropriate C libraries have been installed.
+You can use the following to check if the appropriate C libraries are available.
 
 ```python
 from dtaidistance import dtw
