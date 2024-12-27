@@ -16,6 +16,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import minmax_scale
 
 from sequentia.datasets import SequentialDataset, load_digits
+from sequentia.enums import CovarianceMode, PriorMode, TopologyMode
 from sequentia.model_selection import (
     GridSearchCV,
     HalvingGridSearchCV,
@@ -26,9 +27,15 @@ from sequentia.model_selection import (
     ShuffleSplit,
     StratifiedKFold,
     StratifiedShuffleSplit,
+    param_grid,
 )
 from sequentia.model_selection._search import BaseSearchCV
-from sequentia.models import KNNClassifier, KNNRegressor
+from sequentia.models import (
+    GaussianMixtureHMM,
+    HMMClassifier,
+    KNNClassifier,
+    KNNRegressor,
+)
 from sequentia.preprocessing import IndependentFunctionTransformer
 
 EPS: np.float32 = np.finfo(np.float32).eps
@@ -70,7 +77,7 @@ def data() -> SequentialDataset:
 @pytest.mark.parametrize(
     "search", [GridSearchCV, RandomizedSearchCV, HalvingGridSearchCV]
 )
-def test_classifier(
+def test_knn_classifier(
     data: SequentialDataset,
     search: type[BaseSearchCV],
     cv: type[BaseCrossValidator] | type[BaseShuffleSplit],
@@ -134,7 +141,7 @@ def test_classifier(
 @pytest.mark.parametrize(
     "search", [GridSearchCV, RandomizedSearchCV, HalvingGridSearchCV]
 )
-def test_regressor(
+def test_knn_regressor(
     data: SequentialDataset,
     search: type[BaseSearchCV],
     cv: type[BaseCrossValidator] | type[BaseShuffleSplit],
@@ -175,3 +182,47 @@ def test_regressor(
     # Calculate R^2
     r2 = model.score(data.X, y, lengths=data.lengths)
     assert r2 > 0.8
+
+
+def test_hmm_classifier(data: SequentialDataset) -> None:
+    # Initialize search, splitter and parameter
+    optimizer = GridSearchCV(
+        estimator=Pipeline(
+            [
+                ("scale", IndependentFunctionTransformer(minmax_scale)),
+                ("clf", HMMClassifier(variant=GaussianMixtureHMM, n_jobs=-1)),
+            ]
+        ),
+        param_grid={
+            "clf__prior": [PriorMode.UNIFORM, PriorMode.FREQUENCY],
+            "clf__model_kwargs": param_grid(
+                n_states=[3, 4, 5],
+                n_components=[2, 3, 4],
+                covariance=[CovarianceMode.DIAGONAL, CovarianceMode.SPHERICAL],
+                topology=[TopologyMode.LEFT_RIGHT, TopologyMode.LINEAR],
+            ),
+        },
+        cv=StratifiedKFold(),
+        n_jobs=-1,
+    )
+
+    # Perform the hyper-parameter search and retrieve the best model
+    optimizer.fit(data.X, data.y, lengths=data.lengths)
+    assert optimizer.best_score_ > 0.8
+    clf = optimizer.best_estimator_
+
+    # Predict labels
+    y_pred = clf.predict(data.X, lengths=data.lengths)
+    assert np.isin(y_pred, (0, 1)).all()
+
+    # Predict probabilities
+    y_probs = clf.predict_proba(data.X, lengths=data.lengths)
+    assert ((y_probs >= 0) & (y_probs <= 1)).all()
+    npt.assert_almost_equal(y_probs.sum(axis=1), 1.0)
+
+    # Predict log probabilities
+    clf.predict_log_proba(data.X, lengths=data.lengths)
+
+    # Calculate accuracy
+    acc = clf.score(data.X, data.y, lengths=data.lengths)
+    assert acc > 0.8

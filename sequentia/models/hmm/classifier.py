@@ -22,7 +22,7 @@ from sequentia._internal._typing import Array, FloatArray, IntArray
 from sequentia.datasets.base import SequentialDataset
 from sequentia.enums import PriorMode
 from sequentia.models.base import ClassifierMixin
-from sequentia.models.hmm.variants.base import BaseHMM
+from sequentia.models.hmm import variants
 
 
 class HMMClassifier(ClassifierMixin):
@@ -35,8 +35,9 @@ class HMMClassifier(ClassifierMixin):
 
     Examples
     --------
-    Using a :class:`.HMMClassifier` (with :class:`.GaussianMixtureHMM`
-    models) to classify spoken digits. ::
+    Using a :class:`.HMMClassifier` with :class:`.GaussianMixtureHMM`
+    models for each class (all with identical settings),
+    to classify spoken digits. ::
 
         import numpy as np
         from sequentia.datasets import load_digits
@@ -47,7 +48,29 @@ class HMMClassifier(ClassifierMixin):
 
         # Fetch MFCCs of spoken digits
         data = load_digits()
-        train_data, test_data = data.split(test_size=0.2, random_state=random_state)
+        train_data, test_data = data.split(
+            test_size=0.2, random_state=random_state
+        )
+
+        # Create a HMMClassifier using:
+        # - a separate GaussianMixtureHMM for each class (with 3 states)
+        # - a class frequency prior
+        clf = HMMClassifier(
+            variant=GaussianMixtureHMM,
+            model_kwargs=dict(n_states=3, random_state=random_state)
+            prior='frequency',
+        )
+
+        # Fit the HMMs by providing observation sequences for all classes
+        clf.fit(train_data.X, train_data.y, lengths=train_data.lengths)
+
+        # Predict classes for the test observation sequences
+        y_pred = clf.predict(test_data.X, lengths=test_data.lengths)
+
+    For more complex problems, it might be necessary to specify different
+    hyper-parameters for each individual class HMM. This can be done by
+    using :func:`add_model` or :func:`add_models` to add HMM objects
+    after the :class:`HMMClassifier` has been initialized. ::
 
         # Create a HMMClassifier using a class frequency prior
         clf = HMMClassifier(prior='frequency')
@@ -57,24 +80,18 @@ class HMMClassifier(ClassifierMixin):
             model = GaussianMixtureHMM(random_state=random_state)
             clf.add_model(model, label=label)
 
-        # Fit the HMMs by providing training observation sequences for all classes
+        # Fit the HMMs by providing observation sequences for all classes
         clf.fit(train_data.X, train_data.y, lengths=train_data.lengths)
 
-        # Predict classes for the test observation sequences
-        y_pred = clf.predict(test_data.X, lengths=test_data.lengths)
-
-    As done in the above example, we can provide unfitted HMMs using
-    :func:`add_model` or :func:`add_models`, then provide training
-    observation sequences for all classes to :func:`fit`, which will
-    automatically train each HMM on the appropriate subset of data.
-
-    Alternatively, we may provide pre-fitted HMMs and call :func:`fit` with
-    no arguments. ::
+    Alternatively, we might want to pre-fit the HMMs individually,
+    then add these fitted HMMs to the :class:`.HMMClassifier`. In this case,
+    :func:`fit` on the :class:`.HMMClassifier` is called without providing any
+    data as arguments, since the HMMs are already fitted. ::
 
         # Create a HMMClassifier using a class frequency prior
         clf = HMMClassifier(prior='frequency')
 
-       # Manually fit each HMM on its own subset of data
+        # Manually fit each HMM on its own subset of data
         for X_train, lengths_train, label for train_data.iter_by_class():
             model = GaussianMixtureHMM(random_state=random_state)
             model.fit(X_train, lengths=lengths_train)
@@ -82,12 +99,16 @@ class HMMClassifier(ClassifierMixin):
 
         # Fit the classifier
         clf.fit()
-    """  # noqa: E501
+    """
 
     @pyd.validate_call(config=dict(arbitrary_types_allowed=True))
     def __init__(
         self: pyd.SkipValidation,
         *,
+        variant: type[variants.CategoricalHMM]
+        | type[variants.GaussianMixtureHMM]
+        | None = None,
+        model_kwargs: dict[str, t.Any] | None = None,
         prior: (
             PriorMode | dict[int, pyd.confloat(ge=0, le=1)]
         ) = PriorMode.UNIFORM,  # placeholder
@@ -100,10 +121,21 @@ class HMMClassifier(ClassifierMixin):
         ----------
         self: HMMClassifier
 
+        variant:
+            Variant of HMM to use for modelling each class. If not specified,
+            models must instead be added using the :func:`add_model` or
+            :func:`add_models` methods after the :class:`.HMMClassifier` has
+            been initialized.
+
+        model_kwargs:
+            If ``variant`` is specified, these parameters are used to
+            initialize the created HMM object(s). Note that all HMMs
+            will be created with identical settings.
+
         prior:
             Type of prior probability to assign to each HMM.
 
-            - If ``None``, a uniform prior will be used, making each HMM
+            - If ``"uniform"``, a uniform prior will be used, making each HMM
               equally likely.
             - If ``"frequency"``, the prior probability of each HMM is equal
               to the fraction of total observation sequences that the HMM was
@@ -134,6 +166,14 @@ class HMMClassifier(ClassifierMixin):
         -------
         HMMClassifier
         """
+        #: Type of HMM to use for each class.
+        self.variant: (
+            type[variants.CategoricalHMM]
+            | type[variants.GaussianMixtureHMM]
+            | None
+        ) = variant
+        #: Model parameters for initializing HMMs.
+        self.model_kwargs: dict[str, t.Any] | None = model_kwargs
         #: Type of prior probability to assign to each HMM.
         self.prior: PriorMode | dict[int, pyd.confloat(ge=0, le=1)] = prior
         #: Set of possible class labels.
@@ -141,7 +181,7 @@ class HMMClassifier(ClassifierMixin):
         #: Maximum number of concurrently running workers.
         self.n_jobs: pyd.PositiveInt | pyd.NegativeInt = n_jobs
         #: HMMs constituting the :class:`.HMMClassifier`.
-        self.models: dict[int, BaseHMM] = {}
+        self.models: dict[int, variants.BaseHMM] = {}
 
         # Allow metadata routing for lengths
         if _sklearn.routing_enabled():
@@ -158,7 +198,7 @@ class HMMClassifier(ClassifierMixin):
     @pyd.validate_call(config=dict(arbitrary_types_allowed=True))
     def add_model(
         self: pyd.SkipValidation,
-        model: BaseHMM,
+        model: variants.BaseHMM,
         /,
         *,
         label: int,
@@ -200,7 +240,7 @@ class HMMClassifier(ClassifierMixin):
     @pyd.validate_call(config=dict(arbitrary_types_allowed=True))
     def add_models(
         self: pyd.SkipValidation,
-        models: dict[int, BaseHMM],
+        models: dict[int, variants.BaseHMM],
         /,
     ) -> pyd.SkipValidation:
         """Add HMMs to the classifier.
@@ -239,8 +279,9 @@ class HMMClassifier(ClassifierMixin):
         - If fitted models were provided with :func:`add_model` or
           :func:`add_models`, no arguments should be passed to :func:`fit`.
         - If unfitted models were provided with :func:`add_model` or
-          :func:`add_models`, training data ``X``, ``y`` and ``lengths``
-          must be provided to :func:`fit`.
+          :func:`add_models`, or a ``variant`` was specified in
+          :func:`HMMClassifier.__init__`, training data ``X``, ``y`` and
+          ``lengths`` must be provided to :func:`fit`.
 
         Parameters
         ----------
@@ -291,6 +332,13 @@ class HMMClassifier(ClassifierMixin):
             y = _validation.check_y(y, lengths=lengths, dtype=np.int8)
             self.classes_ = _validation.check_classes(y, classes=self.classes)
 
+        # Initialize models based on instructor spec if provided
+        if self.variant:
+            model_kwargs = self.model_kwargs or {}
+            self.models = {
+                label: self.variant(**model_kwargs) for label in self.classes_
+            }
+
         # Check that each label has a HMM (and vice versa)
         if set(self.models.keys()) != set(self.classes_):
             msg = (
@@ -312,7 +360,7 @@ class HMMClassifier(ClassifierMixin):
                 self.models[c].fit(X_c, lengths=lengths_c)
 
         # Set class priors
-        models: t.Iterator[int, BaseHMM] = self.models.items()
+        models: t.Iterable[int, variants.BaseHMM] = self.models.items()
         if self.prior == PriorMode.UNIFORM:
             self.prior_ = {c: 1 / len(self.classes_) for c, _ in models}
         elif self.prior == PriorMode.FREQUENCY:
@@ -464,7 +512,7 @@ class HMMClassifier(ClassifierMixin):
         -----
         This method requires a trained classifier — see :func:`fit`.
         """
-        model: BaseHMM = next(iter(self.models.values()))
+        model: variants.BaseHMM = next(iter(self.models.values()))
         X, lengths = _validation.check_X_lengths(
             X,
             lengths=lengths,
