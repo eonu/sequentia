@@ -5,7 +5,11 @@
 
 """Hyper-parameter search and dataset splitting utilities."""
 
-from sequentia.model_selection._search import GridSearchCV, RandomizedSearchCV
+from sequentia.model_selection._search import (
+    GridSearchCV,
+    RandomizedSearchCV,
+    param_grid,
+)
 from sequentia.model_selection._search_successive_halving import (
     HalvingGridSearchCV,
     HalvingRandomSearchCV,
@@ -30,4 +34,5 @@ __all__ = [
     "RandomizedSearchCV",
     "HalvingGridSearchCV",
     "HalvingRandomSearchCV",
+    "param_grid",
 ]

@@ -5,7 +5,8 @@
 
 """Supported hidden Markov Model variants."""
 
+from sequentia.models.hmm.variants.base import BaseHMM
 from sequentia.models.hmm.variants.categorical import CategoricalHMM
 from sequentia.models.hmm.variants.gaussian_mixture import GaussianMixtureHMM
 
-__all__ = ["CategoricalHMM", "GaussianMixtureHMM"]
+__all__ = ["BaseHMM", "CategoricalHMM", "GaussianMixtureHMM"]

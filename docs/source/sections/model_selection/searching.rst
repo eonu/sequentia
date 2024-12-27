@@ -15,11 +15,12 @@ versions of these methods to support sequence data.
 API reference
 -------------
 
-Classes
-^^^^^^^
+Classes/Methods
+^^^^^^^^^^^^^^^
 
 .. autosummary::
 
+   ~sequentia.model_selection.param_grid
    ~sequentia.model_selection.GridSearchCV
    ~sequentia.model_selection.RandomizedSearchCV
    ~sequentia.model_selection.HalvingGridSearchCV
@@ -80,6 +81,8 @@ cross-validate a :class:`.KNNClassifier` training pipeline. ::
 
 Definitions
 ^^^^^^^^^^^
+
+.. autofunction:: sequentia.model_selection.param_grid
 
 .. autoclass:: sequentia.model_selection.GridSearchCV
    :members: __init__

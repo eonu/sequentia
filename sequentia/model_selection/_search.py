@@ -50,6 +50,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # License: BSD 3 clause
 
 import time
+import typing as t
 from collections import defaultdict
 from itertools import product
 
@@ -66,7 +67,61 @@ from sklearn.utils.validation import _check_method_params
 
 from sequentia.model_selection._validation import _fit_and_score
 
-__all__ = ["BaseSearchCV", "GridSearchCV", "RandomizedSearchCV"]
+__all__ = ["BaseSearchCV", "GridSearchCV", "RandomizedSearchCV", "param_grid"]
+
+
+def param_grid(**kwargs: list[t.Any]) -> list[dict[str, t.Any]]:
+    """Generates a hyper-parameter grid for a nested object.
+
+    Examples
+    --------
+    Using :func:`.param_grid` in a grid search to cross-validate over
+    settings for :class:`.GaussianMixtureHMM`, which is a nested model
+    specified in the constructor of a :class:`.HMMClassifier`. ::
+
+        from sklearn.preprocessing import Pipeline, minmax_scale
+
+        from sequenta.enums import PriorMode, CovarianceMode, TopologyMode
+        from sequentia.models import HMMClassifier, GaussianMixtureHMM
+        from sequentia.preprocessing import IndependentFunctionTransformer
+        from sequentia.model_selection import GridSearchCV, StratifiedKFold
+
+        GridSearchCV(
+            estimator=Pipeline(
+                [
+                    ("scale", IndependentFunctionTransformer(minmax_scale)),
+                    ("clf", HMMClassifier(variant=GaussianMixtureHMM)),
+                ]
+            ),
+            param_grid={
+                "clf__prior": [PriorMode.UNIFORM, PriorMode.FREQUENCY],
+                "clf__model_kwargs": param_grid(
+                    n_states=[3, 5, 7],
+                    n_components=[2, 3, 4],
+                    covariance=[
+                        CovarianceMode.DIAGONAL, CovarianceMode.SPHERICAL
+                    ],
+                    topology=[
+                        TopologyMode.LEFT_RIGHT, TopologyMode.LINEAR
+                    ],
+                )
+            },
+            cv=StratifiedKFold(),
+        )
+
+    Parameters
+    ----------
+    **kwargs:
+        Hyper-parameter name and corresponding values.
+
+    Returns
+    -------
+    Hyper-parameter grid for a nested object.
+    """
+    return [
+        dict(zip(kwargs.keys(), values))
+        for values in product(*kwargs.values())
+    ]
 
 
 class BaseSearchCV(_search.BaseSearchCV):
