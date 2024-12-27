@@ -79,9 +79,10 @@ def param_grid(**kwargs: list[t.Any]) -> list[dict[str, t.Any]]:
     settings for :class:`.GaussianMixtureHMM`, which is a nested model
     specified in the constructor of a :class:`.HMMClassifier`. ::
 
-        from sklearn.preprocessing import Pipeline, minmax_scale
+        from sklearn.pipeline import Pipeline
+        from sklearn.preprocessing import minmax_scale
 
-        from sequenta.enums import PriorMode, CovarianceMode, TopologyMode
+        from sequentia.enums import PriorMode, CovarianceMode, TopologyMode
         from sequentia.models import HMMClassifier, GaussianMixtureHMM
         from sequentia.preprocessing import IndependentFunctionTransformer
         from sequentia.model_selection import GridSearchCV, StratifiedKFold

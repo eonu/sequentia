@@ -356,8 +356,24 @@ class HMMClassifier(ClassifierMixin):
                 lengths=lengths,
                 classes=self.classes_,
             )
-            for X_c, lengths_c, c in dataset.iter_by_class():
-                self.models[c].fit(X_c, lengths=lengths_c)
+
+            # get number of jobs
+            n_jobs = _multiprocessing.effective_n_jobs(
+                self.n_jobs, x=self.classes_
+            )
+
+            # fit models in parallel
+            self.models = dict(
+                zip(
+                    self.classes_,
+                    joblib.Parallel(n_jobs=n_jobs, max_nbytes=None)(
+                        joblib.delayed(self.models[c].fit)(
+                            X_c, lengths=lengths_c
+                        )
+                        for X_c, lengths_c, c in dataset.iter_by_class()
+                    ),
+                )
+            )
 
         # Set class priors
         models: t.Iterable[int, variants.BaseHMM] = self.models.items()

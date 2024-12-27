@@ -16,9 +16,9 @@ The following models provided by Sequentia all support variable length sequences
 |                                                        |                |               |              +----------+------------+
 |                                                        |                |               |              | Training | Prediction |
 +=========================+==============================+================+===============+==============+==========+============+
-| :class:`.HMMClassifier` | :class:`.GaussianMixtureHMM` | Classification | Real          | ✔            | ✗        | ✔          |
+| :class:`.HMMClassifier` | :class:`.GaussianMixtureHMM` | Classification | Real          | ✔            | ✔        | ✔          |
 |                         +------------------------------+----------------+---------------+--------------+----------+------------+
-|                         | :class:`.CategoricalHMM`     | Classification | Categorical   | ✗            | ✗        | ✔          |
+|                         | :class:`.CategoricalHMM`     | Classification | Categorical   | ✗            | ✔        | ✔          |
 +-------------------------+------------------------------+----------------+---------------+--------------+----------+------------+
 | :class:`.KNNRegressor`                                 | Regression     | Real          | ✔            | N/A      | ✔          |
 +--------------------------------------------------------+----------------+---------------+--------------+----------+------------+
