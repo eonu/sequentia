@@ -21,7 +21,10 @@ Methods
    ~sequentia.preprocessing.transforms.mean_filter
    ~sequentia.preprocessing.transforms.median_filter
 
-|
+.. _definitions:
+
+Definitions
+^^^^^^^^^^^
 
 .. autofunction:: sequentia.preprocessing.transforms.mean_filter
 .. autofunction:: sequentia.preprocessing.transforms.median_filter

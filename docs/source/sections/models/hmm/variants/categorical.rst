@@ -62,7 +62,10 @@ Methods
    ~sequentia.models.hmm.variants.CategoricalHMM.unfreeze
    ~sequentia.models.hmm.variants.CategoricalHMM.n_params
 
-|
+.. _definitions:
+
+Definitions
+^^^^^^^^^^^
 
 .. autoclass:: sequentia.models.hmm.variants.CategoricalHMM
    :members:

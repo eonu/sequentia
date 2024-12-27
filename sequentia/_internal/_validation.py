@@ -1,4 +1,4 @@
-# Copyright (c) 2019-2025 Sequentia Developers.
+# Copyright (c) 2019 Sequentia Developers.
 # Distributed under the terms of the MIT License (see the LICENSE file).
 # SPDX-License-Identifier: MIT
 # This source code is part of the Sequentia project (https://github.com/eonu/sequentia).
@@ -100,7 +100,7 @@ def check_X(
     X: t.Iterable[int] | t.Iterable[float],
     /,
     *,
-    dtype: np.float_ | np.int_,
+    dtype: np.float64 | np.int64,
     univariate: bool = False,
 ) -> Array:
     if not isinstance(X, np.ndarray):
@@ -133,7 +133,7 @@ def check_X_lengths(
     /,
     *,
     lengths: t.Iterable[int] | None,
-    dtype: np.float_ | np.int_,
+    dtype: np.float64 | np.int64,
     univariate: bool = False,
 ) -> tuple[Array, IntArray]:
     # validate observations
@@ -172,7 +172,7 @@ def check_y(
     /,
     *,
     lengths: IntArray,
-    dtype: np.float_ | np.int_ | None = None,
+    dtype: np.float64 | np.int64 | None = None,
 ) -> Array:
     if y is None:
         msg = "No output values `y` provided"

@@ -1,4 +1,4 @@
-# Copyright (c) 2019-2025 Sequentia Developers.
+# Copyright (c) 2019 Sequentia Developers.
 # Distributed under the terms of the MIT License (see the LICENSE file).
 # SPDX-License-Identifier: MIT
 # This source code is part of the Sequentia project (https://github.com/eonu/sequentia).
@@ -9,8 +9,22 @@ sequence machine learning algorithms in Python.
 
 import sklearn
 
-from sequentia import datasets, enums, models, preprocessing, version
+from sequentia import (
+    datasets,
+    enums,
+    model_selection,
+    models,
+    preprocessing,
+    version,
+)
 
-__all__ = ["datasets", "models", "preprocessing", "enums", "version"]
+__all__ = [
+    "datasets",
+    "enums",
+    "model_selection",
+    "models",
+    "preprocessing",
+    "version",
+]
 
 sklearn.set_config(enable_metadata_routing=True)

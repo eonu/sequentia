@@ -1,4 +1,4 @@
-# Copyright (c) 2019-2025 Sequentia Developers.
+# Copyright (c) 2019 Sequentia Developers.
 # Distributed under the terms of the MIT License (see the LICENSE file).
 # SPDX-License-Identifier: MIT
 # This source code is part of the Sequentia project (https://github.com/eonu/sequentia).
@@ -33,7 +33,7 @@ Source code modified from pydantic (https://github.com/pydantic/pydantic).
 
 __all__ = ["VERSION", "version_info"]
 
-VERSION = "2.0.2"
+VERSION = "2.5.0"
 
 
 def version_info() -> str:

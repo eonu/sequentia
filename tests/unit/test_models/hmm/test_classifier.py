@@ -1,4 +1,4 @@
-# Copyright (c) 2019-2025 Sequentia Developers.
+# Copyright (c) 2019 Sequentia Developers.
 # Distributed under the terms of the MIT License (see the LICENSE file).
 # SPDX-License-Identifier: MIT
 # This source code is part of the Sequentia project (https://github.com/eonu/sequentia).
@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import copy
+import enum
 import os
 import tempfile
 import typing as t
@@ -35,6 +36,12 @@ from .variants.test_gaussian_mixture import (
 )
 
 n_classes = 7
+
+
+class FitMode(enum.StrEnum):
+    PREFIT = "prefit"
+    POSTFIT_IDENTICAL = "postfit_identical"
+    POSTFIT_FLEXIBLE = "postfit_flexible"
 
 
 @pytest.fixture(scope="module")
@@ -113,18 +120,19 @@ def assert_fit(clf: BaseHMM):
         },
     ],
 )
-@pytest.mark.parametrize("prefit", [True, False])
+@pytest.mark.parametrize("fit_mode", list(FitMode))
+@pytest.mark.parametrize("n_jobs", [1, -1])
 def test_classifier_e2e(
     request: SubRequest,
     helpers: t.Any,
     model: BaseHMM,
     dataset: SequentialDataset,
     prior: enums.PriorMode | dict[int, float],
+    fit_mode: FitMode,
+    n_jobs: int,
     random_state: np.random.RandomState,
-    *,
-    prefit: bool,
 ) -> None:
-    clf = HMMClassifier(prior=prior)
+    clf = HMMClassifier(prior=prior, n_jobs=n_jobs)
     clf.add_models({i: copy.deepcopy(model) for i in range(n_classes)})
 
     assert clf.prior == prior
@@ -139,12 +147,20 @@ def test_classifier_e2e(
         test_size=0.2, random_state=random_state, stratify=True
     )
 
-    if prefit:
+    if fit_mode == FitMode.PREFIT:
         for X, lengths, c in train.iter_by_class():
             clf.models[c].fit(X, lengths=lengths)
         assert_fit(clf.fit())
-    else:
+    elif fit_mode == FitMode.POSTFIT_FLEXIBLE:
         assert_fit(clf.fit(**train.X_y_lengths))
+    elif fit_mode == FitMode.POSTFIT_IDENTICAL:
+        clf = HMMClassifier(
+            variant=type(model),
+            model_kwargs=model.get_params(),
+            prior=prior,
+            n_jobs=n_jobs,
+        )
+        clf.fit(**train.X_y_lengths)
 
     scores_pred = clf.predict_scores(**test.X_lengths)
     assert scores_pred.shape == (len(test), n_classes)

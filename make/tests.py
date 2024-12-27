@@ -1,4 +1,4 @@
-# Copyright (c) 2019-2025 Sequentia Developers.
+# Copyright (c) 2019 Sequentia Developers.
 # Distributed under the terms of the MIT License (see the LICENSE file).
 # SPDX-License-Identifier: MIT
 # This source code is part of the Sequentia project (https://github.com/eonu/sequentia).
@@ -23,6 +23,8 @@ def unit(c: Config, *, cov: bool = False) -> None:
     command: str = "poetry run pytest tests/"
 
     if cov:
-        command = f"{command} --cov sequentia --cov-report xml"
-
+        command = (
+            f"{command} --cov-config .coveragerc "
+            "--cov sequentia --cov-report xml"
+        )
     c.run(command)

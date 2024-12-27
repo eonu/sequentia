@@ -1,4 +1,4 @@
-# Copyright (c) 2019-2025 Sequentia Developers.
+# Copyright (c) 2019 Sequentia Developers.
 # Distributed under the terms of the MIT License (see the LICENSE file).
 # SPDX-License-Identifier: MIT
 # This source code is part of the Sequentia project (https://github.com/eonu/sequentia).
@@ -21,9 +21,9 @@ sys.path.insert(0, os.path.abspath("../.."))
 # -- Project information -----------------------------------------------------
 
 project = "sequentia"
-copyright = "2019-2025, Sequentia Developers"  # noqa: A001
+copyright = "2019, Sequentia Developers"  # noqa: A001
 author = "Edwin Onuonga (eonu)"
-release = "2.0.2"
+release = "2.5.0"
 
 # -- General configuration ---------------------------------------------------
 

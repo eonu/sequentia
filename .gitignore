@@ -94,3 +94,6 @@ venv.bak/
 
 # Changelog entry
 ENTRY.md
+
+# Jupyter Notebook checkpoints
+*.ipynb_checkpoints/

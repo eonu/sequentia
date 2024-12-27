@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sequentia"
-version = "2.0.2"
+version = "2.5.0"
 license = "MIT"
 authors = ["Edwin Onuonga <ed@eonu.net>"]
 maintainers = ["Edwin Onuonga <ed@eonu.net>"]
@@ -23,6 +23,7 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
@@ -65,8 +66,11 @@ build-backend = 'poetry.core.masonry.api'
 
 [tool.poetry.dependencies]
 python = "^3.11"
-numba = ">=0.56,<1"
-numpy = "^1.19.5"
+numba = [
+    { version = ">=0.56,<1", python = "^3.11,<3.13" },
+    { version = ">=0.61.0rc2", python = ">=3.13" }
+]
+numpy = ">=1.19.5,<3"
 hmmlearn = ">=0.2.8,<1"
 dtaidistance = "^2.3.10"
 scikit-learn = "^1.4"
@@ -180,6 +184,21 @@ allow-star-arg-any = true
     "B",
     "SLF",
     "ARG",
+]
+"sequentia/model_selection/*.py" = [
+    "D",
+    "E", 
+    "ANN", 
+    "PLR", 
+    "TRY", 
+    "EM", 
+    "T", 
+    "BLE", 
+    "RET", 
+    "SLF",
+    "UP",
+    "ARG",
+    "FA"
 ]
 "tests/**/*.py" = ["D", "E", "S101"]
 # "tests/**/test_*.py" = ["ARG001", "S101", "D", "FA100", "FA102", "PLR0915"]

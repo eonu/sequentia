@@ -29,7 +29,10 @@ Methods
    ~sequentia.preprocessing.transforms.IndependentFunctionTransformer.inverse_transform
    ~sequentia.preprocessing.transforms.IndependentFunctionTransformer.transform
 
-|
+.. _definitions:
+
+Definitions
+^^^^^^^^^^^
 
 .. autoclass:: sequentia.preprocessing.transforms.IndependentFunctionTransformer
    :members:

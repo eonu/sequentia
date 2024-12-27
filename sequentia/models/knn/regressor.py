@@ -1,4 +1,4 @@
-# Copyright (c) 2019-2025 Sequentia Developers.
+# Copyright (c) 2019 Sequentia Developers.
 # Distributed under the terms of the MIT License (see the LICENSE file).
 # SPDX-License-Identifier: MIT
 # This source code is part of the Sequentia project (https://github.com/eonu/sequentia).
@@ -14,7 +14,7 @@ import typing as t
 import numpy as np
 import pydantic as pyd
 
-from sequentia._internal import _data, _validation
+from sequentia._internal import _data, _sklearn, _validation
 from sequentia._internal._typing import FloatArray, IntArray
 from sequentia.models.base import RegressorMixin
 from sequentia.models.knn.base import KNNMixin
@@ -131,9 +131,10 @@ class KNNRegressor(KNNMixin, RegressorMixin):
         reproducible pseudo-randomness."""
 
         # Allow metadata routing for lengths
-        self.set_fit_request(lengths=True)
-        self.set_predict_request(lengths=True)
-        self.set_score_request(lengths=True, sample_weight=True)
+        if _sklearn.routing_enabled():
+            self.set_fit_request(lengths=True)
+            self.set_predict_request(lengths=True)
+            self.set_score_request(lengths=True, sample_weight=True)
 
     def fit(
         self: KNNRegressor,
