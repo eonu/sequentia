@@ -48,7 +48,10 @@ Methods
    ~sequentia.models.knn.regressor.KNNRegressor.save
    ~sequentia.models.knn.regressor.KNNRegressor.score
 
-|
+.. _definitions:
+
+Definitions
+^^^^^^^^^^^
 
 .. autoclass:: sequentia.models.knn.regressor.KNNRegressor
    :members:

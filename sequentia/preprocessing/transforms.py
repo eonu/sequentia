@@ -49,11 +49,12 @@ import warnings
 
 import numpy as np
 import scipy.signal
+import sklearn
 import sklearn.base
 from sklearn.preprocessing import FunctionTransformer
 from sklearn.utils.validation import _allclose_dense_sparse, check_array
 
-from sequentia._internal import _data, _validation
+from sequentia._internal import _data, _sklearn, _validation
 from sequentia._internal._typing import Array, FloatArray, IntArray
 
 __all__ = ["IndependentFunctionTransformer", "mean_filter", "median_filter"]
@@ -122,10 +123,12 @@ class IndependentFunctionTransformer(FunctionTransformer):
         self.feature_names_out = feature_names_out
         self.kw_args = kw_args
         self.inv_kw_args = inv_kw_args
+
         # Allow metadata routing for lengths
-        self.set_fit_request(lengths=True)
-        self.set_transform_request(lengths=True)
-        self.set_inverse_transform_request(lengths=True)
+        if _sklearn.routing_enabled():
+            self.set_fit_request(lengths=True)
+            self.set_transform_request(lengths=True)
+            self.set_inverse_transform_request(lengths=True)
 
     def _check_input(self, X, *, lengths, reset):
         if self.validate:

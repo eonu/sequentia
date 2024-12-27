@@ -49,7 +49,10 @@ Properties
    ~sequentia.datasets.base.SequentialDataset.lengths
    ~sequentia.datasets.base.SequentialDataset.y
 
-|
+.. _definitions:
+
+Definitions
+^^^^^^^^^^^
 
 .. autoclass:: sequentia.datasets.base.SequentialDataset
    :members:

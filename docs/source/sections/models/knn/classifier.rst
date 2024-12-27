@@ -47,7 +47,10 @@ Methods
    ~sequentia.models.knn.classifier.KNNClassifier.save
    ~sequentia.models.knn.classifier.KNNClassifier.score
 
-|
+.. _definitions:
+
+Definitions
+^^^^^^^^^^^
 
 .. autoclass:: sequentia.models.knn.classifier.KNNClassifier
    :members:

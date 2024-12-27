@@ -17,7 +17,7 @@ import numpy as np
 import pydantic as pyd
 from sklearn.utils.validation import NotFittedError
 
-from sequentia._internal import _data, _multiprocessing, _validation
+from sequentia._internal import _data, _multiprocessing, _sklearn, _validation
 from sequentia._internal._typing import Array, FloatArray, IntArray
 from sequentia.datasets.base import SequentialDataset
 from sequentia.enums import PriorMode
@@ -142,16 +142,18 @@ class HMMClassifier(ClassifierMixin):
         self.n_jobs: pyd.PositiveInt | pyd.NegativeInt = n_jobs
         #: HMMs constituting the :class:`.HMMClassifier`.
         self.models: dict[int, BaseHMM] = {}
+
         # Allow metadata routing for lengths
-        self.set_fit_request(lengths=True)
-        self.set_predict_request(lengths=True)
-        self.set_predict_proba_request(lengths=True)
-        self.set_predict_log_proba_request(lengths=True)
-        self.set_score_request(
-            lengths=True,
-            normalize=True,
-            sample_weight=True,
-        )
+        if _sklearn.routing_enabled():
+            self.set_fit_request(lengths=True)
+            self.set_predict_request(lengths=True)
+            self.set_predict_proba_request(lengths=True)
+            self.set_predict_log_proba_request(lengths=True)
+            self.set_score_request(
+                lengths=True,
+                normalize=True,
+                sample_weight=True,
+            )
 
     @pyd.validate_call(config=dict(arbitrary_types_allowed=True))
     def add_model(

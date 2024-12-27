@@ -13,7 +13,10 @@ API Reference
     ~sequentia.enums.TopologyMode
     ~sequentia.enums.TransitionMode
 
-|
+.. _definitions:
+
+Definitions
+^^^^^^^^^^^
 
 .. automodule:: sequentia.enums
     :members:

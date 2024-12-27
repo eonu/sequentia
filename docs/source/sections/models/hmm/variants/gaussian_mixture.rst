@@ -73,7 +73,10 @@ Methods
    ~sequentia.models.hmm.variants.GaussianMixtureHMM.unfreeze
    ~sequentia.models.hmm.variants.GaussianMixtureHMM.n_params
 
-|
+.. _definitions:
+
+Definitions
+^^^^^^^^^^^
 
 .. autoclass:: sequentia.models.hmm.variants.GaussianMixtureHMM
    :members:
