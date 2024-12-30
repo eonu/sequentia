@@ -13,10 +13,10 @@ from sequentia._internal._validation import FloatArray
 from sequentia.enums import TopologyMode
 
 __all__ = [
+    "TOPOLOGY_MAP",
     "ErgodicTopology",
     "LeftRightTopology",
     "LinearTopology",
-    "TOPOLOGY_MAP",
 ]
 
 

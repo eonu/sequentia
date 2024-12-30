@@ -338,7 +338,7 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
         defaults = self._hmmlearn_kwargs_defaults()["params"]
         msg = (
             "Expected a string consisting of any combination of "
-            f"{defaults!r}"  #
+            f"{defaults!r}"
         )
         if isinstance(params, str):
             if bool(re.compile(rf"[^{defaults}]").search(params)):

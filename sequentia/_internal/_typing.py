@@ -6,7 +6,7 @@
 import numpy as np
 import numpy.typing as npt
 
-__all__ = ["FloatArray", "IntArray", "Array"]
+__all__ = ["Array", "FloatArray", "IntArray"]
 
 FloatArray = npt.NDArray[np.float64]
 IntArray = npt.NDArray[np.int64]

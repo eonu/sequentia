@@ -20,15 +20,15 @@ from sklearn.utils.validation import NotFittedError
 from sequentia._internal._typing import Array, FloatArray, IntArray
 
 __all__ = [
-    "check_random_state",
-    "check_is_fitted",
-    "requires_fit",
-    "check_classes",
     "check_X",
     "check_X_lengths",
-    "check_y",
-    "check_weighting",
+    "check_classes",
+    "check_is_fitted",
+    "check_random_state",
     "check_use_c",
+    "check_weighting",
+    "check_y",
+    "requires_fit",
 ]
 
 
@@ -106,14 +106,14 @@ def check_X(
     if not isinstance(X, np.ndarray):
         try:
             X = np.array(X).astype(dtype)
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             type_ = type(X).__name__
             msg = f"Expected value to be a numpy.ndarray, got {type_!r}"
             raise TypeError(msg) from e
     if (dtype_ := X.dtype) != dtype:
         try:
             X = X.astype(dtype)
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             msg = f"Expected array to have dtype {dtype}, got {dtype_}"
             raise TypeError(msg) from e
     if (ndim_ := X.ndim) != 2:
@@ -214,7 +214,7 @@ def check_weighting(
         if x.shape != weights.shape:
             msg = "Weights should have the same shape as inputs"
             raise ValueError(msg)  # noqa: TRY301
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         msg = "Invalid weighting function"
         raise ValueError(msg) from e
 

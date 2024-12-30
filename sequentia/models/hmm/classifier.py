@@ -173,9 +173,9 @@ class HMMClassifier(ClassifierMixin):
         #: Model parameters for initializing HMMs.
         self.model_kwargs: dict[str, t.Any] | None = model_kwargs
         #: Type of prior probability to assign to each HMM.
-        self.prior: PriorMode | dict[
-            int, t.Annotated[float, pyd.Field(ge=0, le=1)]
-        ] = prior
+        self.prior: (
+            PriorMode | dict[int, t.Annotated[float, pyd.Field(ge=0, le=1)]]
+        ) = prior
         #: Set of possible class labels.
         self.classes: list[int] | None = classes
         #: Maximum number of concurrently running workers.

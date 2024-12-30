@@ -79,6 +79,6 @@ def version_info() -> str:
         "related packages": ", ".join(related_packages),
     }
     return "\n".join(
-        "{:>30} {}".format(k + ":", str(v).replace("\n", " "))  #
+        "{:>30} {}".format(k + ":", str(v).replace("\n", " "))
         for k, v in info.items()
     )

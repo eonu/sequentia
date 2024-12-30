@@ -10,4 +10,4 @@ from sequentia.datasets.base import SequentialDataset
 from sequentia.datasets.digits import load_digits
 from sequentia.datasets.gene_families import load_gene_families
 
-__all__ = ["data", "load_digits", "load_gene_families", "SequentialDataset"]
+__all__ = ["SequentialDataset", "data", "load_digits", "load_gene_families"]

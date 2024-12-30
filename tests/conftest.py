@@ -56,6 +56,6 @@ class Helpers:
             assert_almost_equal(x.sum(axis=1), np.ones(len(x)))
 
 
-@pytest.fixture()
+@pytest.fixture
 def helpers() -> type[Helpers]:
     return Helpers
