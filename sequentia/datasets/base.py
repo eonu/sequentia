@@ -26,19 +26,17 @@ class SequentialDataset:
     """Utility wrapper for a generic sequential dataset."""
 
     def __init__(
-        self: SequentialDataset,
+        self,
         X: Array,
         y: Array | None = None,
         *,
         lengths: IntArray | None = None,
         classes: list[int] | None = None,
-    ) -> SequentialDataset:
+    ) -> None:
         """Initialize a :class:`.SequentialDataset`.
 
         Parameters
         ----------
-        self: SequentialDataset
-
         X:
             Sequence(s).
 
@@ -80,17 +78,21 @@ class SequentialDataset:
         self._idxs = _data.get_idxs(self.lengths)
 
     def split(
-        self: SequentialDataset,
+        self,
         *,
         test_size: (
-            pyd.NonNegativeInt | pyd.confloat(ge=0, le=1) | None
-        ) = None,  # placeholder
+            pyd.NonNegativeInt
+            | t.Annotated[float, pyd.Field(ge=0, le=1)]
+            | None
+        ) = None,
         train_size: (
-            pyd.NonNegativeInt | pyd.confloat(ge=0, le=1) | None
-        ) = None,  # placeholder
+            pyd.NonNegativeInt
+            | t.Annotated[float, pyd.Field(ge=0, le=1)]
+            | None
+        ) = None,
         random_state: (
             pyd.NonNegativeInt | np.random.RandomState | None
-        ) = None,  # placeholder
+        ) = None,
         shuffle: bool = True,
         stratify: bool = False,
     ) -> tuple[SequentialDataset, SequentialDataset]:
@@ -100,8 +102,6 @@ class SequentialDataset:
 
         Parameters
         ----------
-        self: SequentialDataset
-
         test_size:
             Size of the test partition.
 
@@ -171,9 +171,7 @@ class SequentialDataset:
 
         return data_train, data_test
 
-    def iter_by_class(
-        self: SequentialDataset,
-    ) -> t.Generator[tuple[Array, Array, int]]:
+    def iter_by_class(self) -> t.Generator[tuple[Array, Array, int]]:
         """Subset the observation sequences by class.
 
         Returns
@@ -207,24 +205,18 @@ class SequentialDataset:
             lengths = self._lengths[ind]
             yield np.vstack(X), lengths, c
 
-    def __len__(self: SequentialDataset) -> int:
+    def __len__(self) -> int:
         """Return the number of sequences in the dataset."""
         return len(self._lengths)
 
-    def __getitem__(
-        self: SequentialDataset,
-        /,
-        i: int,
-    ) -> Array | tuple[Array, Array]:
+    def __getitem__(self, /, i: int) -> Array | tuple[Array, Array]:
         """Slice observation sequences and corresponding outputs."""
         idxs = np.atleast_2d(self._idxs[i])
         X = list(_data.iter_X(self._X, idxs=idxs))
         X = X[0] if isinstance(i, int) and len(X) == 1 else X
         return X if self._y is None else (X, self._y[i])
 
-    def __iter__(
-        self: SequentialDataset,
-    ) -> t.Generator[Array | tuple[Array, Array]]:
+    def __iter__(self) -> t.Generator[Array | tuple[Array, Array]]:
         """Create a generator over sequences and their corresponding
         outputs.
         """
@@ -232,7 +224,7 @@ class SequentialDataset:
             yield self[i]
 
     @property
-    def X(self: SequentialDataset) -> Array:
+    def X(self) -> Array:
         """Observation sequences.
 
         Returns
@@ -243,7 +235,7 @@ class SequentialDataset:
         return self._X
 
     @property
-    def y(self: SequentialDataset) -> Array:
+    def y(self) -> Array:
         """Outputs corresponding to ``X``.
 
         Returns
@@ -262,7 +254,7 @@ class SequentialDataset:
         return self._y
 
     @property
-    def lengths(self: SequentialDataset) -> IntArray:
+    def lengths(self) -> IntArray:
         """Lengths corresponding to ``X``.
 
         Returns
@@ -273,7 +265,7 @@ class SequentialDataset:
         return self._lengths
 
     @property
-    def classes(self: SequentialDataset) -> IntArray | None:
+    def classes(self) -> IntArray | None:
         """Set of unique classes in ``y``.
 
         Returns
@@ -284,7 +276,7 @@ class SequentialDataset:
         return self._classes
 
     @property
-    def idxs(self: SequentialDataset) -> IntArray:
+    def idxs(self) -> IntArray:
         """Observation sequence start and end indices.
 
         Returns
@@ -295,7 +287,7 @@ class SequentialDataset:
         return self._idxs
 
     @property
-    def X_y(self: SequentialDataset) -> dict[str, Array]:
+    def X_y(self) -> dict[str, Array]:
         """Observation sequences and corresponding outputs.
 
         Returns
@@ -317,7 +309,7 @@ class SequentialDataset:
         return {"X": self._X, "y": self._y}
 
     @property
-    def X_lengths(self: SequentialDataset) -> dict[str, Array]:
+    def X_lengths(self) -> dict[str, Array]:
         """Observation sequences and corresponding lengths.
 
         Returns
@@ -331,7 +323,7 @@ class SequentialDataset:
         return {"X": self._X, "lengths": self._lengths}
 
     @property
-    def X_y_lengths(self: SequentialDataset) -> dict[str, Array]:
+    def X_y_lengths(self) -> dict[str, Array]:
         """Observation sequences and corresponding outputs and lengths.
 
         Returns
@@ -354,7 +346,7 @@ class SequentialDataset:
         return {"X": self._X, "y": self._y, "lengths": self._lengths}
 
     def save(
-        self: SequentialDataset,
+        self,
         path: str | pathlib.Path | t.IO,
         /,
         *,
@@ -389,9 +381,7 @@ class SequentialDataset:
         save_fun(path, **arrs)
 
     @classmethod
-    def load(
-        cls: type[SequentialDataset], path: str | pathlib.Path | t.IO, /
-    ) -> SequentialDataset:
+    def load(cls, path: str | pathlib.Path | t.IO, /) -> SequentialDataset:
         """Load a stored dataset in ``.npz`` format.
 
         See :func:`numpy:numpy.load`.
@@ -413,7 +403,7 @@ class SequentialDataset:
         """
         return cls(**np.load(path))
 
-    def copy(self: SequentialDataset) -> SequentialDataset:
+    def copy(self) -> SequentialDataset:
         """Create a copy of the dataset.
 
         Returns

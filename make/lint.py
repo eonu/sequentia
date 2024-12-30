@@ -33,7 +33,7 @@ def check(c: Config) -> None:
 def format_(c: Config) -> None:
     """Format Python files."""
     commands: list[str] = [
-        "poetry run ruff --fix .",
+        "poetry run ruff check --fix .",
         "poetry run ruff format .",
     ]
     for command in commands:

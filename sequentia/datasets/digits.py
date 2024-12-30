@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import importlib.resources
 import operator
+import typing as t
 
 import numpy as np
 import pydantic as pyd
@@ -22,7 +23,19 @@ __all__ = ["load_digits"]
 
 @pyd.validate_call
 def load_digits(
-    *, digits: set[pyd.conint(ge=0, le=9)] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+    *,
+    digits: set[t.Annotated[int, pyd.Field(ge=0, le=9)]] = {
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+    },
 ) -> SequentialDataset:
     """Load a dataset of MFCC features of spoken digit audio samples from the
     Free Spoken Digit Dataset.

@@ -328,7 +328,7 @@ def test_ergodic_random_transitions_many(
 
 
 def test_ergodic_check_transitions_invalid(
-    random_state: np.random.RandomState
+    random_state: np.random.RandomState,
 ) -> None:
     """Validate an invalid ergodic transition matrix"""
     topology = topologies.ErgodicTopology(
@@ -342,7 +342,7 @@ def test_ergodic_check_transitions_invalid(
 
 
 def test_ergodic_check_transitions_valid(
-    random_state: np.random.RandomState
+    random_state: np.random.RandomState,
 ) -> None:
     """Validate a valid ergodic transition matrix"""
     topology = topologies.ErgodicTopology(
@@ -451,7 +451,7 @@ def test_linear_random_transitions_many(
 
 
 def test_linear_check_transitions_invalid(
-    random_state: np.random.RandomState
+    random_state: np.random.RandomState,
 ) -> None:
     """Validate an invalid linear transition matrix"""
     topology = topologies.LinearTopology(n_states=5, random_state=random_state)
@@ -466,7 +466,7 @@ def test_linear_check_transitions_invalid(
 
 
 def test_linear_check_transitions_valid(
-    random_state: np.random.RandomState
+    random_state: np.random.RandomState,
 ) -> None:
     """Validate a valid linear transition matrix"""
     topology = topologies.LinearTopology(n_states=5, random_state=random_state)

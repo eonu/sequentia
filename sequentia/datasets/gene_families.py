@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import importlib.resources
 import operator
+import typing as t
 
 import numpy as np
 import pydantic as pyd
@@ -23,7 +24,16 @@ __all__ = ["load_gene_families"]
 
 @pyd.validate_call
 def load_gene_families(
-    *, families: set[pyd.conint(ge=0, le=6)] = {0, 1, 2, 3, 4, 5, 6}
+    *,
+    families: set[t.Annotated[int, pyd.Field(ge=0, le=6)]] = {
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+    },
 ) -> tuple[SequentialDataset, LabelEncoder]:
     """Load a dataset of human DNA sequences grouped by gene family.
 

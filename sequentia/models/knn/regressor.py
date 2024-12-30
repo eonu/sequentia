@@ -33,22 +33,20 @@ class KNNRegressor(KNNMixin, RegressorMixin):
 
     @pyd.validate_call(config=dict(arbitrary_types_allowed=True))
     def __init__(
-        self: pyd.SkipValidation,
+        self,
         *,
         k: pyd.PositiveInt = 1,
         weighting: t.Callable[[FloatArray], FloatArray] | None = None,
-        window: pyd.confloat(ge=0.0, le=1.0) = 1.0,
+        window: t.Annotated[float, pyd.Field(ge=0, le=1)] = 1.0,
         independent: bool = False,
         use_c: bool = True,
         n_jobs: pyd.PositiveInt | pyd.NegativeInt = 1,
         random_state: pyd.NonNegativeInt | np.random.RandomState | None = None,
-    ) -> pyd.SkipValidation:
+    ) -> None:
         """Initializes the :class:`.KNNRegressor`.
 
         Parameters
         ----------
-        self: KNNRegressor
-
         k:
             Number of neighbors.
 
@@ -107,9 +105,7 @@ class KNNRegressor(KNNMixin, RegressorMixin):
         self.k: int = k
         """Number of neighbors."""
 
-        self.weighting: t.Callable[[np.ndarray], np.ndarray] | None = (
-            weighting  # placeholder
-        )
+        self.weighting: t.Callable[[np.ndarray], np.ndarray] | None = weighting
         """A callable that specifies how distance weighting should be
         performed."""
 
@@ -138,18 +134,16 @@ class KNNRegressor(KNNMixin, RegressorMixin):
             self.set_score_request(lengths=True, sample_weight=True)
 
     def fit(
-        self: KNNRegressor,
+        self,
         X: FloatArray,
         y: FloatArray,
         *,
         lengths: IntArray | None = None,
-    ) -> KNNRegressor:
+    ) -> t.Self:
         """Fits the regressor to the sequence(s) in ``X``.
 
         Parameters
         ----------
-        self: KNNRegressor
-
         X:
             Sequence(s).
 
@@ -183,7 +177,7 @@ class KNNRegressor(KNNMixin, RegressorMixin):
 
     @_validation.requires_fit
     def predict(
-        self: KNNRegressor,
+        self,
         X: FloatArray,
         *,
         lengths: IntArray | None = None,
@@ -192,8 +186,6 @@ class KNNRegressor(KNNMixin, RegressorMixin):
 
         Parameters
         ----------
-        self: KNNRegressor
-
         X:
             Sequence(s).
 

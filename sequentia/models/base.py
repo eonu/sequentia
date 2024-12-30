@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import abc
+import typing as t
 
 import numpy as np
 import sklearn.base
@@ -28,18 +29,18 @@ class ClassifierMixin(
 
     @abc.abstractmethod
     def fit(
-        self: ClassifierMixin,
+        self,
         X: Array,
         y: IntArray,
         *,
         lengths: IntArray | None = None,
-    ) -> ClassifierMixin:
+    ) -> t.Self:
         """Fit the classifier with the provided sequences and outputs."""
         raise NotImplementedError
 
     @abc.abstractmethod
     def predict(
-        self: ClassifierMixin,
+        self,
         X: Array,
         *,
         lengths: IntArray | None = None,
@@ -48,7 +49,7 @@ class ClassifierMixin(
         raise NotImplementedError
 
     def fit_predict(
-        self: ClassifierMixin,
+        self,
         X: Array,
         y: IntArray,
         *,
@@ -59,8 +60,6 @@ class ClassifierMixin(
 
         Parameters
         ----------
-        self: ClassifierMixin
-
         X:
             Sequence(s).
 
@@ -82,7 +81,7 @@ class ClassifierMixin(
 
     @abc.abstractmethod
     def predict_proba(
-        self: ClassifierMixin,
+        self,
         X: Array,
         *,
         lengths: IntArray | None = None,
@@ -92,7 +91,7 @@ class ClassifierMixin(
 
     @abc.abstractmethod
     def predict_scores(
-        self: ClassifierMixin,
+        self,
         X: Array,
         *,
         lengths: IntArray | None = None,
@@ -102,7 +101,7 @@ class ClassifierMixin(
 
     @_validation.requires_fit
     def score(
-        self: ClassifierMixin,
+        self,
         X: Array,
         y: IntArray,
         *,
@@ -114,8 +113,6 @@ class ClassifierMixin(
 
         Parameters
         ----------
-        self: ClassifierMixin
-
         X:
             Sequence(s).
 
@@ -155,24 +152,24 @@ class RegressorMixin(sklearn.base.BaseEstimator, sklearn.base.RegressorMixin):
 
     @abc.abstractmethod
     def fit(
-        self: RegressorMixin,
+        self,
         X: FloatArray,
         y: FloatArray,
         *,
         lengths: IntArray | None = None,
-    ) -> RegressorMixin:
+    ) -> t.Self:
         """Fit the regressor with the provided sequences and outputs."""
         raise NotImplementedError
 
     @abc.abstractmethod
     def predict(
-        self: RegressorMixin, X: FloatArray, lengths: IntArray | None = None
+        self, X: FloatArray, lengths: IntArray | None = None
     ) -> FloatArray:
         """Predict outputs for the provided sequences."""
         raise NotImplementedError
 
     def fit_predict(
-        self: RegressorMixin,
+        self,
         X: FloatArray,
         y: FloatArray,
         *,
@@ -183,8 +180,6 @@ class RegressorMixin(sklearn.base.BaseEstimator, sklearn.base.RegressorMixin):
 
         Parameters
         ----------
-        self: RegressorMixin
-
         X:
             Sequence(s).
 
@@ -206,7 +201,7 @@ class RegressorMixin(sklearn.base.BaseEstimator, sklearn.base.RegressorMixin):
 
     @_validation.requires_fit
     def score(
-        self: RegressorMixin,
+        self,
         X: FloatArray,
         y: FloatArray,
         *,
@@ -218,8 +213,6 @@ class RegressorMixin(sklearn.base.BaseEstimator, sklearn.base.RegressorMixin):
 
         Parameters
         ----------
-        self: RegressorMixin
-
         X:
             Sequence(s).
 
