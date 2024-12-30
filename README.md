@@ -186,7 +186,7 @@ from dtaidistance import dtw
 dtw.try_import_c()
 ```
 
-If these libraries are not available, Sequentia will fall back to using the Python version of the relevant code instead of C.
+If these libraries are unavailable, Sequentia will fall back to using a Python alternative.
 
 ### Development
 
