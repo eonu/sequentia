@@ -366,7 +366,7 @@ class HMMClassifier(ClassifierMixin):
             self.models = dict(
                 zip(
                     self.classes_,
-                    joblib.Parallel(n_jobs=n_jobs, max_nbytes=None)(
+                    joblib.Parallel(n_jobs=n_jobs, mmap_mode="r+")(
                         joblib.delayed(self.models[c].fit)(
                             X_c, lengths=lengths_c
                         )
@@ -537,7 +537,7 @@ class HMMClassifier(ClassifierMixin):
         n_jobs = _multiprocessing.effective_n_jobs(self.n_jobs, x=lengths)
         chunk_idxs = np.array_split(_data.get_idxs(lengths), n_jobs)
         return np.concatenate(
-            joblib.Parallel(n_jobs=n_jobs, max_nbytes=None)(
+            joblib.Parallel(n_jobs=n_jobs, mmap_mode="r+")(
                 joblib.delayed(self._compute_scores_chunk)(X, idxs=idxs)
                 for idxs in chunk_idxs
             )
