@@ -37,7 +37,7 @@ class KNNRegressor(KNNMixin, RegressorMixin):
         *,
         k: pyd.PositiveInt = 1,
         weighting: t.Callable[[FloatArray], FloatArray] | None = None,
-        window: pyd.confloat(ge=0.0, le=1.0) = 1.0,
+        window: t.Annotated[float, pyd.Field(ge=0, le=1)] = 1.0,
         independent: bool = False,
         use_c: bool = False,
         n_jobs: pyd.PositiveInt | pyd.NegativeInt = 1,

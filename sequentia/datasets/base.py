@@ -81,11 +81,15 @@ class SequentialDataset:
         self,
         *,
         test_size: (
-            pyd.NonNegativeInt | pyd.confloat(ge=0, le=1) | None
-        ) = None,  # placeholder
+            pyd.NonNegativeInt
+            | t.Annotated[float, pyd.Field(ge=0, le=1)]
+            | None
+        ) = None,
         train_size: (
-            pyd.NonNegativeInt | pyd.confloat(ge=0, le=1) | None
-        ) = None,  # placeholder
+            pyd.NonNegativeInt
+            | t.Annotated[float, pyd.Field(ge=0, le=1)]
+            | None
+        ) = None,
         random_state: (
             pyd.NonNegativeInt | np.random.RandomState | None
         ) = None,  # placeholder
