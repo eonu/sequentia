@@ -64,7 +64,8 @@ class KNNRegressor(KNNMixin, RegressorMixin):
             If ``None``, then a uniform weighting of 1 will be applied to all
             distances.
 
-        window: The size of the Sakoe—Chiba band global constrant as a
+        window:
+            The size of the Sakoe—Chiba band global constrant as a
             fraction of the length of the shortest of the two sequences being
             compared.
 
