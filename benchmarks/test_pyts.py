@@ -34,9 +34,7 @@ def prepare(data: SequentialDataset, length: int) -> DataSplit:
     return X_pad[:, 0], data.y
 
 
-def multivariate(
-    *, train_data: DataSplit, test_data: DataSplit, n_jobs: int
-) -> None:
+def run(*, train_data: DataSplit, test_data: DataSplit, n_jobs: int) -> None:
     """Fit and predict the classifier."""
     # initialize model
     clf = KNeighborsClassifier(
@@ -70,7 +68,7 @@ if __name__ == "__main__":
     )
 
     benchmark = timeit.timeit(
-        "func(train_data=train_data, test_data=test_data, n_jobs=args.n_jobs)",
+        "run(train_data=train_data, test_data=test_data, n_jobs=args.n_jobs)",
         globals=locals(),
         number=args.number,
     )

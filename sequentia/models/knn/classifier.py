@@ -59,23 +59,21 @@ class KNNClassifier(KNNMixin, ClassifierMixin):
 
     @pyd.validate_call(config=dict(arbitrary_types_allowed=True))
     def __init__(
-        self: pyd.SkipValidation,
+        self,
         *,
         k: pyd.PositiveInt = 1,
         weighting: t.Callable[[FloatArray], FloatArray] | None = None,
-        window: pyd.confloat(ge=0.0, le=1.0) = 1.0,
+        window: t.Annotated[float, pyd.Field(ge=0, le=1)] = 1.0,
         independent: bool = False,
-        use_c: bool = False,
+        use_c: bool = True,
         n_jobs: pyd.PositiveInt | pyd.NegativeInt = 1,
         random_state: pyd.NonNegativeInt | np.random.RandomState | None = None,
         classes: list[int] | None = None,
-    ) -> pyd.SkipValidation:
+    ) -> None:
         """Initializes the :class:`.KNNClassifier`.
 
         Parameters
         ----------
-        self: KNNClassifier
-
         k:
             Number of neighbors.
 
@@ -142,9 +140,7 @@ class KNNClassifier(KNNMixin, ClassifierMixin):
         self.k: int = k
         """Number of neighbors."""
 
-        self.weighting: t.Callable[[np.ndarray], np.ndarray] | None = (
-            weighting  # placeholder
-        )
+        self.weighting: t.Callable[[np.ndarray], np.ndarray] | None = weighting
         """A callable that specifies how distance weighting should be
         performed."""
 
@@ -184,18 +180,16 @@ class KNNClassifier(KNNMixin, ClassifierMixin):
             )
 
     def fit(
-        self: KNNClassifier,
+        self,
         X: FloatArray,
         y: IntArray,
         *,
         lengths: IntArray | None = None,
-    ) -> KNNClassifier:
+    ) -> t.Self:
         """Fit the classifier to the sequence(s) in ``X``.
 
         Parameters
         ----------
-        self: KNNClassifier
-
         X:
             Sequence(s).
 
@@ -233,7 +227,7 @@ class KNNClassifier(KNNMixin, ClassifierMixin):
 
     @_validation.requires_fit
     def predict(
-        self: KNNClassifier,
+        self,
         X: FloatArray,
         *,
         lengths: IntArray | None = None,
@@ -242,8 +236,6 @@ class KNNClassifier(KNNMixin, ClassifierMixin):
 
         Parameters
         ----------
-        self: KNNClassifier
-
         X:
             Sequence(s).
 
@@ -267,7 +259,7 @@ class KNNClassifier(KNNMixin, ClassifierMixin):
 
     @_validation.requires_fit
     def predict_log_proba(
-        self: KNNClassifier,
+        self,
         X: FloatArray,
         *,
         lengths: IntArray | None = None,
@@ -278,8 +270,6 @@ class KNNClassifier(KNNMixin, ClassifierMixin):
 
         Parameters
         ----------
-        self: KNNClassifier
-
         X:
             Sequence(s).
 
@@ -302,7 +292,7 @@ class KNNClassifier(KNNMixin, ClassifierMixin):
 
     @_validation.requires_fit
     def predict_proba(
-        self: KNNClassifier,
+        self,
         X: FloatArray,
         *,
         lengths: IntArray | None = None,
@@ -313,8 +303,6 @@ class KNNClassifier(KNNMixin, ClassifierMixin):
 
         Parameters
         ----------
-        self: KNNClassifier
-
         X:
             Sequence(s).
 
@@ -338,7 +326,7 @@ class KNNClassifier(KNNMixin, ClassifierMixin):
 
     @_validation.requires_fit
     def predict_scores(
-        self: KNNClassifier,
+        self,
         X: FloatArray,
         *,
         lengths: IntArray | None = None,
@@ -350,8 +338,6 @@ class KNNClassifier(KNNMixin, ClassifierMixin):
 
         Parameters
         ----------
-        self: KNNClassifier
-
         X:
             Sequence(s).
 
@@ -379,7 +365,7 @@ class KNNClassifier(KNNMixin, ClassifierMixin):
         return self._compute_scores(k_labels, k_weightings)
 
     def _compute_scores(
-        self: KNNClassifier, labels: IntArray, weightings: FloatArray
+        self, labels: IntArray, weightings: FloatArray
     ) -> FloatArray:
         """Calculate the sum of the weightings for each label group."""
         scores = np.zeros((len(labels), len(self.classes_)))
@@ -388,7 +374,7 @@ class KNNClassifier(KNNMixin, ClassifierMixin):
         return scores
 
     def _find_max_labels(
-        self: KNNClassifier,
+        self,
         scores: FloatArray,
         /,
     ) -> IntArray:
@@ -398,15 +384,13 @@ class KNNClassifier(KNNMixin, ClassifierMixin):
         n_jobs = _multiprocessing.effective_n_jobs(self.n_jobs, x=scores)
         score_chunks = np.array_split(scores, n_jobs)
         return np.concatenate(
-            joblib.Parallel(n_jobs=n_jobs, max_nbytes=None)(
+            joblib.Parallel(n_jobs=n_jobs, mmap_mode="r+")(
                 joblib.delayed(self._find_max_labels_chunk)(score_chunk)
                 for score_chunk in score_chunks
             )
         )
 
-    def _find_max_labels_chunk(
-        self: KNNClassifier, score_chunk: FloatArray, /
-    ) -> IntArray:
+    def _find_max_labels_chunk(self, score_chunk: FloatArray, /) -> IntArray:
         """Return the label with the highest score for each item in the
         chunk.
         """

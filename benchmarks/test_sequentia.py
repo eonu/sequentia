@@ -21,7 +21,7 @@ np.random.seed(0)
 random_state: np.random.RandomState = np.random.RandomState(0)
 
 
-def multivariate(
+def run(
     *, train_data: SequentialDataset, test_data: SequentialDataset, n_jobs: int
 ) -> None:
     """Fit and predict the classifier."""
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     train_data, test_data = load_dataset(multivariate=False)
 
     benchmark = timeit.timeit(
-        "func(train_data=train_data, test_data=test_data, n_jobs=args.n_jobs)",
+        "run(train_data=train_data, test_data=test_data, n_jobs=args.n_jobs)",
         globals=locals(),
         number=args.number,
     )

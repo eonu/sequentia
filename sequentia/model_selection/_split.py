@@ -49,11 +49,11 @@ from sklearn.model_selection import _split
 
 __all__ = [
     "KFold",
-    "StratifiedKFold",
-    "ShuffleSplit",
-    "StratifiedShuffleSplit",
     "RepeatedKFold",
     "RepeatedStratifiedKFold",
+    "ShuffleSplit",
+    "StratifiedKFold",
+    "StratifiedShuffleSplit",
 ]
 
 

@@ -24,15 +24,15 @@ from sequentia.model_selection._split import (
 )
 
 __all__ = [
-    "KFold",
-    "StratifiedKFold",
-    "ShuffleSplit",
-    "StratifiedShuffleSplit",
-    "RepeatedKFold",
-    "RepeatedStratifiedKFold",
     "GridSearchCV",
-    "RandomizedSearchCV",
     "HalvingGridSearchCV",
     "HalvingRandomSearchCV",
+    "KFold",
+    "RandomizedSearchCV",
+    "RepeatedKFold",
+    "RepeatedStratifiedKFold",
+    "ShuffleSplit",
+    "StratifiedKFold",
+    "StratifiedShuffleSplit",
     "param_grid",
 ]

@@ -7,7 +7,7 @@
 
 import enum
 
-__all__ = ["TopologyMode", "CovarianceMode", "TransitionMode", "PriorMode"]
+__all__ = ["CovarianceMode", "PriorMode", "TopologyMode", "TransitionMode"]
 
 
 class TopologyMode(enum.StrEnum):

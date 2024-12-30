@@ -58,6 +58,8 @@ Some examples of how Sequentia can be used on sequence data include:
 
 - **Simplicity and interpretability**: Sequentia offers a limited set of machine learning algorithms, chosen specifically to be more interpretable and easier to configure than more complex alternatives such as recurrent neural networks and transformers, while maintaining a high level of effectiveness.
 - **Familiar and user-friendly**: To fit more seamlessly into the workflow of data science practitioners, Sequentia follows the ubiquitous Scikit-Learn API, providing a familiar model development process for many, as well as enabling wider access to the rapidly growing Scikit-Learn ecosystem.
+- **Speed**: Some algorithms offered by Sequentia naturally have restrictive runtime scaling, such as k-nearest neighbors. However, our implementation is 
+optimized to the point of being multiple orders of magnitude faster than similar packages — see the [Benchmarks](#benchmarks) section for more information.
 
 ## Build Status
 
@@ -82,7 +84,7 @@ effective inference algorithm.
 - [x] Sakoe–Chiba band global warping constraint
 - [x] Dependent and independent feature warping (DTWD/DTWI)
 - [x] Custom distance-weighted predictions
-- [x] Multi-processed predictions
+- [x] Multi-processed prediction
 
 #### [Hidden Markov Models](https://sequentia.readthedocs.io/en/latest/sections/models/hmm/index.html) (via [`hmmlearn`](https://github.com/hmmlearn/hmmlearn))
 
@@ -99,7 +101,7 @@ based on the provided training sequence data.
 - [x] Multivariate real-valued observations (modeled with Gaussian mixture emissions)
 - [x] Univariate categorical observations (modeled with discrete emissions)
 - [x] Linear, left-right and ergodic topologies
-- [x] Multi-processed predictions
+- [x] Multi-processed training and prediction
 
 ### Scikit-Learn compatibility
 
@@ -157,7 +159,7 @@ All of the above libraries support multiprocessing, and prediction was performed
 <img src="benchmarks/benchmark.svg" width="100%"/>
 
 > **Device information**:
-> - Product: ThinkPad T14s (Gen 6)
+> - Product: Lenovo ThinkPad T14s (Gen 6)
 > - Processor: AMD Ryzen™ AI 7 PRO 360 (8 cores, 16 threads, 2-5GHz)
 > - Memory: 64 GB LPDDR5X-7500MHz
 > - Solid State Drive: 1 TB SSD M.2 2280 PCIe Gen4 Performance TLC Opal 
@@ -175,7 +177,7 @@ pip install sequentia
 
 For optimal performance when using any of the k-NN based models, it is important that the correct `dtaidistance` C libraries are accessible.
 
-Please see the [`dtaidistance` installation guide](https://dtaidistance.readthedocs.io/en/latest/usage/installation.html) for troubleshooting if you run into C compilation issues, or if setting `use_c=True` on k-NN based models results in a warning.
+Please see the [`dtaidistance` installation guide](https://dtaidistance.readthedocs.io/en/latest/usage/installation.html) for troubleshooting if you run into C compilation issues, or if using k-NN based models with `use_c=True` results in a warning.
 
 You can use the following to check if the appropriate C libraries are available.
 
@@ -183,6 +185,8 @@ You can use the following to check if the appropriate C libraries are available.
 from dtaidistance import dtw
 dtw.try_import_c()
 ```
+
+If these libraries are unavailable, Sequentia will fall back to using a Python alternative.
 
 ### Development
 

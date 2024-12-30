@@ -11,13 +11,13 @@ repos:
         pass_filenames: false
   # ruff check (w/autofix)
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.3 # should match version in pyproject.toml
+    rev: v0.8.4 # should match version in pyproject.toml
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
   # ruff format
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.3 # should match version in pyproject.toml
+    rev: v0.8.4 # should match version in pyproject.toml
     hooks:
       - id: ruff-format
   # # pydoclint - docstring formatting

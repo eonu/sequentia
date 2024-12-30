@@ -33,7 +33,7 @@ Source code modified from pydantic (https://github.com/pydantic/pydantic).
 
 __all__ = ["VERSION", "version_info"]
 
-VERSION = "2.5.0"
+VERSION = "2.6.0"
 
 
 def version_info() -> str:
@@ -79,6 +79,6 @@ def version_info() -> str:
         "related packages": ", ".join(related_packages),
     }
     return "\n".join(
-        "{:>30} {}".format(k + ":", str(v).replace("\n", " "))  #
+        "{:>30} {}".format(k + ":", str(v).replace("\n", " "))
         for k, v in info.items()
     )
