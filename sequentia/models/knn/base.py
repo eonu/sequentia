@@ -143,7 +143,7 @@ class KNNMixin:
 
         # multiprocessed DTW calculation
         return np.vstack(
-            joblib.Parallel(n_jobs=n_jobs, max_nbytes=None)(
+            joblib.Parallel(n_jobs=n_jobs, mmap_mode="r+")(
                 joblib.delayed(self._distance_matrix_row_chunk)(
                     row_idxs, col_chunk_idxs, X, n_jobs, dtw
                 )
@@ -245,7 +245,7 @@ class KNNMixin:
         columns.
         """
         return np.hstack(
-            joblib.Parallel(n_jobs=n_jobs, max_nbytes=None)(
+            joblib.Parallel(n_jobs=n_jobs, mmap_mode="r+")(
                 joblib.delayed(self._distance_matrix_row_col_chunk)(
                     col_idxs, row_idxs, X, dtw
                 )
