@@ -388,11 +388,17 @@ Nothing, initial release!
 
 </details>
 
-## [v2.5.0](https://github.com/eonu/sequentia/releases/tag/v2.5.0) - 2024-12-27
+## [v2.6.0](https://github.com/eonu/sequentia/releases/tag/v2.6.0) - 2024-12-30
+
+### Bug Fixes
+
+- enable `joblib.Parallel` memory mapping ([#262](https://github.com/eonu/sequentia/issues/262))
 
 ### Documentation
 
 - update copyright notice ([#255](https://github.com/eonu/sequentia/issues/255))
+- fix `KNNRegressor.window` docstring typo ([#261](https://github.com/eonu/sequentia/issues/261))
+- update `README.md` features ([#265](https://github.com/eonu/sequentia/issues/265))
 
 ### Features
 
@@ -402,6 +408,11 @@ Nothing, initial release!
 - add `model_selection` sub-package for hyper-parameters ([#257](https://github.com/eonu/sequentia/issues/257))
 - add model spec support to `HMMClassifier.__init__` ([#258](https://github.com/eonu/sequentia/issues/258))
 - add `HMMClassifier.fit` multiprocessing ([#259](https://github.com/eonu/sequentia/issues/259))
+- set `use_c=True` by default for `KNNClassifier`/`KNNRegressor` ([#263](https://github.com/eonu/sequentia/issues/263))
+
+### Styling
+
+- upgrade to `ruff` v0.8.4 and fix type hints ([#264](https://github.com/eonu/sequentia/issues/264))
 
 ## [v2.0.2](https://github.com/eonu/sequentia/releases/tag/v2.0.2) - 2024-04-13
 
