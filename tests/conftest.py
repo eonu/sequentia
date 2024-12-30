@@ -39,17 +39,12 @@ class Helpers:
         assert not np.allclose(a, b, rtol=1e-3)
 
     @classmethod
-    def assert_all_equal(cls: type[Helpers], A: Array, B: Array, /) -> None:
+    def assert_all_equal(cls, A: Array, B: Array, /) -> None:
         for a, b in zip(A, B):
             cls.assert_equal(a, b)
 
     @classmethod
-    def assert_all_not_equal(
-        cls: type[Helpers],
-        A: Array,
-        B: Array,
-        /,
-    ) -> None:
+    def assert_all_not_equal(cls, A: Array, B: Array, /) -> None:
         for a, b in zip(A, B):
             cls.assert_not_equal(a, b)
 

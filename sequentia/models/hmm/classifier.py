@@ -103,7 +103,7 @@ class HMMClassifier(ClassifierMixin):
 
     @pyd.validate_call(config=dict(arbitrary_types_allowed=True))
     def __init__(
-        self: pyd.SkipValidation,
+        self,
         *,
         variant: type[variants.CategoricalHMM]
         | type[variants.GaussianMixtureHMM]
@@ -114,13 +114,11 @@ class HMMClassifier(ClassifierMixin):
         ) = PriorMode.UNIFORM,  # placeholder
         classes: list[int] | None = None,
         n_jobs: pyd.PositiveInt | pyd.NegativeInt = 1,
-    ) -> pyd.SkipValidation:
+    ) -> None:
         """Initialize a :class:`.HMMClassifier`.
 
         Parameters
         ----------
-        self: HMMClassifier
-
         variant:
             Variant of HMM to use for modelling each class. If not specified,
             models must instead be added using the :func:`add_model` or
@@ -196,19 +194,11 @@ class HMMClassifier(ClassifierMixin):
             )
 
     @pyd.validate_call(config=dict(arbitrary_types_allowed=True))
-    def add_model(
-        self: pyd.SkipValidation,
-        model: variants.BaseHMM,
-        /,
-        *,
-        label: int,
-    ) -> pyd.SkipValidation:
+    def add_model(self, model: variants.BaseHMM, /, *, label: int) -> t.Self:
         """Add a single HMM to the classifier.
 
         Parameters
         ----------
-        self: HMMClassifier
-
         model:
             HMM to add to the classifier.
 
@@ -238,17 +228,11 @@ class HMMClassifier(ClassifierMixin):
         return self
 
     @pyd.validate_call(config=dict(arbitrary_types_allowed=True))
-    def add_models(
-        self: pyd.SkipValidation,
-        models: dict[int, variants.BaseHMM],
-        /,
-    ) -> pyd.SkipValidation:
+    def add_models(self, models: dict[int, variants.BaseHMM], /) -> t.Self:
         """Add HMMs to the classifier.
 
         Parameters
         ----------
-        self: HMMClassifier
-
         models:
             HMMs to add to the classifier. The key for each HMM should be the
             label of the class represented by the HMM.
@@ -268,12 +252,12 @@ class HMMClassifier(ClassifierMixin):
         return self
 
     def fit(
-        self: HMMClassifier,
+        self,
         X: Array | None = None,
         y: IntArray | None = None,
         *,
         lengths: IntArray | None = None,
-    ) -> HMMClassifier:
+    ) -> t.Self:
         """Fit the HMMs to the sequence(s) in ``X``.
 
         - If fitted models were provided with :func:`add_model` or
@@ -285,8 +269,6 @@ class HMMClassifier(ClassifierMixin):
 
         Parameters
         ----------
-        self: HMMClassifier
-
         X:
             Sequence(s).
 
@@ -396,7 +378,7 @@ class HMMClassifier(ClassifierMixin):
 
     @_validation.requires_fit
     def predict(
-        self: HMMClassifier,
+        self,
         X: Array,
         *,
         lengths: IntArray | None = None,
@@ -405,8 +387,6 @@ class HMMClassifier(ClassifierMixin):
 
         Parameters
         ----------
-        self: HMMClassifier
-
         X:
             Sequence(s).
 
@@ -431,15 +411,13 @@ class HMMClassifier(ClassifierMixin):
 
     @_validation.requires_fit
     def predict_log_proba(
-        self: HMMClassifier, X: Array, *, lengths: IntArray | None = None
+        self, X: Array, *, lengths: IntArray | None = None
     ) -> FloatArray:
         """Predict log un-normalized posterior probabilities for the
         sequences in ``X``.
 
         Parameters
         ----------
-        self: HMMClassifier
-
         X:
             Sequence(s).
 
@@ -462,7 +440,7 @@ class HMMClassifier(ClassifierMixin):
 
     @_validation.requires_fit
     def predict_proba(
-        self: HMMClassifier, X: Array, *, lengths: IntArray | None = None
+        self, X: Array, *, lengths: IntArray | None = None
     ) -> FloatArray:
         """Predict class probabilities for the sequence(s) in ``X``.
 
@@ -471,8 +449,6 @@ class HMMClassifier(ClassifierMixin):
 
         Parameters
         ----------
-        self: HMMClassifier
-
         X:
             Sequence(s).
 
@@ -499,7 +475,7 @@ class HMMClassifier(ClassifierMixin):
 
     @_validation.requires_fit
     def predict_scores(
-        self: HMMClassifier, X: Array, *, lengths: IntArray | None = None
+        self, X: Array, *, lengths: IntArray | None = None
     ) -> FloatArray:
         """Predict class scores for the sequence(s) in ``X``.
 
@@ -508,8 +484,6 @@ class HMMClassifier(ClassifierMixin):
 
         Parameters
         ----------
-        self: HMMClassifier
-
         X:
             Sequence(s).
 
@@ -544,13 +518,11 @@ class HMMClassifier(ClassifierMixin):
         )
 
     @_validation.requires_fit
-    def save(self: HMMClassifier, path: str | pathlib.Path | t.IO, /) -> None:
+    def save(self, path: str | pathlib.Path | t.IO, /) -> None:
         """Serialize and save a fitted HMM classifier.
 
         Parameters
         ----------
-        self: HMMClassifier
-
         path:
             Location to save the serialized classifier.
 
@@ -575,17 +547,11 @@ class HMMClassifier(ClassifierMixin):
         joblib.dump(state, path)
 
     @classmethod
-    def load(
-        cls: type[HMMClassifier],
-        path: str | pathlib.Path | t.IO,
-        /,
-    ) -> HMMClassifier:
+    def load(cls, path: str | pathlib.Path | t.IO, /) -> HMMClassifier:
         """Load and deserialize a fitted HMM classifier.
 
         Parameters
         ----------
-        cls: type[HMMClassifier]
-
         path:
             Location to load the serialized classifier from.
 
@@ -613,7 +579,7 @@ class HMMClassifier(ClassifierMixin):
         return model
 
     def _compute_scores_chunk(
-        self: HMMClassifier, X: Array, /, *, idxs: IntArray
+        self, X: Array, /, *, idxs: IntArray
     ) -> FloatArray:
         """Compute log posterior probabilities for a chunk of sequences."""
         scores = np.zeros((len(idxs), len(self.classes_)))
@@ -622,7 +588,7 @@ class HMMClassifier(ClassifierMixin):
         return scores
 
     def _compute_log_posterior(
-        self: HMMClassifier,
+        self,
         x: Array,
         /,
     ) -> FloatArray:

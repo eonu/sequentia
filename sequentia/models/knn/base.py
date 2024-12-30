@@ -30,7 +30,7 @@ class KNNMixin:
 
     @_validation.requires_fit
     def query_neighbors(
-        self: KNNMixin,
+        self,
         X: FloatArray,
         *,
         lengths: IntArray | None = None,
@@ -41,8 +41,6 @@ class KNNMixin:
 
         Parameters
         ----------
-        self: KNNMixin
-
         X:
             Sequence(s).
 
@@ -94,7 +92,7 @@ class KNNMixin:
 
     @_validation.requires_fit
     def compute_distance_matrix(
-        self: KNNMixin,
+        self,
         X: FloatArray,
         *,
         lengths: IntArray | None = None,
@@ -104,8 +102,6 @@ class KNNMixin:
 
         Parameters
         ----------
-        self: KNNMixin
-
         X:
             Sequence(s).
 
@@ -152,13 +148,11 @@ class KNNMixin:
         )
 
     @_validation.requires_fit
-    def dtw(self: KNNMixin, A: FloatArray, B: FloatArray) -> float:
+    def dtw(self, A: FloatArray, B: FloatArray) -> float:
         """Calculate the DTW distance between two observation sequences.
 
         Parameters
         ----------
-        self: KNNMixin
-
         A:
             The first sequence.
 
@@ -179,7 +173,7 @@ class KNNMixin:
         return self._dtw()(A, B)
 
     def _dtw1d(
-        self: KNNMixin,
+        self,
         a: FloatArray,
         b: FloatArray,
         *,
@@ -193,11 +187,11 @@ class KNNMixin:
             window=window,
         )
 
-    def _window(self: KNNMixin, A: FloatArray, B: FloatArray) -> int:
+    def _window(self, A: FloatArray, B: FloatArray) -> int:
         """Calculate the absolute DTW window size."""
         return int(self.window * min(len(A), len(B)))
 
-    def _dtwi(self: KNNMixin, A: FloatArray, B: FloatArray) -> float:
+    def _dtwi(self, A: FloatArray, B: FloatArray) -> float:
         """Compute the multivariate DTW distance as the sum of the pairwise
         per-feature DTW distances, allowing each feature to be warped
         independently.
@@ -210,7 +204,7 @@ class KNNMixin:
 
         return np.sum([dtw(A[:, i], B[:, i]) for i in range(A.shape[1])])
 
-    def _dtwd(self: KNNMixin, A: FloatArray, B: FloatArray) -> float:
+    def _dtwd(self, A: FloatArray, B: FloatArray) -> float:
         """Compute the multivariate DTW distance so that the warping of the
         features depends on each other, by modifying the local distance
         measure.
@@ -223,18 +217,18 @@ class KNNMixin:
             window=window,
         )
 
-    def _dtw(self: KNNMixin) -> t.Callable[[FloatArray], float]:
+    def _dtw(self) -> t.Callable[[FloatArray], float]:
         """Conditional DTW callable."""
         return self._dtwi if self.independent else self._dtwd
 
-    def _weighting(self: KNNMixin) -> t.Callable[[FloatArray], FloatArray]:
+    def _weighting(self) -> t.Callable[[FloatArray], FloatArray]:
         """Weighting function - use equal weighting if not provided."""
         if callable(self.weighting):
             return self.weighting
         return np.ones_like
 
     def _distance_matrix_row_chunk(
-        self: KNNMixin,
+        self,
         row_idxs: IntArray,
         col_chunk_idxs: list[IntArray],
         X: FloatArray,
@@ -254,7 +248,7 @@ class KNNMixin:
         )
 
     def _distance_matrix_row_col_chunk(
-        self: KNNMixin,
+        self,
         col_idxs: IntArray,
         row_idxs: IntArray,
         X: FloatArray,
@@ -270,17 +264,11 @@ class KNNMixin:
         return distances
 
     @_validation.requires_fit
-    def save(
-        self: KNNMixin,
-        path: str | pathlib.Path | t.IO,
-        /,
-    ) -> None:
+    def save(self, path: str | pathlib.Path | t.IO, /) -> None:
         """Serialize and save a fitted KNN estimator.
 
         Parameters
         ----------
-        self: KNNMixin
-
         path:
             Location to save the serialized estimator.
 
@@ -312,17 +300,11 @@ class KNNMixin:
         joblib.dump(state, path)
 
     @classmethod
-    def load(
-        cls: type[KNNMixin],
-        path: str | pathlib.Path | t.IO,
-        /,
-    ) -> KNNMixin:
+    def load(cls, path: str | pathlib.Path | t.IO, /) -> KNNMixin:
         """Load and deserialize a fitted KNN estimator.
 
         Parameters
         ----------
-        cls: type[KNNMixin]
-
         path:
             Location to load the serialized estimator from.
 

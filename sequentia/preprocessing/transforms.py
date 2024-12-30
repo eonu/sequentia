@@ -45,6 +45,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from __future__ import annotations
 
+import typing as t
 import warnings
 
 import numpy as np
@@ -176,18 +177,16 @@ class IndependentFunctionTransformer(FunctionTransformer):
 
     @sklearn.base._fit_context(prefer_skip_nested_validation=True)
     def fit(
-        self: IndependentFunctionTransformer,
+        self,
         X: Array,
         y: Array | None = None,
         *,
         lengths: IntArray | None = None,
-    ) -> IndependentFunctionTransformer:
+    ) -> t.Self:
         """Fits the transformer to ``X``.
 
         Parameters
         ----------
-        self: IndependentFunctionTransformer
-
         X:
             Sequence(s).
 
@@ -213,7 +212,7 @@ class IndependentFunctionTransformer(FunctionTransformer):
         return self
 
     def transform(
-        self: IndependentFunctionTransformer,
+        self,
         X: Array,
         *,
         lengths: IntArray | None = None,
@@ -223,8 +222,6 @@ class IndependentFunctionTransformer(FunctionTransformer):
 
         Parameters
         ----------
-        self: IndependentFunctionTransformer
-
         X:
             Sequence(s).
 
@@ -245,7 +242,7 @@ class IndependentFunctionTransformer(FunctionTransformer):
         )
 
     def inverse_transform(
-        self: IndependentFunctionTransformer,
+        self,
         X: Array,
         *,
         lengths: IntArray | None = None,
@@ -254,8 +251,6 @@ class IndependentFunctionTransformer(FunctionTransformer):
 
         Parameters
         ----------
-        self: IndependentFunctionTransformer
-
         X:
             Sequence(s).
 
@@ -283,7 +278,7 @@ class IndependentFunctionTransformer(FunctionTransformer):
         )
 
     def fit_transform(
-        self: IndependentFunctionTransformer,
+        self,
         X: Array,
         y: Array | None = None,
         *,
@@ -294,8 +289,6 @@ class IndependentFunctionTransformer(FunctionTransformer):
 
         Parameters
         ----------
-        self: IndependentFunctionTransformer
-
         X:
             Sequence(s).
 

@@ -33,7 +33,7 @@ class KNNRegressor(KNNMixin, RegressorMixin):
 
     @pyd.validate_call(config=dict(arbitrary_types_allowed=True))
     def __init__(
-        self: pyd.SkipValidation,
+        self,
         *,
         k: pyd.PositiveInt = 1,
         weighting: t.Callable[[FloatArray], FloatArray] | None = None,
@@ -42,13 +42,11 @@ class KNNRegressor(KNNMixin, RegressorMixin):
         use_c: bool = False,
         n_jobs: pyd.PositiveInt | pyd.NegativeInt = 1,
         random_state: pyd.NonNegativeInt | np.random.RandomState | None = None,
-    ) -> pyd.SkipValidation:
+    ) -> None:
         """Initializes the :class:`.KNNRegressor`.
 
         Parameters
         ----------
-        self: KNNRegressor
-
         k:
             Number of neighbors.
 
@@ -138,18 +136,16 @@ class KNNRegressor(KNNMixin, RegressorMixin):
             self.set_score_request(lengths=True, sample_weight=True)
 
     def fit(
-        self: KNNRegressor,
+        self,
         X: FloatArray,
         y: FloatArray,
         *,
         lengths: IntArray | None = None,
-    ) -> KNNRegressor:
+    ) -> t.Self:
         """Fits the regressor to the sequence(s) in ``X``.
 
         Parameters
         ----------
-        self: KNNRegressor
-
         X:
             Sequence(s).
 
@@ -183,7 +179,7 @@ class KNNRegressor(KNNMixin, RegressorMixin):
 
     @_validation.requires_fit
     def predict(
-        self: KNNRegressor,
+        self,
         X: FloatArray,
         *,
         lengths: IntArray | None = None,
@@ -192,8 +188,6 @@ class KNNRegressor(KNNMixin, RegressorMixin):
 
         Parameters
         ----------
-        self: KNNRegressor
-
         X:
             Sequence(s).
 

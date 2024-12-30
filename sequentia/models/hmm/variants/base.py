@@ -34,13 +34,13 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def __init__(
-        self: BaseHMM,
+        self,
         *,
         n_states: pyd.PositiveInt,
         topology: enums.TopologyMode | None,
         random_state: pyd.NonNegativeInt | np.random.RandomState | None,
         hmmlearn_kwargs: dict[str, t.Any] | None,
-    ) -> BaseHMM:
+    ) -> None:
         self.n_states: int = n_states
         """Number of states in the Markov chain."""
 
@@ -66,19 +66,12 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
         self._skip_init_params = set()
         self._skip_params = set()
 
-    def fit(
-        self: BaseHMM,
-        X: Array,
-        *,
-        lengths: IntArray | None = None,
-    ) -> BaseHMM:
+    def fit(self, X: Array, *, lengths: IntArray | None = None) -> t.Self:
         """Fit the HMM to the sequences in ``X``, using the Baum—Welch
         algorithm.
 
         Parameters
         ----------
-        self: BaseHMM
-
         X:
             Sequence(s).
 
@@ -123,14 +116,12 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
         return self
 
     @_validation.requires_fit
-    def score(self: BaseHMM, x: Array, /) -> float:
+    def score(self, x: Array, /) -> float:
         """Calculate the log-likelihood of the HMM generating a single
         observation sequence.
 
         Parameters
         ----------
-        self: BaseHMM
-
         x:
             Sequence.
 
@@ -152,7 +143,7 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
 
     @abc.abstractproperty
     @_validation.requires_fit
-    def n_params(self: BaseHMM) -> int:
+    def n_params(self) -> int:
         """Number of trainable parameters — requires :func:`fit`."""
         n_params = 0
         if "s" not in self._skip_params:
@@ -163,7 +154,7 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
 
     @_validation.requires_fit
     def bic(
-        self: BaseHMM,
+        self,
         X: Array,
         *,
         lengths: IntArray | None = None,
@@ -173,8 +164,6 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
 
         Parameters
         ----------
-        self: BaseHMM
-
         X:
             Sequence(s).
 
@@ -200,7 +189,7 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
 
     @_validation.requires_fit
     def aic(
-        self: BaseHMM,
+        self,
         X: Array,
         *,
         lengths: IntArray | None = None,
@@ -210,8 +199,6 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
 
         Parameters
         ----------
-        self: BaseHMM
-
         X:
             Sequence(s).
 
@@ -236,7 +223,7 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
 
     @pyd.validate_call(config=dict(arbitrary_types_allowed=True))
     def set_state_start_probs(
-        self: pyd.SkipValidation,
+        self,
         probs: (
             FloatArray | enums.TransitionMode
         ) = enums.TransitionMode.RANDOM,  # placeholder
@@ -258,8 +245,6 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
 
         Parameters
         ----------
-        self: BaseHMM
-
         probs:
             Probabilities or probability type to assign as initial state
             probabilities.
@@ -285,7 +270,7 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
 
     @pyd.validate_call(config=dict(arbitrary_types_allowed=True))
     def set_state_transition_probs(
-        self: pyd.SkipValidation,
+        self,
         probs: (
             FloatArray | enums.TransitionMode
         ) = enums.TransitionMode.RANDOM,  # placeholder
@@ -307,8 +292,6 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
 
         Parameters
         ----------
-        self: BaseHMM
-
         probs:
             Probabilities or probability type to assign as state transition
             probabilities.
@@ -335,7 +318,7 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
             self._skip_init_params |= set("t")
 
     @abc.abstractmethod
-    def freeze(self: BaseHMM, params: str | None, /) -> None:
+    def freeze(self, params: str | None, /) -> None:
         """Freeze the trainable parameters of the HMM,
         preventing them from be updated during the Baum—Welch algorithm.
         """
@@ -343,14 +326,14 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
         self._skip_params |= set(self._modify_params(params or defaults))
 
     @abc.abstractmethod
-    def unfreeze(self: BaseHMM, params: str | None, /) -> None:
+    def unfreeze(self, params: str | None, /) -> None:
         """Unfreeze the trainable parameters of the HMM,
         allowing them to be updated during the Baum—Welch algorithm.
         """
         defaults = self._hmmlearn_kwargs_defaults()["params"]
         self._skip_params -= set(self._modify_params(params or defaults))
 
-    def _modify_params(self: BaseHMM, params: str) -> str:
+    def _modify_params(self, params: str) -> str:
         """Validate parameters to be frozen/unfrozen."""
         defaults = self._hmmlearn_kwargs_defaults()["params"]
         msg = (
@@ -364,7 +347,7 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
             raise TypeError(msg)
         return params
 
-    def _check_init_params(self: BaseHMM) -> None:
+    def _check_init_params(self) -> None:
         """Validate hmmlearn init_params argument."""
         topology = self.topology_ or _hmm.topologies.ErgodicTopology(
             n_states=self.n_states,
@@ -401,7 +384,7 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
 
     @classmethod
     def _check_hmmlearn_kwargs(
-        cls: type[BaseHMM], kwargs: dict[str, t.Any] | None
+        cls, kwargs: dict[str, t.Any] | None
     ) -> dict[str, t.Any]:
         """Check hmmlearn forwarded key-word arguments."""
         defaults: dict[str, t.Any] = cls._hmmlearn_kwargs_defaults()
@@ -456,7 +439,7 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
         return kwargs
 
     @abc.abstractmethod
-    def _init_hmm(self: BaseHMM, **kwargs: t.Any) -> hmmlearn.base.BaseHMM:
+    def _init_hmm(self, **kwargs: t.Any) -> hmmlearn.base.BaseHMM:
         """Initialize the hmmlearn model."""
         raise NotImplementedError
 

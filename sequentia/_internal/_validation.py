@@ -60,7 +60,7 @@ def check_is_fitted(
 
 def requires_fit(function: t.Callable) -> t.Callable:
     @functools.wraps(function)
-    def wrapper(self: t.Self, *args: t.Any, **kwargs: t.Any) -> t.Any:
+    def wrapper(self, *args: t.Any, **kwargs: t.Any) -> t.Any:  # noqa: ANN001
         check_is_fitted(self)
         return function(self, *args, **kwargs)
 

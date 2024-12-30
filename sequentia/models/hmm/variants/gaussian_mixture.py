@@ -60,7 +60,7 @@ class GaussianMixtureHMM(BaseHMM):
 
     @pyd.validate_call(config=dict(arbitrary_types_allowed=True))
     def __init__(
-        self: pyd.SkipValidation,
+        self,
         *,
         n_states: pyd.PositiveInt = 5,
         n_components: pyd.PositiveInt = 3,
@@ -68,13 +68,11 @@ class GaussianMixtureHMM(BaseHMM):
         topology: enums.TopologyMode | None = enums.TopologyMode.LEFT_RIGHT,
         random_state: pyd.NonNegativeInt | np.random.RandomState | None = None,
         hmmlearn_kwargs: dict[str, t.Any] | None = None,
-    ) -> pyd.SkipValidation:
+    ) -> None:
         """Initializes the :class:`.GaussianMixtureHMM`.
 
         Parameters
         ----------
-        self: GaussianMixtureHMM
-
         n_states:
             Number of states in the Markov chain.
 
@@ -122,7 +120,7 @@ class GaussianMixtureHMM(BaseHMM):
 
     @property
     @_validation.requires_fit
-    def n_params(self: GaussianMixtureHMM) -> int:
+    def n_params(self) -> int:
         """Number of trainable parameters — requires :func:`fit`."""
         n_params = super().n_params()
         if "m" not in self._skip_params:
@@ -133,11 +131,7 @@ class GaussianMixtureHMM(BaseHMM):
             n_params += self.model.weights_.size
         return n_params
 
-    def set_state_means(
-        self: GaussianMixtureHMM,
-        means: FloatArray,
-        /,
-    ) -> None:
+    def set_state_means(self, means: FloatArray, /) -> None:
         """Set the mean vectors of the state emission distributions.
 
         If this method is **not** called, mean vectors will be
@@ -146,8 +140,6 @@ class GaussianMixtureHMM(BaseHMM):
 
         Parameters
         ----------
-        self: GaussianMixtureHMM
-
         means:
             Array of mean values.
 
@@ -158,11 +150,7 @@ class GaussianMixtureHMM(BaseHMM):
         self._means = np.array(means, dtype=np.float64)
         self._skip_init_params |= set("m")
 
-    def set_state_covars(
-        self: GaussianMixtureHMM,
-        covars: FloatArray,
-        /,
-    ) -> None:
+    def set_state_covars(self, covars: FloatArray, /) -> None:
         """Set the covariance matrices of the state emission distributions.
 
         If this method is **not** called, covariance matrices will be
@@ -171,8 +159,6 @@ class GaussianMixtureHMM(BaseHMM):
 
         Parameters
         ----------
-        self: GaussianMixtureHMM
-
         covars:
             Array of covariance values.
 
@@ -183,11 +169,7 @@ class GaussianMixtureHMM(BaseHMM):
         self._covars = np.array(covars, dtype=np.float64)
         self._skip_init_params |= set("c")
 
-    def set_state_weights(
-        self: GaussianMixtureHMM,
-        weights: FloatArray,
-        /,
-    ) -> None:
+    def set_state_weights(self, weights: FloatArray, /) -> None:
         """Set the component mixture weights of the state emission
         distributions.
 
@@ -197,8 +179,6 @@ class GaussianMixtureHMM(BaseHMM):
 
         Parameters
         ----------
-        self: GaussianMixtureHMM
-
         weights:
             Array of component mixture weights.
 
@@ -209,18 +189,12 @@ class GaussianMixtureHMM(BaseHMM):
         self._weights = np.array(weights, dtype=np.float64)
         self._skip_init_params |= set("w")
 
-    def freeze(
-        self: GaussianMixtureHMM,
-        params: str | None = None,
-        /,
-    ) -> None:
+    def freeze(self, params: str | None = None, /) -> None:
         """Freeze the trainable parameters of the HMM,
         preventing them from be updated during the Baum—Welch algorithm.
 
         Parameters
         ----------
-        self: GaussianMixtureHMM
-
         params:
             A string specifying which parameters to freeze. Can contain a
             combination of:
@@ -239,18 +213,12 @@ class GaussianMixtureHMM(BaseHMM):
         """
         super().freeze(params)
 
-    def unfreeze(
-        self: GaussianMixtureHMM,
-        params: str | None = None,
-        /,
-    ) -> None:
+    def unfreeze(self, params: str | None = None, /) -> None:
         """Unfreeze the trainable parameters of the HMM,
         allowing them to be updated during the Baum—Welch algorithm.
 
         Parameters
         ----------
-        self: GaussianMixtureHMM
-
         params:
             A string specifying which parameters to unfreeze. Can contain
             a combination of:
@@ -270,7 +238,7 @@ class GaussianMixtureHMM(BaseHMM):
         super().unfreeze(params)
 
     def _init_hmm(
-        self: GaussianMixtureHMM,
+        self,
         **kwargs: t.Any,
     ) -> hmmlearn.hmm.GMMHMM:
         """Initialize the hmmlearn model."""

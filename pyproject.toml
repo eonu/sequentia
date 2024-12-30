@@ -145,6 +145,8 @@ select = [
     "RUF",  # ruff
 ]
 ignore = [
+    "ANN101",  # https://docs.astral.sh/ruff/rules/missing-type-self/
+    "ANN102",  # https://docs.astral.sh/ruff/rules/missing-type-cls/
     "ANN401",  # https://beta.ruff.rs/docs/rules/any-type/
     "B905",    # https://beta.ruff.rs/docs/rules/zip-without-explicit-strict/
     "TD003",   # https://beta.ruff.rs/docs/rules/missing-todo-link/

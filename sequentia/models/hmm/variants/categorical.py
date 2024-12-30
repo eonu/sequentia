@@ -59,19 +59,17 @@ class CategoricalHMM(BaseHMM):
 
     @pyd.validate_call(config=dict(arbitrary_types_allowed=True))
     def __init__(
-        self: pyd.SkipValidation,
+        self,
         *,
         n_states: pyd.PositiveInt = 5,
         topology: enums.TopologyMode | None = enums.TopologyMode.LEFT_RIGHT,
         random_state: pyd.NonNegativeInt | np.random.RandomState | None = None,
         hmmlearn_kwargs: dict[str, t.Any] | None = None,
-    ) -> pyd.SkipValidation:
+    ) -> None:
         """Initializes the :class:`.CategoricalHMM`.
 
         Parameters
         ----------
-        self: CategoricalHMM
-
         n_states:
             Number of states in the Markov chain.
 
@@ -104,18 +102,14 @@ class CategoricalHMM(BaseHMM):
 
     @property
     @_validation.requires_fit
-    def n_params(self: CategoricalHMM) -> int:
+    def n_params(self) -> int:
         """Number of trainable parameters — requires :func:`fit`."""
         n_params = super().n_params
         if "e" not in self._skip_params:
             n_params += self.model.emissionprob_.size
         return n_params
 
-    def set_state_emission_probs(
-        self: CategoricalHMM,
-        probs: FloatArray,
-        /,
-    ) -> None:
+    def set_state_emission_probs(self, probs: FloatArray, /) -> None:
         """Set the state emission distribution of the HMM's emission model.
 
         If this method is **not** called, emission probabilities will be
@@ -124,8 +118,6 @@ class CategoricalHMM(BaseHMM):
 
         Parameters
         ----------
-        self: CategoricalHMM
-
         probs:
             Array of emission probabilities.
 
@@ -136,14 +128,12 @@ class CategoricalHMM(BaseHMM):
         self._emissionprob = np.array(probs, dtype=np.float64)
         self._skip_init_params |= set("e")
 
-    def freeze(self: CategoricalHMM, params: str | None = None, /) -> None:
+    def freeze(self, params: str | None = None, /) -> None:
         """Freeze the trainable parameters of the HMM,
         preventing them from being updated during the Baum—Welch algorithm.
 
         Parameters
         ----------
-        self: CategoricalHMM
-
         params:
             A string specifying which parameters to freeze.
             Can contain a combination of:
@@ -164,14 +154,12 @@ class CategoricalHMM(BaseHMM):
         """
         super().freeze(params)
 
-    def unfreeze(self: CategoricalHMM, params: str | None = None, /) -> None:
+    def unfreeze(self, params: str | None = None, /) -> None:
         """Unfreeze the trainable parameters of the HMM,
         allowing them to be updated during the Baum—Welch algorithm.
 
         Parameters
         ----------
-        self: CategoricalHMM
-
         params:
             A string specifying which parameters to unfreeze.
             Can contain a combination of:
@@ -189,10 +177,7 @@ class CategoricalHMM(BaseHMM):
         """
         super().unfreeze(params)
 
-    def _init_hmm(
-        self: CategoricalHMM,
-        **kwargs: t.Any,
-    ) -> hmmlearn.hmm.CategoricalHMM:
+    def _init_hmm(self, **kwargs: t.Any) -> hmmlearn.hmm.CategoricalHMM:
         """Initialize the hmmlearn model."""
         return hmmlearn.hmm.CategoricalHMM(
             n_components=self.n_states,
