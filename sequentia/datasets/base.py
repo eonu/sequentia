@@ -92,7 +92,7 @@ class SequentialDataset:
         ) = None,
         random_state: (
             pyd.NonNegativeInt | np.random.RandomState | None
-        ) = None,  # placeholder
+        ) = None,
         shuffle: bool = True,
         stratify: bool = False,
     ) -> tuple[SequentialDataset, SequentialDataset]:

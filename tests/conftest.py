@@ -25,7 +25,7 @@ class Helpers:
         return map(  # noqa: C417
             lambda params: "".join(params),
             itertools.chain.from_iterable(
-                itertools.combinations(string, i)  # placeholder
+                itertools.combinations(string, i)
                 for i in range(1, len(string))
             ),
         )

@@ -105,9 +105,7 @@ class KNNRegressor(KNNMixin, RegressorMixin):
         self.k: int = k
         """Number of neighbors."""
 
-        self.weighting: t.Callable[[np.ndarray], np.ndarray] | None = (
-            weighting  # placeholder
-        )
+        self.weighting: t.Callable[[np.ndarray], np.ndarray] | None = weighting
         """A callable that specifies how distance weighting should be
         performed."""
 

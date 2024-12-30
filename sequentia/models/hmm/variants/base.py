@@ -226,7 +226,7 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
         self,
         probs: (
             FloatArray | enums.TransitionMode
-        ) = enums.TransitionMode.RANDOM,  # placeholder
+        ) = enums.TransitionMode.RANDOM,
         /,
     ) -> None:
         """Set the initial state probabilities.
@@ -273,7 +273,7 @@ class BaseHMM(BaseEstimator, metaclass=abc.ABCMeta):
         self,
         probs: (
             FloatArray | enums.TransitionMode
-        ) = enums.TransitionMode.RANDOM,  # placeholder
+        ) = enums.TransitionMode.RANDOM,
         /,
     ) -> None:
         """Set the transition probability matrix.

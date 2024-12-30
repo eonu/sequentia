@@ -111,7 +111,7 @@ class HMMClassifier(ClassifierMixin):
         model_kwargs: dict[str, t.Any] | None = None,
         prior: (
             PriorMode | dict[int, t.Annotated[float, pyd.Field(ge=0, le=1)]]
-        ) = PriorMode.UNIFORM,  # placeholder
+        ) = PriorMode.UNIFORM,
         classes: list[int] | None = None,
         n_jobs: pyd.PositiveInt | pyd.NegativeInt = 1,
     ) -> None:
