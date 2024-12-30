@@ -65,7 +65,7 @@ class KNNClassifier(KNNMixin, ClassifierMixin):
         weighting: t.Callable[[FloatArray], FloatArray] | None = None,
         window: pyd.confloat(ge=0.0, le=1.0) = 1.0,
         independent: bool = False,
-        use_c: bool = False,
+        use_c: bool = True,
         n_jobs: pyd.PositiveInt | pyd.NegativeInt = 1,
         random_state: pyd.NonNegativeInt | np.random.RandomState | None = None,
         classes: list[int] | None = None,
